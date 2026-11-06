@@ -13,7 +13,7 @@ import { injectScan, isTextField } from '@/scanInject';
 
 const props = defineProps({
   target: { type: Function, default: null },
-  label: { type: String, default: 'Scan' },
+  label: { type: String, default: 'Ler' },
   // Icon only, squared off on the left so it sits flush against the text box to its left.
   compact: { type: Boolean, default: false },
 });
@@ -33,8 +33,8 @@ function begin() {
   error.value = null;
   if (!hasCamera || !secure) {
     error.value = !secure
-      ? 'The camera only works over a secure (https) connection.'
-      : 'This browser has no camera access.';
+      ? 'A câmera só funciona em uma conexão segura (HTTPS).'
+      : 'Este navegador não tem acesso à câmera.';
     return;
   }
   open.value = true;

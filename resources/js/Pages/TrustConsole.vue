@@ -167,7 +167,7 @@ const revoke = (trust) => run(async () => {
 	notice.value = `A confiança com ${trust.name} foi revogada.`;
 }, 'Não foi possível revogar.');
 
-const when = (v) => (v ? new Date(v).toLocaleString() : null);
+const when = (v) => (v ? new Date(v).toLocaleString('pt-BR') : null);
 
 onMounted(load);
 </script>

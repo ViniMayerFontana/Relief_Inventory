@@ -343,7 +343,7 @@ async function moveQuestion(record, index, direction) {
 					<span v-if="justSaved" class="ri_success" style="margin-left: 0.75em;">Salvo.</span>
 					<button v-if="editing" @click="cancel()" class="ri_formbutton">Cancelar alterações</button>
 					<button v-if="editing" @click="doDelete()" class="ri_deletebutton" :class="{ ri_confirming: confirmingDelete }">
-						{{ confirmingDelete ? 'Confirm Delete — cannot be undone' : 'Delete' }}
+						{{ confirmingDelete ? 'Confirmar exclusão — não será possível desfazer' : 'Excluir' }}
 					</button>
 					<button v-if="editing && confirmingDelete" @click="keepRecord()" class="ri_linkbutton">Manter registro</button>
 					<button v-if="!editing" @click="cancel()" class="ri_defaultbutton">Voltar à lista</button>

@@ -70,7 +70,7 @@ async function confirm() {
 		await axios.post('/json/volunteer-kiosk/enable-lock', { location_id: locationId.value });
 		emit('enabled');
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not enable kiosk mode.';
+		error.value = e.response?.data?.message || 'Não foi possível ativar o modo quiosque.';
 		enabling.value = false;
 	}
 }
@@ -81,20 +81,20 @@ async function confirm() {
 		<div class="kecm_body">
 			<h2 class="kecm_title">Ativar o modo quiosque?</h2>
 			<p class="kecm_text">
-				This will log you out and lock this device to sign-in/sign-out only — no login required — until
-				someone logs back in.
+				Você será desconectado e este dispositivo ficará bloqueado para permitir apenas entradas e saídas,
+				sem exigir login, até que alguém entre novamente.
 			</p>
 			<label v-if="locations.length > 1" class="ri_formcontrol">
 				<span class="text-gray-700">Em qual local este quiosque está instalado?</span>
 				<select v-model.number="locationId" class="ri_forminput">
-					<option :value="null">— Choose —</option>
+					<option :value="null">— Escolha —</option>
 					<option v-for="location in locations" :key="location.id" :value="location.id">{{ location.name }}</option>
 				</select>
 			</label>
 			<p v-if="error" class="kecm_error">{{ error }}</p>
 			<div class="ri_formactions">
 				<button type="button" class="ri_defaultbutton" :disabled="enabling || (locations.length > 1 && !locationId)" @click="confirm">
-					{{ enabling ? 'Enabling…' : 'Enable Kiosk Mode' }}
+					{{ enabling ? 'Ativando…' : 'Ativar modo quiosque' }}
 				</button>
 				<button type="button" class="ri_formbutton" :disabled="enabling" @click="cancel">Cancelar</button>
 			</div>

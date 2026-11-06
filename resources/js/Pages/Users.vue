@@ -44,6 +44,7 @@ import Checkbox from '@/Components/Checkbox.vue';
 import UserInvitations from '@/Components/UserInvitations.vue';
 import axios from 'axios';
 import { withWarehouse } from '@/bootstrap';
+import { roleLabel } from '@/labels';
 
 defineProps({
     breadcrumb: {
@@ -117,8 +118,12 @@ function statusLabel(record) {
     return statusLabels.value[record.status] || record.status;
 }
 
+function displayRole(role) {
+    return roleLabel(role);
+}
+
 function formatDateTime(value) {
-    return value ? new Date(value).toLocaleString() : '';
+    return value ? new Date(value).toLocaleString('pt-BR') : '';
 }
 
 function inTab(record) {
@@ -535,7 +540,7 @@ function setPasswordChangeRequired(required) {
             <span class="text-gray-700">Função</span>
             <select v-model="roleFilter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
               <option value="">Todas as funções</option>
-              <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+              <option v-for="role in roles" :key="role.id" :value="role.id">{{ displayRole(role.name) }}</option>
               <option value="none">Sem função</option>
             </select>
           </label>
@@ -632,7 +637,7 @@ function setPasswordChangeRequired(required) {
                 </td>
                 <td class="py-1 pr-2">{{ record.first_name }} {{ record.last_name }}</td>
                 <td class="py-1 pr-2">{{ record.email }}</td>
-                <td class="py-1 pr-2">{{ (record.roles || []).map((r) => r.name).join(', ') }}</td>
+                <td class="py-1 pr-2">{{ (record.roles || []).map((r) => displayRole(r.name)).join(', ') }}</td>
                 <td class="py-1 pr-2">{{ statusLabel(record) }}</td>
                 <td class="py-1 pr-2 whitespace-nowrap" :class="{ 'text-gray-400': !record.last_login_at }">
                   {{ record.last_login_at ? formatDateTime(record.last_login_at) : 'Nunca' }}
@@ -731,7 +736,7 @@ function setPasswordChangeRequired(required) {
               :class="{ 'role-chip-active': roleAssigned(selected, role.id) }"
               :title="(role.permissions || []).map((p) => p.key).join(', ')"
               @click="selectRole(selected, role)"
-            >{{ role.name }} <span class="role-chip-count">({{ (role.permissions || []).length }})</span></button>
+            >{{ displayRole(role.name) }} <span class="role-chip-count">({{ (role.permissions || []).length }})</span></button>
           </div>
           <p class="text-xs text-gray-500 mt-1">
             As entidades parceiras podem acessar o sistema, mas ainda não podem fazer pedidos.

@@ -59,7 +59,7 @@ async function submit() {
 }
 
 function when(value) {
-	return value ? new Date(value).toLocaleString() : '';
+	return value ? new Date(value).toLocaleString('pt-BR') : '';
 }
 
 onMounted(load);

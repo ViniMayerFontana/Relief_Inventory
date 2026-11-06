@@ -155,7 +155,7 @@ onMounted(load);
 						</label>
 
 						<label v-if="activeMailer === 'resend'" class="block sm:col-span-2">
-							<span class="text-gray-700">Resend API key</span>
+							<span class="text-gray-700">Chave de API do Resend</span>
 							<input v-model="form.resend_key" type="password" autocomplete="new-password"
 								placeholder="Deixe em branco para manter a chave atual" :disabled="form.clear_resend_key"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm font-mono" />
@@ -170,7 +170,7 @@ onMounted(load);
 
 						<template v-if="activeMailer === 'smtp'">
 							<label class="block">
-								<span class="text-gray-700">SMTP server</span>
+								<span class="text-gray-700">Servidor SMTP</span>
 								<input v-model="form.smtp_host" type="text" :placeholder="placeholder('smtp_host')"
 									class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 							</label>
@@ -185,7 +185,7 @@ onMounted(load);
 									class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 							</label>
 							<label class="block">
-								<span class="text-gray-700">Password</span>
+								<span class="text-gray-700">Senha</span>
 								<input v-model="form.smtp_password" type="password" autocomplete="new-password"
 									placeholder="Deixe em branco para manter a senha atual" :disabled="form.clear_smtp_password"
 									class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />

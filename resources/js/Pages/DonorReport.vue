@@ -18,6 +18,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import ChartCanvas from '@/Components/ChartCanvas.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { transactionStatusLabel } from '@/labels';
 
 const STANDINGS = [
 	{ value: 'preferred', label: 'Preferencial' },
@@ -114,7 +115,7 @@ export default {
 				this.edit = {};
 			} catch (error) {
 				this.error = error.response?.status === 422
-					? 'Check the dates: the "to" date can\'t be before the "from" date.'
+					? 'Confira as datas: a data final não pode ser anterior à data inicial.'
 					: 'Não foi possível carregar o relatório de doadores.';
 			} finally {
 				this.loading = false;
@@ -148,7 +149,7 @@ export default {
 				this.report.totals.decline = this.report.donors.filter((x) => !x.is_system && x.standing === 'decline').length;
 				this.report.totals.needs_review = this.report.donors.filter((x) => this.needsReview(x)).length;
 			} catch (error) {
-				e.error = error.response?.data?.errors?.note?.[0] || error.response?.data?.message || 'Could not save the standing.';
+				e.error = error.response?.data?.errors?.note?.[0] || error.response?.data?.message || 'Não foi possível salvar a classificação.';
 			} finally {
 				e.saving = false;
 			}
@@ -160,7 +161,7 @@ export default {
 			return value === null || value === undefined ? '—' : value + '%';
 		},
 		n(value) {
-			return Number(value || 0).toLocaleString();
+			return Number(value || 0).toLocaleString('pt-BR');
 		},
 	},
 	created() {
@@ -287,7 +288,7 @@ export default {
 												<tr v-for="n2 in d.donation_list" :key="n2.id">
 													<td>{{ n2.id }}</td>
 													<td>{{ n2.date }}</td>
-													<td>{{ n2.status }}</td>
+													<td>{{ transactionStatusLabel(n2.status) }}</td>
 													<td class="dnr_num">{{ n(n2.usable) }}</td>
 													<td class="dnr_num">{{ n(n2.outdated) }}</td>
 													<td class="dnr_num">{{ n(n2.trashed) }}</td>

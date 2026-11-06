@@ -17,6 +17,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import ChartCanvas from '@/Components/ChartCanvas.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { itemCategoryLabel } from '@/labels';
 
 const BLUE = '#2a78d6';
 const ORANGE = '#eb6834';
@@ -62,7 +63,7 @@ export default {
 			return (this.report?.items || []).filter((i) => !q
 				|| (i.name || '').toLowerCase().includes(q)
 				|| (i.display_number || '').toLowerCase().includes(q)
-				|| (i.category || '').toLowerCase().includes(q));
+				|| itemCategoryLabel(i.category).toLowerCase().includes(q));
 		},
 		totals() {
 			return this.report?.totals;
@@ -107,6 +108,9 @@ export default {
 		},
 	},
 	methods: {
+		categoryLabel(category) {
+			return itemCategoryLabel(category);
+		},
 		async fetchReport() {
 			this.loading = true;
 			this.error = null;
@@ -136,14 +140,14 @@ export default {
 		},
 		bucketLabel(start) {
 			const d = new Date(start + 'T00:00:00');
-			if (this.bucket === 'month') return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
-			return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+			if (this.bucket === 'month') return d.toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+			return d.toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' });
 		},
 		bucketLabelText(bucket) {
 			return ({ day: 'dia', week: 'semana', month: 'mês' })[bucket] || bucket;
 		},
 		n(value) {
-			return Number(value || 0).toLocaleString();
+			return Number(value || 0).toLocaleString('pt-BR');
 		},
 		signed(value) {
 			return (value > 0 ? '+' : '') + this.n(value);
@@ -187,13 +191,13 @@ export default {
 				</label>
 				<label>Categoria
 					<select v-model="categoryId" class="ri_forminput" @change="onCategoryChange">
-						<option value="">All</option>
+						<option value="">Todas</option>
 						<option v-for="c in report?.options?.categories || []" :key="c.id" :value="c.id">{{ c.name }}</option>
 					</select>
 				</label>
 				<label>Tipo de item
 					<select v-model="itemtypeId" class="ri_forminput" @change="fetchReport">
-						<option value="">All</option>
+						<option value="">Todos</option>
 						<option v-for="t in itemtypeOptions" :key="t.id" :value="t.id">{{ t.name }}</option>
 					</select>
 				</label>
@@ -277,7 +281,7 @@ export default {
 					<tbody>
 						<tr v-for="i in items" :key="i.itemtype_id">
 							<td>{{ i.display_number || '—' }}</td>
-							<td>{{ i.name }}<span v-if="i.category" class="flr_category">{{ i.category }}</span></td>
+							<td>{{ i.name }}<span v-if="i.category" class="flr_category">{{ categoryLabel(i.category) }}</span></td>
 							<td>{{ i.unit }}</td>
 							<td class="flr_num">{{ n(i.opening) }}</td>
 							<td class="flr_num">{{ n(i.received) }}</td>

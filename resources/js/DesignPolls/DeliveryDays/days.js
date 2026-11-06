@@ -6,7 +6,7 @@
 
 import { reactive } from 'vue';
 
-export const WEEK_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+export const WEEK_DAYS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
 
 export function blankDays() {
 	return reactive(Object.fromEntries(WEEK_DAYS.map((day) => [day, 'no'])));
@@ -16,11 +16,11 @@ export function resetDays(days) {
 	for (const day of WEEK_DAYS) days[day] = 'no';
 }
 
-/** "Can accept: Tue, Wed, Thu · Preferred: Tue" — what the request would record. */
+/** Summarizes accepted and preferred days for the demo. */
 export function summarize(days) {
 	const accepted = WEEK_DAYS.filter((day) => days[day] !== 'no');
-	if (!accepted.length) return 'No days chosen yet';
-	const canAccept = accepted.length === 7 ? 'Any day' : accepted.join(', ');
+	if (!accepted.length) return 'Nenhum dia selecionado';
+	const canAccept = accepted.length === 7 ? 'Qualquer dia' : accepted.join(', ');
 	const pref = WEEK_DAYS.filter((day) => days[day] === 'pref');
-	return 'Can accept: ' + canAccept + (pref.length ? ' · Preferred: ' + pref.join(', ') : '');
+	return 'Pode receber: ' + canAccept + (pref.length ? ' · Preferencial: ' + pref.join(', ') : '');
 }

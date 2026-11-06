@@ -424,8 +424,16 @@ class Person extends Model
         $from = $this->partner_status ?? '';
 
         if (! in_array($toStatus, self::PARTNER_STATUS_TRANSITIONS[$from] ?? [], true)) {
-            $fromLabel = $from === '' ? '(not tracked)' : $from;
-            throw new InvalidArgumentException("Cannot move partner_status from \"{$fromLabel}\" to \"{$toStatus}\".");
+            $statusLabels = [
+                '' => 'não rastreado',
+                self::PARTNER_STATUS_PENDING => 'pendente',
+                self::PARTNER_STATUS_APPROVED => 'aprovado',
+                self::PARTNER_STATUS_DENIED => 'recusado',
+                self::PARTNER_STATUS_BLOCKED => 'bloqueado',
+            ];
+            $fromLabel = $statusLabels[$from] ?? $from;
+            $toLabel = $statusLabels[$toStatus] ?? $toStatus;
+            throw new InvalidArgumentException("Não é possível alterar o status do parceiro de \"{$fromLabel}\" para \"{$toLabel}\".");
         }
 
         DB::transaction(function () use ($from, $toStatus, $changedByPersonId, $notes, $formSubmissionId) {

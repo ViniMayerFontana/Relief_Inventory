@@ -58,7 +58,7 @@
 	        @mousedown.prevent="selectOption(option)"
 	        :class="['ir-combo-box-option', { ir_combo_box_highlighted: index === highlightedIndex }]"
 	      >
-	        {{ option[display] }}<span v-if="secondaryDisplay && option[secondaryDisplay]"> &mdash; {{ option[secondaryDisplay] }}</span>
+	        {{ displayText(option) }}<span v-if="secondaryDisplay && option[secondaryDisplay]"> &mdash; {{ option[secondaryDisplay] }}</span>
 	      </li>
 	    </ul>
 		<span v-if="!enabled" class="ir_disabled_input">{{ this.search }}</span>
@@ -118,7 +118,12 @@ export default {
 	placeholder: {
 		type: String,
 		required: false,
-		default: "Select an option",
+		default: "Selecione uma opção",
+	},
+	displayFormatter: {
+		type: Function,
+		required: false,
+		default: null,
 	},
   },
   data() {
@@ -153,7 +158,7 @@ export default {
       immediate: true,
       handler(newValue) {
         const selectedOption = this.optionlist.find(option => option.id === newValue);
-        this.search = selectedOption ? selectedOption[this.display] : "";
+        this.search = selectedOption ? this.displayText(selectedOption) : "";
 		if(this.updates && selectedOption) {
 			this.$emit("update:updates", selectedOption);
 		}
@@ -161,6 +166,10 @@ export default {
     },
   },
   methods: {
+	displayText(option) {
+		const value = option?.[this.display] ?? "";
+		return this.displayFormatter ? this.displayFormatter(value, option) : value;
+	},
 	fetchOptions() {
 	  if(this.options) {
 		  this.optionlist = this.options;
@@ -179,13 +188,15 @@ export default {
 	filterOptions() {
       const fields = this.searchFields && this.searchFields.length ? this.searchFields : [this.display];
       const term = this.search.toLowerCase();
-      this.filteredOptions = this.baseOptions.filter((option) =>
-        fields.some((field) => option[field] && String(option[field]).toLowerCase().includes(term))
-      );
+      this.filteredOptions = this.baseOptions.filter((option) => {
+        const labelMatches = String(this.displayText(option)).toLowerCase().includes(term);
+        const fieldMatches = fields.some((field) => option[field] && String(option[field]).toLowerCase().includes(term));
+        return labelMatches || fieldMatches;
+      });
 	  this.highlightedIndex = this.filteredOptions.length ? 0 : -1;
     },
     selectOption(option) {
-      this.search = option[this.display];
+      this.search = this.displayText(option);
       this.isOpen = false;
 	  this.highlightedIndex = -1;
       this.$emit("update:keyValue", option.id);
@@ -215,7 +226,7 @@ export default {
 	},
 	showOptionTitle() {
 		const selectedOption = this.optionlist.find(option => option.id === this.keyValue);
-		this.search = selectedOption ? selectedOption[this.display] : "";
+		this.search = selectedOption ? this.displayText(selectedOption) : "";
 	},
     handleBlur() {
       setTimeout(() => {
@@ -228,4 +239,3 @@ export default {
   }
 };
 </script>
-

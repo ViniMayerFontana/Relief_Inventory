@@ -58,7 +58,7 @@ const groups = computed(() => {
 	const map = new Map();
 	for (const printer of printers.value) {
 		const key = printer.site_id ?? 'none';
-		if (!map.has(key)) map.set(key, { key, site: printer.site || 'No site assigned', printers: [] });
+		if (!map.has(key)) map.set(key, { key, site: printer.site || 'Nenhum local atribuído', printers: [] });
 		map.get(key).printers.push(printer);
 	}
 	return [...map.values()];

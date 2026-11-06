@@ -21,9 +21,10 @@ import { Head, Link } from '@inertiajs/vue3';
 import PeriodStatCard from '@/Components/Dashboard/PeriodStatCard.vue';
 import BarBreakdownCard from '@/Components/Dashboard/BarBreakdownCard.vue';
 import axios from 'axios';
+import { itemCategoryLabel } from '@/labels';
 
-const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: 'Sorting', Complete: 'Complete' };
-const ORDER_STAGE_LABELS = { 'New Order': 'New Order', Filling: 'Filling', Filled: 'Filled', Shipped: 'Shipped', 'Delivered - Waiting on BOL': 'Waiting on BOL' };
+const DONATION_STAGE_LABELS = { Received: 'Recebida', Sorting: 'Em triagem', Complete: 'Concluída' };
+const ORDER_STAGE_LABELS = { 'New Order': 'Novo pedido', Filling: 'Em separação', Filled: 'Separado', Shipped: 'Enviado', 'Delivered - Waiting on BOL': 'Aguardando comprovante de entrega' };
 
 export default {
 	components: { AuthenticatedLayout, Head, Link, PeriodStatCard, BarBreakdownCard },
@@ -56,7 +57,7 @@ export default {
 		},
 		categoryRows() {
 			if (!this.data) return [];
-			return this.data.inventory_summary.top_categories.map((c) => ({ label: c.category, value: c.units }));
+			return this.data.inventory_summary.top_categories.map((c) => ({ label: itemCategoryLabel(c.category), value: c.units }));
 		},
 	},
 	methods: {
@@ -88,7 +89,7 @@ export default {
 			<div class="wd_topbar">
 				<h2 class="ri_datatable_head">Painel do armazém</h2>
 				<span v-if="data" class="wd_generated">
-					Dados atualizados em {{ new Date(data.generated_at).toLocaleString() }}
+					Dados atualizados em {{ new Date(data.generated_at).toLocaleString('pt-BR') }}
 					<button @click="fetchDashboard" class="ri_linkbutton">Atualizar</button>
 				</span>
 			</div>

@@ -7,6 +7,7 @@ import { Head } from '@inertiajs/vue3';
 import PeriodStatCard from '@/Components/Dashboard/PeriodStatCard.vue';
 import BarBreakdownCard from '@/Components/Dashboard/BarBreakdownCard.vue';
 import axios from 'axios';
+import { itemCategoryLabel } from '@/labels';
 
 // An always-on stats sign for an R Station (or any screen): the Situation Report ('sitrep') or the
 // warehouse dashboard ('dashboard') with no menus, refreshing itself. Data comes from
@@ -37,7 +38,7 @@ export default {
 			return this.data.county_breakdown.map((c) => ({ label: c.county, value: c.count }));
 		},
 		categoryRows() {
-			return this.data.inventory_summary.top_categories.map((c) => ({ label: c.category, value: c.units }));
+			return this.data.inventory_summary.top_categories.map((c) => ({ label: itemCategoryLabel(c.category), value: c.units }));
 		},
 	},
 	methods: {
@@ -73,7 +74,7 @@ export default {
 		<div class="ds_container">
 			<div class="ds_topbar">
 				<h1>{{ title }}</h1>
-				<span class="ds_time">{{ now.toLocaleDateString() }} {{ now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }}</span>
+				<span class="ds_time">{{ now.toLocaleDateString('pt-BR') }} {{ now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) }}</span>
 			</div>
 
 			<p v-if="error" class="ds_error">{{ error }}</p>

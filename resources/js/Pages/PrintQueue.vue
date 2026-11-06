@@ -205,7 +205,7 @@ function waitingNote(job) {
 }
 
 function formatTime(iso) {
-	return iso ? new Date(iso).toLocaleString() : '';
+	return iso ? new Date(iso).toLocaleString('pt-BR') : '';
 }
 
 function age(iso) {
@@ -414,7 +414,7 @@ onUnmounted(() => {
 					</div>
 
 					<p class="text-xs text-gray-500">
-						<template v-if="updatedAt">Atualizado às {{ updatedAt.toLocaleTimeString() }}. </template>
+						<template v-if="updatedAt">Atualizado às {{ updatedAt.toLocaleTimeString('pt-BR') }}. </template>
 						{{ realtime.connected ? 'Atualização em tempo real.' : 'Esta página é atualizada a cada poucos segundos.' }}
 						<template v-if="canManage">Cancelar um trabalho que já está sendo impresso não interrompe a impressão que já começou.</template>
 						Os arquivos dos trabalhos concluídos são removidos após algumas semanas; o registro permanece.

@@ -20,6 +20,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { itemStatusLabel, itemCategoryLabel, palletStatusLabel } from '@/labels';
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu },
@@ -69,6 +70,12 @@ export default {
 		},
 	},
 	methods: {
+		statusLabel(status) {
+			return itemStatusLabel(status);
+		},
+		categoryLabel(category) {
+			return itemCategoryLabel(category);
+		},
 		async fetchReport() {
 			this.loading = true;
 			this.error = null;
@@ -116,7 +123,7 @@ export default {
 				/>
 				<select v-model="categoryFilter" class="ri_forminput">
 					<option value="">Todas as categorias</option>
-					<option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
+					<option v-for="c in categories" :key="c" :value="c">{{ categoryLabel(c) }}</option>
 				</select>
 				<label class="inv_toggle">
 					<input type="checkbox" v-model="showAll" />
@@ -150,9 +157,9 @@ export default {
 							<td>{{ record.display_number || '(sem número)' }}</td>
 							<td>
 								{{ record.name }}
-								<span v-if="record.status !== 'orderable'" class="inv_status_badge">{{ record.status }}</span>
+								<span v-if="record.status !== 'orderable'" class="inv_status_badge">{{ statusLabel(record.status) }}</span>
 							</td>
-							<td>{{ record.category }}</td>
+							<td>{{ categoryLabel(record.category) }}</td>
 							<td>{{ record.unit }}</td>
 							<td class="inv_num" :class="{ inv_zero: record.on_hand === 0 }">{{ record.on_hand }}</td>
 							<td class="inv_num">{{ record.received_new || '' }}</td>
@@ -188,7 +195,7 @@ export default {
 										<tr v-for="loc in record.locations" :key="loc.location_id ?? 'none'">
 											<td>{{ loc.code || 'Local não registrado' }}</td>
 											<td>
-												<span v-for="(p, i) in loc.pallets" :key="p.id" class="inv_pallet">{{ p.tag }} ({{ p.qty }}, {{ p.status }})<span v-if="i < loc.pallets.length - 1">, </span></span>
+												<span v-for="(p, i) in loc.pallets" :key="p.id" class="inv_pallet">{{ p.tag }} ({{ p.qty }}, {{ palletStatusLabel(p.status) }})<span v-if="i < loc.pallets.length - 1">, </span></span>
 											</td>
 											<td class="inv_num">{{ loc.qty }}</td>
 										</tr>

@@ -99,7 +99,7 @@ export default {
 	methods: {
 		formatTime(value) {
 			if (!value) return '';
-			return new Date(value).toLocaleString(undefined, { hour: 'numeric', minute: '2-digit' });
+			return new Date(value).toLocaleString('pt-BR', { hour: 'numeric', minute: '2-digit' });
 		},
 		async load() {
 			this.refreshing = true;

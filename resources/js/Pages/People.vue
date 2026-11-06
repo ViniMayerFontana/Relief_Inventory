@@ -10,6 +10,7 @@ import RIForm from '@/Components/RIForm.vue';
 import TextArea from '@/Components/TextArea.vue';
 import SearchSelect from '@/Components/SearchSelect.vue';
 import AddressCorrectionCheck from '@/Components/AddressCorrectionCheck.vue';
+import { roleLabel, partnerStatusLabel } from '@/labels';
 
 defineProps({
     breadcrumb: {
@@ -51,16 +52,16 @@ defineProps({
       <template #tbody="{ record }">
         <td class="people_card">
           <div class="people_line1">
-            <strong>{{ [record.first_name, record.last_name].filter(Boolean).join(' ') || 'N/A' }}</strong>
+            <strong>{{ [record.first_name, record.last_name].filter(Boolean).join(' ') || 'Não informado' }}</strong>
             <span v-if="record.organization">{{ record.organization }}</span>
             <span v-if="record.is_organization" class="people_badge">organização</span>
             <span v-if="record.category" class="people_dim">{{ record.category.name }}</span>
             <span v-if="record.parent" class="people_dim">Organização principal: {{ record.parent.full_name }}</span>
           </div>
           <div class="people_line2">
-            <span>Telefone: {{ record.phone || 'N/A' }}</span>
+            <span>Telefone: {{ record.phone || 'Não informado' }}</span>
             <span :title="record.email || ''">E-mail: {{ shortenEmail(record.email) }}</span>
-            <span>Funções: {{ (record.roles || []).map((r) => r.name).join(', ') || 'Nenhuma' }}</span>
+            <span>Funções: {{ (record.roles || []).map((r) => roleLabel(r.name)).join(', ') || 'Nenhuma' }}</span>
             <span>Voluntário: {{ record.is_volunteer ? 'Sim' : 'Não' }}</span>
           </div>
         </td>
@@ -272,7 +273,7 @@ defineProps({
           <div v-if="record.id && record.roles?.some((r) => r.name === 'Partner')" class="ri_fieldset">
             <div class="ri_fieldlabel">Status da entidade parceira:</div>
             <div>
-              <span v-if="record.partner_status" class="people_badge">{{ record.partner_status }}</span>
+              <span v-if="record.partner_status" class="people_badge">{{ partnerStatusLabel(record.partner_status) }}</span>
               <span v-else class="text-gray-400 text-sm">Não rastreado</span>
             </div>
           </div>
@@ -299,8 +300,8 @@ defineProps({
             </div>
             <div v-if="record.partner_status_logs?.length" class="mt-2 text-xs text-gray-500 space-y-1">
               <div v-for="log in record.partner_status_logs" :key="log.id">
-                {{ log.from_status || '(not tracked)' }} &rarr; {{ log.to_status }}
-                por {{ log.changed_by?.full_name }} &mdash; {{ new Date(log.created_at).toLocaleString() }}
+                {{ partnerStatusLabel(log.from_status) || 'Não rastreado' }} &rarr; {{ partnerStatusLabel(log.to_status) }}
+                por {{ log.changed_by?.full_name }} &mdash; {{ new Date(log.created_at).toLocaleString('pt-BR') }}
                 <span v-if="log.notes">&mdash; {{ log.notes }}</span>
               </div>
             </div>

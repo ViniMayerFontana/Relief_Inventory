@@ -10,14 +10,14 @@ export default {
 	props: {
 		direction: { type: String, required: true }, // 'up' | 'down' | 'static'
 		percent: { type: Number, default: null },
-		label: { type: String, default: '' }, // e.g. "vs. prior 7 days"
+		label: { type: String, default: '' },
 	},
 	computed: {
 		arrow() {
 			return { up: '▲', down: '▼', static: '▬' }[this.direction] || '';
 		},
 		text() {
-			if (this.percent === null) return this.direction === 'up' ? 'new activity' : 'no change';
+			if (this.percent === null) return this.direction === 'up' ? 'nova atividade' : 'sem alteração';
 			return Math.abs(this.percent) + '%';
 		},
 	},

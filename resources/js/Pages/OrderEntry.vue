@@ -59,6 +59,7 @@ import TextArea from '@/Components/TextArea.vue';
 import AddressCorrectionCheck from '@/Components/AddressCorrectionCheck.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import axios from 'axios';
+import { transactionStatusLabel } from '@/labels';
 
 function normalizeAddr(s) {
 	return (s || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
@@ -198,9 +199,12 @@ export default {
 			}
 		},
 		personLabel(person) {
-			if (!person) return '(no partner)';
+			if (!person) return '(sem parceiro)';
 			const name = [person.first_name, person.last_name].filter(Boolean).join(' ');
-			return person.organization ? person.organization + (name ? ' - ' + name : '') : name || '(unnamed)';
+			return person.organization ? person.organization + (name ? ' - ' + name : '') : name || '(sem nome)';
+		},
+		statusLabel(status) {
+			return transactionStatusLabel(status);
 		},
 		// Just the person's name, unlike personLabel — for defaulting the
 		// Review screen's delivery/pickup contact, which shouldn't carry the
@@ -783,7 +787,7 @@ export default {
 							<td>{{ personLabel(record.person) }}</td>
 							<td>{{ orderSummary(record).lines }}</td>
 							<td>{{ orderSummary(record).qty }}</td>
-							<td>{{ record.status ? record.status.name : '' }}</td>
+							<td>{{ statusLabel(record.status?.name) }}</td>
 							<td>{{ personLabel(record.entered_by) }}</td>
 						</tr>
 					</tbody>
@@ -803,7 +807,7 @@ export default {
 							<td>{{ personLabel(record.person) }}</td>
 							<td>{{ orderSummary(record).lines }}</td>
 							<td>{{ orderSummary(record).qty }}</td>
-							<td>{{ record.status ? record.status.name : '' }}</td>
+							<td>{{ statusLabel(record.status?.name) }}</td>
 							<td>{{ personLabel(record.entered_by) }}</td>
 						</tr>
 					</tbody>
@@ -1087,7 +1091,7 @@ export default {
 				<button @click="closeOrder" class="ri_formbutton">&larr; Todos os pedidos</button>
 				<span class="oe_title">
 					Pedido nº {{ order.id }}<span v-if="order.order_date" class="oe_title_date"> &middot; {{ order.order_date }}</span>
-					<span v-if="readonly" class="oe_status_badge">{{ order.status ? order.status.name : '' }}</span>
+					<span v-if="readonly" class="oe_status_badge">{{ statusLabel(order.status?.name) }}</span>
 				</span>
 				<span class="oe_savestate" v-if="!readonly">
 					<span v-if="failedLines.length" class="oe_error_inline">
@@ -1220,7 +1224,7 @@ export default {
 			     split order line — the only ways out are Combine or Cancel. -->
 			<div v-if="duplicateOf" class="oe_modal_backdrop" @click.self="cancelDuplicate" @keydown.tab="onDuplicateTab">
 				<div class="oe_modal">
-					<h3>Ops</h3>
+					<h3>Opa!</h3>
 					<p>Este item já foi adicionado. Veja a quantidade solicitada:</p>
 					<table class="oe_modal_table">
 						<thead>

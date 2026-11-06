@@ -18,6 +18,7 @@ import ComboBox from '@/Components/ComboBox.vue';
 import RIForm from '@/Components/RIForm.vue';
 import RISubform from '@/Components/RISubform.vue';
 import Checkbox from '@/Components/Checkbox.vue';
+import { itemCategoryLabel } from '@/labels';
 
 defineProps({
     breadcrumb: {
@@ -29,6 +30,7 @@ defineProps({
 // the database links to the item itself, so its stock and history move with it.
 const canMove = computed(() => !!usePage().props.catalog?.canMoveItems);
 const move = ref({ open: false, item: null, impact: null, itemtype_id: null, busy: false, error: '' });
+const categoryLabel = itemCategoryLabel;
 
 async function openMove(item) {
 	move.value = { open: true, item, impact: null, itemtype_id: null, busy: false, error: '' };
@@ -137,7 +139,7 @@ const itemSort = computed(() => (a, b) => {
 		    <th class="ri_sortable" style="text-align:center;" @click="setSort('active')">Ativo{{ sortArrow('active') }}</th>
 		</template>
 		<template #tbody="{ record, index }">
-			<td> {{ record.category.name }} </td>
+			<td> {{ categoryLabel(record.category.name) }} </td>
 			<td> {{ record.display_number }} </td>
 			<td> {{ record.name }} </td>
 			<td> {{ record.unit.abbreviation }} </td>
@@ -148,9 +150,10 @@ const itemSort = computed(() => (a, b) => {
 		  <div class="ri_fieldset">
 			  <div class="ri_fieldlabel">Categoria</div>
 			  <ComboBox
-			  		v-model:keyValue="record.category_id"
-			  					v-model:updates="record.category"
-			  					optionsource="/json/categories"
+				v-model:keyValue="record.category_id"
+				v-model:updates="record.category"
+				optionsource="/json/categories"
+				:display-formatter="categoryLabel"
 				:enabled="editing"
 			    /> 
 		  </div>	
@@ -277,7 +280,7 @@ const itemSort = computed(() => (a, b) => {
 	<Modal :show="move.open" max-width="lg" @close="move.open = false">
 		<div class="item_move">
 			<h3>Mover item para outro nº ACS</h3>
-			<p v-if="move.item"><strong>{{ move.item.description || '(no description)' }}</strong><span v-if="move.impact"> &mdash; now under {{ move.impact.item.acs }} {{ move.impact.item.itemtype }}</span></p>
+			<p v-if="move.item"><strong>{{ move.item.description || '(sem descrição)' }}</strong><span v-if="move.impact"> &mdash; agora associado a {{ move.impact.item.acs }} {{ move.impact.item.itemtype }}</span></p>
 			<label>Novo nº ACS / tipo de item:</label>
 			<SearchSelect
 				v-model="move.itemtype_id"
@@ -316,6 +319,3 @@ const itemSort = computed(() => (a, b) => {
   max-width: 20rem;
 }
 </style>
-
-
-

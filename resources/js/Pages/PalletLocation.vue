@@ -19,6 +19,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import SearchSelect from '@/Components/SearchSelect.vue';
 import ScanButton from '@/Components/ScanButton.vue';
 import { playScanError, playScanMatched, scanSoundsEnabled, setScanSoundsEnabled } from '@/scanSounds';
+import { palletStatusLabel } from '@/labels';
 
 const props = defineProps({
 	breadcrumb: { type: Array },
@@ -216,14 +217,14 @@ async function recordMovement() {
 	const pallet = current.value;
 	if (!pallet) return;
 	if (unknownLocationText.value) {
-		scanMessage.value = { ok: false, text: `"${move.value.locationCode}" is not a known active location.` };
+		scanMessage.value = { ok: false, text: `"${move.value.locationCode}" não é um local ativo conhecido.` };
 		return;
 	}
 	saving.value = true;
 	scanMessage.value = null;
 	try {
 		await postStatus(pallet, chosenLocation.value?.id, move.value.status, move.value.notes);
-		scanMessage.value = { ok: true, text: `${pallet.tag}: ${locationChanged.value ? 'moved to ' + move.value.locationCode : 'status recorded as ' + move.value.status}.` };
+		scanMessage.value = { ok: true, text: `${pallet.tag}: ${locationChanged.value ? 'movido para ' + move.value.locationCode : 'situação registrada como ' + palletStatusLabel(move.value.status)}.` };
 		await applyPallet(await lookupPallet(pallet.tag));
 	} catch (e) {
 		scanMessage.value = { ok: false, text: errorText(e, 'Não foi possível salvar.') };
@@ -238,14 +239,14 @@ async function recordMovement() {
 async function quickMove(location) {
 	const pallet = current.value;
 	if (location.id === pallet.location_id) {
-		scanMessage.value = { ok: true, text: `${pallet.tag} is already at ${location.code}.` };
+		scanMessage.value = { ok: true, text: `${pallet.tag} já está em ${location.code}.` };
 		playScanMatched();
 		return;
 	}
 	try {
 		await postStatus(pallet, location.id, pallet.status, null);
 		playScanMatched();
-		scanMessage.value = { ok: true, text: `${pallet.tag}: moved to ${location.code}.` };
+		scanMessage.value = { ok: true, text: `${pallet.tag}: movido para ${location.code}.` };
 		await applyPallet(await lookupPallet(pallet.tag));
 	} catch (e) {
 		scanMessage.value = { ok: false, text: errorText(e, 'Não foi possível registrar a movimentação.') };
@@ -509,7 +510,7 @@ function openSearchFor(tag) {
 }
 
 function formatDate(value) {
-	return value ? new Date(value).toLocaleString() : '';
+	return value ? new Date(value).toLocaleString('pt-BR') : '';
 }
 
 onMounted(() => {
@@ -547,7 +548,7 @@ onMounted(() => {
 							<tr>
 								<th>Local</th>
 								<th>Paletes</th>
-								<th v-for="s in statusColumns" :key="s" class="pm_status_head">{{ s }}</th>
+								<th v-for="s in statusColumns" :key="s" class="pm_status_head">{{ palletStatusLabel(s) }}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -560,7 +561,7 @@ onMounted(() => {
 								<tr v-if="openLocation?.key === r.key" class="pm_drillrow">
 									<td :colspan="2 + statusColumns.length">
 										<p v-if="openLocation.error" class="ri_error">{{ openLocation.error }}</p>
-										<p v-else-if="!openLocation.pallets">Loading…</p>
+										<p v-else-if="!openLocation.pallets">Carregando…</p>
 										<table v-else class="ri_datatable" border="1">
 											<thead>
 												<tr><th>Palete</th><th>Tipo</th><th>Status</th><th>Última movimentação</th></tr>
@@ -569,7 +570,7 @@ onMounted(() => {
 												<tr v-for="p in openLocation.pallets" :key="p.id">
 													<td class="pm_mono"><a href="#" @click.prevent="openSearchFor(p.tag)">{{ p.tag }}</a></td>
 													<td>{{ p.kind_label }}</td>
-													<td>{{ p.status }}</td>
+													<td>{{ palletStatusLabel(p.status) }}</td>
 													<td>{{ formatDate(p.last_moved_at) }}</td>
 												</tr>
 												<tr v-if="!openLocation.pallets.length"><td colspan="4">Nenhum palete ativo neste local.</td></tr>
@@ -621,7 +622,7 @@ onMounted(() => {
 					<p class="pm_current">
 						<strong class="pm_mono">{{ current.tag }}</strong> ({{ current.kind_label }}) —
 						<strong>{{ current.location ? 'em ' + current.location.code : 'nenhum local registrado' }}</strong>,
-						status <strong>{{ current.status }}</strong><span v-if="current.last_moved_at">, última atualização {{ formatDate(current.last_moved_at) }}</span><span v-if="current.expires_on">, vencimento mais próximo <strong>{{ current.expires_on }}</strong></span>.
+						situação <strong>{{ palletStatusLabel(current.status) }}</strong><span v-if="current.last_moved_at">, última atualização {{ formatDate(current.last_moved_at) }}</span><span v-if="current.expires_on">, vencimento mais próximo <strong>{{ current.expires_on }}</strong></span>.
 						<button type="button" class="ri_linkbutton" @click="clearPallet">Limpar / novo palete</button>
 					</p>
 
@@ -633,7 +634,7 @@ onMounted(() => {
 						<label v-if="!isWarehouse" class="pm_fillfield">
 							<span class="ri_fieldlabel">Status:</span>
 							<select v-model="move.status" class="ri_forminput">
-								<option v-for="st in current.statuses" :key="st.id" :value="st.id">{{ st.name }}</option>
+								<option v-for="st in current.statuses" :key="st.id" :value="st.id">{{ palletStatusLabel(st.id) }}</option>
 							</select>
 						</label>
 						<label class="pm_fillfield">
@@ -824,7 +825,7 @@ onMounted(() => {
 								<tr v-for="h in history" :key="h.id">
 									<td>{{ formatDate(h.created_at) }}</td>
 									<td>{{ h.location ? h.location.code : 'Desconhecido' }}</td>
-									<td>{{ h.status }}</td>
+									<td>{{ palletStatusLabel(h.status) }}</td>
 									<td>{{ h.notes }}</td>
 								</tr>
 							</tbody>
@@ -844,7 +845,7 @@ onMounted(() => {
 								<td>{{ formatDate(r.created_at) }}</td>
 								<td class="pm_mono">{{ r.pallet ? r.pallet.tag : r.pallet_id }}</td>
 								<td>{{ r.location ? r.location.code : 'Desconhecido' }}</td>
-								<td>{{ r.status }}</td>
+								<td>{{ palletStatusLabel(r.status) }}</td>
 								<td>{{ r.notes }}</td>
 							</tr>
 							<tr v-if="!recent.length"><td colspan="5">Nenhuma movimentação registrada ainda.</td></tr>

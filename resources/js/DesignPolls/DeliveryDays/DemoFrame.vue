@@ -10,7 +10,7 @@
 
 <script setup>
 defineProps({
-	label: { type: String, default: 'Can Accept Delivery:' },
+	label: { type: String, default: 'Pode receber entregas:' },
 	summary: { type: String, required: true },
 });
 defineEmits(['reset']);
@@ -22,7 +22,7 @@ defineEmits(['reset']);
 		<slot />
 		<div class="dd_footer">
 			<span class="dd_summary">{{ summary }}</span>
-			<button type="button" class="dd_reset" @click="$emit('reset')">Reset</button>
+			<button type="button" class="dd_reset" @click="$emit('reset')">Redefinir</button>
 		</div>
 	</div>
 </template>

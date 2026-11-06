@@ -7,6 +7,7 @@ import ComboBox from '@/Components/ComboBox.vue';
 import RIForm from '@/Components/RIForm.vue';
 import RISubform from '@/Components/RISubform.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
+import { palletKindLabel, palletStatusLabel } from '@/labels';
 
 defineProps({
     breadcrumb: {
@@ -15,11 +16,11 @@ defineProps({
 });
 
 const kindOptions = [
-	{ id: 'R', name: 'Receiving' },
-	{ id: 'W', name: 'Warehouse' },
-	{ id: 'S', name: 'Shipping' },
-	{ id: 'H', name: 'Hold' },
-	{ id: 'Q', name: 'Quarantine' },
+	{ id: 'R', name: 'Recebimento' },
+	{ id: 'W', name: 'Armazém' },
+	{ id: 'S', name: 'Expedição' },
+	{ id: 'H', name: 'Retenção' },
+	{ id: 'Q', name: 'Quarentena' },
 ];
 
 // Mirrors App\Support\PalletKind::LIFECYCLES (+ 'missing'); the server still validates.
@@ -31,14 +32,14 @@ const statusesByKind = {
 	Q: ['held', 'released', 'condemned'],
 };
 const statusOptions = (kind) =>
-	[...(statusesByKind[kind] || []), 'missing'].map((s) => ({ id: s, name: s.charAt(0).toUpperCase() + s.slice(1) }));
+	[...(statusesByKind[kind] || []), 'missing'].map((s) => ({ id: s, name: palletStatusLabel(s) }));
 
 const containerTypeOptions = [
-	{ id: 'pallet', name: 'Pallet' },
-	{ id: 'gaylord', name: 'Gaylord' },
-	{ id: 'box', name: 'Box' },
-	{ id: 'bag', name: 'Bag' },
-	{ id: 'tote', name: 'Tote' },
+	{ id: 'pallet', name: 'Palete' },
+	{ id: 'gaylord', name: 'Caixa Gaylord' },
+	{ id: 'box', name: 'Caixa' },
+	{ id: 'bag', name: 'Saco' },
+	{ id: 'tote', name: 'Caixa plástica' },
 ];
 </script>
 
@@ -64,11 +65,11 @@ const containerTypeOptions = [
 
       <template #tbody="{ record, index }">
 		<td><span style="font-weight: bold; font-size: 14pt;"> {{ record.kind }}{{ record.id.toString().padStart(8, "0") }}</span></td>
-        <td>{{ record.kind }}</td>
+        <td>{{ palletKindLabel(record.kind) }}</td>
         <td>{{ record.datepacked }}</td>
         <td v-if="record.location">{{ record.location.code }}</td>
         <td v-else>Desconhecido</td>
-        <td>{{ record.status }}</td>
+        <td>{{ palletStatusLabel(record.status) }}</td>
       </template>
 
       <template #default="{ record, editing, templates }">
@@ -195,7 +196,7 @@ const containerTypeOptions = [
           <template #tbody="{ subrecord, index }">
             <td>{{ subrecord.created_at }}</td>
             <td>{{ subrecord.location ? subrecord.location.code : '' }}</td>
-            <td>{{ subrecord.status }}</td>
+            <td>{{ palletStatusLabel(subrecord.status) }}</td>
 			<td>{{ subrecord.notes }}</td>
           </template>
 

@@ -33,10 +33,10 @@ const submitting = ref(false);
 const done = ref(null);
 
 const helpOptions = [
-	['help_volunteer', 'Volunteer at a warehouse'],
-	['help_software', 'Help with the software or IT'],
-	['help_organization', 'Bring this to my organization'],
-	['help_other', 'Some other way'],
+	['help_volunteer', 'Ser voluntário em um armazém'],
+	['help_software', 'Ajudar com o software ou a TI'],
+	['help_organization', 'Levar este projeto à minha organização'],
+	['help_other', 'Ajudar de outra forma'],
 ];
 
 onMounted(() => {
@@ -64,8 +64,8 @@ async function submit() {
 	} catch (e) {
 		errors.value = e.response?.data?.errors || {};
 		message.value = e.response?.status === 422
-			? 'Please check the highlighted fields.'
-			: (e.response?.data?.message || 'Something went wrong — please try again.');
+			? 'Confira os campos destacados.'
+			: (e.response?.data?.message || 'Ocorreu um erro. Tente novamente.');
 		if (props.turnstile_enabled && window.turnstile) window.turnstile.reset();
 	} finally {
 		submitting.value = false;

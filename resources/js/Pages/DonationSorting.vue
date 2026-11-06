@@ -239,9 +239,9 @@ export default {
 			return { lines: ledgers.length, total };
 		},
 		personLabel(person) {
-			if (!person) return '(no donor recorded)';
+			if (!person) return '(sem doador registrado)';
 			const name = [person.first_name, person.last_name].filter(Boolean).join(' ');
-			return person.organization ? person.organization + (name ? ' - ' + name : '') : name || '(unnamed)';
+			return person.organization ? person.organization + (name ? ' - ' + name : '') : name || '(sem nome)';
 		},
 		// A completed donation's "Date" and "Completed By" come from when it
 		// actually finished sorting, not from Receiving's own order_date /
@@ -251,7 +251,7 @@ export default {
 		// Order Filling/Picking) name whoever actually sorted it, which may
 		// be more than one person across a session.
 		completedDateLabel(record) {
-			return record.status_changed_at ? new Date(record.status_changed_at).toLocaleString() : record.order_date;
+			return record.status_changed_at ? new Date(record.status_changed_at).toLocaleString('pt-BR') : record.order_date;
 		},
 		completedByLabel(record) {
 			const names = [...new Set(
@@ -353,7 +353,7 @@ export default {
 		},
 		// ---------- leaving the page with unsaved work ----------
 		leaveMessage() {
-			return 'This sorting session has an item that is not saved yet (or lines still saving). Leave anyway?';
+			return 'Esta sessão de triagem tem um item ainda não salvo ou linhas sendo salvas. Deseja sair mesmo assim?';
 		},
 		// Menu / link navigation (Inertia visits): returning false cancels the visit.
 		onInertiaBefore() {
@@ -405,7 +405,7 @@ export default {
 				this.lines = [...unsaved, ...(response.data.record.item_ledgers || []).map((line) => ({ ...line, status: 'saved' }))];
 				const merged = response.data.merged;
 				this.notice = merged
-					? 'Combined ' + merged + ' duplicate line' + (merged === 1 ? '' : 's') + '.'
+					? `${merged} ${merged === 1 ? 'linha duplicada combinada' : 'linhas duplicadas combinadas'}.`
 					: 'Não há linhas duplicadas para combinar.';
 			} catch (error) {
 				this.headerError = error.response?.data?.message || 'Não foi possível combinar as linhas. Tente novamente.';
@@ -661,7 +661,7 @@ export default {
 		},
 		lineTime(line) {
 			const date = new Date(line.created_at);
-			return isNaN(date) ? '' : date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+			return isNaN(date) ? '' : date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
 		},
 		dispositionLabel(line) {
 			return dispositionFor(line.disposition, line.item_condition ?? null)?.label || line.disposition;

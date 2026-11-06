@@ -23,24 +23,24 @@ export default {
 	<div class="stat_card">
 		<div class="stat_card_head">
 			<h3>{{ title }}</h3>
-			<TrendBadge v-if="trend" :direction="trend.direction" :percent="trend.percent" label="vs. prior week" />
+			<TrendBadge v-if="trend" :direction="trend.direction" :percent="trend.percent" label="vs. semana anterior" />
 		</div>
 		<div class="stat_card_periods">
 			<div class="stat_period">
 				<span class="stat_value">{{ counts.today }}</span>
-				<span class="stat_label">Today</span>
+				<span class="stat_label">Hoje</span>
 			</div>
 			<div class="stat_period">
 				<span class="stat_value">{{ counts.last_7_days }}</span>
-				<span class="stat_label">Last 7 days</span>
+				<span class="stat_label">Últimos 7 dias</span>
 			</div>
 			<div class="stat_period">
 				<span class="stat_value">{{ counts.last_30_days }}</span>
-				<span class="stat_label">Last 30 days</span>
+				<span class="stat_label">Últimos 30 dias</span>
 			</div>
 			<div class="stat_period">
 				<span class="stat_value">{{ counts.all_time }}</span>
-				<span class="stat_label">All time</span>
+				<span class="stat_label">Todo o período</span>
 			</div>
 		</div>
 	</div>

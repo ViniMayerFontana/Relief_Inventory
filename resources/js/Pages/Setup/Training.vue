@@ -101,7 +101,7 @@ function watchReset() {
 
 function archiveTime(stamp) {
 	const [d, t] = stamp.split('_');
-	return new Date(d + 'T' + t.slice(0, 2) + ':' + t.slice(2, 4) + ':' + t.slice(4, 6)).toLocaleString();
+	return new Date(d + 'T' + t.slice(0, 2) + ':' + t.slice(2, 4) + ':' + t.slice(4, 6)).toLocaleString('pt-BR');
 }
 
 async function prepare() {
@@ -172,7 +172,7 @@ async function removeSignature(slot) {
 }
 
 function formatTime(value) {
-	return value ? new Date(value).toLocaleString() : '';
+	return value ? new Date(value).toLocaleString('pt-BR') : '';
 }
 
 onMounted(async () => {

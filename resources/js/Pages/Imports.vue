@@ -177,7 +177,7 @@ onMounted(() => {
 				<div v-if="selectedFileType === 'mailing_list'" class="rounded bg-blue-50 border border-blue-200 text-blue-900 px-4 py-3 text-sm space-y-1">
 					<p>
 						A primeira linha deve conter os cabeçalhos. Colunas reconhecidas (em qualquer ordem; as que não tiver podem ser omitidas):
-						<strong>First Name, Last Name</strong> (or one <strong>Name</strong> column), <strong>Organization,
+						<strong>First Name, Last Name</strong> (ou uma coluna <strong>Name</strong>), <strong>Organization,
 						Address, Address 2, City, State, Zip, Tags</strong>.
 					</p>
 					<p>

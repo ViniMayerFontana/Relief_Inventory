@@ -328,7 +328,7 @@ export default {
 				<div v-else-if="loadError && !hasDownload" class="pm_hint pm_hint_error">Não foi possível carregar as impressoras.</div>
 				<div v-else-if="!options.length" class="pm_hint">Nenhuma impressora está configurada para este documento.</div>
 
-				<div v-if="options.length" role="radiogroup" :aria-label="'What to do with ' + label" class="pm_options">
+				<div v-if="options.length" role="radiogroup" :aria-label="'O que fazer com ' + label" class="pm_options">
 					<button
 						v-for="option in options"
 						:key="option.key"

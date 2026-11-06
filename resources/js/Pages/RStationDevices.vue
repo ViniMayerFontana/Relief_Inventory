@@ -73,7 +73,7 @@ const printClientDownloads = computed(() => downloads.value.filter((r) => r.kind
 function downloadLabel(release) {
 	return release.kind === 'print_client'
 		? platforms.value[release.architecture] || release.architecture
-		: release.release_type === 'vm_image' ? 'Virtual Machine Image' : 'Raspberry Pi SD Card Image';
+		: release.release_type === 'vm_image' ? 'Imagem de máquina virtual' : 'Imagem para cartão SD do Raspberry Pi';
 }
 
 function formatSize(bytes) {
@@ -180,7 +180,7 @@ async function removeDevice(device) {
 }
 
 function lastSeen(device) {
-	return device.last_seen_at ? new Date(device.last_seen_at).toLocaleString() : 'nunca';
+	return device.last_seen_at ? new Date(device.last_seen_at).toLocaleString('pt-BR') : 'nunca';
 }
 
 // ---- Collapsible tiles ----
@@ -232,7 +232,7 @@ onMounted(fetchAll);
 				</div>
 				<div v-if="pairingCode" class="rounded bg-blue-50 border border-blue-300 px-4 py-3">
 					<span class="text-3xl font-mono tracking-widest">{{ pairingCode.code }}</span>
-					<span class="ml-3 text-sm text-gray-600">Digite este código na tela de configuração do dispositivo (ou servidor de impressão). Uso único; expira às {{ new Date(pairingCode.expires_at).toLocaleTimeString() }}.</span>
+					<span class="ml-3 text-sm text-gray-600">Digite este código na tela de configuração do dispositivo (ou servidor de impressão). Uso único; expira às {{ new Date(pairingCode.expires_at).toLocaleTimeString('pt-BR') }}.</span>
 				</div>
 			</section>
 
@@ -315,11 +315,11 @@ onMounted(fetchAll);
 						</div>
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 							<label class="block">
-								<span class="text-gray-700">Name</span>
+								<span class="text-gray-700">Nome</span>
 								<input type="text" maxlength="255" v-model="device.name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 							</label>
 							<label class="block">
-								<span class="text-gray-700">Site</span>
+								<span class="text-gray-700">Local</span>
 								<select v-model="device.kiosk_location_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
 									<option :value="null">— nenhum —</option>
 									<option v-for="location in locations" :key="location.id" :value="location.id">{{ location.name }}</option>

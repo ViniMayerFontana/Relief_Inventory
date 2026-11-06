@@ -7,7 +7,7 @@
 import DemoFrame from './DemoFrame.vue';
 import { WEEK_DAYS, blankDays, resetDays, summarize } from './days.js';
 
-const CHOICES = [['no', 'Can\'t'], ['ok', 'OK'], ['pref', '★ Preferred']];
+const CHOICES = [['no', 'Não pode'], ['ok', 'Pode'], ['pref', '★ Preferencial']];
 const days = blankDays();
 </script>
 

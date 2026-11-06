@@ -260,7 +260,7 @@ onUnmounted(() => clearInterval(timer));
 		<!-- done -->
 		<div v-else-if="phase === 'complete'" class="mt-3 space-y-3">
 			<div class="rounded border border-green-300 bg-green-50 p-3 text-sm text-green-900">
-				O backup foi restaurado<span v-if="status.backup_created_at"> (criado em {{ new Date(status.backup_created_at).toLocaleString() }})</span>.
+				O backup foi restaurado<span v-if="status.backup_created_at"> (criado em {{ new Date(status.backup_created_at).toLocaleString('pt-BR') }})</span>.
 			</div>
 			<div v-if="status.blanked?.length" class="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
 				<p class="font-medium">Estas configurações foram criptografadas com a chave do sistema antigo e não puderam ser mantidas. Informe-as novamente depois de entrar:</p>
@@ -271,10 +271,10 @@ onUnmounted(() => clearInterval(timer));
 			</div>
 			<div v-if="!status.includes_uploads" class="text-xs text-gray-600">Este backup não incluía fotos e documentos enviados.</div>
 			<div v-else-if="status.files_created_at && status.files_created_at !== status.backup_created_at" class="text-xs text-gray-600">
-				Os arquivos enviados são do backup criado em {{ new Date(status.files_created_at).toLocaleString() }}.
+				Os arquivos enviados são do backup criado em {{ new Date(status.files_created_at).toLocaleString('pt-BR') }}.
 			</div>
 			<div v-if="status.admin_missing" class="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-				Os dados restaurados não têm uma conta de administrador. Continue para criar uma.
+				Os dados restaurados não têm uma conta de administrador. Prossiga para criar uma.
 				<a href="/install" class="block mt-2 underline">Continuar para a configuração inicial</a>
 			</div>
 			<a v-else href="/login" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700">Entrar</a>

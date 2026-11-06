@@ -53,7 +53,7 @@ const statusClasses = {
 };
 
 function formatDateTime(value) {
-	return value ? new Date(value).toLocaleString() : '';
+	return value ? new Date(value).toLocaleString('pt-BR') : '';
 }
 
 function startAction(submission, action) {

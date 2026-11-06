@@ -30,6 +30,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import WebcamCapture from '@/Components/WebcamCapture.vue';
+import { transactionStatusLabel, receivingCategoryLabel, palletStatusLabel } from '@/labels';
 
 defineProps({
 	breadcrumb: {
@@ -41,38 +42,38 @@ defineProps({
 // (never distributed to partners/recipients, unlike Donation) — the
 // distinction between the two is easy to miss, hence the hover tooltip.
 const categoryOptions = [
-	{ id: 'donation', name: 'Donation' },
+	{ id: 'donation', name: 'Doação' },
 	{
 		id: 'equipment',
-		name: 'Equipment',
-		title: 'Durable items the warehouse itself uses long-term (shelving, pallet jacks, tools, computers) — not for distribution.',
+		name: 'Equipamentos',
+		title: 'Itens duráveis usados pelo próprio armazém por muito tempo (estantes, paleteiras, ferramentas, computadores) — não são para distribuição.',
 	},
 	{
 		id: 'supplies',
-		name: 'Supplies',
-		title: 'Consumables the warehouse itself uses up (packing tape, gloves, cleaning supplies, printer paper) — not for distribution.',
+		name: 'Suprimentos',
+		title: 'Materiais consumidos pelo próprio armazém (fita para embalagem, luvas, produtos de limpeza, papel para impressora) — não são para distribuição.',
 	},
-	{ id: 'other', name: 'Other' },
+	{ id: 'other', name: 'Outro' },
 ];
 
 const yesNoOptions = [
-	{ value: true, label: 'Yes' },
-	{ value: false, label: 'No' },
+	{ value: true, label: 'Sim' },
+	{ value: false, label: 'Não' },
 ];
 
 // Pallets is a single, exclusive choice; Other reveals a multi-select
 // checklist below it since a mixed load can be boxes AND bags AND totes
 // AND/OR loose all at once.
 const arrivalModeOptions = [
-	{ value: 'pallet', label: 'Pallets' },
-	{ value: 'other', label: 'Other' },
+	{ value: 'pallet', label: 'Paletes' },
+	{ value: 'other', label: 'Outro' },
 ];
 
 const otherContainerTypeOptions = [
-	{ value: 'box', label: 'Boxes' },
-	{ value: 'bag', label: 'Bags' },
-	{ value: 'tote', label: 'Totes' },
-	{ value: 'loose', label: 'Loose' },
+	{ value: 'box', label: 'Caixas' },
+	{ value: 'bag', label: 'Sacos' },
+	{ value: 'tote', label: 'Caixas plásticas' },
+	{ value: 'loose', label: 'Itens avulsos' },
 ];
 
 // Icon paths point at public/img/ files in the same style as the
@@ -81,20 +82,20 @@ const otherContainerTypeOptions = [
 // names. TileSelect falls back to plain text/emoji for any icon value
 // that isn't a path, so this degrades gracefully if a file is missing.
 const arrivalMethodOptions = [
-	{ value: 'semi', label: 'Semi', icon: '/img/truck-semi-icon.webp' },
-	{ value: 'box_truck', label: 'Box Truck', icon: '/img/truck-box-icon.webp' },
-	{ value: 'personal_vehicle', label: 'Personal Vehicle', icon: '/img/truck-personal-icon.webp' },
-	{ value: 'trailer', label: 'Trailer', icon: '/img/truck-trailer-icon.webp' },
-	{ value: 'delivery_truck', label: 'Delivery Truck', icon: '/img/truck-delivery-icon.webp' },
-	{ value: 'other', label: 'Other', icon: '/img/truck-other-icon.webp' },
+	{ value: 'semi', label: 'Caminhão semirreboque', icon: '/img/truck-semi-icon.webp' },
+	{ value: 'box_truck', label: 'Caminhão-baú', icon: '/img/truck-box-icon.webp' },
+	{ value: 'personal_vehicle', label: 'Veículo particular', icon: '/img/truck-personal-icon.webp' },
+	{ value: 'trailer', label: 'Reboque', icon: '/img/truck-trailer-icon.webp' },
+	{ value: 'delivery_truck', label: 'Caminhão de entrega', icon: '/img/truck-delivery-icon.webp' },
+	{ value: 'other', label: 'Outro', icon: '/img/truck-other-icon.webp' },
 ];
 
 const containerTypeOptions = [
-	{ value: 'pallet', label: 'Pallet' },
-	{ value: 'gaylord', label: 'Gaylord' },
-	{ value: 'box', label: 'Box' },
-	{ value: 'bag', label: 'Bag' },
-	{ value: 'tote', label: 'Tote' },
+	{ value: 'pallet', label: 'Palete' },
+	{ value: 'gaylord', label: 'Caixa grande (Gaylord)' },
+	{ value: 'box', label: 'Caixa' },
+	{ value: 'bag', label: 'Saco' },
+	{ value: 'tote', label: 'Caixa plástica' },
 ];
 </script>
 
@@ -169,9 +170,9 @@ const containerTypeOptions = [
 					{{ donorName(record) }}
 					<span v-if="record.donor_identification_pending" class="recv_badge recv_badge_id">identificação do doador pendente</span>
 				</td>
-				<td>{{ record.category === 'other' && record.category_other ? record.category_other : record.category }}</td>
+				<td>{{ record.category === 'other' && record.category_other ? record.category_other : receivingCategoryLabel(record.category) }}</td>
 				<td>
-					{{ record.status ? record.status.name : '' }}
+					{{ transactionStatusLabel(record.status?.name) }}
 					<span v-if="record.is_close_out_candidate" class="recv_badge">pronto para concluir</span>
 				</td>
 				<td>{{ record.container_count }}</td>
@@ -454,7 +455,7 @@ const containerTypeOptions = [
 									<tr v-for="pallet in record.pallets" :key="pallet.id">
 										<td class="recv_mono">{{ pallet.tag }}</td>
 										<td>{{ pallet.container_type }}</td>
-										<td>{{ pallet.status }}</td>
+										<td>{{ palletStatusLabel(pallet.status) }}</td>
 										<td><PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="link" label="Reimprimir"
 											:params="{ id: pallet.id }" :download-href="'/report/pallet/' + pallet.id" /></td>
 									</tr>
@@ -498,7 +499,7 @@ const containerTypeOptions = [
 							class="recv_hidden_input"
 							@change="onPhotoSelected($event, record)"
 						/>
-						<button type="button" class="ri_formbutton" v-if="canTakePhoto" @click="takePhoto">📷 Take Photo</button>
+						<button type="button" class="ri_formbutton" v-if="canTakePhoto" @click="takePhoto">📷 Tirar foto</button>
 						<button type="button" class="ri_formbutton" @click="$refs.fileInput.click()">Escolher arquivo</button>
 					</div>
 					<WebcamCapture
@@ -557,7 +558,7 @@ const containerTypeOptions = [
 									<tr v-for="pallet in record.pallets" :key="pallet.id">
 										<td class="recv_mono">{{ pallet.tag }}</td>
 										<td>{{ pallet.container_type }}</td>
-										<td>{{ pallet.status }}</td>
+										<td>{{ palletStatusLabel(pallet.status) }}</td>
 										<td><PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="link" label="Etiqueta"
 											:params="{ id: pallet.id }" :download-href="'/report/pallet/' + pallet.id" /></td>
 									</tr>
@@ -700,14 +701,14 @@ export default {
 	},
 	methods: {
 		donorName(record) {
-			return record.person?.full_name || '(no donor recorded)';
+			return record.person?.full_name || '(sem doador registrado)';
 		},
 		// Parses a "YYYY-MM-DD" string as a local calendar date, not UTC —
 		// see the identical helper in DonationOffers.vue.
 		formatLocalDate(value) {
 			if (!value) return '';
 			const [y, m, d] = value.split('-').map(Number);
-			return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+			return new Date(y, m - 1, d).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' });
 		},
 		formatEtaRange(start, end) {
 			if (!start) return '';
@@ -809,8 +810,8 @@ export default {
 			this.wizardStep = 'photo';
 		},
 		photoStepContinueLabel(record) {
-			if (record.photo_path) return 'Continue';
-			return record.category === 'donation' ? 'Proceed to Labels' : 'Skip';
+			if (record.photo_path) return 'Continuar';
+			return record.category === 'donation' ? 'Ir para as etiquetas' : 'Pular';
 		},
 		async finishPhotoStep(record, cancel) {
 			if (record.category === 'donation') {

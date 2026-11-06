@@ -32,7 +32,7 @@ async function act(request) {
 	try {
 		message.value = (await request()).data.message;
 	} catch (e) {
-		message.value = e.response?.data?.message || 'That did not work.';
+		message.value = e.response?.data?.message || 'Não foi possível concluir a operação.';
 	} finally {
 		busy.value = false;
 		await load();
@@ -41,7 +41,7 @@ async function act(request) {
 
 const resend = (i) => act(() => axios.post(`/json/users/invitations/${i.id}/resend`));
 const withdraw = (i) => act(() => axios.delete(`/json/users/invitations/${i.id}`));
-const when = (iso) => new Date(iso).toLocaleDateString();
+const when = (iso) => new Date(iso).toLocaleDateString('pt-BR');
 
 onMounted(load);
 </script>
@@ -50,8 +50,9 @@ onMounted(load);
 	<section v-if="invitations.length" class="bg-white shadow rounded-lg p-6 space-y-3">
 		<h2 class="text-lg font-semibold">Aguardando resposta</h2>
 		<p class="text-sm text-gray-600">
-			These people's emails already have a login in another warehouse, so they were invited instead of added.
-			They cannot sign in here until the owner of that login accepts.
+			Os endereços de e-mail destas pessoas já têm acesso a outro armazém, por isso elas receberam um convite
+			em vez de serem adicionadas. Elas só poderão entrar neste armazém depois que a pessoa responsável pelo
+			acesso aceitar o convite.
 		</p>
 		<p v-if="message" class="text-sm text-gray-800">{{ message }}</p>
 		<ul class="divide-y">
@@ -61,7 +62,7 @@ onMounted(load);
 					<span class="text-gray-600"> &lt;{{ i.email }}&gt;</span>
 					<span class="block text-xs text-gray-500">
 						{{ i.source === 'restore' ? 'De um backup restaurado (o convite não foi enviado por e-mail)' : `Convidado por ${i.invited_by || 'um administrador'}` }}
-						· open until {{ when(i.expires_at) }}
+						· válido até {{ when(i.expires_at) }}
 					</span>
 				</span>
 				<span class="flex gap-2">

@@ -125,7 +125,7 @@ export default {
 		display: { type: String, default: "name" },
 		secondary: { type: String, default: null },
 		searchfields: { type: Array, default: null },
-		placeholder: { type: String, default: "Search..." },
+		placeholder: { type: String, default: "Buscar..." },
 		enabled: { type: Boolean, default: true },
 		allowcreate: { type: Boolean, default: false },
 		autofocus: { type: Boolean, default: false },
@@ -460,11 +460,11 @@ export default {
 					class="ss_option ss_create"
 					:class="{ ss_highlighted: highlighted === filteredOptions.length }"
 				>
-					+ Add "{{ search.trim() }}"...
+					+ Adicionar "{{ search.trim() }}"...
 				</li>
 			</ul>
 			<div v-if="loadError" class="ss_error">
-				Could not load options.
+				Não foi possível carregar as opções.
 				<a href="#" @click.prevent="fetchOptions(true)">Tentar novamente</a>
 			</div>
 		</template>

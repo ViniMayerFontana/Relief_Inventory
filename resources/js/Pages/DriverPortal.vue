@@ -20,6 +20,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { transactionStatusLabel } from '@/labels';
 
 export default {
 	components: { AuthenticatedLayout, Head },
@@ -59,6 +60,9 @@ export default {
 		totals(order) {
 			const lines = order.order_lines || [];
 			return { lines: lines.length, qty: lines.reduce((sum, l) => sum + (l.qty_requested || 0), 0) };
+		},
+		statusLabel(status) {
+			return transactionStatusLabel(status);
 		},
 		toggleDetails(order) {
 			this.expandedIds = { ...this.expandedIds, [order.id]: !this.expandedIds[order.id] };
@@ -205,9 +209,9 @@ export default {
 				<div v-for="order in current" :key="order.id" class="dp_card">
 					<div class="dp_cardhead">
 						<span class="dp_ordernum">Pedido nº {{ order.id }}</span>
-						<span class="dp_status_badge">{{ order.status?.name }}</span>
+						<span class="dp_status_badge">{{ statusLabel(order.status?.name) }}</span>
 					</div>
-					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</p>
+					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || '(sem parceiro)' }}</p>
 					<p class="dp_meta">
 						{{ totals(order).lines }} linha(s), {{ totals(order).qty }} item(ns)<span v-if="order.pallet_count"> — {{ order.pallet_count }} palete(s)</span><span v-if="isStaffViewer && order.driver"> — motorista: {{ order.driver.name }}</span>
 					</p>
@@ -263,7 +267,7 @@ export default {
 						<span class="dp_ordernum">Pedido nº {{ order.id }}</span>
 						<span class="dp_status_badge dp_status_badge_done">Entregue</span>
 					</div>
-					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</p>
+					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || '(sem parceiro)' }}</p>
 				</div>
 				<p v-if="!delivered.length && !loading" class="dp_empty">Nenhuma entrega realizada ainda.</p>
 			</template>

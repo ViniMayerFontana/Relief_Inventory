@@ -57,7 +57,7 @@ async function copyLink(poll) {
 }
 
 const labelFor = (poll, key) => poll.options.find((o) => o.key === key)?.label || key;
-const when = (iso) => (iso ? new Date(iso).toLocaleString() : null);
+const when = (iso) => (iso ? new Date(iso).toLocaleString('pt-BR') : null);
 
 onMounted(load);
 </script>

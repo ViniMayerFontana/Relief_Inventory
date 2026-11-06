@@ -4,6 +4,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import TextInput from '@/Components/TextInput.vue';
 import RIForm from '@/Components/RIForm.vue';
+import { itemCategoryLabel } from '@/labels';
 
 defineProps({
     breadcrumb: {
@@ -17,8 +18,9 @@ const categorySearch = ref('');
 function categoryMatchesSearch(record) {
 	const text = categorySearch.value.trim().toLowerCase();
 	if (!text) return true;
-	return String(record.name ?? '').toLowerCase().includes(text);
+	return String(record.name ?? '').toLowerCase().includes(text) || categoryLabel(record.name).toLowerCase().includes(text);
 }
+const categoryLabel = itemCategoryLabel;
 
 // Column-header sorting: clicking a header sorts by that field, clicking the
 // same header again flips direction.
@@ -59,7 +61,7 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
         <th class="ri_sortable" @click="setSort()">Nome da categoria{{ sortArrow() }}</th>
       </template>
       <template #tbody="{ record, index }">
-        <td>{{ record.name }}</td>
+        <td>{{ categoryLabel(record.name) }}</td>
       </template>
       <template #default="{ record, editing, templates }">
         <div class="ri_formtable">

@@ -15,6 +15,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { itemCategoryLabel } from '@/labels';
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu },
@@ -51,13 +52,16 @@ export default {
 			return (this.report?.items || []).filter((i) => !q
 				|| (i.name || '').toLowerCase().includes(q)
 				|| (i.display_number || '').toLowerCase().includes(q)
-				|| (i.category || '').toLowerCase().includes(q));
+				|| itemCategoryLabel(i.category).toLowerCase().includes(q));
 		},
 		totals() {
 			return this.report?.totals;
 		},
 	},
 	methods: {
+		categoryLabel(category) {
+			return itemCategoryLabel(category);
+		},
 		async fetchReport() {
 			this.loading = true;
 			this.error = null;
@@ -70,7 +74,7 @@ export default {
 				this.expanded = {};
 			} catch (error) {
 				this.error = error.response?.status === 422
-					? 'Check the dates: the "to" date can\'t be before the "from" date.'
+					? 'Confira as datas: a data final não pode ser anterior à data inicial.'
 					: 'Não foi possível carregar o relatório de pedidos não atendidos.';
 			} finally {
 				this.loading = false;
@@ -85,7 +89,7 @@ export default {
 			this.expanded = { ...this.expanded, [id]: !this.expanded[id] };
 		},
 		n(value) {
-			return Number(value || 0).toLocaleString();
+			return Number(value || 0).toLocaleString('pt-BR');
 		},
 	},
 	created() {
@@ -183,7 +187,7 @@ export default {
 								<tr class="urr_rowlink" @click="toggleExpanded(item.itemtype_id)">
 									<td class="urr_expander">{{ expanded[item.itemtype_id] ? '−' : '+' }}</td>
 									<td>{{ item.display_number || '—' }}</td>
-									<td>{{ item.name }}<span v-if="item.category" class="urr_category">{{ item.category }}</span></td>
+									<td>{{ item.name }}<span v-if="item.category" class="urr_category">{{ categoryLabel(item.category) }}</span></td>
 									<td>{{ item.unit }}</td>
 									<td class="urr_num">{{ n(item.requests) }}</td>
 									<td class="urr_num">{{ n(item.requested) }}</td>

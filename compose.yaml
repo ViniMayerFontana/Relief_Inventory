@@ -1,4 +1,4 @@
-# Relief Inventory — Docker Compose stack. This is the ONLY file you need to edit.
+ # Relief Inventory — Docker Compose stack. This is the ONLY file you need to edit.
 #
 #   1. Set APP_URL in the "YOUR SETTINGS" block below.
 #   2. docker compose up -d

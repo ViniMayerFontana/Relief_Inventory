@@ -38,7 +38,7 @@ function contents(record) {
 
 function dateOf(value) {
 	const date = new Date(value);
-	return isNaN(date) ? '' : date.toLocaleDateString();
+	return isNaN(date) ? '' : date.toLocaleDateString('pt-BR');
 }
 
 const filtered = computed(() => {

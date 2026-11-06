@@ -25,10 +25,10 @@ const days = blankDays();
 			</button>
 		</div>
 		<div class="dd_legend">
-			<span><span class="dd_swatch"></span>Cannot</span>
-			<span><span class="dd_swatch dd_ok"></span>Can accept</span>
-			<span><span class="dd_swatch dd_pref"></span>★ Preferred</span>
-			<span>Tap again to change</span>
+			<span><span class="dd_swatch"></span>Não pode</span>
+			<span><span class="dd_swatch dd_ok"></span>Pode receber</span>
+			<span><span class="dd_swatch dd_pref"></span>★ Preferencial</span>
+			<span>Toque novamente para alterar</span>
 		</div>
 	</DemoFrame>
 </template>

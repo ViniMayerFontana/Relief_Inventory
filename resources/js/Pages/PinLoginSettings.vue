@@ -57,7 +57,7 @@ async function saveSettings() {
 	try {
 		const response = await axios.put('/json/pin-login-settings', form);
 		Object.assign(form, response.data.settings);
-		settingsSavedAt.value = new Date().toLocaleTimeString();
+		settingsSavedAt.value = new Date().toLocaleTimeString('pt-BR');
 	} catch (error) {
 		settingsError.value = error.response?.data?.message
 			|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
@@ -154,6 +154,15 @@ function statusBadgeClass(status) {
 		revoked: 'bg-gray-200 text-gray-600',
 		denied: 'bg-red-100 text-red-800',
 	}[status] || 'bg-gray-100 text-gray-600';
+}
+
+function statusLabel(status) {
+	return {
+		pending: 'Aguardando aprovação',
+		approved: 'Aprovado',
+		revoked: 'Revogado',
+		denied: 'Recusado',
+	}[status] || status;
 }
 
 onMounted(() => {
@@ -264,7 +273,7 @@ onMounted(() => {
 							<div class="flex items-center justify-between flex-wrap gap-2">
 								<div class="flex items-center gap-2">
 									<span class="text-xs font-semibold uppercase tracking-widest px-2 py-1 rounded"
-										:class="statusBadgeClass(device.status)">{{ device.status }}</span>
+										:class="statusBadgeClass(device.status)">{{ statusLabel(device.status) }}</span>
 									<span class="font-medium">{{ device.label || describe(device) }}</span>
 								</div>
 								<span v-if="device.status === 'approved'" class="text-xs text-gray-500 font-mono">
@@ -287,8 +296,8 @@ onMounted(() => {
 										<template v-if="device.last_ip_address && device.last_ip_address !== device.ip_address">
 											(visto pela última vez de <span class="font-mono">{{ device.last_ip_address }}</span>)</template>
 									</div>
-									<div>Solicitado em {{ new Date(device.requested_at).toLocaleString() }}<template v-if="device.requester"> por {{ device.requester.full_name }}</template></div>
-									<div v-if="device.last_seen_at">Visto pela última vez: {{ new Date(device.last_seen_at).toLocaleString() }}</div>
+									<div>Solicitado em {{ new Date(device.requested_at).toLocaleString('pt-BR') }}<template v-if="device.requester"> por {{ device.requester.full_name }}</template></div>
+									<div v-if="device.last_seen_at">Visto pela última vez: {{ new Date(device.last_seen_at).toLocaleString('pt-BR') }}</div>
 									<div v-if="device.approver && device.status === 'approved'">Aprovado por {{ device.approver.full_name }}</div>
 									<div v-if="device.kiosk_mode" class="text-amber-700">Em modo quiosque</div>
 									<div class="truncate text-gray-400" :title="device.user_agent">{{ device.user_agent }}</div>
@@ -331,7 +340,7 @@ onMounted(() => {
 							<div v-for="device in closedDevices" :key="device.id" class="border rounded p-3 text-sm flex flex-wrap items-center justify-between gap-2">
 								<div>
 									<span class="text-xs font-semibold uppercase tracking-widest px-2 py-1 rounded mr-2"
-										:class="statusBadgeClass(device.status)">{{ device.status }}</span>
+										:class="statusBadgeClass(device.status)">{{ statusLabel(device.status) }}</span>
 									{{ device.label || describe(device) }}
 									<span class="text-xs text-gray-500">
 										— {{ describe(device) }}, <span class="font-mono">{{ device.ip_address || '—' }}</span><template v-if="device.requester">, solicitado por {{ device.requester.full_name }}</template>

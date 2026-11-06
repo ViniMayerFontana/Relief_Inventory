@@ -11,7 +11,7 @@
 <template>
 	<div class="display_layout">
 		<slot />
-		<a href="/login" class="display_login">Log in</a>
+		<a href="/login" class="display_login">Entrar</a>
 	</div>
 </template>
 

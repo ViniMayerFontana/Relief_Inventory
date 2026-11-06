@@ -94,7 +94,7 @@ async function requestDockerUpdate(action) {
 		status.value.docker_update = response.data.docker_update;
 		startDockerPolling();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not send the request.';
+		error.value = e.response?.data?.message || 'Não foi possível enviar a solicitação.';
 	} finally {
 		requestingDocker.value = false;
 	}
@@ -110,9 +110,9 @@ function startDockerPolling() {
 			const du = data.docker_update;
 			if (du && !dockerBusy.value && wasBusy) {
 				wasBusy = false;
-				if (du.state === 'failed') error.value = `Update failed: ${du.message}`;
+				if (du.state === 'failed') error.value = `Falha na atualização: ${du.message}`;
 				else if (du.state === 'stalled') error.value = du.message;
-				else notice.value = du.message || 'Finished.';
+				else notice.value = du.message || 'Concluído.';
 			}
 		} catch (e) {
 			// offline while restarting — keep polling
@@ -135,10 +135,10 @@ async function checkForUpdates() {
 		const response = await axios.post('/json/instance/check-updates');
 		status.value.version = response.data.version;
 		notice.value = response.data.version.behind === 0
-			? 'You are running the latest version.'
-			: `Update available: ${response.data.version.behind} new commit(s).`;
+			? 'Você está usando a versão mais recente.'
+			: `Atualização disponível: ${response.data.version.behind} novo(s) commit(s).`;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Update check failed.';
+		error.value = e.response?.data?.message || 'Falha ao verificar atualizações.';
 	} finally {
 		checking.value = false;
 	}
@@ -158,7 +158,7 @@ async function startUpdate() {
 		startPolling();
 	} catch (e) {
 		updating.value = false;
-		error.value = e.response?.data?.message || 'Could not start the update.';
+		error.value = e.response?.data?.message || 'Não foi possível iniciar a atualização.';
 	}
 }
 
@@ -173,11 +173,11 @@ function startPolling() {
 				stopPolling();
 				updating.value = false;
 				if (state === 'success') {
-					notice.value = 'Update finished successfully.';
+					notice.value = 'Atualização concluída com sucesso.';
 				} else if (state === 'stalled') {
-					error.value = `Update stalled: ${data.update_status.message}`;
+					error.value = `A atualização parou: ${data.update_status.message}`;
 				} else {
-					error.value = `Update failed: ${data.update_status.message} The site may be in maintenance mode — check the server.`;
+					error.value = `Falha na atualização: ${data.update_status.message} O site pode estar em modo de manutenção — verifique o servidor.`;
 				}
 			}
 		} catch (e) {
@@ -202,10 +202,10 @@ async function toggleOfflineMode() {
 	try {
 		const response = await axios.put('/json/instance/offline-mode', { enabled: desired });
 		status.value.offline_mode = response.data.offline_mode;
-		notice.value = response.data.offline_mode ? 'Offline mode enabled.' : 'Offline mode disabled.';
+		notice.value = response.data.offline_mode ? 'Modo off-line ativado.' : 'Modo off-line desativado.';
 	} catch (e) {
 		status.value.offline_mode = !desired; // revert the checkbox — save failed
-		error.value = e.response?.data?.message || 'Could not save offline mode.';
+		error.value = e.response?.data?.message || 'Não foi possível salvar o modo off-line.';
 	} finally {
 		savingOfflineMode.value = false;
 	}
@@ -232,7 +232,7 @@ const statusClass = (st) => ({
 	suspended: 'bg-amber-100 text-amber-800',
 	maintenance: 'bg-amber-100 text-amber-800',
 }[st] || 'bg-red-100 text-red-800');
-const shortDate = (iso) => (iso ? new Date(iso).toLocaleDateString() : '');
+const shortDate = (iso) => (iso ? new Date(iso).toLocaleDateString('pt-BR') : '');
 
 async function loadWarehouses() {
 	try {
@@ -437,7 +437,7 @@ function backUpInstanceNow(files) {
 
 const sizeOf = (bytes) => (bytes > 1073741824 ? `${(bytes / 1073741824).toFixed(2)} GB` : bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.ceil(bytes / 1024)} KB`);
 const labelNames = { 'scheduled-daily': 'Agendado (diário)', 'scheduled-weekly': 'Agendado (semanal)', manual: 'Manual', premigrate: 'Antes de uma atualização' };
-const instWhen = (iso) => (iso ? new Date(iso).toLocaleString() : '');
+const instWhen = (iso) => (iso ? new Date(iso).toLocaleString('pt-BR') : '');
 
 // ---- Recovery key ----
 // The server keeps only the public half. The private half arrives once, here, in the response to "Make a recovery key", and is gone from the
@@ -465,7 +465,7 @@ function recoveryText() {
 		`RELIEF INVENTORY — CHAVE DE RECUPERAÇÃO (${k.instance})`,
 		'',
 		`Instância:     ${k.address}`,
-		`Criada:        ${new Date(k.made_at).toLocaleString()}`,
+		`Criada:        ${new Date(k.made_at).toLocaleString('pt-BR')}`,
 		`Impressão digital: ${k.fingerprint}`,
 		'',
 		'Chave de recuperação:',
@@ -493,7 +493,7 @@ function printRecoveryKey() {
 		.key{font:700 1.25rem/1.6 monospace;letter-spacing:.05em;border:2px solid #000;padding:1rem;margin:1rem 0;word-break:break-all}
 		pre{white-space:pre-wrap;font:0.85rem/1.5 sans-serif}</style>
 		<h1>Relief Inventory &mdash; chave de recuperação (${esc(k.instance)})</h1>
-		<div>Instância: ${esc(k.address)}<br>Criada: ${esc(new Date(k.made_at).toLocaleString())}<br>Impressão digital: <b>${esc(k.fingerprint)}</b></div>
+		<div>Instância: ${esc(k.address)}<br>Criada: ${esc(new Date(k.made_at).toLocaleString('pt-BR'))}<br>Impressão digital: <b>${esc(k.fingerprint)}</b></div>
 		<div class="key">${esc(k.private_key)}</div>
 		<pre>${esc(recoveryText().split('O QUE É')[1] ? 'O QUE É' + recoveryText().split('O QUE É')[1] : '')}</pre>`);
 	w.document.close();
@@ -599,7 +599,7 @@ onUnmounted(() => {
 								<span v-if="status.version.release" class="font-semibold">{{ status.version.release }}</span>
 								<span v-else class="text-gray-500">sem versão</span>
 								(commit <span class="font-mono">{{ status.version.current || 'desconhecido' }}</span>)
-								<span v-if="status.version.current_date"> — {{ new Date(status.version.current_date).toLocaleString() }}</span>
+								<span v-if="status.version.current_date"> — {{ new Date(status.version.current_date).toLocaleString('pt-BR') }}</span>
 							</p>
 							<p v-if="status.version.current_subject" class="text-gray-500">“{{ status.version.current_subject }}”</p>
 						</div>
@@ -613,10 +613,10 @@ onUnmounted(() => {
 							</p>
 							<template v-else>
 								<p v-if="dockerUpdate.available_version" class="text-sm font-medium text-amber-700">
-									A versão {{ dockerUpdate.available_version }} está disponível (verificada em {{ new Date(dockerUpdate.last_checked_at).toLocaleString() }}).
+									A versão {{ dockerUpdate.available_version }} está disponível (verificada em {{ new Date(dockerUpdate.last_checked_at).toLocaleString('pt-BR') }}).
 								</p>
 								<p v-else-if="dockerUpdate.last_checked_at" class="text-sm text-gray-600">
-									Última verificação em {{ new Date(dockerUpdate.last_checked_at).toLocaleString() }}: nenhuma versão mais recente.
+									Última verificação em {{ new Date(dockerUpdate.last_checked_at).toLocaleString('pt-BR') }}: nenhuma versão mais recente.
 								</p>
 
 								<div v-if="dockerBusy" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 text-sm">

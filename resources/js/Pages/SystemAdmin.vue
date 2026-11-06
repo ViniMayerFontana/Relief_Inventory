@@ -26,6 +26,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { currentWarehouseId } from '@/bootstrap';
 import axios from 'axios';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
+import { backupProgressLabel } from '@/labels';
 
 const props = defineProps({
 	breadcrumb: { type: Array },
@@ -198,7 +199,7 @@ function formatSize(bytes) {
 	return bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.ceil(bytes / 1024)} KB`;
 }
 
-const when = (iso) =>(iso ? new Date(iso).toLocaleString() : '');
+const when = (iso) =>(iso ? new Date(iso).toLocaleString('pt-BR') : '');
 
 // ---- Application key (view-app-key) ----
 const keyPassword = ref('');
@@ -351,7 +352,7 @@ onUnmounted(() => {
 									— {{ formatSize(r.size_bytes) }}, {{ scopeNames[r.scope] || r.scope }}
 								</span>
 								<span v-else-if="r.status === 'failed'" class="text-red-700">— falhou: {{ r.error }}</span>
-								<span v-else class="text-blue-700">— {{ r.progress || r.status }}</span>
+								<span v-else class="text-blue-700">— {{ backupProgressLabel(r.progress || r.status) }}</span>
 							</div>
 							<div v-if="r.expires_at" class="text-xs text-gray-500">Exclusão automática em {{ when(r.expires_at) }}</div>
 							<div v-else-if="tiersOf(r).length" class="text-xs text-gray-500">Mantido pelo agendamento de snapshots abaixo, até ser substituído por backups mais recentes</div>

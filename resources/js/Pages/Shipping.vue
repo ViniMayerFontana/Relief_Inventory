@@ -296,7 +296,7 @@ export default {
 				<tbody>
 					<tr v-for="order in filled" :key="order.id">
 						<td>{{ order.id }}</td>
-						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
+						<td>{{ order.person?.full_name || order.person?.organization || '(sem parceiro)' }}</td>
 						<td class="ship_num">{{ totals(order).lines }}</td>
 						<td class="ship_num">{{ totals(order).qty }}</td>
 						<td>
@@ -326,7 +326,7 @@ export default {
 				<tbody>
 					<tr v-for="order in readyToShip" :key="order.id">
 						<td>{{ order.id }}</td>
-						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
+						<td>{{ order.person?.full_name || order.person?.organization || '(sem parceiro)' }}</td>
 						<td>{{ order.driver?.name }}<span v-if="order.driver?.phone"> — {{ order.driver.phone }}</span></td>
 						<td><PrintMenu document-key="bol" media="report" variant="link" label="Ver comprovante de entrega" :params="{ id: order.id }"
 							:download-href="'/report/bol/' + order.id + '.pdf'" />
@@ -353,7 +353,7 @@ export default {
 				<tbody>
 					<tr v-for="order in shipped" :key="order.id">
 						<td>{{ order.id }}</td>
-						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
+						<td>{{ order.person?.full_name || order.person?.organization || '(sem parceiro)' }}</td>
 						<td>{{ order.driver?.name }}<span v-if="order.driver?.phone"> — {{ order.driver.phone }}</span></td>
 						<td><PrintMenu document-key="bol" media="report" variant="link" label="Ver comprovante de entrega" :params="{ id: order.id }"
 							:download-href="'/report/bol/' + order.id + '.pdf'" />
@@ -373,9 +373,9 @@ export default {
 				<tbody>
 					<tr v-for="order in delivered" :key="order.id">
 						<td>{{ order.id }}</td>
-						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
+						<td>{{ order.person?.full_name || order.person?.organization || '(sem parceiro)' }}</td>
 						<td>{{ order.driver?.name }}</td>
-						<td>{{ order.status_changed_at ? new Date(order.status_changed_at).toLocaleDateString() : '' }}</td>
+						<td>{{ order.status_changed_at ? new Date(order.status_changed_at).toLocaleDateString('pt-BR') : '' }}</td>
 						<td><button class="ri_defaultbutton" @click="openReview(order)">Revisar</button></td>
 					</tr>
 					<tr v-if="!delivered.length && !loading"><td colspan="5" class="ship_empty">Nenhum pedido aguardando revisão.</td></tr>
@@ -391,9 +391,9 @@ export default {
 				<tbody>
 					<tr v-for="order in awaitingBol" :key="order.id">
 						<td>{{ order.id }}</td>
-						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
+						<td>{{ order.person?.full_name || order.person?.organization || '(sem parceiro)' }}</td>
 						<td>{{ order.driver?.name }}<span v-if="order.driver?.phone"> — {{ order.driver.phone }}</span></td>
-						<td>{{ order.status_changed_at ? new Date(order.status_changed_at).toLocaleDateString() : '' }}</td>
+						<td>{{ order.status_changed_at ? new Date(order.status_changed_at).toLocaleDateString('pt-BR') : '' }}</td>
 						<td>{{ order.bol_rejection_reason || '—' }}</td>
 					</tr>
 					<tr v-if="!awaitingBol.length && !loading"><td colspan="5" class="ship_empty">Nenhum comprovante rejeitado pendente.</td></tr>
@@ -409,9 +409,9 @@ export default {
 				<tbody>
 					<tr v-for="order in completed" :key="order.id">
 						<td>{{ order.id }}</td>
-						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
+						<td>{{ order.person?.full_name || order.person?.organization || '(sem parceiro)' }}</td>
 						<td>{{ order.driver?.name }}</td>
-						<td>{{ order.status_changed_at ? new Date(order.status_changed_at).toLocaleDateString() : '' }}</td>
+						<td>{{ order.status_changed_at ? new Date(order.status_changed_at).toLocaleDateString('pt-BR') : '' }}</td>
 						<td><a :href="$withWarehouse('/json/shipping/' + order.id + '/signed-bol')" target="_blank">Ver comprovante assinado</a></td>
 					</tr>
 					<tr v-if="!completed.length && !loading"><td colspan="5" class="ship_empty">Nada concluído ainda.</td></tr>

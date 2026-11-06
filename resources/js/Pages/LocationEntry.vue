@@ -5,6 +5,7 @@ import { Head, Link } from '@inertiajs/vue3';
 import TextInput from '@/Components/TextInput.vue';
 import ComboBox from '@/Components/ComboBox.vue';
 import RIForm from '@/Components/RIForm.vue';
+import { locationStatusLabel } from '@/labels';
 
 defineProps({
     breadcrumb: {
@@ -22,7 +23,7 @@ const fieldGetters = {
 	lane: (r) => r.Lane ?? '',
 	stack: (r) => r.Stack ?? '',
 	use: (r) => r.use?.use ?? '',
-	status: (r) => r.status ?? '',
+	status: (r) => locationStatusLabel(r.status),
 };
 
 // Search box: narrows the list in place by matching any column.
@@ -101,7 +102,7 @@ const locationSort = computed(() => (a, b) => {
         <td>{{ record.Lane }}</td>
         <td>{{ record.Stack }}</td>
         <td>{{ record.use ? record.use.use : '' }}</td>
-        <td>{{ record.status }}</td>
+        <td>{{ locationStatusLabel(record.status) }}</td>
       </template>
 
       <template #default="{ record, editing }">

@@ -2,7 +2,7 @@
      Each guide's own view only supplies its title and content sections, so
      styling and the header/footer stay identical across guides. --}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>@yield('title')</title>

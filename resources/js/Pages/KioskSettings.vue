@@ -212,7 +212,7 @@ onMounted(async () => {
 						<PrimaryButton :disabled="savingLocationId === location.id" @click="saveLocation(location)">
 							{{ savingLocationId === location.id ? 'Salvando…' : 'Salvar' }}
 						</PrimaryButton>
-						<span v-if="locationSavedAt[location.id]" class="text-sm text-green-700">Salvo {{ locationSavedAt[location.id].toLocaleTimeString() }}</span>
+						<span v-if="locationSavedAt[location.id]" class="text-sm text-green-700">Salvo {{ locationSavedAt[location.id].toLocaleTimeString('pt-BR') }}</span>
 					</div>
 				</div>
 
@@ -306,7 +306,7 @@ onMounted(async () => {
 					<PrimaryButton :disabled="savingBehavior" @click="saveKioskSettings">
 						{{ savingBehavior ? 'Salvando…' : 'Salvar' }}
 					</PrimaryButton>
-					<span v-if="behaviorSavedAt" class="text-sm text-green-700">Salvo {{ behaviorSavedAt.toLocaleTimeString() }}</span>
+					<span v-if="behaviorSavedAt" class="text-sm text-green-700">Salvo {{ behaviorSavedAt.toLocaleTimeString('pt-BR') }}</span>
 				</div>
 				<p class="text-xs text-gray-500">
 					Por quanto tempo a tela do quiosque pode ficar inativa antes de voltar à tela de boas-vindas e busca. Deixe

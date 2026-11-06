@@ -19,7 +19,7 @@ defineProps({
 </script>
 
 <template>
-	<a :href="'/help/' + guide" target="_blank" class="ri_helplink">Help: <slot /></a>
+	<a :href="'/help/' + guide" target="_blank" class="ri_helplink">Ajuda: <slot /></a>
 </template>
 
 <style scoped>

@@ -101,11 +101,11 @@ export default {
 				return 'Sugestão de ' + scan.suggestion.source_name + ' — confira com o produto que está à sua frente.';
 			}
 			return {
-				pending: 'Looking up product details online...',
-				none: 'Not found in Open Food Facts or Open Products Facts - enter the details by hand.',
-				unavailable: 'The online lookup is not responding right now - enter the details by hand.',
-				throttled: 'Too many online lookups this minute - enter the details by hand.',
-				disabled: 'Online lookup is off - enter the details by hand.',
+				pending: 'Buscando os detalhes do produto on-line…',
+				none: 'Produto não encontrado no Open Food Facts nem no Open Products Facts. Preencha os detalhes manualmente.',
+				unavailable: 'A busca on-line não está respondendo no momento. Preencha os detalhes manualmente.',
+				throttled: 'Muitas buscas on-line neste minuto. Preencha os detalhes manualmente.',
+				disabled: 'A busca on-line está desativada. Preencha os detalhes manualmente.',
 			}[scan.online] || '';
 		},
 		close() {
@@ -178,7 +178,7 @@ export default {
 			} catch (error) {
 				this.error = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not save the new item.';
+					|| 'Não foi possível salvar o novo item.';
 			} finally {
 				this.saving = false;
 			}
@@ -258,7 +258,7 @@ export default {
 
 			<div class="nim_buttons">
 				<button @click="save" class="ri_defaultbutton" :disabled="saving">
-					{{ saving ? 'Saving...' : 'Save Item' }}
+					{{ saving ? 'Salvando…' : 'Salvar item' }}
 				</button>
 				<button @click="close" class="ri_formbutton">Cancelar</button>
 			</div>

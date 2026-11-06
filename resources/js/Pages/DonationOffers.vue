@@ -497,10 +497,10 @@ export default {
 	},
 	methods: {
 		donorName(record) {
-			return record.person?.full_name || '(no donor recorded)';
+			return record.person?.full_name || '(sem doador registrado)';
 		},
 		formatDateTime(value) {
-			return value ? new Date(value).toLocaleString() : '';
+			return value ? new Date(value).toLocaleString('pt-BR') : '';
 		},
 		// Parses a "YYYY-MM-DD" string as a local calendar date, not UTC —
 		// `new Date("YYYY-MM-DD")` is spec'd to parse as UTC midnight, which
@@ -508,7 +508,7 @@ export default {
 		formatLocalDate(value) {
 			if (!value) return '';
 			const [y, m, d] = value.split('-').map(Number);
-			return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+			return new Date(y, m - 1, d).toLocaleDateString('pt-BR', { month: 'short', day: 'numeric' });
 		},
 		formatEtaRange(start, end) {
 			if (!start) return '';
@@ -528,16 +528,17 @@ export default {
 		// scope and can't see its top-level consts).
 		logHeadline(log) {
 			const labels = {
-				offered: 'Offered',
-				pending: 'Pending Arrival',
-				refused: 'Refused',
-				diverted: 'Diverted',
-				cancelled: 'Cancelled',
-				received: 'Received',
+				offered: 'Oferecida',
+				pending: 'Aguardando chegada',
+				refused: 'Recusada',
+				diverted: 'Redirecionada',
+				cancelled: 'Cancelada',
+				received: 'Recebida',
 			};
-			if (!log.from_status) return `Logged as ${labels[log.to_status]}`;
-			if (log.from_status === log.to_status) return `Update — ${labels[log.to_status]}`;
-			return `${labels[log.from_status]} → ${labels[log.to_status]}`;
+			const label = (status) => labels[status] || status || 'Desconhecido';
+			if (!log.from_status) return `Registrada como ${label(log.to_status)}`;
+			if (log.from_status === log.to_status) return `Atualização — ${label(log.to_status)}`;
+			return `${label(log.from_status)} → ${label(log.to_status)}`;
 		},
 		isEditableStatus(record) {
 			// !record.id covers a brand-new record before its first save,

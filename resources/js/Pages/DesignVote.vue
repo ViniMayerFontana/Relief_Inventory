@@ -76,11 +76,11 @@ async function sendIdea() {
 	ideaErrors.value = {};
 	ideaMessage.value = null;
 	if (!idea.text.trim()) {
-		ideaMessage.value = 'Type your idea first.';
+		ideaMessage.value = 'Digite sua ideia primeiro.';
 		return;
 	}
 	if (idea.ok_to_contact && !idea.email.trim()) {
-		ideaErrors.value = { email: ['Add your email so we can contact you, or untick the box.'] };
+		ideaErrors.value = { email: ['Informe seu e-mail para que possamos entrar em contato ou desmarque a opção.'] };
 		return;
 	}
 	ideaSending.value = true;
@@ -98,8 +98,8 @@ async function sendIdea() {
 	} catch (e) {
 		ideaErrors.value = e.response?.data?.errors || {};
 		ideaMessage.value = e.response?.status === 422
-			? (ideaErrors.value.idea?.[0] || (ideaErrors.value.email ? null : 'Please check your idea and try again.'))
-			: (e.response?.data?.message || 'Something went wrong — please try again.');
+			? (ideaErrors.value.idea?.[0] || (ideaErrors.value.email ? null : 'Confira sua ideia e tente novamente.'))
+			: (e.response?.data?.message || 'Ocorreu um erro. Tente novamente.');
 	} finally {
 		resetTurnstile(ideaWidget.value);
 		ideaSending.value = false;
@@ -129,7 +129,7 @@ async function submit() {
 	errors.value = {};
 	message.value = null;
 	if (!chosen.value.length) {
-		message.value = 'Tap "I like this" or "Not for me" on at least one design first.';
+		message.value = 'Avalie pelo menos um design: toque em "Gostei" ou "Não gostei".';
 		return;
 	}
 	submitting.value = true;
@@ -152,8 +152,8 @@ async function submit() {
 	} catch (e) {
 		errors.value = e.response?.data?.errors || {};
 		message.value = e.response?.status === 422
-			? (Object.values(errors.value)[0]?.[0] || 'Please check what you entered.')
-			: (e.response?.data?.message || 'Something went wrong — please try again.');
+			? (Object.values(errors.value)[0]?.[0] || 'Confira os dados informados.')
+			: (e.response?.data?.message || 'Ocorreu um erro. Tente novamente.');
 		resetTurnstile(voteWidget.value);
 	} finally {
 		submitting.value = false;
@@ -296,7 +296,7 @@ function changeVote() {
 					<span class="text-sm text-gray-700">Autorizo contato sobre esta ideia</span>
 				</label>
 				<div v-if="turnstile_enabled" ref="ideaWidget" class="cf-turnstile" :data-sitekey="turnstile_site_key"></div>
-				<p v-if="ideasSent" class="text-sm text-green-700">Thank you — got it.{{ ideasSent > 1 ? ` (${ideasSent} sent)` : '' }} Send another any time.</p>
+				<p v-if="ideasSent" class="text-sm text-green-700">Obrigado — recebemos sua ideia.{{ ideasSent > 1 ? ` (${ideasSent} enviadas)` : '' }} Envie outra quando quiser.</p>
 				<p v-if="ideaMessage" class="text-sm text-red-600">{{ ideaMessage }}</p>
 				<button type="submit" :disabled="ideaSending || turnstile_unavailable"
 					class="px-4 py-2 bg-gray-700 text-white rounded-md font-semibold hover:bg-gray-800 disabled:opacity-50">

@@ -149,7 +149,7 @@ onUnmounted(() => clearInterval(timer));
 						<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
 							<div v-for="(n, key) in summary.counts" :key="key" class="border rounded p-3">
 								<div class="text-gray-500 text-xs">{{ labels[key] || key }}</div>
-								<div class="text-lg font-semibold">{{ n.toLocaleString() }}</div>
+								<div class="text-lg font-semibold">{{ n.toLocaleString('pt-BR') }}</div>
 							</div>
 						</div>
 						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
@@ -192,7 +192,7 @@ onUnmounted(() => clearInterval(timer));
 						</div>
 						<PrimaryButton :disabled="starting" @click="startSimulation">{{ starting ? 'Iniciando…' : 'Iniciar simulação' }}</PrimaryButton>
 						<p class="text-xs text-gray-500">
-							Os dados simulados não podem ser removidos pelo aplicativo. Um ano com {{ form.orders.toLocaleString() }} pedidos gera aproximadamente {{ (form.orders * 10).toLocaleString() }} movimentações de estoque e leva cerca de um minuto.
+							Os dados simulados não podem ser removidos pelo aplicativo. Um ano com {{ form.orders.toLocaleString('pt-BR') }} pedidos gera aproximadamente {{ (form.orders * 10).toLocaleString('pt-BR') }} movimentações de estoque e leva cerca de um minuto.
 						</p>
 					</div>
 
@@ -262,7 +262,7 @@ onUnmounted(() => clearInterval(timer));
 									<td class="pr-4 py-2 text-right font-mono whitespace-nowrap">{{ fmtMs(g.max_ms) }}</td>
 									<td class="py-2">
 										<div class="font-mono text-xs break-all">{{ g.sql }}</div>
-										<div class="text-xs text-gray-500 mt-1">{{ g.sources.join(' · ') }}<span v-if="g.rows_examined"> · até {{ g.rows_examined.toLocaleString() }} linhas examinadas</span></div>
+										<div class="text-xs text-gray-500 mt-1">{{ g.sources.join(' · ') }}<span v-if="g.rows_examined"> · até {{ g.rows_examined.toLocaleString('pt-BR') }} linhas examinadas</span></div>
 									</td>
 								</tr>
 							</tbody>
@@ -276,7 +276,7 @@ onUnmounted(() => clearInterval(timer));
 								<tr v-for="(e, i) in slow.entries.slice(0, 100)" :key="i" class="border-t align-top">
 									<td class="pr-4 py-2 font-mono text-xs whitespace-nowrap">{{ fmtTime(e.time) }}</td>
 									<td class="pr-4 py-2 text-right font-mono whitespace-nowrap">{{ fmtMs(e.ms) }}</td>
-									<td class="pr-4 py-2 text-xs">{{ e.origin === 'app' ? e.source : 'MariaDB' + (e.rows_examined ? ' · ' + e.rows_examined.toLocaleString() + ' linhas' : '') }}</td>
+									<td class="pr-4 py-2 text-xs">{{ e.origin === 'app' ? e.source : 'MariaDB' + (e.rows_examined ? ' · ' + e.rows_examined.toLocaleString('pt-BR') + ' linhas' : '') }}</td>
 									<td class="py-2 font-mono text-xs break-all">{{ e.sql }}</td>
 								</tr>
 							</tbody>

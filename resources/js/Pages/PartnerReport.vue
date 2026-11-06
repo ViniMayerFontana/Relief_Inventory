@@ -17,6 +17,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import ChartCanvas from '@/Components/ChartCanvas.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { transactionStatusLabel } from '@/labels';
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu, ChartCanvas },
@@ -94,7 +95,7 @@ export default {
 				this.expanded = {};
 			} catch (error) {
 				this.error = error.response?.status === 422
-					? 'Check the dates: the "to" date can\'t be before the "from" date.'
+					? 'Confira as datas: a data final não pode ser anterior à data inicial.'
 					: 'Não foi possível carregar o relatório de entidades parceiras.';
 			} finally {
 				this.loading = false;
@@ -113,7 +114,7 @@ export default {
 			return value === null || value === undefined ? '—' : value + '%';
 		},
 		n(value) {
-			return Number(value || 0).toLocaleString();
+			return Number(value || 0).toLocaleString('pt-BR');
 		},
 	},
 	created() {
@@ -234,7 +235,7 @@ export default {
 												<tr v-for="o in p.orders" :key="o.id">
 													<td>{{ o.id }}</td>
 													<td>{{ o.order_date }}</td>
-													<td>{{ o.status }}</td>
+													<td>{{ transactionStatusLabel(o.status) }}</td>
 													<td class="ptr_num">{{ n(o.requested) }}</td>
 													<td class="ptr_num">{{ n(o.filled) }}</td>
 												</tr>

@@ -29,6 +29,7 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { uaSummary } from '@/userAgent';
+import { roleLabel } from '@/labels';
 
 defineProps({
 	breadcrumb: {
@@ -61,7 +62,7 @@ async function fetchSessions() {
 		lastRefreshed.value = new Date();
 		error.value = '';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load active sessions.';
+		error.value = e.response?.data?.message || 'Não foi possível carregar as sessões ativas.';
 	} finally {
 		loading.value = false;
 	}
@@ -73,7 +74,7 @@ async function fetchHistory() {
 		history.value = response.data.history;
 		historyError.value = '';
 	} catch (e) {
-		historyError.value = e.response?.data?.message || 'Could not load login history.';
+		historyError.value = e.response?.data?.message || 'Não foi possível carregar o histórico de acessos.';
 	} finally {
 		historyLoading.value = false;
 	}
@@ -81,9 +82,9 @@ async function fetchHistory() {
 
 function agoText(iso) {
 	const seconds = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
-	if (seconds < 60) return `${seconds}s ago`;
+	if (seconds < 60) return `${seconds} s atrás`;
 	const minutes = Math.round(seconds / 60);
-	return `${minutes}m ago`;
+	return `${minutes} min atrás`;
 }
 
 // Tap-to-expand for the raw user-agent string, keyed by login_history id —
@@ -98,7 +99,7 @@ function toggleUserAgent(id) {
 }
 
 function methodLabel(method) {
-	return method === 'pin' ? 'PIN unlock' : 'Password';
+	return method === 'pin' ? 'Desbloqueio por PIN' : 'Senha';
 }
 
 async function toggleExpanded(entry) {
@@ -118,7 +119,7 @@ async function toggleExpanded(entry) {
 		});
 		personHistory.value = response.data.history;
 	} catch (e) {
-		personHistoryError.value = e.response?.data?.message || 'Could not load login history.';
+		personHistoryError.value = e.response?.data?.message || 'Não foi possível carregar o histórico de acessos.';
 	} finally {
 		personHistoryLoading.value = false;
 	}
@@ -153,7 +154,7 @@ const sortedSessions = computed(() =>
 						<span class="text-gray-400 font-normal">({{ sortedSessions.length }})</span>
 					</h2>
 					<span v-if="lastRefreshed" class="text-xs text-gray-400">
-						Atualizado às {{ lastRefreshed.toLocaleTimeString() }}
+						Atualizado às {{ lastRefreshed.toLocaleTimeString('pt-BR') }}
 					</span>
 				</div>
 
@@ -173,7 +174,7 @@ const sortedSessions = computed(() =>
 					<tbody>
 						<tr v-for="(session, i) in sortedSessions" :key="i" class="border-b last:border-0">
 							<td class="py-2 pr-4 font-medium">{{ session.name }}</td>
-							<td class="py-2 pr-4 text-gray-600">{{ session.roles.join(', ') || '—' }}</td>
+							<td class="py-2 pr-4 text-gray-600">{{ session.roles.map(roleLabel).join(', ') || '—' }}</td>
 							<td class="py-2 pr-4 font-mono text-xs text-gray-600">/{{ session.last_url || '—' }}</td>
 							<td class="py-2 pr-4 text-gray-600">{{ agoText(session.last_activity) }}</td>
 							<td class="py-2 pr-4 font-mono text-xs text-gray-400">{{ session.ip_address }}</td>
@@ -223,7 +224,7 @@ const sortedSessions = computed(() =>
 									{{ entry.name }}
 								</td>
 								<td class="py-2 pr-4 text-gray-600">{{ methodLabel(entry.method) }}</td>
-								<td class="py-2 pr-4 text-gray-600">{{ new Date(entry.logged_in_at).toLocaleString() }}</td>
+								<td class="py-2 pr-4 text-gray-600">{{ new Date(entry.logged_in_at).toLocaleString('pt-BR') }}</td>
 								<td
 									class="py-2 pr-4 text-xs text-gray-400 max-w-[16rem] cursor-pointer"
 									:title="entry.user_agent"
@@ -255,7 +256,7 @@ const sortedSessions = computed(() =>
 											<tr v-for="past in personHistory" :key="past.id" class="border-b last:border-0">
 												<td class="py-1 pr-4 text-gray-600">{{ methodLabel(past.method) }}</td>
 												<td class="py-1 pr-4 text-gray-600">
-													{{ new Date(past.logged_in_at).toLocaleString() }}
+													{{ new Date(past.logged_in_at).toLocaleString('pt-BR') }}
 												</td>
 												<td
 													class="py-1 pr-4 text-gray-400 max-w-[16rem] cursor-pointer"

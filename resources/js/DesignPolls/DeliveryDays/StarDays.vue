@@ -26,14 +26,14 @@ function toggleStar(day) {
 					v-if="days[day] !== 'no'"
 					type="button"
 					class="dd_star"
-					:aria-label="days[day] === 'pref' ? `Make ${day} not preferred` : `Make ${day} preferred`"
+					:aria-label="days[day] === 'pref' ? `Desmarcar ${day} como preferencial` : `Marcar ${day} como preferencial`"
 					@click="toggleStar(day)"
 				>{{ days[day] === 'pref' ? '★' : '☆' }}</button>
 			</span>
 		</div>
 		<div class="dd_legend">
-			<span><span class="dd_swatch dd_ok"></span>Can accept</span>
-			<span><span class="dd_swatch dd_pref"></span>★ Preferred</span>
+			<span><span class="dd_swatch dd_ok"></span>Pode receber</span>
+			<span><span class="dd_swatch dd_pref"></span>★ Preferencial</span>
 		</div>
 	</DemoFrame>
 </template>

@@ -150,9 +150,9 @@ export default {
 			return { critical: 0, moderate: 1, low: 2 }[level] ?? 3;
 		},
 		personLabel(person) {
-			if (!person) return '(no partner)';
+			if (!person) return '(sem parceiro)';
 			const name = [person.first_name, person.last_name].filter(Boolean).join(' ');
-			return person.organization ? person.organization + (name ? ' - ' + name : '') : name || '(unnamed)';
+			return person.organization ? person.organization + (name ? ' - ' + name : '') : name || '(sem nome)';
 		},
 		lineFilled(line) {
 			return (line.item_ledgers || []).reduce((sum, fill) => sum + Number(fill.qty_subtracted || 0), 0);

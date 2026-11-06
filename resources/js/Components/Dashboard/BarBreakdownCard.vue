@@ -12,7 +12,7 @@ export default {
 		title: { type: String, required: true },
 		// [{ label, value }], already sorted by the caller
 		rows: { type: Array, required: true },
-		emptyText: { type: String, default: 'No data yet.' },
+		emptyText: { type: String, default: 'Ainda não há dados.' },
 	},
 	computed: {
 		max() {

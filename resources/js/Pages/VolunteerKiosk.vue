@@ -623,7 +623,7 @@ export default {
 		personName(person) {
 			if (!person) return '';
 			const name = [person.first_name, person.last_name].filter(Boolean).join(' ');
-			return name || person.organization || 'Unknown';
+			return name || person.organization || 'Desconhecido';
 		},
 		// For the "Thank you, ___!" greeting — a first name reads friendlier
 		// than a full name, but falls back to personName() for an org-only
@@ -634,7 +634,7 @@ export default {
 		},
 		formatTime(value) {
 			if (!value) return '';
-			return new Date(value).toLocaleString(undefined, { hour: 'numeric', minute: '2-digit' });
+			return new Date(value).toLocaleString('pt-BR', { hour: 'numeric', minute: '2-digit' });
 		},
 		toDatetimeLocal(date) {
 			const pad = (n) => String(n).padStart(2, '0');

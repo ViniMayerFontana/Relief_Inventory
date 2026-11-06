@@ -66,7 +66,7 @@ class ItemTypeController extends Controller
             $query->where('id', '!=', $excludingId);
         }
 
-        return $query->exists() ? 'That family/variant number is already in use.' : null;
+        return $query->exists() ? 'Este número de família/variante já está em uso.' : null;
     }
 
     // Display a listing of item types

@@ -23,9 +23,10 @@ import PeriodStatCard from '@/Components/Dashboard/PeriodStatCard.vue';
 import BarBreakdownCard from '@/Components/Dashboard/BarBreakdownCard.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import axios from 'axios';
+import { itemCategoryLabel } from '@/labels';
 
-const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: 'Sorting', Complete: 'Complete' };
-const ORDER_STAGE_LABELS = { 'New Order': 'New Order', Filling: 'Filling', Filled: 'Filled', Shipped: 'Shipped' };
+const DONATION_STAGE_LABELS = { Received: 'Recebida', Sorting: 'Em triagem', Complete: 'Concluída' };
+const ORDER_STAGE_LABELS = { 'New Order': 'Novo pedido', Filling: 'Em separação', Filled: 'Separado', Shipped: 'Enviado' };
 
 export default {
 	components: { AuthenticatedLayout, Head, PeriodStatCard, BarBreakdownCard, PrintMenu },
@@ -64,11 +65,11 @@ export default {
 			if (!this.data) return 'Pedidos por CEP';
 			const total = this.data.zip_breakdown.zip_count;
 			const shown = this.data.zip_breakdown.rows.length;
-			return shown < total ? `Orders by Zip (top ${shown} of ${total})` : 'Orders by Zip';
+			return shown < total ? `Pedidos por CEP (os ${shown} principais de ${total})` : 'Pedidos por CEP';
 		},
 		categoryRows() {
 			if (!this.data) return [];
-			return this.data.inventory_summary.top_categories.map((c) => ({ label: c.category, value: c.units }));
+			return this.data.inventory_summary.top_categories.map((c) => ({ label: itemCategoryLabel(c.category), value: c.units }));
 		},
 	},
 	methods: {
@@ -101,7 +102,7 @@ export default {
 				<h2 class="ri_datatable_head">Relatório de situação</h2>
 				<div class="sr_actions">
 					<span v-if="data" class="sr_generated">
-						Em {{ new Date(data.generated_at).toLocaleString() }}
+						Em {{ new Date(data.generated_at).toLocaleString('pt-BR') }}
 					</span>
 					<PrintMenu document-key="sitrep" media="report" label="Imprimir / PDF" download-href="/report/sitrep.pdf" />
 				</div>

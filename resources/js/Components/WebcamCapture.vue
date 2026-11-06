@@ -36,10 +36,10 @@ onMounted(async () => {
 	} catch (e) {
 		error.value =
 			e?.name === 'NotAllowedError'
-				? 'Camera access was blocked. Allow it in the browser address bar, or use Choose File.'
+				? 'O acesso à câmera foi bloqueado. Permita o acesso na barra de endereço do navegador ou escolha um arquivo.'
 				: e?.name === 'NotFoundError'
-					? 'No camera found. Use Choose File instead.'
-					: 'Could not start the camera. Use Choose File instead.';
+					? 'Nenhuma câmera foi encontrada. Escolha um arquivo.'
+					: 'Não foi possível iniciar a câmera. Escolha um arquivo.';
 	}
 });
 
@@ -83,7 +83,7 @@ function close() {
 		<p v-if="error" class="ri_error">{{ error }}</p>
 		<div class="wc_actions">
 			<button v-if="!error" type="button" class="ri_defaultbutton" :disabled="!ready" @click="capture">
-				Capture
+				Capturar
 			</button>
 			<button type="button" class="ri_formbutton" @click="close">Cancelar</button>
 		</div>
