@@ -171,7 +171,7 @@ class DonationOfferController extends Controller
     public function update(Request $request, DonationOffer $donationOffer)
     {
         if (! in_array($donationOffer->status, [DonationOffer::STATUS_OFFERED, DonationOffer::STATUS_PENDING], true)) {
-            return response()->json(['message' => 'This offer has already been decided and can\'t be edited.'], 422);
+            return response()->json(['message' => 'Esta oferta já foi decidida e não pode ser editada.'], 422);
         }
 
         $data = $request->validate([
@@ -198,7 +198,7 @@ class DonationOfferController extends Controller
     public function addNote(Request $request, DonationOffer $donationOffer)
     {
         if (! in_array($donationOffer->status, [DonationOffer::STATUS_OFFERED, DonationOffer::STATUS_PENDING], true)) {
-            return response()->json(['message' => 'This offer has already been decided and can\'t be updated.'], 422);
+            return response()->json(['message' => 'Esta oferta já foi decidida e não pode ser atualizada.'], 422);
         }
 
         $data = $request->validate([
@@ -226,7 +226,7 @@ class DonationOfferController extends Controller
     public function approve(Request $request, DonationOffer $donationOffer)
     {
         if ($donationOffer->status !== DonationOffer::STATUS_OFFERED) {
-            return response()->json(['message' => 'Only an offered donation can be approved.'], 422);
+            return response()->json(['message' => 'Somente uma doação oferecida pode ser aprovada.'], 422);
         }
 
         $data = $request->validate([
@@ -255,7 +255,7 @@ class DonationOfferController extends Controller
     public function refuse(Request $request, DonationOffer $donationOffer)
     {
         if ($donationOffer->status !== DonationOffer::STATUS_OFFERED) {
-            return response()->json(['message' => 'Only an offered donation can be refused.'], 422);
+            return response()->json(['message' => 'Somente uma doação oferecida pode ser recusada.'], 422);
         }
 
         $data = $request->validate([
@@ -278,7 +278,7 @@ class DonationOfferController extends Controller
     public function divert(Request $request, DonationOffer $donationOffer)
     {
         if ($donationOffer->status !== DonationOffer::STATUS_OFFERED) {
-            return response()->json(['message' => 'Only an offered donation can be diverted.'], 422);
+            return response()->json(['message' => 'Somente uma doação oferecida pode ser desviada.'], 422);
         }
 
         $data = $request->validate([
@@ -301,7 +301,7 @@ class DonationOfferController extends Controller
     public function cancel(Request $request, DonationOffer $donationOffer)
     {
         if ($donationOffer->status !== DonationOffer::STATUS_PENDING) {
-            return response()->json(['message' => 'Only a pending donation offer can be cancelled.'], 422);
+            return response()->json(['message' => 'Somente uma oferta de doação pendente pode ser cancelada.'], 422);
         }
 
         $data = $request->validate([
@@ -331,7 +331,7 @@ class DonationOfferController extends Controller
     public function match(Request $request, DonationOffer $donationOffer)
     {
         if ($donationOffer->status !== DonationOffer::STATUS_PENDING) {
-            return response()->json(['message' => 'Only a pending donation offer can be matched.'], 422);
+            return response()->json(['message' => 'Somente uma oferta de doação pendente pode ser associada.'], 422);
         }
 
         $data = $request->validate([
@@ -341,7 +341,7 @@ class DonationOfferController extends Controller
         ]);
 
         if (DonationOffer::where('donation_id', $data['donation_id'])->exists()) {
-            return response()->json(['message' => 'That donation is already matched to another offer.'], 422);
+            return response()->json(['message' => 'Essa doação já está associada a outra oferta.'], 422);
         }
 
         $donationOffer->transitionTo(

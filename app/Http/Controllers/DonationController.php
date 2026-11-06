@@ -80,7 +80,7 @@ class DonationController extends Controller
         }
 
         return response()->json([
-            'message' => 'Donation created successfully.',
+            'message' => 'Doação criada com sucesso.',
         ], 201);
     }
 
@@ -129,7 +129,7 @@ class DonationController extends Controller
         }
 
         return response()->json([
-            'message' => 'Donation updated successfully.',
+            'message' => 'Doação atualizada com sucesso.',
         ], 200);
     }
 
@@ -145,7 +145,7 @@ class DonationController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error deleting order item: '.$e->getMessage(),
+                'message' => 'Erro ao excluir o item do pedido: '.$e->getMessage(),
             ], 500);
         }
     }

@@ -98,7 +98,7 @@ export default {
 		scanNote() {
 			const scan = this.modal.scan;
 			if (scan.suggestion) {
-				return 'Suggested by ' + scan.suggestion.source_name + ' - check it against the product in front of you.';
+				return 'Sugestão de ' + scan.suggestion.source_name + ' — confira com o produto que está à sua frente.';
 			}
 			return {
 				pending: 'Looking up product details online...',
@@ -132,17 +132,17 @@ export default {
 			const modal = this.modal;
 
 			if (!modal.description.trim()) {
-				this.error = 'A description is required.';
+				this.error = 'A descrição é obrigatória.';
 				return;
 			}
 			if (!modal.creatingType && !modal.itemtype_id) {
-				this.error = 'Choose an item type (or add a new one).';
+				this.error = 'Escolha um tipo de item ou adicione um novo.';
 				return;
 			}
 			if (modal.creatingType && (!modal.newTypeName.trim() || !modal.unit_id ||
 				(!modal.creatingCategory && !modal.category_id) ||
 				(modal.creatingCategory && !modal.newCategoryName.trim()))) {
-				this.error = 'A new item type needs a name, a unit, and a category.';
+				this.error = 'Um novo tipo de item precisa de nome, unidade e categoria.';
 				return;
 			}
 
@@ -190,69 +190,69 @@ export default {
 <template>
 	<div class="nim_overlay" @click.self="close">
 		<div class="nim_box" ref="box" tabindex="-1" @keydown.self="onStrayKey">
-			<h3>Add New Item</h3>
+			<h3>Adicionar novo item</h3>
 			<p v-if="error" class="nim_error">{{ error }}</p>
 			<template v-if="modal.scan">
 				<p class="nim_note">{{ scanNote() }}</p>
 				<img v-if="modal.scan.suggestion?.image_url" :src="modal.scan.suggestion.image_url" alt="" class="nim_image" />
 				<div class="nim_field" v-if="allowCarton">
-					<label>This barcode is on:</label>
-					<label class="nim_radio"><input type="radio" value="each" v-model="modal.kind" /> One item</label>
-					<label class="nim_radio"><input type="radio" value="carton" v-model="modal.kind" @change="switchToCarton" /> A case of items already in the list</label>
+					<label>Este código de barras identifica:</label>
+					<label class="nim_radio"><input type="radio" value="each" v-model="modal.kind" /> Uma unidade</label>
+					<label class="nim_radio"><input type="radio" value="carton" v-model="modal.kind" @change="switchToCarton" /> Uma caixa de itens já cadastrados</label>
 				</div>
 			</template>
 
 			<div class="nim_field">
-				<label>Description:</label>
+				<label>Descrição:</label>
 				<input type="text" v-model="modal.description" class="ri_forminput" autofocus />
 			</div>
 			<div class="nim_field">
-				<label>UPC (optional):</label>
-				<input type="text" v-model="modal.upc" class="ri_forminput" placeholder="Scan barcode" />
+				<label>UPC (opcional):</label>
+				<input type="text" v-model="modal.upc" class="ri_forminput" placeholder="Leia o código de barras" />
 			</div>
 
 			<div class="nim_field" v-if="!modal.creatingType">
-				<label>Item Type:</label>
+				<label>Tipo de item:</label>
 				<SearchSelect
 					v-model="modal.itemtype_id"
 					optionsource="/json/itemtypes/noitems"
 					display="name"
 					:searchfields="['name', 'display_number']"
-					placeholder="Search item types..."
+					placeholder="Buscar tipos de item..."
 					:allowcreate="true"
 					@create="startNewType"
 				/>
 			</div>
 			<template v-else>
 				<div class="nim_field">
-					<label>New Item Type:</label>
-					<input type="text" v-model="modal.newTypeName" class="ri_forminput" placeholder="Type name" />
-					<button @click="modal.creatingType = false" class="ri_formbutton">Pick existing instead</button>
+					<label>Novo tipo de item:</label>
+					<input type="text" v-model="modal.newTypeName" class="ri_forminput" placeholder="Nome do tipo" />
+					<button @click="modal.creatingType = false" class="ri_formbutton">Escolher um já cadastrado</button>
 				</div>
 				<div class="nim_field">
-					<label>Measured By:</label>
+					<label>Unidade de medida:</label>
 					<SearchSelect
 						v-model="modal.unit_id"
 						optionsource="/json/units"
 						display="name"
-						placeholder="Unit (e.g. Each, Pound)..."
+						placeholder="Unidade (por exemplo, unidade, quilograma)..."
 					/>
 				</div>
 				<div class="nim_field" v-if="!modal.creatingCategory">
-					<label>Category:</label>
+					<label>Categoria:</label>
 					<SearchSelect
 						v-model="modal.category_id"
 						optionsource="/json/categories"
 						display="name"
-						placeholder="Search categories..."
+						placeholder="Buscar categorias..."
 						:allowcreate="true"
 						@create="startNewCategory"
 					/>
 				</div>
 				<div class="nim_field" v-else>
-					<label>New Category:</label>
-					<input type="text" v-model="modal.newCategoryName" class="ri_forminput" placeholder="Category name" />
-					<button @click="modal.creatingCategory = false" class="ri_formbutton">Pick existing instead</button>
+					<label>Nova categoria:</label>
+					<input type="text" v-model="modal.newCategoryName" class="ri_forminput" placeholder="Nome da categoria" />
+					<button @click="modal.creatingCategory = false" class="ri_formbutton">Escolher uma já cadastrada</button>
 				</div>
 			</template>
 
@@ -260,7 +260,7 @@ export default {
 				<button @click="save" class="ri_defaultbutton" :disabled="saving">
 					{{ saving ? 'Saving...' : 'Save Item' }}
 				</button>
-				<button @click="close" class="ri_formbutton">Cancel</button>
+				<button @click="close" class="ri_formbutton">Cancelar</button>
 			</div>
 		</div>
 	</div>

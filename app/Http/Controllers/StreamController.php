@@ -64,6 +64,6 @@ class StreamController extends Controller
     {
         Stream::findOrFail($id)->delete();
 
-        return response()->json(['message' => 'Stream deleted successfully.']);
+        return response()->json(['message' => 'Transmissão excluída com sucesso.']);
     }
 }

@@ -45,7 +45,7 @@ class CategoryController extends Controller
         $category = Category::create($data);
 
         return response()->json([
-            'message' => 'Category created successfully.',
+            'message' => 'Categoria criada com sucesso.',
             'category' => $category,
         ], 201);
     }
@@ -64,7 +64,7 @@ class CategoryController extends Controller
         $category->update($data);
 
         return response()->json([
-            'message' => 'Category updated successfully.',
+            'message' => 'Categoria atualizada com sucesso.',
             'category' => $category,
         ], 200);
     }
@@ -83,12 +83,12 @@ class CategoryController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Category deleted successfully.',
+                'message' => 'Categoria excluída com sucesso.',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error deleting category: '.$e->getMessage(),
+                'message' => 'Erro ao excluir a categoria: '.$e->getMessage(),
             ], 500);
         }
     }

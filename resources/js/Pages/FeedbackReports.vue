@@ -99,7 +99,7 @@ async function saveAggregationSettings() {
 		aggregationSaved.value = true;
 		if (response.data.settings.instance_role === 'remote' && response.data.settings.feedback_trust_id) await testConnection();
 	} catch (e) {
-		aggregationError.value = e.response?.data?.message || 'Could not save these settings.';
+		aggregationError.value = e.response?.data?.message || 'Não foi possível salvar estas configurações.';
 	} finally {
 		aggregationSaving.value = false;
 	}
@@ -115,7 +115,7 @@ async function testConnection() {
 		const response = await axios.post('/json/feedback-aggregation-settings/test');
 		connectionTest.value = response.data;
 	} catch (e) {
-		connectionTest.value = { ok: false, message: e.response?.data?.message || 'Could not run the test.' };
+		connectionTest.value = { ok: false, message: e.response?.data?.message || 'Não foi possível executar o teste.' };
 	} finally {
 		testingConnection.value = false;
 	}
@@ -203,11 +203,11 @@ const resolvedReports = computed(() =>
 // labels are shown) — kept here too since the Status filter dropdown below
 // needs it and prop-drilling a label map for one <select> isn't worth it.
 const statusLabels = {
-	new: 'New',
-	seen: 'Acknowledged',
-	in_development: 'In Development',
-	review: 'Review',
-	resolved: 'Resolved',
+	new: 'Novo',
+	seen: 'Confirmado',
+	in_development: 'Em desenvolvimento',
+	review: 'Em revisão',
+	resolved: 'Resolvido',
 };
 
 async function fetchReports() {
@@ -233,15 +233,15 @@ async function sendUnsentReports() {
 		const response = await axios.post('/json/feedback-reports/send-unsent');
 		const { attempted, total, sent, error: pushError } = response.data;
 		if (!attempted) {
-			sendUnsentMessage.value = 'Central push isn\'t configured on this instance.';
+			sendUnsentMessage.value = 'O envio à instância central não está configurado nesta instalação.';
 		} else if (total === 0) {
-			sendUnsentMessage.value = 'Nothing to send — every report is already submitted.';
+			sendUnsentMessage.value = 'Nada para enviar — todos os relatos já foram enviados.';
 		} else {
-			sendUnsentMessage.value = `Sent ${sent} of ${total} report${total === 1 ? '' : 's'}.` + (pushError ? ` ${pushError}` : '');
+			sendUnsentMessage.value = `${sent} de ${total} relato${total === 1 ? '' : 's'} enviado${sent === 1 ? '' : 's'}.` + (pushError ? ` ${pushError}` : '');
 		}
 		await fetchReports();
 	} catch (e) {
-		sendUnsentMessage.value = e.response?.data?.message || 'Could not reach central — try again later.';
+		sendUnsentMessage.value = e.response?.data?.message || 'Não foi possível acessar a instância central — tente novamente mais tarde.';
 	} finally {
 		sendingUnsent.value = false;
 	}
@@ -278,7 +278,7 @@ async function confirmCompose() {
 	const { reportId, status, isNote, reopening } = composing.value;
 
 	if ((isNote || status === 'review' || status === 'resolved' || reopening) && !comment.value.trim()) {
-		error.value = isNote ? 'Enter a note to add.' : reopening ? 'Enter why this is being reopened.' : 'A note is required.';
+		error.value = isNote ? 'Digite uma observação.' : reopening ? 'Informe por que este relato está sendo reaberto.' : 'A observação é obrigatória.';
 		return;
 	}
 
@@ -291,55 +291,55 @@ async function confirmCompose() {
 		comment.value = '';
 		await fetchReports();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not update status.';
+		error.value = e.response?.data?.message || 'Não foi possível atualizar o status.';
 	}
 }
 
 </script>
 
 <template>
-	<Head title="Feedback & Bug Reports" />
+	<Head title="Relatos e erros" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Feedback & Bug Reports</h1>
+			<h1 class="text-2xl font-bold">Relatos e erros</h1>
 
 			<details class="bg-white shadow rounded-lg p-6">
-				<summary class="cursor-pointer text-lg font-semibold select-none">Centralized Aggregation Settings</summary>
+				<summary class="cursor-pointer text-lg font-semibold select-none">Configurações de centralização de relatos</summary>
 
 				<div class="mt-4 space-y-4">
 					<p class="text-sm text-gray-500">
-						Every instance's own feedback flow works standalone regardless of these — only set
-						these up if this instance should send its own reports to a central triage instance,
-						or should <em>be</em> that central instance.
+						O fluxo de relatos de cada instalação funciona de forma independente — configure esta seção
+						somente se esta instalação for enviar relatos a uma instalação central de triagem ou
+						<em>for</em> essa instalação central.
 					</p>
 
-					<p v-if="aggregationLoading" class="text-gray-500 text-sm">Loading settings…</p>
+					<p v-if="aggregationLoading" class="text-gray-500 text-sm">Carregando configurações…</p>
 
 					<form v-else class="space-y-4" @submit.prevent="saveAggregationSettings">
 						<label class="block text-sm">
-							<span class="text-gray-700">Role</span>
+							<span class="text-gray-700">Função</span>
 							<select v-model="aggregationForm.instance_role" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-								<option value="remote">Remote — sends its reports to a central instance</option>
-								<option value="central">Central — receives reports from remote instances</option>
+								<option value="remote">Remota — envia relatos para uma instalação central</option>
+								<option value="central">Central — recebe relatos de instalações remotas</option>
 							</select>
 						</label>
 
 						<p v-if="aggregationForm.instance_role === 'central'" class="text-sm text-gray-600">
-							Remote instances connect to this one from the <a href="/setup/trust" class="underline text-blue-700">Trust Console</a>:
-							create a connection code there that allows "Sending feedback", and give it to the remote's administrator.
+							As instalações remotas se conectam a esta pela <a href="/setup/trust" class="underline text-blue-700">Central de confiança</a>:
+							crie lá um código de conexão que permita "Enviar relatos" e passe-o à pessoa que administra a instalação remota.
 						</p>
 
 						<div v-if="aggregationForm.instance_role === 'remote'" class="rounded-md border border-gray-200 bg-gray-50 p-4 space-y-2 text-sm">
 							<label class="block">
-								<span class="font-medium text-gray-700">Send reports to</span>
+								<span class="font-medium text-gray-700">Enviar relatos para</span>
 								<select v-model="aggregationForm.feedback_trust_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-									<option value="">Choose an instance…</option>
-									<option v-for="t in peerTrusts" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_url }}){{ t.may_send_feedback ? '' : ' — has not allowed feedback yet' }}</option>
+									<option value="">Escolha uma instalação…</option>
+									<option v-for="t in peerTrusts" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_url }}){{ t.may_send_feedback ? '' : ' — ainda não autorizou o envio de relatos' }}</option>
 								</select>
 							</label>
 							<p class="text-gray-500">
-								Only instances this one is paired with appear here. Pair with the central instance in the
-								<a href="/setup/trust" class="underline text-blue-700">Trust Console</a> by pasting the connection code its administrator gives you.
+								Somente instalações pareadas com esta aparecem aqui. Faça o pareamento com a instalação central na
+								<a href="/setup/trust" class="underline text-blue-700">Central de confiança</a>, colando o código de conexão fornecido pela administração.
 							</p>
 						</div>
 
@@ -349,7 +349,7 @@ async function confirmCompose() {
 								class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md disabled:bg-gray-400"
 								:disabled="aggregationSaving"
 							>
-								{{ aggregationSaving ? 'Saving…' : 'Save Settings' }}
+								{{ aggregationSaving ? 'Salvando…' : 'Salvar configurações' }}
 							</button>
 							<button
 								v-if="aggregationSettings?.instance_role === 'remote' && aggregationSettings?.feedback_trust_id"
@@ -358,9 +358,9 @@ async function confirmCompose() {
 								:disabled="testingConnection"
 								@click="testConnection"
 							>
-								{{ testingConnection ? 'Testing…' : 'Test Connection' }}
+								{{ testingConnection ? 'Testando…' : 'Testar conexão' }}
 							</button>
-							<span v-if="aggregationSaved" class="text-sm text-green-600">Saved.</span>
+							<span v-if="aggregationSaved" class="text-sm text-green-600">Salvo.</span>
 							<span v-if="aggregationError" class="text-sm text-red-600">{{ aggregationError }}</span>
 						</div>
 						<p v-if="connectionTest" class="text-sm" :class="connectionTest.ok ? 'text-green-700' : 'text-red-600'">
@@ -372,14 +372,14 @@ async function confirmCompose() {
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<div class="flex items-center justify-between gap-4 flex-wrap">
-					<h2 class="text-lg font-semibold">Reports</h2>
+					<h2 class="text-lg font-semibold">Relatos</h2>
 					<div v-if="currentInstanceRole === 'remote'" class="flex items-center gap-3">
 						<button
 							class="text-xs font-medium text-blue-600 underline disabled:text-gray-400 disabled:no-underline"
 							:disabled="sendingUnsent"
 							@click="sendUnsentReports"
 						>
-							{{ sendingUnsent ? 'Sending…' : 'Send Unsent Reports' }}
+							{{ sendingUnsent ? 'Enviando…' : 'Enviar relatos pendentes' }}
 						</button>
 						<span v-if="sendUnsentMessage" class="text-xs text-gray-500">{{ sendUnsentMessage }}</span>
 					</div>
@@ -387,55 +387,55 @@ async function confirmCompose() {
 
 				<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm items-end">
 					<label class="block">
-						<span class="text-gray-700">Type</span>
+						<span class="text-gray-700">Tipo</span>
 						<select v-model="filterType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">All</option>
-							<option value="bug">Bug</option>
-							<option value="feature">Feature</option>
+							<option value="">Todos</option>
+							<option value="bug">Erro</option>
+							<option value="feature">Sugestão</option>
 						</select>
 					</label>
 					<label class="block">
 						<span class="text-gray-700">Status</span>
 						<select v-model="filterStatus" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">All</option>
+							<option value="">Todos</option>
 							<option v-for="(label, key) in statusLabels" :key="key" :value="key">{{ label }}</option>
 						</select>
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Reported by</span>
+						<span class="text-gray-700">Relatado por</span>
 						<select v-model="filterReporter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">All</option>
+							<option value="">Todos</option>
 							<option v-for="person in reporterOptions" :key="person.id" :value="String(person.id)">{{ person.full_name }}</option>
 						</select>
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Page</span>
+						<span class="text-gray-700">Página</span>
 						<select v-model="filterPage" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">All</option>
+							<option value="">Todas</option>
 							<option v-for="pageLabel in pageOptions" :key="pageLabel" :value="pageLabel">{{ pageLabel }}</option>
 						</select>
 					</label>
 				</div>
 
 				<label class="block text-sm">
-					<span class="text-gray-700">Search</span>
+					<span class="text-gray-700">Buscar</span>
 					<input
 						type="text"
 						v-model="searchText"
 						class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-						placeholder="Search message, comments, page, reporter, or #number..."
+						placeholder="Buscar mensagem, comentários, página, pessoa que relatou ou nº..."
 					/>
 				</label>
 
 				<button v-if="hasActiveFilters" class="text-xs text-blue-600 underline" @click="clearFilters">
-					Clear filters
+					Limpar filtros
 				</button>
 
-				<p v-if="loading" class="text-gray-500">Loading reports…</p>
+				<p v-if="loading" class="text-gray-500">Carregando relatos…</p>
 
-				<div v-else-if="!reports.length" class="text-gray-400">No reports yet.</div>
+				<div v-else-if="!reports.length" class="text-gray-400">Nenhum relato ainda.</div>
 
-				<div v-else-if="!filteredReports.length" class="text-gray-400">No reports match these filters.</div>
+				<div v-else-if="!filteredReports.length" class="text-gray-400">Nenhum relato corresponde a estes filtros.</div>
 
 				<div v-else class="space-y-4">
 					<FeedbackReportCard
@@ -461,7 +461,7 @@ async function confirmCompose() {
 					     case (see the computed above) and this section would just repeat it. -->
 					<details v-if="resolvedReports.length" class="pt-2">
 						<summary class="cursor-pointer text-sm text-gray-500 select-none">
-							Resolved ({{ resolvedReports.length }})
+							Resolvidos ({{ resolvedReports.length }})
 						</summary>
 						<div class="space-y-4 mt-4">
 							<FeedbackReportCard

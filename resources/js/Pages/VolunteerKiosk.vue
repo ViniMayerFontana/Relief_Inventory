@@ -74,7 +74,7 @@ defineProps({
 </script>
 
 <template>
-	<Head title="Sign-in Kiosk" />
+	<Head title="Quiosque de entrada e saída" />
 	<!-- Guest kiosk mode (nobody logged in on this device, see
 	     EnsureKioskAccess) skips AuthenticatedLayout entirely — that layout
 	     assumes $page.props.auth.user exists (nav, profile menu), which is
@@ -83,22 +83,22 @@ defineProps({
 	<component :is="isAuthenticated ? AuthenticatedLayout : 'div'" :breadcrumb="isAuthenticated ? breadcrumb : undefined">
 		<div class="vk_page" :class="{ vk_page_bare: !isAuthenticated }">
 			<div v-if="!isAuthenticated" class="vk_stafflogin">
-				<a href="/login">Staff Login</a>
+				<a href="/login">Acesso da equipe</a>
 			</div>
 
 			<div class="vk_shell">
 				<header v-if="view === 'grid'" class="vk_header">
 					<img src="/img/welcome.webp" alt="" class="vk_header_badge" />
-					<h1 class="vk_header_title">Facility Sign-In/Sign-Out</h1>
+					<h1 class="vk_header_title">Entrada e saída de pessoas</h1>
 					<p v-if="kioskLocationName" class="vk_header_location">{{ kioskLocationName }}</p>
 					<p v-if="kioskWelcomeMessage" class="vk_header_tagline">{{ kioskWelcomeMessage }}</p>
 				</header>
 
 				<div v-if="isAuthenticated && view === 'grid'" class="vk_kioskmode_bar">
 					<button type="button" class="ri_formbutton" @click="showKioskConfirmModal = true">
-						Enable Kiosk Mode
+						Ativar modo quiosque
 					</button>
-					<span class="vk_hint vk_hint_inline">Locks this device to sign-in only, no login required, until someone logs in again.</span>
+					<span class="vk_hint vk_hint_inline">Este dispositivo ficará bloqueado na tela de entrada e saída, sem exigir acesso ao sistema, até que alguém entre novamente.</span>
 				</div>
 
 				<!-- ---------------- default (type-ahead) view ---------------- -->
@@ -109,15 +109,15 @@ defineProps({
 						:class="{ vk_firsttimebtn_open: showFirstTimeOptions }"
 						@click="showFirstTimeOptions = !showFirstTimeOptions"
 					>
-						First Time Here?
+						Primeira vez aqui?
 						<span class="vk_firsttimebtn_chevron" :class="{ vk_firsttimebtn_chevron_open: showFirstTimeOptions }" aria-hidden="true">▾</span>
 					</button>
 					<div v-if="showFirstTimeOptions" class="vk_secondarybar">
-						<button type="button" class="ri_formbutton vk_secondarybtn" @click="openGuest">Guest</button>
-						<button type="button" class="ri_formbutton vk_secondarybtn" @click="openAddNew">New Volunteer</button>
+						<button type="button" class="ri_formbutton vk_secondarybtn" @click="openGuest">Visitante</button>
+						<button type="button" class="ri_formbutton vk_secondarybtn" @click="openAddNew">Novo voluntário</button>
 					</div>
 
-					<p class="vk_instruction">If you've been here before, start typing your name and select your name when it appears</p>
+					<p class="vk_instruction">Se você já esteve aqui, comece a digitar seu nome e selecione-o quando aparecer</p>
 					<div class="vk_searchbar">
 						<span class="vk_searchicon" aria-hidden="true">🔍</span>
 						<!-- This is the only free-text field on the kiosk's front
@@ -138,7 +138,7 @@ defineProps({
 							type="search"
 							name="vk-lookup-not-a-login-field"
 							class="ri_forminput vk_searchinput"
-							placeholder="Start typing your name"
+							placeholder="Comece a digitar seu nome"
 							autocomplete="off"
 							autocapitalize="words"
 							autocorrect="off"
@@ -154,7 +154,7 @@ defineProps({
 					</div>
 
 					<p v-if="searchQuery.trim() && tiles.length === 0" class="vk_hint vk_hint_center">
-						No match for "{{ searchQuery }}".
+						Nenhum resultado para "{{ searchQuery }}".
 					</p>
 
 					<div v-if="tiles.length" class="vk_grid">
@@ -169,15 +169,15 @@ defineProps({
 							<span class="vk_tile_name">{{ personName(person) }}</span>
 							<span v-if="person.current_sign_in" class="vk_tile_status vk_tile_status_in">
 								<span class="vk_tile_dot" aria-hidden="true"></span>
-								Signed in since {{ formatTime(person.current_sign_in.signed_in_at) }}
+								Entrada registrada às {{ formatTime(person.current_sign_in.signed_in_at) }}
 							</span>
 							<span v-else-if="person.forgotten_sign_in" class="vk_tile_status vk_tile_status_forgotten">
-								Tap to record when you left
+								Toque para informar quando você saiu
 							</span>
 							<span v-else-if="person.last_sign_in" class="vk_tile_status">
-								{{ [person.last_sign_in.agency, person.last_sign_in.description_of_work].filter(Boolean).join(' — ') || 'Tap to sign in' }}
+								{{ [person.last_sign_in.agency, person.last_sign_in.description_of_work].filter(Boolean).join(' — ') || 'Toque para registrar a entrada' }}
 							</span>
-							<span v-else class="vk_tile_status">Tap to sign in</span>
+							<span v-else class="vk_tile_status">Toque para registrar a entrada</span>
 						</button>
 					</div>
 				</template>
@@ -185,22 +185,22 @@ defineProps({
 			<!-- ---------------- new volunteer (first-time) ---------------- -->
 			<template v-else-if="view === 'add-new'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">New Volunteer</h2>
-					<p class="vk_hint">First time here? Enter your name below to sign in.</p>
+					<h2 class="vk_confirm_title">Novo voluntário</h2>
+					<p class="vk_hint">Primeira vez aqui? Informe seu nome abaixo para registrar a entrada.</p>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="First Name" />
+						<InputLabel value="Nome" />
 						<TextInput v-model="newPerson.first_name" autocomplete="off" />
 					</div>
 					<div class="ri_formcontrol">
-						<InputLabel value="Last Name" />
+						<InputLabel value="Sobrenome" />
 						<TextInput v-model="newPerson.last_name" autocomplete="off" />
 					</div>
 					<p v-if="addPersonError" class="vk_error">{{ addPersonError }}</p>
 
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" :disabled="addingPerson" @click="submitAddNew">Sign In</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						<button class="ri_defaultbutton" :disabled="addingPerson" @click="submitAddNew">Registrar entrada</button>
+						<button class="ri_formbutton" @click="cancelConfirm">Cancelar</button>
 					</div>
 				</div>
 			</template>
@@ -208,10 +208,10 @@ defineProps({
 			<!-- ---------------- new volunteer thank-you ---------------- -->
 			<template v-else-if="view === 'new-volunteer-thanks'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Thanks for coming, {{ personName(selected) }}!</h2>
-					<p class="vk_hint">You're signed in. Please check in at the office to complete your first-time sign-in.</p>
+					<h2 class="vk_confirm_title">Agradecemos sua presença, {{ personName(selected) }}!</h2>
+					<p class="vk_hint">Sua entrada foi registrada. Procure a recepção para concluir seu primeiro cadastro.</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="cancelConfirm">Done</button>
+						<button class="ri_defaultbutton" @click="cancelConfirm">Concluir</button>
 					</div>
 				</div>
 			</template>
@@ -219,10 +219,10 @@ defineProps({
 			<!-- ---------------- sign-in thank-you (existing person) ---------------- -->
 			<template v-else-if="view === 'signin-thanks'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Thank you, {{ greetingName(selected) }}!</h2>
-					<p class="vk_hint">Please remember to sign out! Have a great day!</p>
+					<h2 class="vk_confirm_title">Obrigado, {{ greetingName(selected) }}!</h2>
+					<p class="vk_hint">Lembre-se de registrar sua saída! Tenha um ótimo dia!</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="cancelConfirm">Done</button>
+						<button class="ri_defaultbutton" @click="cancelConfirm">Concluir</button>
 					</div>
 				</div>
 			</template>
@@ -230,33 +230,33 @@ defineProps({
 			<!-- ---------------- guest ---------------- -->
 			<template v-else-if="view === 'guest'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Guest Sign-In</h2>
-					<p class="vk_hint">For visitors, inspectors, and other one-off guests.</p>
+					<h2 class="vk_confirm_title">Entrada de visitante</h2>
+					<p class="vk_hint">Para visitantes, inspetores e outros convidados ocasionais.</p>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="First Name" />
+						<InputLabel value="Nome" />
 						<TextInput v-model="newGuest.first_name" autocomplete="off" />
 					</div>
 					<div class="ri_formcontrol">
-						<InputLabel value="Last Name" />
+						<InputLabel value="Sobrenome" />
 						<TextInput v-model="newGuest.last_name" autocomplete="off" />
 					</div>
 					<div class="ri_formcontrol">
-						<InputLabel value="Guest Type" />
+						<InputLabel value="Tipo de visitante" />
 						<select v-model="newGuest.other_category_id" class="ri_forminput">
-							<option :value="null">— Choose or type below —</option>
+							<option :value="null">— Escolha ou digite abaixo —</option>
 							<option v-for="cat in otherCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
 						</select>
 					</div>
 					<div class="ri_formcontrol">
-						<InputLabel value="Or describe (free text)" />
-						<TextInput v-model="newGuest.other_category_text" placeholder="e.g. State Representative" />
+						<InputLabel value="Ou descreva (texto livre)" />
+						<TextInput v-model="newGuest.other_category_text" placeholder="ex.: Representante estadual" />
 					</div>
 					<p v-if="guestError" class="vk_error">{{ guestError }}</p>
 
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" :disabled="addingGuest" @click="submitGuest">Sign In</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						<button class="ri_defaultbutton" :disabled="addingGuest" @click="submitGuest">Registrar entrada</button>
+						<button class="ri_formbutton" @click="cancelConfirm">Cancelar</button>
 					</div>
 				</div>
 			</template>
@@ -264,10 +264,10 @@ defineProps({
 			<!-- ---------------- guest thank-you ---------------- -->
 			<template v-else-if="view === 'guest-thanks'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Thanks, {{ personName(selected) }}!</h2>
-					<p class="vk_hint">You're signed in as a guest.</p>
+					<h2 class="vk_confirm_title">Obrigado, {{ personName(selected) }}!</h2>
+					<p class="vk_hint">Sua entrada foi registrada como visitante.</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="cancelConfirm">Done</button>
+						<button class="ri_defaultbutton" @click="cancelConfirm">Concluir</button>
 					</div>
 				</div>
 			</template>
@@ -275,50 +275,50 @@ defineProps({
 			<!-- ---------------- sign-in confirm ---------------- -->
 			<template v-else-if="view === 'confirm-in'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Sign In — {{ personName(selected) }}</h2>
+					<h2 class="vk_confirm_title">Registrar entrada — {{ personName(selected) }}</h2>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Category" />
+						<InputLabel value="Categoria" />
 						<div class="vk_category_choice">
 							<button
 								type="button"
 								class="ri_formbutton"
 								:class="{ vk_choice_active: form.category === 'volunteer' }"
 								@click="form.category = 'volunteer'"
-							>Volunteer</button>
+							>Voluntário</button>
 							<button
 								type="button"
 								class="ri_formbutton"
 								:class="{ vk_choice_active: form.category === 'other' }"
 								@click="form.category = 'other'"
-							>Other</button>
+							>Outro</button>
 						</div>
 					</div>
 
 					<template v-if="form.category === 'other'">
 						<div class="ri_formcontrol">
-							<InputLabel value="Other category" />
+							<InputLabel value="Outra categoria" />
 							<select v-model="form.other_category_id" class="ri_forminput">
-								<option :value="null">— Choose or type below —</option>
+								<option :value="null">— Escolha ou digite abaixo —</option>
 								<option v-for="cat in otherCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
 							</select>
 						</div>
 						<div class="ri_formcontrol">
-							<InputLabel value="Or describe (free text)" />
-							<TextInput v-model="form.other_category_text" placeholder="e.g. State Representative" />
+							<InputLabel value="Ou descreva (texto livre)" />
+							<TextInput v-model="form.other_category_text" placeholder="ex.: Representante estadual" />
 						</div>
 					</template>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Agency" />
-						<input v-model="form.agency" list="vk_agency_suggestions" class="ri_forminput" placeholder="e.g. American Red Cross" />
+						<InputLabel value="Entidade" />
+						<input v-model="form.agency" list="vk_agency_suggestions" class="ri_forminput" placeholder="ex.: Cruz Vermelha Brasileira" />
 						<datalist id="vk_agency_suggestions">
 							<option v-for="s in agencySuggestions" :key="s.id" :value="s.value" />
 						</datalist>
 					</div>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Title / Function (optional — professional services only)" />
+						<InputLabel value="Cargo / função (opcional — somente para serviços profissionais)" />
 						<input v-model="form.title_function" list="vk_task_suggestions" class="ri_forminput" />
 						<datalist id="vk_task_suggestions">
 							<option v-for="s in taskSuggestions" :key="s.id" :value="s.value" />
@@ -326,25 +326,25 @@ defineProps({
 					</div>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Work Site" />
+						<InputLabel value="Local de trabalho" />
 						<TextInput v-model="form.work_site" />
 					</div>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Description of Work" />
+						<InputLabel value="Descrição do trabalho" />
 						<TextArea v-model="form.description_of_work" />
 					</div>
 
 					<div v-if="form.category === 'other'" class="ri_formcontrol">
-						<InputLabel value="Expected departure (optional)" />
+						<InputLabel value="Horário previsto de saída (opcional)" />
 						<input v-model="form.expected_departure_at" type="datetime-local" class="ri_forminput" />
 					</div>
 
 					<p v-if="saveError" class="vk_error">{{ saveError }}</p>
 
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" :disabled="saving" @click="submitSignIn">Confirm Sign-In</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						<button class="ri_defaultbutton" :disabled="saving" @click="submitSignIn">Confirmar entrada</button>
+						<button class="ri_formbutton" @click="cancelConfirm">Cancelar</button>
 					</div>
 				</div>
 			</template>
@@ -352,19 +352,19 @@ defineProps({
 			<!-- ---------------- sign-out confirm ---------------- -->
 			<template v-else-if="view === 'confirm-out'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Sign Out — {{ personName(selected) }}</h2>
+					<h2 class="vk_confirm_title">Registrar saída — {{ personName(selected) }}</h2>
 					<p class="vk_hint">
-						Signed in since {{ formatTime(selected.current_sign_in.signed_in_at) }}
+						Entrada registrada às {{ formatTime(selected.current_sign_in.signed_in_at) }}
 						<span v-if="selected.current_sign_in.status === 'pending_confirmation'">
-							— this looks like a forgotten sign-out from a previous day. Confirming below will close it out now.
+							— parece que você se esqueceu de registrar a saída em um dia anterior. Ao confirmar abaixo, esse registro será encerrado agora.
 						</span>
 					</p>
 
 					<p v-if="saveError" class="vk_error">{{ saveError }}</p>
 
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" :disabled="saving" @click="submitSignOut">Confirm Sign-Out</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						<button class="ri_defaultbutton" :disabled="saving" @click="submitSignOut">Confirmar saída</button>
+						<button class="ri_formbutton" @click="cancelConfirm">Cancelar</button>
 					</div>
 				</div>
 			</template>
@@ -372,10 +372,10 @@ defineProps({
 			<!-- ---------------- sign-out thank-you ---------------- -->
 			<template v-else-if="view === 'signout-thanks'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">See you next time, {{ greetingName(selected) }}!</h2>
-					<p class="vk_hint">You're signed out. Thanks for coming!</p>
+					<h2 class="vk_confirm_title">Até a próxima, {{ greetingName(selected) }}!</h2>
+					<p class="vk_hint">Sua saída foi registrada. Agradecemos sua presença!</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="cancelConfirm">Done</button>
+						<button class="ri_defaultbutton" @click="cancelConfirm">Concluir</button>
 					</div>
 				</div>
 			</template>
@@ -383,15 +383,15 @@ defineProps({
 			<!-- ---------------- forgotten sign-out (building was cleared) ---------------- -->
 			<template v-else-if="view === 'forgotten-sign-out'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Welcome back, {{ personName(selected) }}</h2>
+					<h2 class="vk_confirm_title">Bem-vindo de volta, {{ personName(selected) }}</h2>
 					<p class="vk_hint">
-						Looks like you forgot to sign out — you were signed in since
-						{{ formatTime(selected.forgotten_sign_in.signed_in_at) }}, and the building's been
-						confirmed empty since then. What time did you leave?
+						Parece que você se esqueceu de registrar a saída — sua entrada foi registrada às
+						{{ formatTime(selected.forgotten_sign_in.signed_in_at) }}, e desde então foi confirmado que o prédio está vazio.
+						A que horas você saiu?
 					</p>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Time You Left" />
+						<InputLabel value="Horário de saída" />
 						<input v-model="forgottenSignOutAt" type="datetime-local" class="ri_forminput" />
 					</div>
 
@@ -402,8 +402,8 @@ defineProps({
 							class="ri_defaultbutton"
 							:disabled="saving || !forgottenSignOutAt"
 							@click="submitForgottenSignOut"
-						>Save &amp; Continue to Sign In</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						>Salvar e continuar para registrar a entrada</button>
+						<button class="ri_formbutton" @click="cancelConfirm">Cancelar</button>
 					</div>
 				</div>
 			</template>
@@ -412,14 +412,14 @@ defineProps({
 			<template v-else-if="view === 'emergency-list'">
 				<div class="vk_confirm">
 					<div class="ri_formactions" style="margin-bottom: 1em;">
-						<button class="ri_formbutton" @click="closeEmergencyList">Back</button>
+						<button class="ri_formbutton" @click="closeEmergencyList">Voltar</button>
 					</div>
-					<h2 class="vk_confirm_title">Emergency Roster</h2>
-				<p class="vk_hint">Everyone currently signed in to the building, for use during an evacuation or emergency sweep.</p>
+					<h2 class="vk_confirm_title">Lista de emergência</h2>
+				<p class="vk_hint">Todas as pessoas que estão no prédio, para uso em evacuações ou inspeções de emergência.</p>
 
-					<p v-if="emergencyListLoading" class="vk_hint">Loading…</p>
+					<p v-if="emergencyListLoading" class="vk_hint">Carregando…</p>
 					<p v-else-if="emergencyListError" class="vk_error">{{ emergencyListError }}</p>
-					<p v-else-if="emergencyList.length === 0" class="vk_hint">Nobody is currently signed in.</p>
+					<p v-else-if="emergencyList.length === 0" class="vk_hint">Ninguém está no prédio no momento.</p>
 					<ul v-else class="vk_emergencylist">
 						<li v-for="occupant in emergencyList" :key="occupant.id">
 							<strong>{{ occupant.name }}</strong>
@@ -427,12 +427,12 @@ defineProps({
 								class="vk_emergencylist_tag"
 								:class="occupant.category === 'volunteer' ? 'vk_emergencylist_tag_volunteer' : 'vk_emergencylist_tag_guest'"
 							>{{ occupant.why }}</span>
-							<span class="vk_hint"> — signed in {{ formatTime(occupant.signed_in_at) }}</span>
+							<span class="vk_hint"> — entrada às {{ formatTime(occupant.signed_in_at) }}</span>
 						</li>
 					</ul>
 
 					<div class="ri_formactions">
-						<button class="ri_formbutton" @click="closeEmergencyList">Back</button>
+						<button class="ri_formbutton" @click="closeEmergencyList">Voltar</button>
 					</div>
 				</div>
 			</template>
@@ -440,13 +440,13 @@ defineProps({
 			<!-- ---------------- end-of-day closeout: decision ---------------- -->
 			<template v-else-if="view === 'closeout-decision'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Welcome Back</h2>
+					<h2 class="vk_confirm_title">Bem-vindo de volta</h2>
 					<p class="vk_hint">
-						This device was in kiosk mode. Is this an end-of-day closeout?
+						Este dispositivo estava no modo quiosque. Você deseja realizar o encerramento do dia?
 					</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="openCloseoutReview">Yes — Walk Through Closeout</button>
-						<button class="ri_formbutton" @click="dismissCloseoutPrompt">Not Now</button>
+						<button class="ri_defaultbutton" @click="openCloseoutReview">Sim — revisar o encerramento</button>
+						<button class="ri_formbutton" @click="dismissCloseoutPrompt">Agora não</button>
 					</div>
 				</div>
 			</template>
@@ -454,27 +454,27 @@ defineProps({
 			<!-- ---------------- end-of-day closeout: review ---------------- -->
 			<template v-else-if="view === 'closeout-review'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">End-of-Day Closeout</h2>
+					<h2 class="vk_confirm_title">Encerramento do dia</h2>
 					<p class="vk_hint">
-						Everyone currently signed in — sign out anyone who's leaving now, then confirm the building is
-						empty whenever you're ready.
+						Todas as pessoas que estão no prédio — registre a saída de quem estiver indo embora e confirme que o prédio está
+						vazio quando estiver pronto.
 					</p>
 
-					<p v-if="closeoutRosterLoading" class="vk_hint">Loading…</p>
+					<p v-if="closeoutRosterLoading" class="vk_hint">Carregando…</p>
 					<p v-else-if="closeoutRosterError" class="vk_error">{{ closeoutRosterError }}</p>
-					<p v-else-if="closeoutRoster.length === 0" class="vk_hint">Nobody is currently signed in.</p>
+					<p v-else-if="closeoutRoster.length === 0" class="vk_hint">Ninguém está no prédio no momento.</p>
 					<ul v-else class="vk_closeoutroster">
 						<li v-for="occupant in closeoutRoster" :key="occupant.id" class="vk_closeoutroster_row">
 							<div>
 								<strong>{{ occupant.name }}</strong>
-								<span class="vk_hint"> — signed in {{ formatTime(occupant.signed_in_at) }}</span>
+								<span class="vk_hint"> — entrada às {{ formatTime(occupant.signed_in_at) }}</span>
 							</div>
 							<button
 								type="button"
 								class="ri_formbutton"
 								:disabled="signingOutId === occupant.id"
 								@click="signOutFromCloseout(occupant)"
-							>{{ signingOutId === occupant.id ? 'Signing Out…' : 'Sign Out' }}</button>
+							>{{ signingOutId === occupant.id ? 'Registrando saída…' : 'Registrar saída' }}</button>
 						</li>
 					</ul>
 
@@ -482,18 +482,17 @@ defineProps({
 					     or the person closing may already know better; the
 					     Confirm button below stays enabled either way. -->
 					<p v-if="!closeoutRosterLoading && closeoutRoster.length > 0" class="vk_closeout_warning">
-						{{ closeoutRoster.length }} {{ closeoutRoster.length === 1 ? 'person is' : 'people are' }} still
-						listed as in the building. Sign them out above, or confirm the building is empty anyway if
-						that's not accurate.
+						{{ closeoutRoster.length }} {{ closeoutRoster.length === 1 ? 'pessoa ainda consta' : 'pessoas ainda constam' }}
+						no prédio. Registre a saída acima ou confirme mesmo assim que o prédio está vazio, se essa lista estiver desatualizada.
 					</p>
 
 					<p v-if="closeoutConfirmError" class="vk_error">{{ closeoutConfirmError }}</p>
 
 					<div class="ri_formactions">
 						<button class="ri_defaultbutton" :disabled="closeoutConfirmSaving" @click="confirmBuildingEmpty">
-							{{ closeoutConfirmSaving ? 'Confirming…' : 'Confirm Building Empty' }}
+							{{ closeoutConfirmSaving ? 'Confirmando…' : 'Confirmar prédio vazio' }}
 						</button>
-						<button class="ri_formbutton" @click="view = 'grid'">Back</button>
+						<button class="ri_formbutton" @click="view = 'grid'">Voltar</button>
 					</div>
 				</div>
 			</template>
@@ -511,13 +510,13 @@ defineProps({
 			<div v-if="view === 'grid'" class="vk_footerbar">
 				<span class="vk_footerbar_count">
 					<span class="vk_footerbar_dot" aria-hidden="true"></span>
-					{{ occupancyCount === null ? '…' : occupancyCount }} currently in the building
+					{{ occupancyCount === null ? '…' : occupancyCount }} pessoas no prédio
 				</span>
 				<div class="vk_footerbar_actions">
 					<button type="button" class="ri_formbutton vk_footerbar_btn vk_footerbar_btn_emergency" @click="openEmergencyList">
-						Emergency Roster
+						Lista de emergência
 					</button>
-					<button v-if="isAuthenticated" type="button" class="ri_formbutton vk_footerbar_btn" @click="openCloseoutReview">Confirm Building Empty</button>
+					<button v-if="isAuthenticated" type="button" class="ri_formbutton vk_footerbar_btn" @click="openCloseoutReview">Confirmar prédio vazio</button>
 				</div>
 			</div>
 			</div>
@@ -714,7 +713,7 @@ export default {
 				this.loadOccupancyCount();
 				this.view = 'new-volunteer-thanks';
 			} catch (e) {
-				this.addPersonError = e.response?.data?.message || 'Could not sign in.';
+				this.addPersonError = e.response?.data?.message || 'Não foi possível registrar a entrada.';
 			} finally {
 				this.addingPerson = false;
 			}
@@ -743,7 +742,7 @@ export default {
 				this.loadOccupancyCount();
 				this.view = 'guest-thanks';
 			} catch (e) {
-				this.guestError = e.response?.data?.message || 'Could not sign in.';
+				this.guestError = e.response?.data?.message || 'Não foi possível registrar a entrada.';
 			} finally {
 				this.addingGuest = false;
 			}
@@ -761,7 +760,7 @@ export default {
 				this.view = 'signin-thanks';
 				this.confirmationTimer = setTimeout(() => this.cancelConfirm(), 5000);
 			} catch (e) {
-				this.saveError = e.response?.data?.message || 'Could not sign in.';
+				this.saveError = e.response?.data?.message || 'Não foi possível registrar a entrada.';
 			} finally {
 				this.saving = false;
 			}
@@ -788,7 +787,7 @@ export default {
 				this.saveError = null;
 				this.view = 'confirm-in';
 			} catch (e) {
-				this.saveError = e.response?.data?.message || 'Could not save.';
+				this.saveError = e.response?.data?.message || 'Não foi possível salvar.';
 			} finally {
 				this.saving = false;
 			}
@@ -802,7 +801,7 @@ export default {
 				this.view = 'signout-thanks';
 				this.confirmationTimer = setTimeout(() => this.cancelConfirm(), 5000);
 			} catch (e) {
-				this.saveError = e.response?.data?.message || 'Could not sign out.';
+				this.saveError = e.response?.data?.message || 'Não foi possível registrar a saída.';
 			} finally {
 				this.saving = false;
 			}
@@ -820,7 +819,7 @@ export default {
 				const response = await axios.get('/json/building-safety/emergency-occupancy-list');
 				this.emergencyList = response.data.records;
 			} catch (e) {
-				this.emergencyListError = 'Could not load the occupancy list.';
+				this.emergencyListError = 'Não foi possível carregar a lista de pessoas no prédio.';
 			} finally {
 				this.emergencyListLoading = false;
 			}
@@ -844,7 +843,7 @@ export default {
 				await axios.post('/json/building-safety/closeout', {});
 				window.location.href = '/dashboard#setup';
 			} catch (e) {
-				this.closeoutConfirmError = e.response?.data?.message || 'Could not complete this action.';
+				this.closeoutConfirmError = e.response?.data?.message || 'Não foi possível concluir esta ação.';
 				this.closeoutConfirmSaving = false;
 			}
 		},
@@ -877,7 +876,7 @@ export default {
 				const response = await axios.get('/json/building-safety/emergency-occupancy-list');
 				this.closeoutRoster = response.data.records;
 			} catch (e) {
-				this.closeoutRosterError = 'Could not load who is currently in the building.';
+				this.closeoutRosterError = 'Não foi possível carregar a lista de pessoas que estão no prédio.';
 			} finally {
 				this.closeoutRosterLoading = false;
 			}
@@ -890,7 +889,7 @@ export default {
 				await this.loadCloseoutRoster();
 				this.loadOccupancyCount();
 			} catch (e) {
-				this.closeoutRosterError = e.response?.data?.message || 'Could not sign that person out.';
+				this.closeoutRosterError = e.response?.data?.message || 'Não foi possível registrar a saída dessa pessoa.';
 			} finally {
 				this.signingOutId = null;
 			}

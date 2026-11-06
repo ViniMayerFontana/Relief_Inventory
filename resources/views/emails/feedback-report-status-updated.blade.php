@@ -1,29 +1,29 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 @php
-    $labels = ['seen' => 'Acknowledged', 'in_development' => 'In Development', 'resolved' => 'Resolved'];
+    $labels = ['seen' => 'Recebido', 'in_development' => 'Em desenvolvimento', 'resolved' => 'Resolvido'];
     $report = $log->feedbackReport;
 @endphp
 
-<p>Hi {{ $report->reporterFullName() }},</p>
+<p>Olá, {{ $report->reporterFullName() }}.</p>
 
 @if ($isTransition)
 <p>
-    Your {{ $report->type === 'bug' ? 'bug report' : 'feature request' }}
-    "{{ \Illuminate\Support\Str::limit($report->message, 80) }}" is now
+    Seu {{ $report->type === 'bug' ? 'relato de erro' : 'pedido de funcionalidade' }}
+    "{{ \Illuminate\Support\Str::limit($report->message, 80) }}" agora está
     <strong>{{ $labels[$log->status] ?? $log->status }}</strong>.
 </p>
 @else
 <p>
-    A new comment was added to your {{ $report->type === 'bug' ? 'bug report' : 'feature request' }}
+    Um novo comentário foi adicionado ao seu {{ $report->type === 'bug' ? 'relato de erro' : 'pedido de funcionalidade' }}
     "{{ \Illuminate\Support\Str::limit($report->message, 80) }}"
-    (currently <strong>{{ $labels[$log->status] ?? $log->status }}</strong>):
+    (atualmente <strong>{{ $labels[$log->status] ?? $log->status }}</strong>):
 </p>
 @endif
 
 @if ($log->comment)
-<p><strong>Note from the developer:</strong></p>
+<p><strong>Nota da equipe de desenvolvimento:</strong></p>
 <p>{{ $log->comment }}</p>
 @endif
 
-<p>Thanks for helping improve Relief Inventory.</p>
+<p>Agradecemos por ajudar a melhorar o Relief Inventory.</p>

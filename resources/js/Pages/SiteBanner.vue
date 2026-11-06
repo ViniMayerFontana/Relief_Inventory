@@ -43,7 +43,7 @@ const bannerNeedsMessage = computed(() => bannerType.value === 'maintenance' || 
 function formatForMessage(datetimeLocal) {
 	if (!datetimeLocal) return null;
 
-	return new Date(datetimeLocal).toLocaleString([], {
+	return new Date(datetimeLocal).toLocaleString(document.documentElement.lang || 'pt-BR', {
 		weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
 	});
 }
@@ -58,9 +58,9 @@ watch([maintenanceStart, maintenanceEnd], ([start, end]) => {
 	const endText = formatForMessage(end);
 
 	if (startText && endText) {
-		bannerMessage.value = `Scheduled maintenance from ${startText} to ${endText}. The site may be briefly unavailable during this time.`;
+		bannerMessage.value = `Manutenção programada de ${startText} a ${endText}. O sistema poderá ficar indisponível por alguns instantes nesse período.`;
 	} else if (startText) {
-		bannerMessage.value = `Scheduled maintenance starting ${startText}. The site may be briefly unavailable during this time.`;
+		bannerMessage.value = `Manutenção programada a partir de ${startText}. O sistema poderá ficar indisponível por alguns instantes nesse período.`;
 	}
 });
 
@@ -72,9 +72,9 @@ async function saveBanner() {
 			type: bannerType.value || null,
 			message: bannerNeedsMessage.value ? bannerMessage.value : null,
 		});
-		bannerSavedAt.value = new Date().toLocaleTimeString();
+		bannerSavedAt.value = new Date().toLocaleTimeString(document.documentElement.lang || 'pt-BR');
 	} catch (e) {
-		bannerError.value = e.response?.data?.message || 'Could not save banner settings.';
+		bannerError.value = e.response?.data?.message || 'Não foi possível salvar as configurações do aviso.';
 	} finally {
 		bannerSaving.value = false;
 	}
@@ -82,42 +82,42 @@ async function saveBanner() {
 </script>
 
 <template>
-	<Head title="Site Banner" />
+	<Head title="Aviso do sistema" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Site Banner</h1>
+			<h1 class="text-2xl font-bold">Aviso do sistema</h1>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<p class="text-sm text-gray-600">
-					Only one banner shows at a time. Choose a kind, add a message if needed, and save —
-					every user sees it until they dismiss it or you change it again.
+					Apenas um aviso é exibido por vez. Escolha um tipo, inclua uma mensagem se necessário e salve.
+					Todas as pessoas verão o aviso até dispensá-lo ou até que você o altere.
 				</p>
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 					<label class="block">
-						<span class="text-gray-700">Banner</span>
+						<span class="text-gray-700">Aviso</span>
 						<select v-model="bannerType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">None</option>
-							<option value="feedback">Report a Bug/Feature (built-in message)</option>
-							<option value="maintenance">Maintenance Notice</option>
-							<option value="message">General Message</option>
+							<option value="">Nenhum</option>
+							<option value="feedback">Relatar erro/sugerir melhoria (mensagem padrão)</option>
+							<option value="maintenance">Aviso de manutenção</option>
+							<option value="message">Mensagem geral</option>
 						</select>
 					</label>
 					<template v-if="bannerType === 'maintenance'">
 						<label class="block">
-							<span class="text-gray-700">Starts</span>
+							<span class="text-gray-700">Início</span>
 							<input type="datetime-local" v-model="maintenanceStart" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Ends</span>
+							<span class="text-gray-700">Término</span>
 							<input type="datetime-local" v-model="maintenanceEnd" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 					</template>
 					<label v-if="bannerNeedsMessage" class="block sm:col-span-2">
-						<span class="text-gray-700">Message</span>
+						<span class="text-gray-700">Mensagem</span>
 						<textarea v-model="bannerMessage" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
 						<span v-if="bannerType === 'maintenance'" class="text-xs text-gray-500">
-							Auto-filled from the start/end times above — edit freely, it won't be regenerated unless you change those.
+							Preenchida automaticamente com os horários acima. Você pode editá-la; ela só será gerada novamente se alterar esses horários.
 						</span>
 					</label>
 				</div>
@@ -128,14 +128,13 @@ async function saveBanner() {
 
 				<div class="flex items-center gap-3">
 					<PrimaryButton :disabled="bannerSaving" @click="saveBanner">
-						{{ bannerSaving ? 'Saving…' : 'Save Banner' }}
+						{{ bannerSaving ? 'Salvando…' : 'Salvar aviso' }}
 					</PrimaryButton>
-					<span v-if="bannerSavedAt" class="text-xs text-gray-500">Saved {{ bannerSavedAt }}</span>
+					<span v-if="bannerSavedAt" class="text-xs text-gray-500">Salvo {{ bannerSavedAt }}</span>
 				</div>
 
 				<p class="text-xs text-gray-500">
-					Changing the message resets everyone's dismissal, so it shows again for anyone who
-					already closed it.
+					Ao alterar a mensagem, o aviso volta a aparecer para todas as pessoas, inclusive para quem já o dispensou.
 				</p>
 			</section>
 		</div>

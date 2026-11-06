@@ -46,7 +46,7 @@ class WarehouseChooserController extends Controller
 
         $warehouse = WarehouseDomain::where('hostname', strtolower($request->getHost()))->exists() ? null : Warehouse::findReachable($code);
         if (! $warehouse) {
-            return back()->withErrors(['code' => 'No warehouse matches that code.']);
+            return back()->withErrors(['code' => 'Nenhum armazém corresponde a esse código.']);
         }
 
         return redirect('/login?w='.$warehouse->id);

@@ -29,25 +29,25 @@ import { Head } from '@inertiajs/vue3';
 </script>
 
 <template>
-	<Head title="Who's In The Building" />
+	<Head title="Quem está no prédio" />
 	<AuthenticatedLayout>
 		<div class="bs_page">
-			<h1 class="bs_title">Who's In The Building</h1>
+			<h1 class="bs_title">Quem está no prédio</h1>
 
-			<p v-if="loading" class="bs_hint">Loading…</p>
+			<p v-if="loading" class="bs_hint">Carregando…</p>
 			<p v-else-if="error" class="bs_error">{{ error }}</p>
 
 			<template v-else-if="rollCall">
 				<div class="bs_rollcall_banner">
-					<strong>Active roll call</strong> — started {{ formatTime(rollCall.started_at) }}.
-					{{ rollCall.confirmed_count }} of {{ rollCall.total }} accounted for.
+					<strong>Contagem de presença ativa</strong> — iniciada às {{ formatTime(rollCall.started_at) }}.
+					{{ rollCall.confirmed_count }} de {{ rollCall.total }} pessoas contabilizadas.
 				</div>
 				<p class="bs_hint">
-					As people respond, have them step over to the Safe group — that way you can see at a glance
-					that everyone in your group has responded. Tap each name below as they're confirmed.
+					Conforme as pessoas responderem, peça que se dirijam ao grupo Seguro — assim você verá rapidamente
+					quem do seu grupo já respondeu. Toque no nome de cada pessoa abaixo para confirmar.
 				</p>
 
-				<button class="ri_formbutton" :disabled="refreshing" @click="load">Refresh</button>
+				<button class="ri_formbutton" :disabled="refreshing" @click="load">Atualizar</button>
 
 				<div class="bs_list">
 					<button
@@ -60,22 +60,22 @@ import { Head } from '@inertiajs/vue3';
 						@click="confirm(person)"
 					>
 						<span>{{ person.name }}</span>
-						<span v-if="person.confirmed" class="bs_row_badge">Safe</span>
-						<span v-else class="bs_row_hint">Tap when confirmed</span>
+						<span v-if="person.confirmed" class="bs_row_badge">Em segurança</span>
+						<span v-else class="bs_row_hint">Toque para confirmar</span>
 					</button>
 				</div>
 			</template>
 
 			<template v-else>
-				<p class="bs_hint">No active roll call — showing everyone currently signed in.</p>
+				<p class="bs_hint">Nenhuma contagem de presença ativa — exibindo todas as pessoas que estão no prédio.</p>
 				<div class="bs_list">
 					<div v-for="person in occupants" :key="person.id" class="bs_row">
 						<span>{{ person.name }}</span>
 						<span class="bs_row_hint">
-							Since {{ formatTime(person.signed_in_at) }} — {{ person.why }}
+							Desde {{ formatTime(person.signed_in_at) }} — {{ person.why }}
 						</span>
 					</div>
-					<p v-if="occupants.length === 0" class="bs_hint">Nobody is currently signed in.</p>
+					<p v-if="occupants.length === 0" class="bs_hint">Ninguém está no prédio no momento.</p>
 				</div>
 			</template>
 		</div>
@@ -112,7 +112,7 @@ export default {
 					this.occupants = occupancyResponse.data.records;
 				}
 			} catch (e) {
-				this.error = 'Could not load building occupancy.';
+				this.error = 'Não foi possível carregar a lista de pessoas no prédio.';
 			} finally {
 				this.loading = false;
 				this.refreshing = false;
@@ -126,7 +126,7 @@ export default {
 				);
 				this.rollCall = response.data.record;
 			} catch (e) {
-				this.error = 'Could not confirm this person.';
+				this.error = 'Não foi possível confirmar esta pessoa.';
 			} finally {
 				this.confirming = null;
 			}

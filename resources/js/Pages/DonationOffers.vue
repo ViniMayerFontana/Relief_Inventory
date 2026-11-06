@@ -49,19 +49,19 @@ defineProps({
 });
 
 const contactMethodOptions = [
-	{ value: 'phone', label: 'Phone' },
-	{ value: 'email', label: 'Email' },
-	{ value: 'in_person', label: 'In Person' },
-	{ value: 'other', label: 'Other' },
+	{ value: 'phone', label: 'Telefone' },
+	{ value: 'email', label: 'E-mail' },
+	{ value: 'in_person', label: 'Presencial' },
+	{ value: 'other', label: 'Outro' },
 ];
 
 const statusLabels = {
-	offered: 'Offered',
-	pending: 'Pending Arrival',
-	refused: 'Refused',
-	diverted: 'Diverted',
-	cancelled: 'Cancelled',
-	received: 'Received',
+	offered: 'Oferecida',
+	pending: 'Aguardando chegada',
+	refused: 'Recusada',
+	diverted: 'Redirecionada',
+	cancelled: 'Cancelada',
+	received: 'Recebida',
 };
 
 const statusClasses = {
@@ -75,13 +75,13 @@ const statusClasses = {
 </script>
 
 <template>
-	<Head title="Donation Offers" />
+	<Head title="Ofertas de doação" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<RIForm
 			ref="riform"
-			title="Donation Offers"
+			title="Ofertas de doação"
 			datasource="/json/donation-offers"
-			newrecordcaption="Log a Donation Offer"
+			newrecordcaption="Registrar oferta de doação"
 			:filter="offerFilter"
 			:sort="offerSort"
 			@select="onOpenRecord"
@@ -90,24 +90,24 @@ const statusClasses = {
 			<template #listactions>
 				<label class="don_checkbox">
 					<input type="checkbox" v-model="pendingOnly" />
-					Pending (ETA-sorted) only
+					Apenas pendentes (ordenadas pela previsão de chegada)
 				</label>
-				<Link href="/receiving" class="don_backlink">&larr; Back to Receiving</Link>
-				<HelpLink guide="donation-offers">Donation Offers Guide</HelpLink>
+				<Link href="/receiving" class="don_backlink">&larr; Voltar ao recebimento</Link>
+				<HelpLink guide="donation-offers">Guia de ofertas de doação</HelpLink>
 			</template>
 
 			<template #thead>
-				<th>Donor</th>
+				<th>Doador</th>
 				<th>Status</th>
-				<th>ETA (Date Range)</th>
-				<th>Description</th>
+				<th>Previsão de chegada (período)</th>
+				<th>Descrição</th>
 			</template>
 
 			<template #tbody="{ record }">
 				<td>{{ donorName(record) }}</td>
 				<td>
 					<span class="don_badge" :class="statusClasses[record.status]">{{ statusLabels[record.status] }}</span>
-					<span v-if="record.is_overdue" class="don_badge don_badge_overdue">overdue</span>
+					<span v-if="record.is_overdue" class="don_badge don_badge_overdue">atrasada</span>
 				</td>
 				<td>{{ formatEtaRange(record.eta_start, record.eta_end) }}</td>
 				<td>{{ record.description }}</td>
@@ -116,14 +116,14 @@ const statusClasses = {
 			<template #default="{ record, editing }">
 				<div class="ri_formtable">
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Donor / Source:</div>
+						<div class="ri_fieldlabel">Doador / origem:</div>
 						<SearchSelect
 							ref="donorSelect"
 							v-model="record.person_id"
 							optionsource="/json/people"
 							display="search_label"
 							:searchfields="['organization', 'first_name', 'last_name']"
-							placeholder="Search donors..."
+							placeholder="Buscar doadores..."
 							:allowcreate="true"
 							:enabled="editing && isEditableStatus(record)"
 							@selected="(p) => { creatingDonor = false; record.person = p; record.contact_person_id = null; }"
@@ -132,37 +132,37 @@ const statusClasses = {
 					</div>
 					<Modal :show="creatingDonor" @close="creatingDonor = false" max-width="sm">
 						<div class="p-6 space-y-4">
-							<h2 class="text-lg font-semibold">New Donor</h2>
+							<h2 class="text-lg font-semibold">Novo doador</h2>
 							<div>
-								<InputLabel value="First Name" />
+								<InputLabel value="Nome" />
 								<TextInput v-model="newDonor.first_name" class="mt-1 block w-full" autofocus />
 							</div>
 							<div>
-								<InputLabel value="Last Name" />
+								<InputLabel value="Sobrenome" />
 								<TextInput v-model="newDonor.last_name" class="mt-1 block w-full" />
 							</div>
 							<div>
-								<InputLabel value="Organization" />
+								<InputLabel value="Organização" />
 								<TextInput v-model="newDonor.organization" class="mt-1 block w-full" />
 							</div>
 							<p v-if="donorError" class="text-sm text-red-700">{{ donorError }}</p>
 							<div class="flex justify-end gap-3">
-								<SecondaryButton :disabled="donorSaving" @click="creatingDonor = false">Cancel</SecondaryButton>
-								<PrimaryButton :disabled="donorSaving" @click="saveNewDonor(record)">Save Donor</PrimaryButton>
+								<SecondaryButton :disabled="donorSaving" @click="creatingDonor = false">Cancelar</SecondaryButton>
+								<PrimaryButton :disabled="donorSaving" @click="saveNewDonor(record)">Salvar doador</PrimaryButton>
 							</div>
 						</div>
 					</Modal>
 
 					<template v-if="record.person_id && record.person?.is_organization">
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Contact Person:</div>
+							<div class="ri_fieldlabel">Pessoa de contato:</div>
 							<SearchSelect
 								ref="contactSelect"
 								v-model="record.contact_person_id"
 								:optionsource="`/json/people?parent_person_id=${record.person_id}`"
 								display="full_name"
 								:searchfields="['first_name', 'last_name']"
-								placeholder="Search contacts at this org..."
+								placeholder="Buscar contatos desta organização..."
 								:allowcreate="true"
 								:enabled="editing && isEditableStatus(record)"
 								@create="startNewContact"
@@ -170,30 +170,30 @@ const statusClasses = {
 						</div>
 						<Modal :show="creatingContact" @close="creatingContact = false" max-width="sm">
 							<div class="p-6 space-y-4">
-								<h2 class="text-lg font-semibold">New Contact</h2>
+								<h2 class="text-lg font-semibold">Novo contato</h2>
 								<div>
-									<InputLabel value="First Name" />
+									<InputLabel value="Nome" />
 									<TextInput v-model="newContact.first_name" class="mt-1 block w-full" autofocus />
 								</div>
 								<div>
-									<InputLabel value="Last Name" />
+									<InputLabel value="Sobrenome" />
 									<TextInput v-model="newContact.last_name" class="mt-1 block w-full" />
 								</div>
 								<div>
-									<InputLabel value="Phone" />
+									<InputLabel value="Telefone" />
 									<TextInput v-model="newContact.phone" class="mt-1 block w-full" />
 								</div>
 								<p v-if="contactError" class="text-sm text-red-700">{{ contactError }}</p>
 								<div class="flex justify-end gap-3">
-									<SecondaryButton :disabled="contactSaving" @click="creatingContact = false">Cancel</SecondaryButton>
-									<PrimaryButton :disabled="contactSaving" @click="saveNewContact(record)">Save Contact</PrimaryButton>
+									<SecondaryButton :disabled="contactSaving" @click="creatingContact = false">Cancelar</SecondaryButton>
+									<PrimaryButton :disabled="contactSaving" @click="saveNewContact(record)">Salvar contato</PrimaryButton>
 								</div>
 							</div>
 						</Modal>
 					</template>
 
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">What's being offered:</div>
+						<div class="ri_fieldlabel">O que está sendo oferecido:</div>
 						<TextArea v-model="record.description" :enabled="editing && isEditableStatus(record)" />
 					</div>
 
@@ -201,23 +201,23 @@ const statusClasses = {
 					     (DonationOfferController::store). Later calls go through Log a Call. -->
 					<template v-if="!record.id">
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">How did the offer come in?</div>
+							<div class="ri_fieldlabel">Como a oferta foi recebida?</div>
 							<select v-model="record.contact_method" class="ri_forminput" :disabled="!editing">
-								<option :value="null">Not recorded</option>
-								<option value="phone">Phone</option>
-								<option value="email">Email</option>
-								<option value="in_person">In person</option>
-								<option value="other">Other</option>
+								<option :value="null">Não informado</option>
+								<option value="phone">Telefone</option>
+								<option value="email">E-mail</option>
+								<option value="in_person">Presencialmente</option>
+								<option value="other">Outro</option>
 							</select>
 						</div>
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Notes from the conversation:</div>
+							<div class="ri_fieldlabel">Anotações da conversa:</div>
 							<TextArea v-model="record.notes" :enabled="editing" />
 						</div>
 					</template>
 
 					<div class="ri_fieldset" v-if="record.status === 'offered'">
-						<div class="ri_fieldlabel">Rough ETA Window (if known):</div>
+						<div class="ri_fieldlabel">Previsão aproximada de chegada (se conhecida):</div>
 						<div class="ri_formcontrol don_etarange">
 							<input
 								type="date"
@@ -225,7 +225,7 @@ const statusClasses = {
 								class="ri_forminput"
 								:disabled="!editing"
 							/>
-							<span>to</span>
+							<span>até</span>
 							<input
 								type="date"
 								v-model.lazy="record.eta_end"
@@ -237,7 +237,7 @@ const statusClasses = {
 
 					<template v-if="record.status === 'pending'">
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">ETA Window:</div>
+							<div class="ri_fieldlabel">Previsão de chegada:</div>
 							<div class="ri_formcontrol don_etarange">
 								<input
 									type="date"
@@ -245,7 +245,7 @@ const statusClasses = {
 									class="ri_forminput"
 									:disabled="!editing"
 								/>
-								<span>to</span>
+								<span>até</span>
 								<input
 									type="date"
 									v-model.lazy="record.eta_end"
@@ -255,21 +255,21 @@ const statusClasses = {
 							</div>
 						</div>
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Transit Notes:</div>
+							<div class="ri_fieldlabel">Observações sobre o transporte:</div>
 							<TextArea v-model="record.transit_notes" :enabled="false" />
 						</div>
 					</template>
 
 					<div class="ri_fieldset" v-if="record.status === 'refused'">
-						<div class="ri_fieldlabel">Refused Because:</div>
+						<div class="ri_fieldlabel">Motivo da recusa:</div>
 						<TextArea v-model="record.refused_reason" :enabled="false" />
 					</div>
 					<div class="ri_fieldset" v-if="record.status === 'diverted'">
-						<div class="ri_fieldlabel">Diverted To:</div>
+						<div class="ri_fieldlabel">Redirecionada para:</div>
 						<TextInput v-model="record.diverted_to" :enabled="false" />
 					</div>
 					<div class="ri_fieldset" v-if="record.status === 'cancelled'">
-						<div class="ri_fieldlabel">Cancelled Because:</div>
+						<div class="ri_fieldlabel">Motivo do cancelamento:</div>
 						<TextArea v-model="record.cancelled_reason" :enabled="false" />
 					</div>
 				</div>
@@ -280,35 +280,35 @@ const statusClasses = {
 				     there's nothing to show reads as "did this load?" rather
 				     than "there's genuinely none." -->
 				<template v-if="record.person">
-					<h3 class="don_subhead">Donor History</h3>
+					<h3 class="don_subhead">Histórico do doador</h3>
 
-					<h4 class="don_subsubhead">Donations</h4>
-					<div v-if="!pastDonations(record).length" class="ri_hint">No prior donations on file.</div>
+					<h4 class="don_subsubhead">Doações</h4>
+					<div v-if="!pastDonations(record).length" class="ri_hint">Nenhuma doação anterior registrada.</div>
 					<ul v-else class="don_historylist">
 						<li v-for="d in pastDonations(record)" :key="'d' + d.id">
-							Donation #{{ d.id }} — {{ d.order_date }} — {{ d.status?.name || 'Unknown status' }}
+							Doação nº {{ d.id }} — {{ d.order_date }} — {{ d.status?.name || 'Status desconhecido' }}
 						</li>
 					</ul>
 
-					<h4 class="don_subsubhead">Requests</h4>
-					<div v-if="!pastRequests(record).length" class="ri_hint">No prior requests on file.</div>
+					<h4 class="don_subsubhead">Pedidos</h4>
+					<div v-if="!pastRequests(record).length" class="ri_hint">Nenhum pedido anterior registrado.</div>
 					<ul v-else class="don_historylist">
 						<li v-for="d in pastRequests(record)" :key="'r' + d.id">
-							Request #{{ d.id }} — {{ d.order_date }} — {{ requestStatusLabel(d.status?.name) }}
+							Pedido nº {{ d.id }} — {{ d.order_date }} — {{ requestStatusLabel(d.status?.name) }}
 						</li>
 					</ul>
 
-					<h4 class="don_subsubhead">Offers</h4>
-					<div v-if="!pastOffers(record).length" class="ri_hint">No prior offers on file.</div>
+					<h4 class="don_subsubhead">Ofertas</h4>
+					<div v-if="!pastOffers(record).length" class="ri_hint">Nenhuma oferta anterior registrada.</div>
 					<ul v-else class="don_historylist">
 						<li v-for="o in pastOffers(record)" :key="'o' + o.id">
-							Offer #{{ o.id }} — {{ o.status_date }} — {{ statusLabels[o.status] }}
+							Oferta nº {{ o.id }} — {{ o.status_date }} — {{ statusLabels[o.status] }}
 						</li>
 					</ul>
 				</template>
 
 				<!-- Full audit trail: every transition, who/when/how/notes -->
-				<h3 class="don_subhead">History</h3>
+				<h3 class="don_subhead">Histórico</h3>
 				<div class="don_historylog">
 					<div
 						v-for="log in record.status_logs || []"
@@ -318,7 +318,7 @@ const statusClasses = {
 						<span class="font-semibold">
 							{{ logHeadline(log) }}
 						</span>
-						by {{ log.changed_by?.full_name || 'Unknown' }}
+						por {{ log.changed_by?.full_name || 'Desconhecido' }}
 						<span class="don_logmeta">— {{ formatDateTime(log.created_at) }}<template v-if="log.contact_method"> · {{ contactMethodLabel(log.contact_method) }}</template></span>
 						<div v-if="log.notes" class="don_lognotes">{{ log.notes }}</div>
 					</div>
@@ -328,10 +328,10 @@ const statusClasses = {
 			<template #actions="{ editing, record, save, cancel }">
 				<div class="ri_formactions">
 					<template v-if="editing">
-						<button @click="save()" class="ri_defaultbutton">Save</button>
-						<button @click="cancel()" class="ri_formbutton">Cancel</button>
+						<button @click="save()" class="ri_defaultbutton">Salvar</button>
+						<button @click="cancel()" class="ri_formbutton">Cancelar</button>
 					</template>
-					<button v-else @click="cancel()" class="ri_defaultbutton">Back to List</button>
+					<button v-else @click="cancel()" class="ri_defaultbutton">Voltar à lista</button>
 				</div>
 
 				<!-- Decisions are actions on the offer, not field edits — they're
@@ -339,26 +339,26 @@ const statusClasses = {
 				     edit-lock toggle above, so approving/refusing/etc. doesn't
 				     require first unlocking the record for editing. -->
 				<template v-if="record.status === 'offered' && canDecide">
-					<h3 class="don_subhead">Decision</h3>
+					<h3 class="don_subhead">Decisão</h3>
 					<div class="don_decisionrow">
-						<button @click="startDecision(record, 'approve')" class="ri_defaultbutton">Approve</button>
-						<button @click="startDecision(record, 'refuse')" class="ri_formbutton">Refuse</button>
-						<button @click="startDecision(record, 'divert')" class="ri_formbutton">Divert</button>
+						<button @click="startDecision(record, 'approve')" class="ri_defaultbutton">Aprovar</button>
+						<button @click="startDecision(record, 'refuse')" class="ri_formbutton">Recusar</button>
+						<button @click="startDecision(record, 'divert')" class="ri_formbutton">Redirecionar</button>
 					</div>
 				</template>
 				<p v-else-if="record.status === 'offered'" class="ri_hint">
-					Deciding this offer (Approve/Refuse/Divert) requires the Donation Offers permission.
+					Decidir sobre esta oferta (aprovar/recusar/redirecionar) requer a permissão de ofertas de doação.
 				</p>
 
 				<template v-if="record.status === 'pending' && canDecide">
-					<h3 class="don_subhead">Decision</h3>
+					<h3 class="don_subhead">Decisão</h3>
 					<div class="don_decisionrow">
-						<button @click="startDecision(record, 'cancel')" class="ri_formbutton">Cancel Offer</button>
-						<button @click="startDecision(record, 'match')" class="ri_defaultbutton">Match to Arrival</button>
+						<button @click="startDecision(record, 'cancel')" class="ri_formbutton">Cancelar oferta</button>
+						<button @click="startDecision(record, 'match')" class="ri_defaultbutton">Vincular à chegada</button>
 					</div>
 					<p class="ri_hint">
-						Or
-						<Link :href="`/receiving?match_offer_id=${record.id}`">start a new Receiving intake for this offer</Link>.
+						Ou
+						<Link :href="`/receiving?match_offer_id=${record.id}`">inicie um novo recebimento para esta oferta</Link>.
 					</p>
 				</template>
 
@@ -369,84 +369,84 @@ const statusClasses = {
 				     buttons since it doesn't change the status. -->
 				<template v-if="record.status === 'offered' || record.status === 'pending'">
 					<div class="don_decisionrow">
-						<button @click="startDecision(record, 'note')" class="ri_formbutton">Log a Call / Update ETA</button>
+						<button @click="startDecision(record, 'note')" class="ri_formbutton">Registrar ligação / atualizar previsão</button>
 					</div>
 				</template>
 
 				<!-- Inline confirm panel — shown after a decision button is clicked -->
 				<div v-if="decision" class="don_decisionpanel">
 					<h4 class="don_subhead">
-						{{ { approve: 'Approve Offer', refuse: 'Refuse Offer', divert: 'Divert Offer', cancel: 'Cancel Offer', match: 'Match to Arrival', note: 'Log a Call / Update' }[decision.action] }}
+						{{ { approve: 'Aprovar oferta', refuse: 'Recusar oferta', divert: 'Redirecionar oferta', cancel: 'Cancelar oferta', match: 'Vincular à chegada', note: 'Registrar ligação / atualizar' }[decision.action] }}
 					</h4>
 
 					<div class="ri_fieldset" v-if="decision.action === 'note'">
-						<div class="ri_fieldlabel">ETA Window:</div>
+						<div class="ri_fieldlabel">Previsão de chegada:</div>
 						<div class="ri_formcontrol don_etarange">
 							<input type="date" v-model.lazy="decision.eta_start" class="ri_forminput" />
-							<span>to</span>
+							<span>até</span>
 							<input type="date" v-model.lazy="decision.eta_end" class="ri_forminput" />
 						</div>
 					</div>
 					<div class="ri_fieldset" v-if="decision.action === 'note'">
-						<div class="ri_fieldlabel">What's being offered (update if it's changed):</div>
+						<div class="ri_fieldlabel">O que está sendo oferecido (atualize se houver mudanças):</div>
 						<TextArea v-model="decision.description" />
 					</div>
 
 					<div class="ri_fieldset" v-if="decision.action === 'approve'">
-						<div class="ri_fieldlabel">ETA Window (start required):</div>
+						<div class="ri_fieldlabel">Previsão de chegada (data inicial obrigatória):</div>
 						<div class="ri_formcontrol don_etarange">
 							<input type="date" v-model.lazy="decision.eta_start" class="ri_forminput" />
-							<span>to</span>
+							<span>até</span>
 							<input type="date" v-model.lazy="decision.eta_end" class="ri_forminput" />
 						</div>
 					</div>
 					<div class="ri_fieldset" v-if="decision.action === 'approve'">
-						<div class="ri_fieldlabel">Transit Notes:</div>
+						<div class="ri_fieldlabel">Observações sobre o transporte:</div>
 						<TextArea v-model="decision.transit_notes" />
 					</div>
 
 					<div class="ri_fieldset" v-if="decision.action === 'refuse'">
-						<div class="ri_fieldlabel">Reason (required):</div>
+						<div class="ri_fieldlabel">Motivo (obrigatório):</div>
 						<TextArea v-model="decision.refused_reason" />
 					</div>
 
 					<div class="ri_fieldset" v-if="decision.action === 'divert'">
-						<div class="ri_fieldlabel">Diverted to (required):</div>
+						<div class="ri_fieldlabel">Redirecionada para (obrigatório):</div>
 						<TextInput v-model="decision.diverted_to" />
 					</div>
 
 					<div class="ri_fieldset" v-if="decision.action === 'cancel'">
-						<div class="ri_fieldlabel">Reason (required):</div>
+						<div class="ri_fieldlabel">Motivo (obrigatório):</div>
 						<TextArea v-model="decision.cancelled_reason" />
 					</div>
 
 					<div class="ri_fieldset" v-if="decision.action === 'match'">
-						<div class="ri_fieldlabel">Match to arrived donation:</div>
+						<div class="ri_fieldlabel">Vincular à doação recebida:</div>
 						<SearchSelect
 							v-model="decision.donation_id"
 							optionsource="/json/donation-offers/unmatched-donations"
 							display="label"
 							:searchfields="['label']"
-							placeholder="Search unmatched intakes..."
+							placeholder="Buscar recebimentos não vinculados..."
 						/>
 					</div>
 
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Contact Method:</div>
+						<div class="ri_fieldlabel">Forma de contato:</div>
 						<select v-model="decision.contact_method" class="ri_forminput">
 							<option :value="null">—</option>
 							<option v-for="o in contactMethodOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
 						</select>
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Notes{{ decision.action === 'note' ? ' (required)' : '' }}:</div>
+						<div class="ri_fieldlabel">Observações{{ decision.action === 'note' ? ' (obrigatório)' : '' }}:</div>
 						<TextArea v-model="decision.notes" />
 					</div>
 
 					<p v-if="decisionError" class="ri_error">{{ decisionError }}</p>
 					<div class="ri_formactions">
-						<button @click="confirmDecision(record)" :disabled="decisionSaving" class="ri_defaultbutton">Confirm</button>
-						<button @click="decision = null" class="ri_formbutton">Cancel</button>
+						<button @click="confirmDecision(record)" :disabled="decisionSaving" class="ri_defaultbutton">Confirmar</button>
+						<button @click="decision = null" class="ri_formbutton">Cancelar</button>
 					</div>
 				</div>
 			</template>
@@ -517,7 +517,7 @@ export default {
 			return `${startLabel} – ${this.formatLocalDate(end)}`;
 		},
 		contactMethodLabel(value) {
-			return { phone: 'Phone', email: 'Email', in_person: 'In Person', other: 'Other' }[value] || value;
+			return { phone: 'Telefone', email: 'E-mail', in_person: 'Presencial', other: 'Outro' }[value] || value;
 		},
 		// A logNote() entry (follow-up call, no decision made) has
 		// from_status === to_status — distinguish that from the initial
@@ -561,7 +561,7 @@ export default {
 		// keys, routes); partner-facing UI language says "Request" instead
 		// — swap the word in an order's status name for display only.
 		requestStatusLabel(statusName) {
-			return statusName ? statusName.replace('Order', 'Request') : 'Unknown status';
+			return statusName ? statusName.replace('Order', 'Request') : 'Status desconhecido';
 		},
 		pastOffers(record) {
 			return (record.person?.donation_offers || []).filter((o) => o.id !== record.id);
@@ -592,7 +592,7 @@ export default {
 			const hasName = this.newDonor.first_name.trim() && this.newDonor.last_name.trim();
 			const hasOrg = (this.newDonor.organization || '').trim();
 			if (!hasName && !hasOrg) {
-				this.donorError = 'Enter a name (first and last) or an organization.';
+				this.donorError = 'Informe o nome e o sobrenome ou uma organização.';
 				return;
 			}
 			this.donorSaving = true;
@@ -604,7 +604,7 @@ export default {
 				record.person = response.data.record;
 				this.creatingDonor = false;
 			} catch (error) {
-				this.donorError = error.response?.data?.message || 'Could not save donor.';
+				this.donorError = error.response?.data?.message || 'Não foi possível salvar o doador.';
 			} finally {
 				this.donorSaving = false;
 			}
@@ -620,7 +620,7 @@ export default {
 		async saveNewContact(record) {
 			this.contactError = null;
 			if (!this.newContact.first_name.trim() && !this.newContact.last_name.trim()) {
-				this.contactError = 'Enter the contact\'s name.';
+				this.contactError = 'Informe o nome do contato.';
 				return;
 			}
 			this.contactSaving = true;
@@ -631,7 +631,7 @@ export default {
 				record.contact_person_id = response.data.record.id;
 				this.creatingContact = false;
 			} catch (error) {
-				this.contactError = error.response?.data?.message || 'Could not save contact.';
+				this.contactError = error.response?.data?.message || 'Não foi possível salvar o contato.';
 			} finally {
 				this.contactSaving = false;
 			}
@@ -665,27 +665,27 @@ export default {
 			const { action } = this.decision;
 
 			if (action === 'approve' && !this.decision.eta_start) {
-				this.decisionError = 'Enter an ETA.';
+				this.decisionError = 'Informe a previsão de chegada.';
 				return;
 			}
 			if (action === 'refuse' && !this.decision.refused_reason.trim()) {
-				this.decisionError = 'Enter a reason.';
+				this.decisionError = 'Informe um motivo.';
 				return;
 			}
 			if (action === 'divert' && !this.decision.diverted_to.trim()) {
-				this.decisionError = 'Enter where this was diverted to.';
+				this.decisionError = 'Informe para onde esta doação foi redirecionada.';
 				return;
 			}
 			if (action === 'cancel' && !this.decision.cancelled_reason.trim()) {
-				this.decisionError = 'Enter a reason.';
+				this.decisionError = 'Informe um motivo.';
 				return;
 			}
 			if (action === 'match' && !this.decision.donation_id) {
-				this.decisionError = 'Select the arrived intake to match.';
+				this.decisionError = 'Selecione o recebimento que chegou para associá-lo.';
 				return;
 			}
 			if (action === 'note' && !this.decision.notes.trim()) {
-				this.decisionError = 'Enter a note describing the call.';
+				this.decisionError = 'Informe uma observação sobre a ligação.';
 				return;
 			}
 
@@ -701,7 +701,7 @@ export default {
 				this.decision = null;
 				this.$refs.riform?.fetchRecords();
 			} catch (error) {
-				this.decisionError = error.response?.data?.message || 'Could not save.';
+				this.decisionError = error.response?.data?.message || 'Não foi possível salvar.';
 			} finally {
 				this.decisionSaving = false;
 			}

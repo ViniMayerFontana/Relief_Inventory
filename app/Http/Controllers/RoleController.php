@@ -65,7 +65,7 @@ class RoleController extends Controller
         Role::create($data);
 
         return response()->json([
-            'message' => 'Role created successfully.',
+            'message' => 'Função criada com sucesso.',
         ], 201);
     }
 
@@ -87,7 +87,7 @@ class RoleController extends Controller
         $role->update($data);
 
         return response()->json([
-            'message' => 'Role updated successfully.',
+            'message' => 'Função atualizada com sucesso.',
         ], 200);
     }
 
@@ -109,7 +109,7 @@ class RoleController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error deleting role: '.$e->getMessage(),
+                'message' => 'Erro ao excluir a função: '.$e->getMessage(),
             ], 500);
         }
     }

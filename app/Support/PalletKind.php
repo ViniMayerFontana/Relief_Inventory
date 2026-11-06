@@ -38,11 +38,11 @@ class PalletKind
     ];
 
     public const LABELS = [
-        self::RECEIVING => 'Receiving',
-        self::WAREHOUSE => 'Warehouse',
-        self::SHIPPING => 'Shipping',
-        self::HOLD => 'Hold',
-        self::QUARANTINE => 'Quarantine',
+        self::RECEIVING => 'Recebimento',
+        self::WAREHOUSE => 'Armazém',
+        self::SHIPPING => 'Expedição',
+        self::HOLD => 'Retenção',
+        self::QUARANTINE => 'Quarentena',
     ];
 
     public static function initialStatus(string $kind): string

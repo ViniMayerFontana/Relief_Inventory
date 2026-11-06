@@ -28,13 +28,13 @@ class KioskModeController extends Controller
 
         $locationId = $request->integer('location_id') ?: null;
         if ($locationId && ! $activeLocations->contains('id', $locationId)) {
-            return response()->json(['message' => 'That location is not available.'], 422);
+            return response()->json(['message' => 'Esse local não está disponível.'], 422);
         }
         if (! $locationId) {
             if ($activeLocations->count() === 1) {
                 $locationId = $activeLocations->first()->id;
             } elseif ($activeLocations->count() > 1) {
-                return response()->json(['message' => 'Choose which location this kiosk is at.'], 422);
+                return response()->json(['message' => 'Escolha o local deste quiosque.'], 422);
             }
         }
 
@@ -43,8 +43,8 @@ class KioskModeController extends Controller
         if (! $pinLogin->enableKioskMode($device, $request->user()->id)) {
             return response()->json([
                 'message' => $pinLogin->settings()->enabled
-                    ? 'This device must be approved for PIN unlock before it can run as a kiosk.'
-                    : 'PIN unlock must be enabled system-wide before a device can run as a kiosk.',
+                    ? 'Este dispositivo precisa ser aprovado para desbloqueio por PIN antes de funcionar como quiosque.'
+                    : 'O desbloqueio por PIN precisa ser ativado para todo o sistema antes que um dispositivo funcione como quiosque.',
             ], 422);
         }
 
@@ -54,6 +54,6 @@ class KioskModeController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return response()->json(['message' => 'Kiosk mode enabled.']);
+        return response()->json(['message' => 'Modo quiosque ativado.']);
     }
 }

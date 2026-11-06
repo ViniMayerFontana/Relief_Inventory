@@ -57,7 +57,7 @@ class SystemController extends Controller
     private function requireSystemd(): ?JsonResponse
     {
         return $this->isDocker()
-            ? response()->json(['message' => 'Not available in a Docker install: it is upgraded by the host-side updater.'], 409)
+            ? response()->json(['message' => 'Indisponível em uma instalação Docker: a atualização é feita pelo atualizador no host.'], 409)
             : null;
     }
 
@@ -110,7 +110,7 @@ class SystemController extends Controller
         $result = Process::path(base_path())->timeout(60)->run(['git', 'fetch', 'origin', 'master']);
         if (! $result->successful()) {
             return response()->json([
-                'message' => 'Could not reach the update server: '.trim($result->errorOutput()),
+                'message' => 'Não foi possível acessar o servidor de atualizações: '.trim($result->errorOutput()),
             ], 502);
         }
 
@@ -125,14 +125,14 @@ class SystemController extends Controller
         }
         Log::warning('Deprecated bare-metal web update used', ['person_id_user' => Auth::id()]);
         if (($this->readUpdateStatus()['state'] ?? null) === 'running') {
-            return response()->json(['message' => 'An update is already running.'], 409);
+            return response()->json(['message' => 'Já há uma atualização em andamento.'], 409);
         }
 
         // Optimistic status so the panel shows "running" immediately;
         // update.sh overwrites this as soon as the unit starts.
         file_put_contents(config('system.update_status_file'), json_encode([
             'state' => 'running',
-            'message' => 'Update requested; waiting for the updater to start',
+            'message' => 'Atualização solicitada; aguardando o início do atualizador',
             'updated_at' => now()->toIso8601String(),
         ]));
 
@@ -153,13 +153,13 @@ class SystemController extends Controller
     private function requestDockerUpdate(string $action): JsonResponse
     {
         if (! $this->isInstanceAdmin()) {
-            return response()->json(['message' => 'Only an instance administrator can check for or install updates.'], 403);
+            return response()->json(['message' => 'Somente um administrador da instalação pode verificar ou instalar atualizações.'], 403);
         }
         if (! InstanceUpdate::enabled()) {
-            return response()->json(['message' => 'Automatic updates are not set up: set RI_UPDATE_SECRET in compose.yaml and run the updater on the host (docker/updater/).'], 409);
+            return response()->json(['message' => 'As atualizações automáticas não estão configuradas: defina RI_UPDATE_SECRET em compose.yaml e execute o atualizador no host (docker/updater/).'], 409);
         }
         if (! InstanceUpdate::request($action, Auth::user()->email)) {
-            return response()->json(['message' => 'An update is already in progress.'], 409);
+            return response()->json(['message' => 'Já há uma atualização em andamento.'], 409);
         }
 
         return response()->json(['docker_update' => InstanceUpdate::current()->payload() + ['can_request' => true]], 202);
@@ -171,7 +171,7 @@ class SystemController extends Controller
         $result = Process::timeout(15)->run(['sudo', '-n', '/usr/bin/systemctl', 'start', '--no-block', $unit]);
         if (! $result->successful()) {
             return response()->json([
-                'message' => "Could not start $unit — is the sudoers rule from scripts/systemd/reliefinventory-sudoers installed? ".trim($result->errorOutput()),
+                'message' => "Não foi possível iniciar $unit — a regra sudoers de scripts/systemd/reliefinventory-sudoers está instalada? ".trim($result->errorOutput()),
             ], 500);
         }
 

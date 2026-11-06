@@ -1,134 +1,88 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 
-Keep track of where pallets are, and put sorted goods onto warehouse pallets so pickers can find them.
+Mantenha o controle de onde as paletes estão e coloque os itens triados em paletes do armazém para que os separadores possam encontrá-los.
 
-## What this screen is for
+## Para que serve esta tela
 
-Open [Inventory Movement](/inventory-movement) (you need the Manage Pallets permission). It has three tabs: **Pallets**
-(the one you'll use all day — scan-driven), **Locations** and **Recent Movements** (look-up only).
+Abra [Movimento de estoque](/inventory-movement) (você precisa da permissão Manage Pallets). Ela tem três guias: **Pallets** (a que você usará o dia inteiro — guiada por leitura), **Locations** e **Recent Movements** (somente consulta).
 
-**Unassigned means "still in the sorting area."** When goods are sorted (see the [Sorting](/help/sorting) guide) they
-count as stock on hand but sit in the sorting area. Putting them on a warehouse pallet moves them out of "unassigned"
-and gives them a place on the shelf. Stock is pooled by item type, so you tell the system *how many* of an item went
-onto a pallet — not which donation it came from.
+**Unassigned significa “ainda na sorting area”.** Quando os itens são triados (veja o guia [Triagem](/help/sorting)), eles contam como estoque disponível, mas ficam na sorting area. Colocá-los em uma palete do armazém os tira de “unassigned” e dá a eles um lugar na prateleira. O estoque é agrupado por tipo de item, então você informa ao sistema *quantos* do item foram para a palete — não de qual doação vieram.
 
-Pallet tags start with a letter for the kind: **R** Receiving, **W** Warehouse, **S** Shipping, **H** Hold, **Q**
-Quarantine, followed by eight digits (for example `W00000123`). A Warehouse pallet is either *sealed* (wrapped and
-closed), *open* or *empty*. Pickers can only take from open pallets — see the [Order Filling](/help/order-filling)
-guide.
+As tags de palete começam com uma letra para o tipo: **R** Receiving, **W** Warehouse, **S** Shipping, **H** Hold, **Q** Quarantine, seguidas de oito dígitos (por exemplo `W00000123`). Uma palete do armazém pode ser *sealed* (embrulhada e fechada), *open* ou *empty*. Os separadores só podem retirar itens de paletes abertas — veja o guia [Preenchimento de pedido](/help/order-filling).
 
-## The scan bar
+## A barra de leitura
 
-At the top of the Pallets tab is one box, always ready for the next scan. After you click anywhere on the page, the
-cursor returns to it (unless you're typing in another field). Scan or type a code and press Enter or **Find**.
+No topo da guia Pallets há uma caixa sempre pronta para o próximo scan. Depois de clicar em qualquer lugar da página, o cursor volta para ela (a menos que você esteja digitando em outro campo). Escaneie ou digite um código e pressione Enter ou **Find**.
 
-- With no pallet showing, a scan is read as a **pallet barcode**.
-- With a pallet showing, a scan that matches a **location code** moves that pallet there at once. Any other scan is read
-  as a pallet and replaces the one on screen.
-- A green message confirms what happened; a red one says what went wrong (for example, an unknown pallet). The speaker
-  button at the right mutes or unmutes the scan sounds.
+- Sem uma palete mostrando, um scan é lido como um **pallet barcode**.
+- Com uma palete mostrando, um scan que corresponda a um **location code** move essa palete para lá imediatamente. Qualquer outro scan é lido como uma palete e substitui a que está na tela.
+- Uma mensagem verde confirma o que aconteceu; uma vermelha diz o que deu errado (por exemplo, uma palete desconhecida). O botão do alto-falante à direita silencia ou ativa os sons de scan.
 
-## Looking up a pallet
+## Consultando uma palete
 
-Scan a pallet's tag. The screen shows its tag and kind, where it is (*at* a location, or *no location recorded*), its
-status, when it was last updated and, for a Warehouse pallet, the earliest expiration date of what's on it. Below that:
+Escaneie a tag de uma palete. A tela mostra sua tag e tipo, onde ela está (*at* um local ou *no location recorded*), seu status, quando foi atualizada pela última vez e, para uma palete do armazém, a data de vencimento mais próxima dos itens nela. Abaixo disso:
 
-- **Pallet Contents** — for a Warehouse pallet, each item and its quantity. For a Receiving pallet, what sorting
-  recorded coming off it (item, disposition, quantity). Other kinds don't track contents.
-- **Movement History** — every move and status change, newest first (date, location, status, notes).
+- **Pallet Contents** — para uma palete do armazém, cada item e sua quantidade. Para uma palete de Recebimento, o que a triagem registrou saindo dela (item, disposição, quantidade). Outros tipos não rastreiam conteúdo.
+- **Movement History** — cada movimento e mudança de status, mais recente primeiro (data, local, status, observações).
 
-**Clear / new pallet** removes the pallet from the screen so you can scan another or build a new one.
+**Clear / new pallet** remove a palete da tela para que você possa escanear outra ou montar uma nova.
 
-## Moving a pallet
+## Movendo uma palete
 
-1. Scan the pallet's tag.
-2. Scan the barcode on the shelf or rack location. The move is recorded immediately ("… moved to …"), and the pallet
-   keeps its status. Scanning the location it's already at just says so.
-3. Prefer the form? Type or pick a code in **Location**, add **Notes** if you like, and click **Record Movement**. The
-   location must be a known, active one.
+1. Escaneie a tag da palete.
+2. Escaneie o código da prateleira ou rack. O movimento é registrado imediatamente (“… moved to …”), e a palete mantém seu status. Escanear o local em que já está apenas informa isso.
+3. Prefere o formulário? Digite ou escolha um código em **Location**, acrescente **Notes** se quiser e clique em **Record Movement**. O local deve ser conhecido e ativo.
 
-For Receiving, Shipping, Hold and Quarantine pallets there is also a **Status** drop-down; change it and click **Record
-Status** (the button reads Record Movement when the location changed). A Warehouse pallet has no Status drop-down — its
-status changes through sealing and unsealing below.
+Para paletes de Receiving, Shipping, Hold e Quarantine também há um menu suspenso **Status**; altere e clique em **Record Status** (o botão fica **Record Movement** quando o local mudou). Uma palete do armazém não tem menu suspenso de Status — seu status muda por meio de lacrar e abrir abaixo.
 
-## Building a new Warehouse pallet
+## Montando uma nova palete do armazém
 
-A lead or forklift driver does this as a pallet leaves the sorting area. With no pallet showing, the page says **Build a
-new Warehouse pallet**.
+Um líder ou motorista de empilhadeira faz isso quando uma palete sai da sorting area. Sem nenhuma palete mostrando, a página diz **Build a new Warehouse pallet**.
 
-1. Under **In the sorting area** is the pick-up list: each item still waiting, how many (*Waiting*) and its earliest
-   expiration. Click **Put all N on pallet** to stage an item. Items that share an ACS item number are grouped into one
-   row; click it to expand the individual items, or use its button to stage them all.
-2. Staged items appear in a table above. Change a **Quantity** if only part of it is going on this pallet (it can't
-   exceed what's waiting), or click **Remove**.
-3. Check each item's **Expires** date in the list — it's the earliest date known for that item, and goes on its item
-   label; change or clear it if it's wrong. Type or scan the **Location** the pallet is going to. The pallet's own
-   **Expires** date is filled with the earliest date among the items; change it or click **Auto** to go back. Add
-   **Notes** if needed.
-4. Click **Seal & Place**. A new Warehouse pallet is created, sealed, and set at that location. A green line shows its
-   tag and contents, with a **Print Pallet Label** button — print it and put it on the pallet — and a **Print Item
-   Labels** button: one small label for each item you put on, showing the ACS item number and description, quantity,
-   earliest expiration and pallet, with a barcode. Stick each on its cases. Item labels print on the small label size
-   (set on the Printers page). To print them again later, scan the pallet: its **Inventory Labels** list has a Print
-   button for each.
+1. Em **In the sorting area** está a lista de coleta: cada item ainda esperando, quantos (*Waiting*) e sua data de vencimento mais próxima. Clique em **Put all N on pallet** para preparar um item. Itens que compartilham um número ACS de item são agrupados em uma linha; clique nele para expandir os itens individuais ou use o botão para preparar todos.
+2. Itens preparados aparecem em uma tabela acima. Altere uma **Quantity** se apenas parte dele vai para esta palete (não pode exceder o que está esperando), ou clique em **Remove**.
+3. Verifique a data **Expires** de cada item na lista — é a data mais próxima conhecida para esse item e vai no rótulo do item; altere ou limpe se estiver errada. Digite ou escaneie o **Location** para onde a palete vai. A própria **Expires** da palete é preenchida com a data mais próxima entre os itens; altere-a ou clique em **Auto** para voltar. Adicione **Notes** se necessário.
+4. Clique em **Seal & Place**. Uma nova palete do armazém é criada, lacrada e colocada nesse local. Uma linha verde mostra sua tag e conteúdo, com um botão **Print Pallet Label** — imprima-o e coloque-o na palete — e um botão **Print Item Labels**: uma pequena etiqueta para cada item que você colocou, mostrando o número ACS do item e a descrição, quantidade, data de vencimento mais próxima e palete, com código de barras. Cole cada uma em suas caixas. Etiquetas de item são impressas no tamanho pequeno de etiqueta (definido na página Printers). Para imprimi-las de novo depois, escaneie a palete: sua lista **Inventory Labels** tem um botão Print para cada uma.
 
-The system won't let you put more of an item on pallets than is still in the sorting area ("Only N of … are not already
-on a pallet"). When everything is on a pallet the list says *Nothing waiting — everything sorted is already on a
-pallet.*
+O sistema não deixa você colocar em paletes mais de um item do que ainda está na sorting area (“Only N of … are not already on a pallet”). Quando tudo está em uma palete, a lista diz *Nothing waiting — everything sorted is already on a pallet.*
 
-**Adding to an existing pallet:** scan a Warehouse pallet that is *open*; the same list now reads **Add items to W…**
-and the button is **Add to pallet**. A sealed pallet must be unsealed first.
+**Adicionando a uma palete existente:** escaneie uma palete do armazém que esteja *open*; a mesma lista agora mostra **Add items to W…** e o botão é **Add to pallet**. Uma palete lacrada precisa ser aberta primeiro.
 
-## Sealing and unsealing
+## Lacrando e abrindo
 
-- A **sealed** Warehouse pallet can only be moved or unsealed. The page reminds you: unseal it to add items or adjust
-  what is on it. Pickers can't take from a sealed pallet either — unless the pick takes the whole pallet, or someone
-  unseals it first.
-- Click **Unseal** to open it; click **Re-seal** when you're finished.
-- A pallet that runs out of goods (a picker takes the last items) is marked empty automatically.
+- Uma palete do armazém **sealed** só pode ser movida ou aberta. A página lembra: unseal it to add items or adjust what is on it. Os separadores também não podem retirar de uma palete lacrada — a menos que a separação leve a palete inteira ou alguém a abra antes.
+- Clique em **Unseal** para abri-la; clique em **Re-seal** quando terminar.
+- Uma palete que acaba ficando sem itens (um separador leva os últimos) é marcada como vazia automaticamente.
 
-## Adjusting inventory on a pallet
+## Ajustando o estoque em uma palete
 
-Counts sometimes drift: something is damaged, a case is missing, or someone put the wrong item on. An adjustment
-corrects what's recorded on one pallet. It needs a separate permission, **Adjust Inventory** (normally Office and
-Administrator) — without it, you won't see the buttons below.
+As contagens às vezes se desviam: algo está danificado, falta uma caixa ou alguém colocou o item errado. Um ajuste corrige o que está registrado em uma palete. Ele precisa de uma permissão separada, **Adjust Inventory** (normalmente Office e Administrator) — sem ela, você não verá os botões abaixo.
 
-It's only available for a Warehouse pallet that is **open** and already has a **location**. Then two buttons appear:
-**Add from sorting area** and **Adjust inventory** — you can use one at a time.
+Ele só está disponível para uma palete do armazém que está **open** e já tem **location**. Então aparecem dois botões: **Add from sorting area** e **Adjust inventory** — você pode usar um por vez.
 
-1. Click **Adjust inventory**.
-2. For each item, type a number in **Change**: a minus sign removes (`-3`), a plain number adds. **After** shows the
-   result. To add an item that isn't on the pallet yet, search for it under **Another item**.
-3. Choose a **Reason**: Shrinkage, Damaged items, Correcting count, Correcting item type or Other. For Other you must
-   explain in **Notes**.
-4. Click **Record Adjustment**. You can't take off more than the pallet has.
+1. Clique em **Adjust inventory**.
+2. Para cada item, digite um número em **Change**: um sinal de menos remove (`-3`), um número simples adiciona. **After** mostra o resultado. Para adicionar um item que ainda não está na palete, pesquise sob **Another item**.
+3. Escolha um **Reason**: Shrinkage, Damaged items, Correcting count, Correcting item type ou Other. Para Other você deve explicar em **Notes**.
+4. Clique em **Record Adjustment**. Você não pode tirar mais do que a palete tem.
 
-Every adjustment is logged with who, when and why, and it changes stock on hand itself — it isn't a sorting entry.
+Cada ajuste é registrado com quem, quando e por quê, e altera o estoque disponível — não é um lançamento de triagem.
 
-## Locations and Recent Movements
+## Locais e movimentos recentes
 
-- **Locations** — a table of every active location with the number of live pallets there, broken out by status. Click a
-  location to list its pallets, and click a pallet's tag to open it on the Pallets tab. Pallets with no location appear
-  as *No location recorded*. Emptied, shipped, collected, released, condemned and missing pallets aren't counted.
-- **Recent Movements** — the 100 most recent entries across all pallets (date, pallet, location, status, notes).
+- **Locations** — uma tabela de todos os locais ativos com o número de paletes ativas ali, separadas por status. Clique em um local para listar suas paletes e clique na tag da palete para abri-la na guia Pallets. Paletes esvaziadas, enviadas, recolhidas, liberadas, condenadas e desaparecidas não são contadas.
+- **Recent Movements** — as 100 entradas mais recentes em todas as paletes (data, palete, local, status, observações).
 
-The order of locations along the warehouse (the pick path) is set up under Setup by an administrator; it decides the
-order pickers walk.
+A ordem dos locais ao longo do armazém (o caminho de separação) é definida em Setup por um administrador; isso decide o caminho que os separadores percorrem.
 
-## Pallet Management
+## Gestão de paletes
 
-[Pallet Management](/pallet-management) (also needs Manage Pallets) is the plain record list of pallets — use it to
-**reprint a pallet label** (Print Pallet Label) or to correct a pallet's record by hand. It lists pallets that are still
-in use; open one to see its Pallet Tag, Kind, Date Packed, Location, Status, Container Type (Pallet, Gaylord, Box, Bag
-or Tote) and its Pallet Status History. The kind can't be changed once a pallet is labeled.
+[Pallet Management](/pallet-management) (também precisa de Manage Pallets) é a lista simples de registros de paletes — use para **reimprimir uma etiqueta de palete** (Print Pallet Label) ou corrigir o registro de uma palete manualmente. Ela lista paletes ainda em uso; abra uma para ver sua Pallet Tag, Kind, Date Packed, Location, Status, Container Type (Pallet, Gaylord, Box, Bag ou Tote) e seu Pallet Status History. O tipo não pode ser alterado depois que a palete é rotulada.
 
-For everyday work — moving pallets, building them, adjusting them — use Inventory Movement instead: it records each
-change in the history and checks the rules for you, while Pallet Management lets you set the status directly (from a
-list of the statuses valid for that kind of pallet).
+Para o trabalho diário — mover paletes, montá-las, ajustá-las — use Inventory Movement em vez disso: ele registra cada mudança no histórico e verifica as regras para você, enquanto Pallet Management permite definir o status diretamente (a partir de uma lista dos status válidos para esse tipo de palete).
 
-## Related guides
+## Guias relacionados
 
-- [Donation Sorting](/help/sorting) — how goods get into the sorting area.
-- [Order Filling](/help/order-filling) — how pickers take goods from pallets.
-- [Shipping](/help/shipping) — what happens after an order is filled.
+- [Triagem de doações](/help/sorting) — como os itens entram na sorting area.
+- [Preenchimento de pedido](/help/order-filling) — como os separadores retiram itens das paletes.
+- [Envio](/help/shipping) — o que acontece depois que um pedido é preenchido.

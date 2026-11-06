@@ -30,7 +30,7 @@ class VerifyEmailController extends Controller
         // APP_KEY, not the warehouse's key (InstanceSignedUrl).
         if (! InstanceSignedUrl::generator()->hasValidSignature($request)) {
             return redirect()->route('login')->withErrors([
-                'email' => 'That verification link has expired. Log in and we will email you a new one.',
+                'email' => 'Este link de verificação expirou. Entre e enviaremos um novo link por e-mail.',
             ]);
         }
 
@@ -71,6 +71,6 @@ class VerifyEmailController extends Controller
         $request->session()->put('url.intended', $nextRoute);
 
         return redirect()->route('login')
-            ->with('status', 'Your email address is verified. Log in to continue.');
+            ->with('status', 'Seu endereço de e-mail foi verificado. Entre para continuar.');
     }
 }

@@ -71,7 +71,7 @@ export default {
 			} catch (error) {
 				this.error = error.response?.status === 422
 					? 'Check the dates: the "to" date can\'t be before the "from" date.'
-					: 'Could not load the unfulfilled requests report.';
+					: 'Não foi possível carregar o relatório de pedidos não atendidos.';
 			} finally {
 				this.loading = false;
 			}
@@ -95,60 +95,60 @@ export default {
 </script>
 
 <template>
-	<Head title="Unfulfilled Requests Report" />
+	<Head title="Relatório de pedidos não atendidos" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="urr_container">
 			<h2 class="ri_datatable_head urr_head">
-				Unfulfilled Requests Report
+				Relatório de pedidos não atendidos
 				<span class="urr_exports">
-					<a :href="$withWarehouse('/report/unfulfilled.csv' + query)" class="ri_defaultbutton">Download CSV</a>
-					<PrintMenu document-key="unfulfilled-requests" media="report" label="Print / PDF"
+					<a :href="$withWarehouse('/report/unfulfilled.csv' + query)" class="ri_defaultbutton">Baixar CSV</a>
+					<PrintMenu document-key="unfulfilled-requests" media="report" label="Imprimir / PDF"
 						:params="appliedParams" :download-href="'/report/unfulfilled.pdf' + query" />
 				</span>
 			</h2>
 
 			<p class="urr_intro">
-				What partners asked for but didn't get, on requests whose filling is finished. Requests still
-				being entered or filled aren't counted yet.
+				O que as entidades parceiras solicitaram, mas não receberam, em pedidos cuja separação foi
+				concluída. Pedidos ainda em preenchimento ou separação não são contabilizados.
 			</p>
 
 			<form class="urr_toolbar" @submit.prevent="fetchReport">
-				<label>Ordered from <input type="date" v-model="from" class="ri_forminput" /></label>
-				<label>to <input type="date" v-model="to" class="ri_forminput" /></label>
-				<button type="submit" class="ri_defaultbutton">Apply</button>
-				<button v-if="from || to" type="button" class="ri_defaultbutton" @click="clearDates">All dates</button>
+				<label>Pedidos de <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>até <input type="date" v-model="to" class="ri_forminput" /></label>
+				<button type="submit" class="ri_defaultbutton">Aplicar</button>
+				<button v-if="from || to" type="button" class="ri_defaultbutton" @click="clearDates">Todas as datas</button>
 				<input type="text" v-model="search" class="ri_forminput urr_search"
-					placeholder="Search item, item # or category..." />
+					placeholder="Buscar item, nº do item ou categoria..." />
 			</form>
 
 			<p v-if="error" class="urr_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">Carregando...</p>
 
 			<template v-if="report && !loading">
 				<div class="urr_cards">
-					<div class="urr_card"><span>Item types short</span><strong>{{ n(totals.item_types) }}</strong></div>
-					<div class="urr_card"><span>Requests affected</span><strong>{{ n(totals.requests) }}</strong></div>
-					<div class="urr_card"><span>Requested</span><strong>{{ n(totals.requested) }}</strong></div>
-					<div class="urr_card"><span>Filled</span><strong>{{ n(totals.filled) }}</strong></div>
+					<div class="urr_card"><span>Tipos de item com falta</span><strong>{{ n(totals.item_types) }}</strong></div>
+					<div class="urr_card"><span>Pedidos afetados</span><strong>{{ n(totals.requests) }}</strong></div>
+					<div class="urr_card"><span>Solicitado</span><strong>{{ n(totals.requested) }}</strong></div>
+					<div class="urr_card"><span>Atendido</span><strong>{{ n(totals.filled) }}</strong></div>
 					<div class="urr_card urr_card_short">
-						<span>Not filled</span><strong>{{ n(totals.not_filled) }}</strong>
-						<small>{{ n(totals.cut_at_allocation) }} cut at allocation · {{ n(totals.short_at_picking) }} short at picking</small>
+						<span>Não atendido</span><strong>{{ n(totals.not_filled) }}</strong>
+						<small>{{ n(totals.cut_at_allocation) }} reduzidos na alocação · {{ n(totals.short_at_picking) }} faltantes na separação</small>
 					</div>
 				</div>
 
 				<p v-if="!report.items.length" class="urr_empty">
-					No unfulfilled requests{{ report.filters.from || report.filters.to ? ' in this date range' : '' }}.
+					Nenhum pedido não atendido{{ report.filters.from || report.filters.to ? ' neste período' : '' }}.
 				</p>
 
 				<template v-else>
 					<div class="urr_places">
-						<div v-for="place in [['county', 'County'], ['zip', 'Zip']]" :key="place[0]" class="urr_tablewrap">
-							<h3>Not Filled by {{ place[1] }}</h3>
+						<div v-for="place in [['county', 'Condado'], ['zip', 'CEP']]" :key="place[0]" class="urr_tablewrap">
+							<h3>Não atendidos por {{ place[1] }}</h3>
 							<table class="ri_datatable" border="1">
 								<thead>
-									<tr><th>{{ place[1] }}</th><th>Requests</th><th>Item Types</th><th>Not Filled</th></tr>
+									<tr><th>{{ place[1] }}</th><th>Pedidos</th><th>Tipos de item</th><th>Não atendido</th></tr>
 								</thead>
 								<tbody>
 									<tr v-for="row in report['by_' + place[0]]" :key="row[place[0]]">
@@ -162,20 +162,20 @@ export default {
 						</div>
 					</div>
 
-					<h3>Items Not Filled</h3>
+					<h3>Itens não atendidos</h3>
 					<div class="urr_tablewrap"><table class="ri_datatable" border="1">
 						<thead>
 							<tr>
 								<th></th>
-								<th>Item #</th>
+								<th>Nº do item</th>
 								<th>Item</th>
-								<th>Unit</th>
-								<th>Requests</th>
-								<th>Requested</th>
-								<th>Filled</th>
-								<th>Not Filled</th>
-								<th title="Less approved than requested in Review Allocation">Cut at Allocation</th>
-								<th title="Approved but not picked">Short at Picking</th>
+								<th>Unidade</th>
+								<th>Pedidos</th>
+								<th>Solicitado</th>
+								<th>Atendido</th>
+								<th>Não atendido</th>
+								<th title="Quantidade aprovada menor que a solicitada em Revisar alocação">Reduzido na alocação</th>
+								<th title="Aprovado, mas não separado">Faltante na separação</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -198,8 +198,8 @@ export default {
 										<table class="urr_subtable">
 											<thead>
 												<tr>
-													<th>County</th><th>Zip</th><th>Requests</th><th>Requested</th><th>Filled</th>
-													<th>Not Filled</th><th>Cut at Allocation</th><th>Short at Picking</th>
+													<th>Condado</th><th>CEP</th><th>Pedidos</th><th>Solicitado</th><th>Atendido</th>
+													<th>Não atendido</th><th>Reduzido na alocação</th><th>Faltante na separação</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -219,12 +219,12 @@ export default {
 								</tr>
 							</template>
 							<tr v-if="!items.length">
-								<td colspan="10" class="urr_empty">No items match.</td>
+								<td colspan="10" class="urr_empty">Nenhum item corresponde à busca.</td>
 							</tr>
 						</tbody>
 					</table></div>
 					<p class="urr_note">
-						Quantities are in each item's own unit. County and zip are the requesting partner's.
+						As quantidades usam a unidade de cada item. O condado e o CEP são da entidade parceira solicitante.
 					</p>
 				</template>
 			</template>

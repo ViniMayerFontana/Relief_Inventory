@@ -29,19 +29,19 @@ const statusUrl = computed(() => `/w/${currentWarehouseId() ?? ''}/restore-statu
 </script>
 
 <template>
-	<Head title="Restore this warehouse" />
+	<Head title="Restaurar este armazém" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="mx-auto max-w-3xl space-y-4 p-4">
 			<section class="rounded-lg bg-white p-6 shadow">
-				<h1 class="text-lg font-semibold">Restore {{ warehouseName || 'this warehouse' }} from a backup</h1>
+				<h1 class="text-lg font-semibold">Restaurar {{ warehouseName || 'este armazém' }} a partir de um backup</h1>
 
 				<div class="mt-3">
-					<InputLabel for="restore_password" value="Your password (to confirm)" />
+					<InputLabel for="restore_password" value="Sua senha (para confirmar)" />
 					<TextInput id="restore_password" type="password" class="mt-1 block w-full" v-model="identity.password" autocomplete="current-password" />
 				</div>
 				<label v-if="instanceAdmin" class="mt-3 flex items-start gap-2 text-sm text-gray-700">
 					<input type="checkbox" v-model="identity.any_lineage" class="mt-1" />
-					<span>This backup is of a different warehouse (clone it into this one). Only instance administrators can do this.</span>
+					<span>Este backup é de outro armazém (cloná-lo neste). Somente administradores da instância podem fazer isso.</span>
 				</label>
 
 				<RestoreBackup base="/json/warehouse-restore" :status-url="statusUrl" :identity="identity" own @back="back" />

@@ -28,23 +28,23 @@ const submit = () => form.post(route('invitations.accept', props.token), { onFin
 
 <template>
 	<GuestLayout>
-		<Head :title="`Join ${warehouseName}`" />
+		<Head :title="`Entrar em ${warehouseName}`" />
 
-		<h1 class="text-lg font-semibold text-gray-900">Join {{ warehouseName }}</h1>
+		<h1 class="text-lg font-semibold text-gray-900">Entrar em {{ warehouseName }}</h1>
 		<p class="mt-1 text-sm text-gray-600">
-			<template v-if="invitedBy">{{ invitedBy }} has invited</template><template v-else>You have been invited</template>
-			your login <strong>{{ email }}</strong> to join this warehouse. Nothing changes until you accept.
-			Enter that login's password to accept.
+			<template v-if="invitedBy">{{ invitedBy }} convidou</template><template v-else>Você foi convidado</template>
+			a conta <strong>{{ email }}</strong> para entrar neste armazém. Nada muda até você aceitar.
+			Informe a senha dessa conta para aceitar.
 		</p>
 
 		<form @submit.prevent="submit">
 			<div class="mt-4">
-				<InputLabel for="password" value="Password" />
+				<InputLabel for="password" value="Senha" />
 				<TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" autofocus autocomplete="current-password" />
 				<InputError class="mt-2" :message="form.errors.password" />
 			</div>
 			<div class="mt-6 flex justify-end">
-				<PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">Accept and sign in</PrimaryButton>
+				<PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">Aceitar e entrar</PrimaryButton>
 			</div>
 		</form>
 	</GuestLayout>

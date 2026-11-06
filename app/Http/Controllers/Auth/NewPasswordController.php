@@ -62,11 +62,16 @@ class NewPasswordController extends Controller
         // the application's home authenticated view. If there is an error we can
         // redirect them back to where they came from with their error message.
         if ($status == Password::PASSWORD_RESET) {
-            return redirect()->route('login')->with('status', __($status));
+            return redirect()->route('login')->with('status', 'Sua senha foi redefinida.');
         }
 
         throw ValidationException::withMessages([
-            'email' => [trans($status)],
+            'email' => [match ($status) {
+                'passwords.user' => 'Não encontramos um usuário com este endereço de e-mail.',
+                'passwords.token' => 'Este token de redefinição de senha é inválido.',
+                'passwords.throttled' => 'Aguarde um pouco antes de tentar novamente.',
+                default => 'Não foi possível redefinir a senha. Tente novamente.',
+            }],
         ]);
     }
 }

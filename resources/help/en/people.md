@@ -1,68 +1,62 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 
-Keep the record of each partner, donor, supplier and contact. These are the people and organizations picked on
-[Receiving](/help/receiving) and [Order Entry](/help/order-entry).
+Mantenha o registro de cada parceiro, doador, fornecedor e contato. Essas são as pessoas e organizações escolhidas em [Recebimento](/help/receiving)
+e [Cadastro de pedidos](/help/order-entry).
 
-## Finding and adding people
+## Encontrando e adicionando pessoas
 
-Open [Setup → People Entry](/setup/people) (needs the Manage People permission). Each row of the list shows the name,
-any organization, phone, email, roles and whether they are a volunteer. Type in **Search by name or organization...** to
-narrow the list, click a row to open it, or use the new-record button at the top to add someone.
+Abra [Configuração → People Entry](/setup/people) (precisa da permissão Manage People). Cada linha da lista mostra o nome, qualquer organização, telefone,
+email, funções e se a pessoa é voluntária. Digite em **Search by name or organization...** para estreitar a lista, clique em uma linha para abri-la ou use o botão de novo registro no topo para adicionar alguém.
 
-Click **Save** to keep your changes or **Cancel Changes** to throw them away. If a save fails, the reason shows on the
-form (for example an email or badge code already used by someone else).
+Clique em **Save** para manter as alterações ou **Cancel Changes** para descartá-las. Se um salvamento falhar, a razão aparece no formulário (por exemplo,
+email ou badge code já usados por outra pessoa).
 
-## Names and organizations
+## Nomes e organizações
 
-Fill in a **First Name** and **Last Name**, an **Organization**, or both — **at least one of the three is required**. A
-donation often arrives with only a company name, or with nothing known at all; for that, use the built-in Unknown Donor
-record rather than inventing a name.
+Preencha um **First Name** e um **Last Name**, uma **Organization**, ou ambos — **pelo menos um dos três é obrigatório**. Muitas vezes uma doação chega
+com apenas o nome da empresa ou com nada conhecido; nesse caso, use o registro interno **Unknown Donor** em vez de inventar um nome.
 
-## Organizations and their contacts
+## Organizações e seus contatos
 
-1. Create the organization's own record (for example “Macedonia SDA Church”) and check **This record is the organization
-   itself**. It then appears as a *org* tag in the list.
-2. Create a record for each contact person. In **Parent Organization**, search for and pick the organization.
-3. A **Contact Role** field appears once a parent is chosen — type something like Primary, Delivery or Billing.
+1. Crie o registro da própria organização (por exemplo, “Macedonia SDA Church”) e marque **This record is the organization itself**. Ele então aparece
+como uma tag *org* na lista.
+2. Crie um registro para cada pessoa de contato. Em **Parent Organization**, procure e escolha a organização.
+3. Um campo **Contact Role** aparece quando a organização pai é escolhida — digite algo como Primary, Delivery ou Billing.
 
-Contacts show “Parent: ...” in the list. Only records marked as an organization can be picked as a parent, and a record
-can't be its own parent.
+Os contatos aparecem como “Parent: ...” na lista. Apenas registros marcados como organização podem ser escolhidos como pai, e um registro não pode ser
+seu próprio pai.
 
-## Other details
+## Outros detalhes
 
-- **Category** — an open-ended tag for filtering (Donor, Supplier, Warehouse Contact...). Type a new one to add it. It
-  isn't required and has nothing to do with permissions.
-- **Badge Code** — the code from the person's physical badge, if they have one. Each code can belong to only one person.
-- **Phone** and **Email** — an email address can only be used on one record.
-- **Volunteer** — check if the person volunteers; it's separate from their role.
-- **Comments** — free notes.
+- **Category** — uma categoria livre para filtragem (Donor, Supplier, Warehouse Contact...). Digite uma nova para adicioná-la. Não é obrigatória e não tem
+relação com permissões.
+- **Badge Code** — o código do crachá físico da pessoa, se houver. Cada código pode pertencer a apenas uma pessoa.
+- **Phone** e **Email** — um endereço de email pode ser usado em apenas um registro.
+- **Volunteer** — marque se a pessoa é voluntária; isso é separado da função.
+- **Comments** — observações livres.
 
-## Address, city, state and county
+## Endereço, cidade, estado e município
 
-Enter the **ZIP Code** first, then the **Address**. When you leave an address field, the system checks it online and
-fills in blank **City**, **State** and **County** for you. If its spelling of the address differs from yours, it shows
-both and lets you accept its version or keep yours. County is also used on reports, so it's worth checking.
+Digite o **ZIP Code** primeiro, depois o **Address**. Quando você sai de um campo de endereço, o sistema verifica online e preenche os campos vazios de
+**City**, **State** e **County** para você. Se a grafia do endereço diferir da sua, ele mostra os dois e permite aceitar a versão dele ou manter a sua.
+County também é usado em relatórios, então vale a pena conferir.
 
-- If an address has never been checked, a **Verify Address** button appears while editing. It's disabled, and says it
-  can't verify, when the system is in offline mode.
-- Nothing you type is overwritten silently: City, State and ZIP are only filled in where blank. You can always type them
-  or pick the county yourself.
+- Se um endereço nunca foi verificado, um botão **Verify Address** aparece durante a edição. Ele fica desativado e diz que não consegue verificar quando
+o sistema está em modo off-line.
+- Nada que você digitar é sobrescrito silenciosamente: City, State e ZIP só são preenchidos onde estiverem em branco. Você pode sempre digitar ou
+escolher o município você mesmo.
 
-## Roles and partner approval
+## Funções e aprovação de parceiro
 
-The **Roles** box here offers only the party-tracking roles (such as Partner, Donor and Volunteer). Staff login access
-and individual permission changes are handled under Setup → User Administration, not on this page.
+A caixa **Roles** aqui oferece apenas as funções de cadastro de participantes (como Partner, Donor e Volunteer). Acesso de login do pessoal e alterações
+individuais de permissão são tratadas em Configuração → User Administration, não nesta página.
 
-- You can only give a role to someone if you hold all of that role's permissions yourself. The same rule applies to
-  editing anyone who already holds a permission you don't: their record opens read-only with the message “You don't have
-  permission to edit this record.” Use **Back to List** to leave it.
-- A person with the Partner role also gets a **Partner Status** line with buttons for the moves that make sense from the
-  current status: **Approve**, **Deny**, **Block**, **Reconsider** and **Unblock (Approve)**. Add an optional note and
-  click **Confirm**. Every change is logged underneath with who made it and when.
+- Você só pode dar uma função a alguém se tiver todas as permissões dessa função. A mesma regra vale para editar alguém que já tenha uma permissão que você não tem: o registro abre em modo somente leitura com a mensagem “You don't have permission to edit this record.” Use **Back to List** para sair.
+- Uma pessoa com a função Partner também recebe uma linha **Partner Status** com botões para os movimentos que fazem sentido a partir do status atual:
+**Approve**, **Deny**, **Block**, **Reconsider** e **Unblock (Approve)**. Adicione uma observação opcional e clique em **Confirm**. Cada alteração é registrada abaixo com quem a fez e quando.
 
-## Deleting a record
+## Excluindo um registro
 
-Click **Delete**, then **Confirm Delete — cannot be undone** (or **Keep Record** to back out). The Delete button only
-appears for people with the separate Delete People permission, which most roles don't have. The built-in **Unknown
-Donor** record can never be deleted.
+Clique em **Delete**, depois **Confirm Delete — cannot be undone** (ou **Keep Record** para retroceder). O botão Delete só aparece para pessoas com a
+permissão separada Delete People, que a maioria das funções não tem. O registro interno **Unknown Donor** nunca pode ser deletado.

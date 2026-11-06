@@ -166,7 +166,7 @@ class ReceivingController extends Controller
         if ($offerId) {
             $offer = DonationOffer::findOrFail($offerId);
             if ($offer->status !== DonationOffer::STATUS_PENDING) {
-                return response()->json(['message' => 'That donation offer is not pending and can\'t be matched.'], 422);
+                return response()->json(['message' => 'Esta oferta de doação não está pendente e não pode ser associada.'], 422);
             }
         }
 
@@ -209,7 +209,7 @@ class ReceivingController extends Controller
 
         if ($data['category'] !== $donation->category && $donation->pallets->isNotEmpty()) {
             return response()->json([
-                'message' => 'Category can\'t be changed once pallets have been created for this intake.',
+                'message' => 'Não é possível alterar a categoria depois que os paletes deste recebimento forem criados.',
             ], 422);
         }
 
@@ -240,7 +240,7 @@ class ReceivingController extends Controller
 
         if ($donation->pallets->isNotEmpty()) {
             return response()->json([
-                'message' => 'This intake already has pallets created for it and can\'t be deleted.',
+                'message' => 'Este recebimento já tem paletes e não pode ser excluído.',
             ], 422);
         }
 
@@ -250,7 +250,7 @@ class ReceivingController extends Controller
 
         $donation->delete();
 
-        return response()->json(['message' => 'Deleted.']);
+        return response()->json(['message' => 'Excluído.']);
     }
 
     /**
@@ -396,7 +396,7 @@ class ReceivingController extends Controller
 
         if (! $this->isCloseOutCandidate($donation)) {
             return response()->json([
-                'message' => 'This donation is not a close-out candidate (must have exactly one non-empty pallet, already in sorting).',
+                'message' => 'Esta doação não pode ser encerrada (é necessário ter exatamente um palete não vazio que já esteja na triagem).',
             ], 422);
         }
 

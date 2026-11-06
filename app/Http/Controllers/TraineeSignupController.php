@@ -44,11 +44,11 @@ class TraineeSignupController extends Controller
     public function store(Request $request)
     {
         if (! TrainingMode::active()) {
-            return response()->json(['message' => 'Sign-up is closed right now.'], 403);
+            return response()->json(['message' => 'As inscrições estão fechadas no momento.'], 403);
         }
         $turnstileEnabled = $this->turnstile->enabled();
         if ($turnstileEnabled && $this->turnstile->misconfigured()) {
-            return response()->json(['message' => 'Sign-up can\'t accept entries right now (spam protection isn\'t set up on this server).'], 503);
+            return response()->json(['message' => 'Não é possível receber inscrições no momento (a proteção contra spam não está configurada neste servidor).'], 503);
         }
 
         $data = $request->validate([

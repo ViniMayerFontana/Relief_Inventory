@@ -50,7 +50,7 @@ class LoginRequest extends FormRequest
             $this->limiter()->hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'email' => 'As credenciais informadas não correspondem aos nossos registros.',
             ]);
         }
 
@@ -71,12 +71,12 @@ class LoginRequest extends FormRequest
         event(new Lockout($this));
 
         $seconds = $this->limiter()->availableIn($this->throttleKey());
+        $wait = $seconds >= 60
+            ? ceil($seconds / 60).' '.(ceil($seconds / 60) === 1 ? 'minuto' : 'minutos')
+            : $seconds.' '.($seconds === 1 ? 'segundo' : 'segundos');
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'email' => 'Muitas tentativas de acesso. Tente novamente em '.$wait.'.',
         ]);
     }
 

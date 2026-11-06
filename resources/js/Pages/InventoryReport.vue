@@ -76,7 +76,7 @@ export default {
 				const response = await axios.get('/json/reports/inventory');
 				this.records = response.data.records;
 			} catch (error) {
-				this.error = 'Could not load the inventory report.';
+				this.error = 'Não foi possível carregar o relatório de estoque.';
 			} finally {
 				this.loading = false;
 			}
@@ -92,39 +92,39 @@ export default {
 </script>
 
 <template>
-	<Head title="Inventory Report" />
+	<Head title="Relatório de estoque" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="inv_container">
 			<h2 class="ri_datatable_head inv_head">
-				Inventory Report
-				<a :href="$withWarehouse('/report/inventory.csv')" class="ri_defaultbutton">Download CSV</a>
-				<PrintMenu document-key="inventory-report" media="report" label="Print / PDF"
+				Relatório de estoque
+				<a :href="$withWarehouse('/report/inventory.csv')" class="ri_defaultbutton">Baixar CSV</a>
+				<PrintMenu document-key="inventory-report" media="report" label="Imprimir / PDF"
 					download-href="/report/inventory.pdf" />
 			</h2>
 
 			<p v-if="error" class="inv_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">Carregando...</p>
 
 			<div class="inv_toolbar">
 				<input
 					type="text"
 					v-model="search"
 					class="ri_forminput inv_search"
-					placeholder="Search by item # or name..."
+					placeholder="Buscar por nº ou nome do item..."
 				/>
 				<select v-model="categoryFilter" class="ri_forminput">
-					<option value="">All categories</option>
+					<option value="">Todas as categorias</option>
 					<option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
 				</select>
 				<label class="inv_toggle">
 					<input type="checkbox" v-model="showAll" />
-					Show full catalog (including items never received)
+					Mostrar catálogo completo (incluindo itens nunca recebidos)
 				</label>
-				<label class="inv_toggle" title="Usable goods recorded as New at sorting (all-time — stock is pooled once sorted, so this isn't a count of new items still on the shelf)">
+				<label class="inv_toggle" title="Itens aproveitáveis registrados como Novos na triagem (desde sempre — após a triagem, o estoque é agrupado, portanto este número não representa os itens novos ainda disponíveis na prateleira)">
 					<input type="checkbox" v-model="newOnly" />
-					Only items received new
+					Apenas itens recebidos como novos
 				</label>
 			</div>
 
@@ -132,22 +132,22 @@ export default {
 				<thead>
 					<tr>
 						<th></th>
-						<th>Item #</th>
-						<th>Name</th>
-						<th>Category</th>
-						<th>Unit</th>
-						<th>On Hand</th>
-						<th title="Usable goods recorded as New at sorting, all-time">Received New</th>
-						<th>Outdated</th>
-						<th>Trashed</th>
-						<th>Diverted</th>
+						<th>Nº do item</th>
+						<th>Nome</th>
+						<th>Categoria</th>
+						<th>Unidade</th>
+						<th>Em estoque</th>
+						<th title="Itens aproveitáveis registrados como Novos na triagem, desde sempre">Recebidos como novos</th>
+						<th>Vencidos</th>
+						<th>Descartados</th>
+						<th>Desviados</th>
 					</tr>
 				</thead>
 				<tbody>
 					<template v-for="record in filtered" :key="record.id">
 						<tr class="inv_rowlink" @click="toggleExpanded(record.id)">
 							<td class="inv_expander">{{ expanded[record.id] ? '−' : '+' }}</td>
-							<td>{{ record.display_number || '(unnumbered)' }}</td>
+							<td>{{ record.display_number || '(sem número)' }}</td>
 							<td>
 								{{ record.name }}
 								<span v-if="record.status !== 'orderable'" class="inv_status_badge">{{ record.status }}</span>
@@ -165,7 +165,7 @@ export default {
 							<td colspan="9">
 								<table class="inv_subtable" v-if="record.items.length">
 									<thead>
-										<tr><th>Item / SKU</th><th>UPC</th><th>On Hand</th><th>Received New</th><th>Outdated</th><th>Trashed</th><th>Diverted</th></tr>
+										<tr><th>Item / SKU</th><th>UPC</th><th>Em estoque</th><th>Recebidos como novos</th><th>Vencidos</th><th>Descartados</th><th>Desviados</th></tr>
 									</thead>
 									<tbody>
 										<tr v-for="item in record.items" :key="item.id">
@@ -179,21 +179,21 @@ export default {
 										</tr>
 									</tbody>
 								</table>
-								<p v-else class="inv_empty">No items defined under this item type.</p>
+								<p v-else class="inv_empty">Nenhum item definido para este tipo de item.</p>
 								<table class="inv_subtable inv_locations" v-if="record.locations && (record.locations.length || record.unassigned)">
 									<thead>
-										<tr><th>Location</th><th>Pallets</th><th>Quantity</th></tr>
+										<tr><th>Local</th><th>Paletes</th><th>Quantidade</th></tr>
 									</thead>
 									<tbody>
 										<tr v-for="loc in record.locations" :key="loc.location_id ?? 'none'">
-											<td>{{ loc.code || 'No location recorded' }}</td>
+											<td>{{ loc.code || 'Local não registrado' }}</td>
 											<td>
 												<span v-for="(p, i) in loc.pallets" :key="p.id" class="inv_pallet">{{ p.tag }} ({{ p.qty }}, {{ p.status }})<span v-if="i < loc.pallets.length - 1">, </span></span>
 											</td>
 											<td class="inv_num">{{ loc.qty }}</td>
 										</tr>
-										<tr v-if="record.unassigned" class="inv_unassigned" title="On hand but not recorded on a warehouse pallet: still in the sorting area, or stock from before pallet tracking.">
-											<td>Not yet on a pallet</td>
+										<tr v-if="record.unassigned" class="inv_unassigned" title="Em estoque, mas sem registro em um palete do armazém: ainda na área de triagem ou estoque anterior ao controle de paletes.">
+											<td>Ainda sem palete</td>
 											<td></td>
 											<td class="inv_num">{{ record.unassigned }}</td>
 										</tr>
@@ -203,12 +203,12 @@ export default {
 						</tr>
 					</template>
 					<tr v-if="!filtered.length && !loading">
-						<td colspan="10" class="inv_empty">No item types match.</td>
+						<td colspan="10" class="inv_empty">Nenhum tipo de item corresponde à busca.</td>
 					</tr>
 				</tbody>
 				<tfoot v-if="filtered.length">
 					<tr class="inv_totalsrow">
-						<td colspan="5">Totals ({{ filtered.length }} item type{{ filtered.length === 1 ? '' : 's' }})</td>
+						<td colspan="5">Totais ({{ filtered.length }} {{ filtered.length === 1 ? 'tipo de item' : 'tipos de item' }})</td>
 						<td class="inv_num">{{ totals.on_hand }}</td>
 						<td class="inv_num">{{ totals.received_new || '' }}</td>
 						<td class="inv_num">{{ totals.outdated || '' }}</td>

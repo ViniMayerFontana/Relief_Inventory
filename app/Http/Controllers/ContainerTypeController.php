@@ -40,6 +40,6 @@ class ContainerTypeController extends Controller
     {
         ContainerType::findOrFail($id)->delete();
 
-        return response()->json(['message' => 'Container type deleted successfully.']);
+        return response()->json(['message' => 'Tipo de contêiner excluído com sucesso.']);
     }
 }

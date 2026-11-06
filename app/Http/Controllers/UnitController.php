@@ -53,7 +53,7 @@ class UnitController extends Controller
         Unit::create($data);
 
         return response()->json([
-            'message' => 'Unit created successfully.',
+            'message' => 'Unidade criada com sucesso.',
         ], 201);
     }
 
@@ -70,7 +70,7 @@ class UnitController extends Controller
         $unit->update($data);
 
         return response()->json([
-            'message' => 'Unit updated successfully.',
+            'message' => 'Unidade atualizada com sucesso.',
         ], 200);
     }
 
@@ -86,7 +86,7 @@ class UnitController extends Controller
         $unit->delete();
 
         return response()->json([
-            'message' => 'Unit deleted successfully.',
+            'message' => 'Unidade excluída com sucesso.',
         ], 200);
     }
 }

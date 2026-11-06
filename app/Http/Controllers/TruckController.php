@@ -61,6 +61,6 @@ class TruckController extends Controller
     {
         Truck::findOrFail($id)->delete();
 
-        return response()->json(['message' => 'Truck deleted successfully.']);
+        return response()->json(['message' => 'Caminhão excluído com sucesso.']);
     }
 }

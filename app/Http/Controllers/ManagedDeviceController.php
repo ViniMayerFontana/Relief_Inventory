@@ -50,7 +50,7 @@ class ManagedDeviceController extends Controller
         }
         $managedDevice->save();
 
-        return response()->json(['message' => 'Device updated.', 'record' => $managedDevice->load('location:id,name')]);
+        return response()->json(['message' => 'Dispositivo atualizado.', 'record' => $managedDevice->load('location:id,name')]);
     }
 
     /** Un-pair: the device learns at its next heartbeat and returns to setup. */
@@ -64,7 +64,7 @@ class ManagedDeviceController extends Controller
         $managedDevice->session_token_hash = null;
         $managedDevice->save();
 
-        return response()->json(['message' => 'Device revoked.', 'record' => $managedDevice]);
+        return response()->json(['message' => 'Dispositivo revogado.', 'record' => $managedDevice]);
     }
 
     public function destroy(ManagedDevice $managedDevice)
@@ -74,7 +74,7 @@ class ManagedDeviceController extends Controller
         }
         $managedDevice->delete();
 
-        return response()->json(['message' => 'Device removed.']);
+        return response()->json(['message' => 'Dispositivo removido.']);
     }
 
     /**

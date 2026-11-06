@@ -43,18 +43,18 @@ class RestoreController extends Controller
     {
         if ($this->owning()) {
             $warehouse = $this->context->current();
-            abort_unless(Auth::user()?->hasPermission('admin-system'), 403, 'Missing required permission: admin-system');
-            abort_unless($warehouse->isActive() && ! $warehouse->is_training, 403, 'This warehouse cannot be restored from here.');
+            abort_unless(Auth::user()?->hasPermission('admin-system'), 403, 'Permissão obrigatória ausente: admin-system');
+            abort_unless($warehouse->isActive() && ! $warehouse->is_training, 403, 'Não é possível restaurar este armazém por aqui.');
 
             return;
         }
         if ($this->activating()) {
             $warehouse = $this->context->current();
-            abort_unless($warehouse->isAwaitingSetup() && $this->codes->claimed(request(), $warehouse), 403, 'Enter the setup code first.');
+            abort_unless($warehouse->isAwaitingSetup() && $this->codes->claimed(request(), $warehouse), 403, 'Informe primeiro o código de configuração.');
 
             return;
         }
-        abort_unless($this->firstRun->needsSetup(), 403, 'This instance has already been set up; a backup can only be restored onto a new one.');
+        abort_unless($this->firstRun->needsSetup(), 403, 'Esta instalação já foi configurada; só é possível restaurar um backup em uma instalação nova.');
     }
 
     public function start(Request $request)
@@ -66,10 +66,10 @@ class RestoreController extends Controller
             'setup_code' => [filled(config('app.setup_code')) && ! $this->activating() && ! $this->owning() ? 'required' : 'nullable', 'string'],
         ]);
         if (! $this->activating() && ! $this->owning() && filled(config('app.setup_code')) && ! hash_equals((string) config('app.setup_code'), (string) $data['setup_code'])) {
-            return response()->json(['message' => 'That setup code is not correct.', 'errors' => ['setup_code' => ['That setup code is not correct.']]], 422);
+            return response()->json(['message' => 'O código de configuração está incorreto.', 'errors' => ['setup_code' => ['O código de configuração está incorreto.']]], 422);
         }
         if ($this->restore->isRunning()) {
-            return response()->json(['message' => 'A restore is already running.'], 409);
+            return response()->json(['message' => 'Já há uma restauração em andamento.'], 409);
         }
 
         @unlink($this->restore->dir().'/status.json'); // a previous failed attempt's message
@@ -90,7 +90,7 @@ class RestoreController extends Controller
     public function uploadChunk(Request $request, string $id)
     {
         $this->requireFreshInstance();
-        abort_if($this->restore->isRunning(), 409, 'A restore is already running.');
+        abort_if($this->restore->isRunning(), 409, 'Já há uma restauração em andamento.');
         [$status, $payload] = $this->restore->uploads()->append($id, (int) $request->query('offset', -1), $request->getContent());
 
         return response()->json($payload, $status);
@@ -102,7 +102,7 @@ class RestoreController extends Controller
         $this->requireFreshInstance();
         $this->assertFullyUploaded($id);
 
-        return response()->json(['message' => 'Upload complete.']);
+        return response()->json(['message' => 'Envio concluído.']);
     }
 
     /**
@@ -116,14 +116,14 @@ class RestoreController extends Controller
         $data = $request->validate([
             'upload_id' => 'required|string',
             'storage_upload_id' => 'nullable|string|different:upload_id',
-            'warehouse_key' => ['nullable', 'string', 'max:200', fn ($attribute, $value, $fail) => $value === null || $value === '' || Warehouse::validKey(trim($value)) ?: $fail('That is not a warehouse key: it starts with "base64:" and is 51 characters in all.')],
+            'warehouse_key' => ['nullable', 'string', 'max:200', fn ($attribute, $value, $fail) => $value === null || $value === '' || Warehouse::validKey(trim($value)) ?: $fail('Essa chave de armazém é inválida: começa com "base64:" e tem 51 caracteres ao todo.')],
         ] + ($this->activating() ? WarehouseSetup::personRules($existing) : [])
             + ($this->owning() ? ['password' => ['required', 'string'], 'any_lineage' => ['sometimes', 'boolean']] : []));
         foreach (array_filter([$data['upload_id'], $data['storage_upload_id'] ?? null]) as $id) {
             $this->assertFullyUploaded($id);
         }
         if ($this->restore->isRunning()) {
-            return response()->json(['message' => 'A restore is already running.'], 409);
+            return response()->json(['message' => 'Já há uma restauração em andamento.'], 409);
         }
         if ($this->activating()) {
             // Who the new warehouse is for: settled now, because the database replacement that follows wipes the session.
@@ -138,11 +138,11 @@ class RestoreController extends Controller
             $user = Auth::user();
             // The database replacement wipes sessions and people alike; the password proves it is the administrator at the keyboard.
             if (! $user->password || ! Hash::check($data['password'], $user->password) || ! $user->account) {
-                return response()->json(['message' => 'That password is not correct.', 'errors' => ['password' => ['That password is not correct.']]], 422);
+                return response()->json(['message' => 'A senha está incorreta.', 'errors' => ['password' => ['A senha está incorreta.']]], 422);
             }
             $anyLineage = (bool) ($data['any_lineage'] ?? false);
             if ($anyLineage && ! $user->account->is_instance_admin) {
-                return response()->json(['message' => 'Only an instance administrator can restore another warehouse\'s backup here.'], 403);
+                return response()->json(['message' => 'Somente um administrador da instalação pode restaurar aqui o backup de outro armazém.'], 403);
             }
             $this->restore->stageOwnRestore([
                 'account_id' => $user->account->id, 'first_name' => (string) $user->first_name, 'last_name' => (string) $user->last_name,
@@ -156,7 +156,7 @@ class RestoreController extends Controller
         }
         $this->restore->launch($data['upload_id'], $data['storage_upload_id'] ?? null);
 
-        return response()->json(['message' => 'Restore started.'], 202);
+        return response()->json(['message' => 'A restauração foi iniciada.'], 202);
     }
 
     private function assertFullyUploaded(string $id): void
@@ -165,18 +165,18 @@ class RestoreController extends Controller
         $meta = $uploads->meta($id);
         $received = $uploads->received($id);
         if ($received !== $meta['size']) {
-            abort(response()->json(['message' => "Upload is incomplete ({$received} of {$meta['size']} bytes).", 'received' => $received], 409));
+            abort(response()->json(['message' => "O envio está incompleto ({$received} de {$meta['size']} bytes).", 'received' => $received], 409));
         }
     }
 
     public function cancel(string $id)
     {
         $this->requireFreshInstance();
-        abort_if($this->restore->isRunning(), 409, 'A restore is running and cannot be cancelled.');
+        abort_if($this->restore->isRunning(), 409, 'Há uma restauração em andamento e ela não pode ser cancelada.');
         $this->restore->uploads()->meta($id);
         $this->restore->uploads()->delete($id);
 
-        return response()->json(['message' => 'Upload cancelled.']);
+        return response()->json(['message' => 'Envio cancelado.']);
     }
 
     /** Polled by the wizard, including while the database is being replaced (so: no session, no database). */

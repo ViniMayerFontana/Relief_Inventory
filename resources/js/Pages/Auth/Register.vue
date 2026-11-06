@@ -47,7 +47,7 @@ const submit = () => {
 		const turnstileResponse = document.querySelector("[name='cf-turnstile-response']")?.value;
 
 		if (!turnstileResponse) {
-		    alert("Please complete the CAPTCHA verification.");
+		    alert("Conclua a verificação CAPTCHA.");
 		    return;
 		}
 
@@ -93,11 +93,11 @@ onMounted(() => {
 
 <template>
     <GuestLayout>
-        <Head title="Register" />
+        <Head title="Cadastro" />
 
         <form @submit.prevent="submit">
 			<div>
-			    <InputLabel for="first_name" value="First Name" />
+			    <InputLabel for="first_name" value="Nome" />
 
 			    <TextInput
 			        id="first_name"
@@ -112,7 +112,7 @@ onMounted(() => {
 			    <InputError class="mt-2" :message="form.errors.first_name" />
 			</div>
 			<div>
-			    <InputLabel for="last_name" value="Last Name" />
+			    <InputLabel for="last_name" value="Sobrenome" />
 
 			    <TextInput
 			        id="last_name"
@@ -128,7 +128,7 @@ onMounted(() => {
 			</div>
 
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="E-mail" />
 
                 <TextInput
                     id="email"
@@ -143,7 +143,7 @@ onMounted(() => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Senha" />
 
                 <TextInput
                     id="password"
@@ -160,7 +160,7 @@ onMounted(() => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    value="Confirme a senha"
                 />
 
                 <TextInput
@@ -188,7 +188,7 @@ onMounted(() => {
                     :href="route('login')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    Already registered?
+                    Já tem cadastro?
                 </Link>
 
                 <PrimaryButton
@@ -196,7 +196,7 @@ onMounted(() => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Register
+                    Cadastrar
                 </PrimaryButton>
             </div>
         </form>

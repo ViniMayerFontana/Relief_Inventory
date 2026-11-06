@@ -67,7 +67,7 @@ async function load() {
 		if (expanded.value) await loadHistory(expanded.value);
 	} catch (e) {
 		// A failed refresh shouldn't wipe the screen or nag every 5 seconds.
-		if (!loaded.value) error.value = e.response?.data?.message || 'Could not load the print queue.';
+		if (!loaded.value) error.value = e.response?.data?.message || 'Não foi possível carregar a fila de impressão.';
 	} finally {
 		loaded.value = true;
 	}
@@ -107,7 +107,7 @@ async function mutate(job, request, done) {
 		notice.value = done;
 		await load();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'That change could not be made.';
+		error.value = e.response?.data?.message || 'Não foi possível fazer essa alteração.';
 	} finally {
 		busyId.value = null;
 	}
@@ -119,11 +119,11 @@ async function cancelJob(job) {
 		return;
 	}
 	confirmingCancel.value = null;
-	await mutate(job, () => axios.post(`/json/print-jobs/${job.id}/cancel`), `Cancelled “${job.title}”.`);
+	await mutate(job, () => axios.post(`/json/print-jobs/${job.id}/cancel`), `“${job.title}” foi cancelado.`);
 }
 
 async function retryJob(job) {
-	await mutate(job, () => axios.post(`/json/print-jobs/${job.id}/retry`), `“${job.title}” is queued again.`);
+	await mutate(job, () => axios.post(`/json/print-jobs/${job.id}/retry`), `“${job.title}” voltou para a fila.`);
 }
 
 async function divertJob(job, printerId) {
@@ -132,7 +132,7 @@ async function divertJob(job, printerId) {
 	await mutate(
 		job,
 		() => axios.post(`/json/print-jobs/${job.id}/divert`, { printer_id: printerId }),
-		`Moved “${job.title}” to ${target?.name ?? 'the other printer'}.`
+		`“${job.title}” foi direcionado para ${target?.name ?? 'a outra impressora'}.`
 	);
 }
 
@@ -145,10 +145,10 @@ async function clearPrinter(printer) {
 	resetFeedback();
 	try {
 		const { data } = await axios.post('/json/print-jobs/clear', { printer_id: printer.id });
-		notice.value = `Cleared ${data.cleared} job${data.cleared === 1 ? '' : 's'} from ${printer.name}.`;
+		notice.value = `${data.cleared} ${data.cleared === 1 ? 'trabalho removido' : 'trabalhos removidos'} da fila de ${printer.name}.`;
 		await load();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not clear that printer.';
+		error.value = e.response?.data?.message || 'Não foi possível limpar a fila dessa impressora.';
 	}
 }
 
@@ -171,7 +171,7 @@ async function loadHistory(id) {
 }
 
 // ---- display helpers ----
-const STATUS_LABELS = { queued: 'Waiting', claimed: 'Printing', failed: 'Failed', printed: 'Printed', cancelled: 'Cancelled' };
+const STATUS_LABELS = { queued: 'Aguardando', claimed: 'Imprimindo', failed: 'Falhou', printed: 'Impresso', cancelled: 'Cancelado' };
 const STATUS_CLASSES = {
 	queued: 'bg-blue-100 text-blue-800',
 	claimed: 'bg-indigo-100 text-indigo-800',
@@ -191,10 +191,9 @@ function dotClass(printer) {
 }
 
 function printerStateText(printer) {
-	if (printer.status === 'idle') return 'ready';
-	if (printer.status === 'printing') return 'printing';
+	const labels = { idle: 'pronta', printing: 'imprimindo', unavailable: 'indisponível', error: 'erro', offline: 'offline' };
 	if (printer.status === 'unavailable') return printer.status_message || 'offline';
-	return printer.status_message ? `${printer.status}: ${printer.status_message}` : printer.status;
+	return printer.status_message ? `${labels[printer.status] || printer.status}: ${printer.status_message}` : labels[printer.status] || printer.status;
 }
 
 // A waiting job's real situation: if its printer can't take it right now, say so.
@@ -202,7 +201,7 @@ function waitingNote(job) {
 	if (job.status !== 'queued') return '';
 	const printer = printerById.value[job.printer_id];
 	if (!printer || printer.ready) return '';
-	return `Waiting — printer is ${printer.status === 'unavailable' ? 'offline' : printer.status}`;
+	return `Aguardando — impressora ${printer.status === 'unavailable' ? 'offline' : ({ idle: 'pronta', printing: 'imprimindo', error: 'com erro', offline: 'offline' }[printer.status] || printer.status)}`;
 }
 
 function formatTime(iso) {
@@ -212,12 +211,12 @@ function formatTime(iso) {
 function age(iso) {
 	if (!iso) return '';
 	const seconds = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
-	if (seconds < 60) return 'just now';
+	if (seconds < 60) return 'agora mesmo';
 	const minutes = Math.floor(seconds / 60);
-	if (minutes < 60) return `${minutes} min ago`;
+	if (minutes < 60) return `há ${minutes} min`;
 	const hours = Math.floor(minutes / 60);
-	if (hours < 24) return `${hours} h ago`;
-	return `${Math.floor(hours / 24)} d ago`;
+	if (hours < 24) return `há ${hours} h`;
+	return `há ${Math.floor(hours / 24)} d`;
 }
 
 // A burst of events (a batch printing) becomes one refresh.
@@ -246,22 +245,22 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<Head title="Print Queue" />
+	<Head title="Fila de impressão" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Print Queue</h1>
+			<h1 class="text-2xl font-bold">Fila de impressão</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
 
-			<p v-if="!loaded" class="text-gray-500">Loading print queue…</p>
+			<p v-if="!loaded" class="text-gray-500">Carregando fila de impressão…</p>
 
 			<template v-else>
 				<!-- Printers -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Printers</h2>
+					<h2 class="text-lg font-semibold">Impressoras</h2>
 					<p v-if="!printers.length" class="text-sm text-gray-400">
-						No printers are set up yet. An administrator can add them under R Station Devices.
+						Nenhuma impressora foi configurada ainda. Um administrador pode adicioná-las em Dispositivos R Station.
 					</p>
 					<div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<div v-for="printer in printers" :key="printer.id" class="border rounded p-3 space-y-1">
@@ -273,7 +272,7 @@ onUnmounted(() => {
 							<div class="text-xs text-gray-500">{{ printer.media_label }} — {{ printerStateText(printer) }}</div>
 							<div class="flex items-center gap-3">
 								<span class="text-xs" :class="printer.pending ? 'text-gray-800' : 'text-gray-400'">
-									{{ printer.pending }} waiting
+									{{ printer.pending }} aguardando
 								</span>
 								<template v-if="canManage && printer.pending">
 									<button
@@ -282,36 +281,36 @@ onUnmounted(() => {
 										:class="confirmingClear === printer.id ? 'text-red-700 font-semibold' : 'text-gray-600'"
 										@click="clearPrinter(printer)"
 									>
-										{{ confirmingClear === printer.id ? 'Confirm — cancel waiting and failed jobs' : 'Clear queue' }}
+										{{ confirmingClear === printer.id ? 'Confirmar — cancelar trabalhos pendentes e com falha' : 'Limpar fila' }}
 									</button>
-									<button v-if="confirmingClear === printer.id" type="button" class="text-xs text-gray-600 underline" @click="confirmingClear = null">Cancel</button>
+									<button v-if="confirmingClear === printer.id" type="button" class="text-xs text-gray-600 underline" @click="confirmingClear = null">Cancelar</button>
 								</template>
 							</div>
 						</div>
 					</div>
 					<p class="text-xs text-gray-500">
-						A printer's status comes from its print server's last check-in. A job sent to an offline
-						printer waits here and prints when the server is back.
+						O status da impressora vem do último contato com o servidor de impressão. Um trabalho enviado para uma impressora offline
+						aguarda aqui e é impresso quando o servidor volta a funcionar.
 					</p>
 				</section>
 
 				<!-- Jobs -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
 					<div class="flex flex-wrap items-center gap-3">
-						<h2 class="text-lg font-semibold mr-auto">{{ canManage ? 'Jobs' : 'My jobs' }}</h2>
+						<h2 class="text-lg font-semibold mr-auto">{{ canManage ? 'Trabalhos' : 'Meus trabalhos' }}</h2>
 						<div class="inline-flex rounded-md shadow-sm text-sm" role="group">
 							<button
 								type="button"
 								class="px-3 py-1 border border-gray-300 rounded-l-md"
 								:class="view === 'active' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'"
 								@click="setView('active')"
-							>Active</button>
+							>Ativos</button>
 							<button
 								type="button"
 								class="px-3 py-1 border border-gray-300 rounded-r-md -ml-px"
 								:class="view === 'history' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'"
 								@click="setView('history')"
-							>History</button>
+							>Histórico</button>
 						</div>
 						<select
 							v-if="printers.length > 1"
@@ -319,23 +318,23 @@ onUnmounted(() => {
 							class="border-gray-300 rounded-md shadow-sm text-sm"
 							@change="load"
 						>
-							<option value="">All printers</option>
+							<option value="">Todas as impressoras</option>
 							<option v-for="printer in printers" :key="printer.id" :value="printer.id">{{ printer.name }}</option>
 						</select>
 					</div>
 
 					<p v-if="!jobs.length" class="text-sm text-gray-400">
-						{{ view === 'active' ? 'Nothing is waiting to print.' : 'No finished jobs yet.' }}
+						{{ view === 'active' ? 'Nenhum trabalho aguardando impressão.' : 'Ainda não há trabalhos concluídos.' }}
 					</p>
 
 					<div v-else class="overflow-x-auto">
 						<table class="w-full text-sm">
 							<thead>
 								<tr class="text-left text-gray-600">
-									<th class="py-1 pr-3">Document</th>
-									<th class="pr-3">Printer</th>
-									<th v-if="canManage" class="pr-3">By</th>
-									<th class="pr-3">Sent</th>
+									<th class="py-1 pr-3">Documento</th>
+									<th class="pr-3">Impressora</th>
+									<th v-if="canManage" class="pr-3">Solicitado por</th>
+									<th class="pr-3">Enviado</th>
 									<th class="pr-3">Status</th>
 									<th v-if="canManage"></th>
 								</tr>
@@ -363,12 +362,12 @@ onUnmounted(() => {
 											<div v-if="waitingNote(job)" class="text-xs text-amber-700 mt-1">{{ waitingNote(job) }}</div>
 											<div v-if="job.error_message" class="text-xs text-red-700 mt-1">{{ job.error_message }}</div>
 											<div v-if="job.status === 'failed' && !job.has_file" class="text-xs text-gray-500 mt-1">
-												File cleaned up — print the document again.
+												Arquivo removido — imprima o documento novamente.
 											</div>
 										</td>
 										<td v-if="canManage" class="whitespace-nowrap space-y-1">
 											<div v-if="job.status === 'failed' && job.has_file">
-												<button type="button" class="text-xs text-blue-700 underline" :disabled="busyId === job.id" @click="retryJob(job)">Retry</button>
+												<button type="button" class="text-xs text-blue-700 underline" :disabled="busyId === job.id" @click="retryJob(job)">Tentar novamente</button>
 											</div>
 											<div v-if="canDivert(job)">
 												<select
@@ -376,9 +375,9 @@ onUnmounted(() => {
 													:disabled="busyId === job.id"
 													@change="divertJob(job, Number($event.target.value)); $event.target.value = ''"
 												>
-													<option value="">Move to…</option>
+													<option value="">Mover para…</option>
 													<option v-for="target in divertTargets(job)" :key="target.id" :value="target.id">
-														{{ target.name }}{{ target.ready ? '' : ' (' + (target.status === 'unavailable' ? 'offline' : target.status) + ')' }}
+														{{ target.name }}{{ target.ready ? '' : ' (' + (target.status === 'unavailable' ? 'offline' : ({ idle: 'pronta', printing: 'imprimindo', error: 'com erro', offline: 'offline' }[target.status] || target.status)) + ')' }}
 													</option>
 												</select>
 											</div>
@@ -390,9 +389,9 @@ onUnmounted(() => {
 													:disabled="busyId === job.id"
 													@click="cancelJob(job)"
 												>
-													{{ confirmingCancel === job.id ? 'Confirm cancel' : 'Cancel' }}
+													{{ confirmingCancel === job.id ? 'Confirmar cancelamento' : 'Cancelar' }}
 												</button>
-												<button v-if="confirmingCancel === job.id" type="button" class="text-xs text-gray-600 underline ml-2" @click="confirmingCancel = null">Keep</button>
+												<button v-if="confirmingCancel === job.id" type="button" class="text-xs text-gray-600 underline ml-2" @click="confirmingCancel = null">Manter</button>
 											</div>
 										</td>
 									</tr>
@@ -402,10 +401,10 @@ onUnmounted(() => {
 												<li v-for="(entry, i) in history" :key="i">
 													<span class="font-mono text-gray-500">{{ formatTime(entry.at) }}</span>
 													— {{ entry.from && entry.from !== entry.to ? statusLabel(entry.from) + ' → ' : '' }}{{ statusLabel(entry.to) }}
-													<span v-if="entry.by"> by {{ entry.by }}</span>
+													<span v-if="entry.by"> por {{ entry.by }}</span>
 													<span v-if="entry.notes" class="text-gray-500"> · {{ entry.notes }}</span>
 												</li>
-												<li v-if="!history.length" class="text-gray-400">No history recorded.</li>
+												<li v-if="!history.length" class="text-gray-400">Nenhum histórico registrado.</li>
 											</ul>
 										</td>
 									</tr>
@@ -415,10 +414,10 @@ onUnmounted(() => {
 					</div>
 
 					<p class="text-xs text-gray-500">
-						<template v-if="updatedAt">Updated {{ updatedAt.toLocaleTimeString() }}. </template>
-						{{ realtime.connected ? 'Updating live.' : 'This page refreshes every few seconds.' }}
-						<template v-if="canManage">Cancelling a job that is already printing doesn't stop paper that has started.</template>
-						Finished jobs' files are removed after a couple of weeks; the record stays.
+						<template v-if="updatedAt">Atualizado às {{ updatedAt.toLocaleTimeString() }}. </template>
+						{{ realtime.connected ? 'Atualização em tempo real.' : 'Esta página é atualizada a cada poucos segundos.' }}
+						<template v-if="canManage">Cancelar um trabalho que já está sendo impresso não interrompe a impressão que já começou.</template>
+						Os arquivos dos trabalhos concluídos são removidos após algumas semanas; o registro permanece.
 					</p>
 				</section>
 			</template>

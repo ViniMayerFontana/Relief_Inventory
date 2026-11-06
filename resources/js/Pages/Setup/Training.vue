@@ -47,7 +47,7 @@ async function load() {
 			trainer2_name: status.value.trainers[1].name || '',
 		};
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load the training warehouse settings.';
+		error.value = e.response?.data?.message || 'Não foi possível carregar as configurações do armazém de treinamento.';
 	}
 }
 
@@ -56,9 +56,9 @@ async function saveEvent() {
 	savingEvent.value = true;
 	try {
 		status.value = (await axios.put('/json/training/event', event.value)).data;
-		notice.value = 'Certificate details saved.';
+		notice.value = 'Detalhes do certificado salvos.';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not save the certificate details.';
+		error.value = e.response?.data?.message || 'Não foi possível salvar os detalhes do certificado.';
 	} finally {
 		savingEvent.value = false;
 	}
@@ -73,7 +73,7 @@ async function startReset() {
 		watchReset();
 	} catch (e) {
 		resetting.value = false;
-		error.value = e.response?.data?.message || 'Could not start the reset.';
+		error.value = e.response?.data?.message || 'Não foi possível iniciar a redefinição.';
 	}
 }
 
@@ -87,8 +87,8 @@ function watchReset() {
 			clearInterval(timer);
 			resetting.value = false;
 			status.value = data;
-			if (data.reset_status?.state === 'failed') error.value = 'The reset failed: ' + data.reset_status.error;
-			else notice.value = 'The reset is done.';
+			if (data.reset_status?.state === 'failed') error.value = 'A redefinição falhou: ' + data.reset_status.error;
+			else notice.value = 'Redefinição concluída.';
 		} catch (e) {
 			const code = e.response?.status;
 			if (code === 401 || code === 419) {
@@ -114,11 +114,11 @@ async function prepare() {
 	preparing.value = true;
 	try {
 		const { data } = await axios.post('/json/training/prepare');
-		notice.value = 'Training data prepared. Print the setup packet and labels below.'
+		notice.value = 'Dados de treinamento preparados. Imprima o pacote de configuração inicial e as etiquetas abaixo.'
 			+ (data.warnings?.length ? ' ' + data.warnings.join(' ') : '');
 		await load();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not prepare training data.';
+		error.value = e.response?.data?.message || 'Não foi possível preparar os dados de treinamento.';
 	} finally {
 		preparing.value = false;
 	}
@@ -131,7 +131,7 @@ async function addTrainee() {
 		notice.value = newTrainee.value.first_name + ' ' + newTrainee.value.last_name + ' added.';
 		newTrainee.value = { first_name: '', last_name: '', team: newTrainee.value.team };
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not add that trainee.';
+		error.value = e.response?.data?.message || 'Não foi possível adicionar essa pessoa em treinamento.';
 	}
 }
 
@@ -140,7 +140,7 @@ async function updateTrainee(trainee, changes) {
 	try {
 		status.value = (await axios.patch('/json/training/trainees/' + trainee.id, changes)).data;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not update that trainee.';
+		error.value = e.response?.data?.message || 'Não foi possível atualizar essa pessoa em treinamento.';
 	}
 }
 
@@ -153,9 +153,9 @@ async function uploadSignature(slot, input) {
 		const form = new FormData();
 		form.append('signature', file);
 		status.value = (await axios.post('/json/training/signatures/' + slot, form)).data;
-		notice.value = 'Signature uploaded.';
+		notice.value = 'Assinatura enviada.';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not upload that signature.';
+		error.value = e.response?.data?.message || 'Não foi possível enviar essa assinatura.';
 	} finally {
 		uploadingSlot.value = null;
 		input.value = '';
@@ -167,7 +167,7 @@ async function removeSignature(slot) {
 	try {
 		status.value = (await axios.delete('/json/training/signatures/' + slot)).data;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not remove that signature.';
+		error.value = e.response?.data?.message || 'Não foi possível remover essa assinatura.';
 	}
 }
 
@@ -185,84 +185,84 @@ onMounted(async () => {
 </script>
 
 <template>
-	<Head title="Training Warehouse" />
+	<Head title="Armazém de treinamento" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Training Warehouse</h1>
+			<h1 class="text-2xl font-bold">Armazém de treinamento</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
-			<p v-if="!status && !error" class="text-gray-500">Loading…</p>
+			<p v-if="!status && !error" class="text-gray-500">Carregando…</p>
 
 			<template v-if="status">
 				<!-- ======================= THIS WAREHOUSE ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">This is a training warehouse</h2>
+					<h2 class="text-lg font-semibold">Este é um armazém de treinamento</h2>
 					<p class="text-sm text-gray-700">
-						Everything entered here is practice data and never mixes with a real warehouse. An approved device shows a
-						<strong>tap-your-name</strong> login for trainees &mdash; no password &mdash; and a trainee can do what the Trainee
-						role grants (station work and reports; nothing in Setup). To close this warehouse after the class, ask the person who runs the
-						instance to turn it off (<span class="font-mono">php artisan warehouse:training disable</span>); its data is kept until it is reset.
+						Tudo o que for registrado aqui são dados de prática e nunca se mistura com um armazém real. Um dispositivo aprovado mostra
+						um acesso em que a pessoa em treinamento toca no próprio nome — sem senha — e pode fazer o que a função Pessoa em treinamento
+						permite (atividades nas estações e relatórios; nada na configuração inicial). Para fechar este armazém depois da aula, peça à pessoa responsável pela
+						instância que o desative (<span class="font-mono">php artisan warehouse:training disable</span>); os dados serão mantidos até a redefinição.
 					</p>
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<div class="border rounded p-3">
-							<div class="text-gray-500">Approved devices</div>
+							<div class="text-gray-500">Dispositivos aprovados</div>
 							<div class="text-lg font-semibold">{{ status.approved_devices }}</div>
 						</div>
 						<div class="border rounded p-3">
-							<div class="text-gray-500">Trainees on the list</div>
+							<div class="text-gray-500">Pessoas na lista de treinamento</div>
 							<div class="text-lg font-semibold">{{ status.trainees.filter((t) => t.active).length }}</div>
 						</div>
 					</div>
 					<div v-if="resetting" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 text-sm">
-						Resetting this warehouse… It is unavailable for a minute or two, and everyone is logged out when it finishes.
-						This page goes to the login screen by itself.
+						Redefinindo este armazém… Ele ficará indisponível por um ou dois minutos e todos sairão do sistema ao final.
+						Esta página abrirá a tela de acesso automaticamente.
 					</div>
 					<div v-else class="space-y-3">
 						<button v-if="!confirmingReset" type="button"
 							class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-red-600 hover:bg-red-500"
-							@click="confirmingReset = true; resetText = ''">Reset this warehouse…</button>
+							@click="confirmingReset = true; resetText = ''">Redefinir este armazém…</button>
 						<div v-if="confirmingReset" class="border border-red-300 bg-red-50 rounded p-4 space-y-2 text-sm">
-							<p class="font-semibold text-red-800">This erases everything entered in this warehouse and starts it again from its seed.</p>
+							<p class="font-semibold text-red-800">Esta ação apaga tudo o que foi registrado neste armazém e o recria a partir dos dados iniciais.</p>
 							<p>
-								Practice donations, orders, pallets and stock, trainees and sign-ups, report cards, items added to the Master Item
-								List, uploaded photos and approved devices are erased. <strong>Kept:</strong> the people who log in here (with their
-								roles), the certificate details and signatures, and the class archives. Nothing outside this warehouse is touched.
+								Doações, pedidos, paletes e estoque de prática, pessoas em treinamento e inscrições, fichas de avaliação, itens adicionados à
+								lista principal de itens, fotos enviadas e dispositivos aprovados serão apagados. <strong>Serão mantidos:</strong> as pessoas que entram aqui (com suas
+								funções), os detalhes e as assinaturas dos certificados e os arquivos da turma. Nada fora deste armazém será alterado.
 							</p>
 							<p>
-								First, a <strong>class archive</strong> is saved: the sign-up follow-up list, report cards (PDF and CSV) and
-								certificates. Download it below afterwards.
+								Antes, será salvo um <strong>arquivo da turma</strong>: a lista de acompanhamento das inscrições, as fichas de avaliação (PDF e CSV) e
+								os certificados. Depois, baixe-o abaixo.
 							</p>
-							<label class="block">Type <strong>RESET</strong> to confirm:
+							<label class="block">Digite <strong>RESET</strong> para confirmar:
 								<input v-model="resetText" class="ml-2 border-gray-300 rounded-md shadow-sm text-sm py-1 w-32" autocomplete="off" />
 							</label>
 							<div class="flex gap-3">
 								<button type="button" :disabled="resetText.trim() !== 'RESET'" @click="startReset"
 									class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-red-600 hover:bg-red-500 disabled:opacity-50">
-									Reset now</button>
-								<button type="button" class="text-sm underline" @click="confirmingReset = false">Cancel</button>
+									Redefinir agora</button>
+								<button type="button" class="text-sm underline" @click="confirmingReset = false">Cancelar</button>
 							</div>
 						</div>
 					</div>
 					<div v-if="status.reset_status?.state === 'failed' && !resetting" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3 text-sm">
-						The last reset failed: {{ status.reset_status.error }}
+						A última redefinição falhou: {{ status.reset_status.error }}
 					</div>
 					<p class="text-xs text-gray-500">
-						To approve a tablet, log in on it and choose <strong>PIN Login on This Device</strong> from the
-						profile menu (the same approval PIN unlock uses; requests from others wait on
-						<Link href="/setup/pin-login" class="underline">PIN Login</Link>). Staff can still log in on a training device with their
-						PIN or email from the links under the name tiles.
+						Para aprovar um tablet, entre nele e selecione <strong>Acesso por PIN neste dispositivo</strong> no
+						menu do perfil (o mesmo PIN de aprovação usado no desbloqueio; solicitações de outras pessoas ficam aguardando em
+						<Link href="/setup/pin-login" class="underline">Acesso por PIN</Link>). A equipe ainda pode entrar em um dispositivo de treinamento com seu
+						PIN ou e-mail pelos links abaixo dos nomes.
 					</p>
 				</section>
 
 				<!-- ======================= SELF SIGN-UP ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Sign-up page</h2>
+					<h2 class="text-lg font-semibold">Página de inscrição</h2>
 					<p class="text-sm text-gray-700">
-						People sign themselves up on their own phones: name, and optionally email, phone, whether
-						they'd like project updates, how they'd like to help, and someone they'd recommend. Each
-						sign-up goes straight onto the trainee list. The page only accepts sign-ups while Training
-						Mode is on, and it never logs anyone in.
+						As pessoas se inscrevem pelo próprio celular: informam o nome e, opcionalmente, e-mail, telefone, se
+						gostariam de receber novidades do projeto, como gostariam de ajudar e alguém que recomendariam. Cada
+						inscrição é adicionada diretamente à lista de pessoas em treinamento. A página só aceita inscrições enquanto o
+						Modo de treinamento está ativado e não inicia sessão de ninguém.
 					</p>
 					<div class="flex flex-wrap items-center gap-6">
 						<div class="w-40 h-40 shrink-0 [&>svg]:w-full [&>svg]:h-full" v-html="status.signup.qr_svg"></div>
@@ -270,135 +270,134 @@ onMounted(async () => {
 							<div><a :href="status.signup.url" target="_blank" class="font-mono text-blue-600 underline break-all">{{ status.signup.url }}</a></div>
 							<div class="grid grid-cols-2 gap-4">
 								<div class="border rounded p-3">
-									<div class="text-gray-500">Signed up today</div>
+									<div class="text-gray-500">Inscrições de hoje</div>
 									<div class="text-lg font-semibold">{{ status.signup.today }}</div>
 								</div>
 								<div class="border rounded p-3">
-									<div class="text-gray-500">All time</div>
+									<div class="text-gray-500">Total</div>
 									<div class="text-lg font-semibold">{{ status.signup.total }}</div>
 								</div>
 							</div>
 							<div class="flex flex-wrap gap-2">
-								<PrintMenu document-key="training-signup-poster" media="report" variant="form" label="QR Poster"
+								<PrintMenu document-key="training-signup-poster" media="report" variant="form" label="Cartaz com QR code"
 									download-href="/report/training/signup-poster.pdf" />
-								<a :href="$withWarehouse('/report/training/signups.csv')" class="ri_formbutton">Follow-up List (CSV)</a>
-								<button type="button" class="ri_formbutton" @click="load">Refresh</button>
+								<a :href="$withWarehouse('/report/training/signups.csv')" class="ri_formbutton">Lista de acompanhamento (CSV)</a>
+								<button type="button" class="ri_formbutton" @click="load">Atualizar</button>
 							</div>
 						</div>
 					</div>
 					<p class="text-xs text-gray-500">
-						Point your short link at the address above. The follow-up list has everyone's answers
-						(contact details, updates, how they'd help, recommendations).
+						Configure seu link curto para apontar para o endereço acima. A lista de acompanhamento contém as respostas de todos
+						(dados de contato, novidades, formas de ajudar e recomendações).
 					</p>
 				</section>
 
 				<!-- ======================= PREPARE ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Prepare Training</h2>
+					<h2 class="text-lg font-semibold">Preparar treinamento</h2>
 					<p class="text-sm text-gray-700">
-						Receiving and Sorting use your own goods, not scanned: put out boxes to receive, and the teams
-						sort what they bring in. Prepare Training adds offers for those deliveries to match. The goods
-						that start out already in the warehouse — the sorting area table, sealed trays at the table spots
-						with orders to pick, and picked orders to ship (Stations 3–5) — are the ones you scan first, so the
-						system knows exactly what is there. Each team also gets a driver. After its first station every
-						team works on the goods it handled one station earlier. The setup packet says which scanned goods
-						go at which spot or in which load, with a contents slip for each and a sign for each station.
+						As estações de Recebimento e Triagem usam seus próprios produtos, que não são escaneados: disponha as caixas para recebimento, e as equipes
+						fazem a triagem do que receberem. A preparação do treinamento adiciona ofertas correspondentes a essas entregas. Os produtos
+						que já estarão no armazém — na mesa da área de triagem, em bandejas fechadas nos espaços de mesa com pedidos para separar e em pedidos separados aguardando expedição (estações 3 a 5) — são os que você deve escanear primeiro, para que o
+						sistema saiba exatamente o que há no local. Cada equipe também terá uma pessoa motorista. Depois da primeira estação, cada equipe
+						trabalha com os produtos que manipulou uma estação antes. O pacote de configuração inicial informa quais produtos escaneados
+						devem ser colocados em cada espaço ou carga, com uma lista de conteúdo para cada um e uma placa para cada estação.
 					</p>
 					<div class="flex flex-wrap items-center gap-4 border rounded p-3 text-sm">
-						<div><span class="text-lg font-semibold">{{ status.products.units }}</span> of {{ status.products.plan.target }} items scanned</div>
-						<div><span class="text-lg font-semibold">{{ status.products.distinct }}</span> of {{ status.products.plan.min_products }} different products</div>
-						<Link href="/setup/training/products" class="ri_defaultbutton">Scan Training Products</Link>
+						<div><span class="text-lg font-semibold">{{ status.products.units }}</span> de {{ status.products.plan.target }} itens escaneados</div>
+						<div><span class="text-lg font-semibold">{{ status.products.distinct }}</span> de {{ status.products.plan.min_products }} produtos diferentes</div>
+						<Link href="/setup/training/products" class="ri_defaultbutton">Escanear produtos para treinamento</Link>
 					</div>
-					<div v-if="preparing" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 text-sm">Preparing training data…</div>
+					<div v-if="preparing" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 text-sm">Preparando dados de treinamento…</div>
 					<div class="flex flex-wrap items-center gap-3">
 						<button type="button" :disabled="preparing || status.products.units < status.products.plan.target" @click="prepare"
 							class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white disabled:opacity-50"
 							:class="confirmingPrepare ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500'">
-							{{ confirmingPrepare ? 'Confirm — adds a full set of training records' : 'Prepare Training' }}
+							{{ confirmingPrepare ? 'Confirmar — adiciona um conjunto completo de registros de treinamento' : 'Preparar treinamento' }}
 						</button>
-						<button v-if="confirmingPrepare" type="button" class="text-sm underline" @click="confirmingPrepare = false">Cancel</button>
+						<button v-if="confirmingPrepare" type="button" class="text-sm underline" @click="confirmingPrepare = false">Cancelar</button>
 						<template v-if="status.prepared">
-							<PrintMenu document-key="training-setup-packet" media="report" variant="form" label="Setup Packet"
+							<PrintMenu document-key="training-setup-packet" media="report" variant="form" label="Pacote de configuração inicial"
 								download-href="/report/training/setup-packet.pdf" />
 							<PrintMenu document-key="training-pallet-labels" :media="$page.props.printing.palletLabelMedia" variant="form"
-								label="Pallet Labels" download-href="/report/training/pallet-labels.pdf" />
+								label="Etiquetas de palete" download-href="/report/training/pallet-labels.pdf" />
 						</template>
 						<PrintMenu document-key="training-spot-labels" :media="$page.props.printing.palletLabelMedia" variant="form"
-							label="Table Spot Labels" download-href="/report/training/spot-labels.pdf" />
+							label="Etiquetas dos espaços de mesa" download-href="/report/training/spot-labels.pdf" />
 					</div>
 					<p v-if="status.products.units < status.products.plan.target" class="text-sm text-gray-500">
-						Scan at least {{ status.products.plan.target }} items first ({{ status.products.plan.target - status.products.units }} more).
+						Escaneie pelo menos {{ status.products.plan.target }} itens primeiro (faltam {{ status.products.plan.target - status.products.units }}).
 					</p>
 					<p class="text-xs text-gray-500">
-						Last prepared: <span class="font-mono">{{ status.prepared_at ? formatTime(status.prepared_at) : 'never' }}</span>.
-						Running it again adds another full set from the same scanned goods (it never removes anything).
-						How many items each station gets is set in <span class="font-mono">config/training.php</span>.
-						The table spot labels (A-1 to C-4, with a barcode for Inventory Movement to scan) print on the
-						pallet label stock.
+						Última preparação: <span class="font-mono">{{ status.prepared_at ? formatTime(status.prepared_at) : 'nunca' }}</span>.
+						Executar novamente adiciona outro conjunto completo com os mesmos produtos escaneados (nada é removido).
+						A quantidade de itens de cada estação é definida em <span class="font-mono">config/training.php</span>.
+						As etiquetas dos espaços de mesa (A-1 a C-4, com um código de barras para escanear na Movimentação de estoque) são impressas em
+						etiquetas para paletes.
 					</p>
 				</section>
 
 				<!-- ======================= TEAM SHEETS & REPORT CARDS ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Team sheets and report cards</h2>
+					<h2 class="text-lg font-semibold">Folhas das equipes e fichas de avaliação</h2>
 					<div class="flex flex-wrap items-center gap-3">
-						<PrintMenu document-key="training-all-teams" media="report" variant="form" label="All Team Sheets"
+						<PrintMenu document-key="training-all-teams" media="report" variant="form" label="Folhas de todas as equipes"
 							download-href="/report/training/team-sheets.pdf" />
-						<Link href="/reports/training" class="ri_formbutton">Report Cards &amp; Certificates</Link>
+						<Link href="/reports/training" class="ri_formbutton">Fichas de avaliação e certificados</Link>
 					</div>
-					<h3 class="font-semibold">Certificates</h3>
+					<h3 class="font-semibold">Certificados</h3>
 					<form class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm" @submit.prevent="saveEvent">
 						<label class="block">
-							<span class="text-gray-700">Training event title</span>
-							<input v-model="event.event_title" maxlength="150" placeholder="Hands-on Warehouse Training"
+							<span class="text-gray-700">Nome do evento de treinamento</span>
+							<input v-model="event.event_title" maxlength="150" placeholder="Treinamento prático em armazém"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Where the class was held</span>
-							<input v-model="event.event_location" maxlength="150" placeholder="e.g. Statesville Warehouse, Statesville, NC"
+							<span class="text-gray-700">Local da aula</span>
+							<input v-model="event.event_location" maxlength="150" placeholder="Ex.: Armazém de Statesville, Statesville, NC"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<div v-for="trainer in status.trainers" :key="trainer.slot" class="border rounded p-3 space-y-2">
 							<label class="block">
-								<span class="text-gray-700">{{ trainer.slot === 1 ? 'Left' : 'Right' }} signature — trainer's name</span>
-								<input v-model="event['trainer' + trainer.slot + '_name']" maxlength="100" placeholder="Trainer"
+								<span class="text-gray-700">Assinatura {{ trainer.slot === 1 ? 'esquerda' : 'direita' }} — nome da pessoa instrutora</span>
+								<input v-model="event['trainer' + trainer.slot + '_name']" maxlength="100" placeholder="Pessoa instrutora"
 									class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 							</label>
 							<div class="h-16 border border-dashed rounded flex items-center justify-center bg-gray-50">
 								<img v-if="trainer.has_signature" :src="'/json/training/signatures/' + trainer.slot + '?v=' + trainer.signature_version"
-									alt="Signature" class="max-h-14 max-w-full" />
-								<span v-else class="text-xs text-gray-400">No signature — the line prints blank to sign by hand</span>
+									alt="Assinatura" class="max-h-14 max-w-full" />
+								<span v-else class="text-xs text-gray-400">Sem assinatura — a linha será impressa em branco para assinatura manual</span>
 							</div>
 							<div class="flex flex-wrap items-center gap-3">
 								<label class="ri_formbutton cursor-pointer">
-									{{ uploadingSlot === trainer.slot ? 'Uploading…' : (trainer.has_signature ? 'Replace signature' : 'Upload signature') }}
+									{{ uploadingSlot === trainer.slot ? 'Enviando…' : (trainer.has_signature ? 'Substituir assinatura' : 'Enviar assinatura') }}
 									<input type="file" accept="image/png,image/jpeg" class="hidden" :disabled="uploadingSlot !== null"
 										@change="uploadSignature(trainer.slot, $event.target)" />
 								</label>
-								<button v-if="trainer.has_signature" type="button" class="text-sm underline" @click="removeSignature(trainer.slot)">Remove</button>
+								<button v-if="trainer.has_signature" type="button" class="text-sm underline" @click="removeSignature(trainer.slot)">Remover</button>
 							</div>
 						</div>
-						<div class="sm:col-span-2"><PrimaryButton :disabled="savingEvent">{{ savingEvent ? 'Saving…' : 'Save certificate details' }}</PrimaryButton></div>
+						<div class="sm:col-span-2"><PrimaryButton :disabled="savingEvent">{{ savingEvent ? 'Salvando…' : 'Salvar detalhes do certificado' }}</PrimaryButton></div>
 					</form>
 					<p class="text-xs text-gray-500">
-						A certificate reads "has completed <em>title</em> held at <em>location</em> on <em>date</em>", with the two
-						trainers' signature lines at the bottom left and right. Left blank, the title is "Hands-on Warehouse
-						Training", the location is left out and each line is labelled "Trainer". Signatures are PNG or JPEG
-						(up to 2 MB) — a scan or photo of a signature on white paper cropped close works; a PNG with a
-						transparent background looks best. Uploading a signature takes effect right away; names need Save.
+						O certificado informa que a pessoa concluiu o treinamento <em>título</em>, realizado em <em>local</em> na <em>data</em>, com as linhas de assinatura das duas
+						pessoas instrutoras nos cantos inferiores esquerdo e direito. Se o título ficar em branco, será usado “Treinamento
+						prático em armazém”; o local será omitido e cada linha será identificada como “Pessoa instrutora”. As assinaturas devem estar em PNG ou JPEG
+						(até 2 MB) — funciona bem uma digitalização ou foto de uma assinatura em papel branco, cortada rente; um PNG com
+						fundo transparente fica melhor. O envio da assinatura tem efeito imediato; os nomes precisam ser salvos.
 					</p>
 					<p class="text-xs text-gray-500">
-						Each team's sheet can also be printed from the <Link href="/help" class="underline">Help</Link> page.
-						Print the team sheets after Prepare Training so they include each team's driver login.
+						A folha de cada equipe também pode ser impressa na página <Link href="/help" class="underline">Ajuda</Link>.
+						Imprima as folhas depois de preparar o treinamento para incluir os dados de acesso da pessoa motorista de cada equipe.
 					</p>
 				</section>
 
 				<!-- ======================= CLASS ARCHIVES ======================= -->
 				<section v-if="status.archives.length" class="bg-white shadow rounded-lg p-6 space-y-3">
-					<h2 class="text-lg font-semibold">Class archives</h2>
-					<p class="text-sm text-gray-700">Saved by each "reset to before training" just before the database was put back.</p>
+					<h2 class="text-lg font-semibold">Arquivos das turmas</h2>
+					<p class="text-sm text-gray-700">Salvos antes de cada redefinição para o estado anterior ao treinamento e da restauração do banco de dados.</p>
 					<table class="ri_datatable w-full text-sm" border="1">
-						<thead><tr><th>Saved</th><th>Files</th></tr></thead>
+						<thead><tr><th>Salvo em</th><th>Arquivos</th></tr></thead>
 						<tbody>
 							<tr v-for="a in status.archives" :key="a.stamp">
 								<td>{{ archiveTime(a.stamp) }}</td>
@@ -413,33 +412,33 @@ onMounted(async () => {
 
 				<!-- ======================= TRAINEES ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Trainees</h2>
+					<h2 class="text-lg font-semibold">Pessoas em treinamento</h2>
 					<form class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-sm items-end" @submit.prevent="addTrainee">
 						<label class="block">
-							<span class="text-gray-700">First name</span>
+							<span class="text-gray-700">Nome</span>
 							<input v-model="newTrainee.first_name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Last name</span>
+							<span class="text-gray-700">Sobrenome</span>
 							<input v-model="newTrainee.last_name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Team</span>
+							<span class="text-gray-700">Equipe</span>
 							<select v-model="newTrainee.team" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-								<option :value="null">Choose at login</option>
-								<option v-for="n in status.teams" :key="n" :value="n">Team {{ n }}</option>
+								<option :value="null">Escolher ao entrar</option>
+								<option v-for="n in status.teams" :key="n" :value="n">Equipe {{ n }}</option>
 							</select>
 						</label>
-						<div><PrimaryButton>Add Trainee</PrimaryButton></div>
+						<div><PrimaryButton>Adicionar pessoa</PrimaryButton></div>
 					</form>
 
 					<label class="text-sm flex items-center gap-2">
-						<input type="checkbox" v-model="showInactive" /> Show trainees taken off the list
+						<input type="checkbox" v-model="showInactive" /> Mostrar pessoas removidas da lista
 					</label>
 
-					<p v-if="!trainees.length" class="text-sm text-gray-400">None yet — add them here, or with Add New on a training device.</p>
+					<p v-if="!trainees.length" class="text-sm text-gray-400">Nenhuma pessoa ainda — adicione aqui ou use “Adicionar novo” em um dispositivo de treinamento.</p>
 					<table v-else class="ri_datatable w-full text-sm" border="1">
-						<thead><tr><th>Name</th><th>Team</th><th>Actions today</th><th></th></tr></thead>
+						<thead><tr><th>Nome</th><th>Equipe</th><th>Ações de hoje</th><th></th></tr></thead>
 						<tbody>
 							<tr v-for="t in trainees" :key="t.id" :class="{ 'text-gray-400': !t.active }">
 								<td>{{ t.full_name }}</td>
@@ -447,21 +446,21 @@ onMounted(async () => {
 									<select :value="t.team" class="border-gray-300 rounded-md shadow-sm text-sm py-1"
 										@change="updateTrainee(t, { team: $event.target.value ? Number($event.target.value) : null })">
 										<option value="">—</option>
-										<option v-for="n in status.teams" :key="n" :value="n">Team {{ n }}</option>
+										<option v-for="n in status.teams" :key="n" :value="n">Equipe {{ n }}</option>
 									</select>
 								</td>
 								<td>{{ t.actions_today }}</td>
 								<td>
 									<button type="button" class="text-sm underline" @click="updateTrainee(t, { active: !t.active })">
-										{{ t.active ? 'Take off the list' : 'Put back on the list' }}
+										{{ t.active ? 'Remover da lista' : 'Adicionar novamente à lista' }}
 									</button>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 					<p class="text-xs text-gray-500">
-						Taking a trainee off the list removes their name tile and stops them logging in; their
-						activity and report card stay.
+						Remover uma pessoa da lista tira seu nome da tela de acesso e impede que ela entre; sua
+						atividade e ficha de avaliação são mantidas.
 					</p>
 				</section>
 			</template>

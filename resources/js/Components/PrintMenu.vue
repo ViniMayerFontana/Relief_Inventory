@@ -66,7 +66,7 @@ export default {
 		params: { type: Object, default: () => ({}) },
 		downloadHref: { type: String, default: null },
 		prepare: { type: Function, default: null },
-		label: { type: String, default: 'Print' },
+		label: { type: String, default: 'Imprimir' },
 		variant: { type: String, default: 'button' },
 		copies: { type: Number, default: 1 },
 		disabled: { type: Boolean, default: false },
@@ -252,7 +252,7 @@ export default {
 				this.$emit('downloaded');
 			} catch (e) {
 				tab?.close();
-				this.showNotice('error', this.errorText(e, 'Could not prepare the document.'));
+				this.showNotice('error', this.errorText(e, 'Não foi possível preparar o documento.'));
 			}
 		},
 		async send(printer, copies) {
@@ -277,7 +277,7 @@ export default {
 				this.showNotice(data.printer?.ready ? 'ok' : 'warn', data.message);
 				this.$emit('sent', data);
 			} catch (e) {
-				this.showNotice('error', this.errorText(e, 'Could not send to the printer.'));
+				this.showNotice('error', this.errorText(e, 'Não foi possível enviar para a impressora.'));
 			} finally {
 				this.busy = false;
 			}
@@ -302,8 +302,8 @@ export default {
 		statusText(printer) {
 			if (printer.ready) return printer.status === 'printing' ? 'printing' : '';
 			return printer.status === 'unavailable'
-				? 'offline — will print when back'
-				: (printer.status_message || printer.status) + ' — will queue';
+				? 'desconectada — o trabalho será impresso quando voltar'
+				: (printer.status_message || printer.status) + ' — será colocado na fila';
 		},
 	},
 };
@@ -317,16 +317,16 @@ export default {
 			:disabled="disabled || busy"
 			@click.stop="openDialog"
 		>
-			{{ busy ? 'Sending…' : label }}
+			{{ busy ? 'Enviando…' : label }}
 		</button>
 
 		<Modal :show="open" max-width="md" @close="close">
 			<div ref="dialogBody" class="pm_dialog" @keydown="onDialogKeydown" @click.stop>
 				<h2 class="pm_title">{{ label }}</h2>
 
-				<div v-if="loading" class="pm_hint">Loading printers…</div>
-				<div v-else-if="loadError && !hasDownload" class="pm_hint pm_hint_error">Couldn't load printers.</div>
-				<div v-else-if="!options.length" class="pm_hint">No printers are set up for this document.</div>
+				<div v-if="loading" class="pm_hint">Carregando impressoras…</div>
+				<div v-else-if="loadError && !hasDownload" class="pm_hint pm_hint_error">Não foi possível carregar as impressoras.</div>
+				<div v-else-if="!options.length" class="pm_hint">Nenhuma impressora está configurada para este documento.</div>
 
 				<div v-if="options.length" role="radiogroup" :aria-label="'What to do with ' + label" class="pm_options">
 					<button
@@ -343,7 +343,7 @@ export default {
 					>
 						<span class="pm_radio" aria-hidden="true"></span>
 						<template v-if="!option.printer">
-							<span class="pm_name">Download PDF</span>
+							<span class="pm_name">Baixar PDF</span>
 						</template>
 						<template v-else>
 							<span class="pm_dot" :class="dotClass(option.printer)"></span>
@@ -354,10 +354,10 @@ export default {
 						</template>
 					</button>
 				</div>
-				<div v-if="loadError && hasDownload" class="pm_hint pm_hint_error">Couldn't load printers — you can still download.</div>
+				<div v-if="loadError && hasDownload" class="pm_hint pm_hint_error">Não foi possível carregar as impressoras — você ainda pode baixar o arquivo.</div>
 
 				<div v-if="selectedPrinter" class="pm_copies">
-					<label for="pm_copies_input">Number of copies</label>
+					<label for="pm_copies_input">Número de cópias</label>
 					<input
 						id="pm_copies_input"
 						v-model="copiesText"
@@ -371,13 +371,13 @@ export default {
 						:class="{ pm_invalid: copiesCount === null }"
 						@focus="$event.target.select()"
 					/>
-					<span v-if="copiesCount === null" class="pm_hint_error pm_copies_error">Enter a number from 1 to 99.</span>
+					<span v-if="copiesCount === null" class="pm_hint_error pm_copies_error">Digite um número de 1 a 99.</span>
 				</div>
 
 				<div class="pm_actions">
-					<button type="button" class="ri_formbutton" @click="close">Cancel</button>
+					<button type="button" class="ri_formbutton" @click="close">Cancelar</button>
 					<button type="button" class="ri_defaultbutton" :disabled="!canConfirm" @click="confirm">
-						{{ choice === 'download' ? 'Download' : 'Print' }}
+						{{ choice === 'download' ? 'Baixar' : 'Imprimir' }}
 					</button>
 				</div>
 			</div>

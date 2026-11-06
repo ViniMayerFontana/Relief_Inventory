@@ -41,10 +41,10 @@ class FormSubmissionController extends Controller
         abort_unless($submission->form_id === $form->id, 404);
 
         if (! $form->requires_approval) {
-            return response()->json(['message' => 'This form doesn\'t use an approval workflow.'], 422);
+            return response()->json(['message' => 'Este formulário não usa um fluxo de aprovação.'], 422);
         }
         if ($submission->approval_status !== FormSubmission::STATUS_PENDING) {
-            return response()->json(['message' => 'Only a pending submission can be approved.'], 422);
+            return response()->json(['message' => 'Somente uma resposta pendente pode ser aprovada.'], 422);
         }
 
         $data = $request->validate([
@@ -71,7 +71,7 @@ class FormSubmissionController extends Controller
         abort_unless($submission->form_id === $form->id, 404);
 
         if ($submission->approval_status !== FormSubmission::STATUS_PENDING) {
-            return response()->json(['message' => 'Only a pending submission can be denied.'], 422);
+            return response()->json(['message' => 'Somente uma resposta pendente pode ser recusada.'], 422);
         }
 
         $data = $request->validate(['notes' => 'nullable|string']);

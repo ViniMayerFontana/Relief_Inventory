@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Order Request Form</title>
+    <title>Formulário de Pedido</title>
     <style>
         @page {
             size: letter;
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Order Request Form — generated {{ $generatedAt->format('F j, Y') }}";
+                content: "Formulário de Pedido — gerado em {{ $generatedAt->format('F j, Y') }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "Página " counter(page) " de " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -135,37 +135,37 @@
     </style>
 </head>
 <body>
-    <h1>Order Request Form</h1>
+    <h1>Formulário de Pedido</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; generated {{ $generatedAt->format('F j, Y') }}
+        {{ config('app.name') }} &mdash; gerado em {{ $generatedAt->format('F j, Y') }}
     </div>
 
     <div class="instructions">
-        Write the quantity needed next to each item below, then return this form (email, fax, or in person) to be
-        entered as your order. Items listed here have stock currently available. If you need something not listed,
-        use the "Other Needs" section at the bottom.
+        Informe ao lado de cada item abaixo a quantidade necessária e devolva este formulário (por e-mail, fax ou pessoalmente)
+        para que seu pedido seja registrado. Os itens listados têm estoque disponível no momento. Se precisar de algo que não esteja na lista,
+        use a seção "Outras necessidades" no final.
     </div>
 
     <div class="fields">
-        <div class="field"><label>Organization / POD Name</label><div class="line"></div></div>
-        <div class="field"><label>Contact Name</label><div class="line"></div></div>
-        <div class="field"><label>Phone</label><div class="line"></div></div>
-        <div class="field"><label>Email</label><div class="line"></div></div>
-        <div class="field"><label>Delivery Address</label><div class="line"></div></div>
-        <div class="field"><label>Date Needed By</label><div class="line"></div></div>
+        <div class="field"><label>Nome da organização / ponto de distribuição</label><div class="line"></div></div>
+        <div class="field"><label>Nome do contato</label><div class="line"></div></div>
+        <div class="field"><label>Telefone</label><div class="line"></div></div>
+        <div class="field"><label>E-mail</label><div class="line"></div></div>
+        <div class="field"><label>Endereço de entrega</label><div class="line"></div></div>
+        <div class="field"><label>Data necessária</label><div class="line"></div></div>
     </div>
 
     @forelse($categories as $category => $items)
         <table>
             <thead>
                 <tr>
-                    <th class="category-heading" colspan="4">{{ $category ?? 'Uncategorized' }}</th>
+                    <th class="category-heading" colspan="4">{{ $category ?? 'Sem categoria' }}</th>
                 </tr>
                 <tr>
-                    <th>Item #</th>
-                    <th>Name</th>
-                    <th>Unit</th>
-                    <th class="qty">Qty Needed</th>
+                    <th>Item nº</th>
+                    <th>Nome</th>
+                    <th>Unidade</th>
+                    <th class="qty">Qtd. necessária</th>
                 </tr>
             </thead>
             <tbody>
@@ -180,20 +180,20 @@
             </tbody>
         </table>
     @empty
-        <p>No items are currently available to request.</p>
+        <p>Não há itens disponíveis para solicitação no momento.</p>
     @endforelse
 
     <div class="other-needs">
-        <h2>Other Needs</h2>
-        <p>Anything you need that isn't listed above:</p>
+        <h2>Outras necessidades</h2>
+        <p>Informe algo de que precisa e que não esteja listado acima:</p>
         <div class="other-line"></div>
         <div class="other-line"></div>
         <div class="other-line"></div>
     </div>
 
     <div class="disclaimer">
-        This list reflects items with stock on hand at the time this form was generated and may change before your
-        order is processed. Quantities are not guaranteed until confirmed.
+        Esta lista reflete os itens em estoque no momento da geração do formulário e pode mudar antes do processamento
+        do pedido. As quantidades não são garantidas até a confirmação.
     </div>
 </body>
 </html>

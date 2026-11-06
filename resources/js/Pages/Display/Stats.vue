@@ -12,8 +12,8 @@ import axios from 'axios';
 // warehouse dashboard ('dashboard') with no menus, refreshing itself. Data comes from
 // /json/display/<mode>, open to a paired device with the matching Function — see EnsureDeviceAccess.
 const REFRESH_MS = 60 * 1000;
-const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: 'Sorting', Complete: 'Complete' };
-const ORDER_STAGE_LABELS = { 'New Order': 'New Order', Filling: 'Filling', Filled: 'Filled', Shipped: 'Shipped' };
+const DONATION_STAGE_LABELS = { Received: 'Recebida', Sorting: 'Em triagem', Complete: 'Concluída' };
+const ORDER_STAGE_LABELS = { 'New Order': 'Novo pedido', Filling: 'Em separação', Filled: 'Separado', Shipped: 'Enviado' };
 
 export default {
 	components: { DisplayLayout, Head, PeriodStatCard, BarBreakdownCard },
@@ -25,7 +25,7 @@ export default {
 	},
 	computed: {
 		title() {
-			return this.mode === 'dashboard' ? 'Warehouse Stats' : 'Situation Report';
+			return this.mode === 'dashboard' ? 'Estatísticas do armazém' : 'Relatório de situação';
 		},
 		donationPipelineRows() {
 			return Object.entries(DONATION_STAGE_LABELS).map(([key, label]) => ({ label, value: this.data.pipeline.donations[key] || 0 }));
@@ -50,8 +50,8 @@ export default {
 				// A 403 means the device's session ended (revoked, re-paired, Function changed): the
 				// launcher gets a fresh one on the next restart, so just report it.
 				this.error = e.response?.status === 403
-					? 'This screen is no longer authorised — restart the R Station or log in.'
-					: 'Can’t reach the server — retrying.';
+					? 'Esta tela não está mais autorizada — reinicie o R Station ou entre novamente.'
+					: 'Não foi possível acessar o servidor — tentando novamente.';
 			}
 		},
 	},
@@ -77,20 +77,20 @@ export default {
 			</div>
 
 			<p v-if="error" class="ds_error">{{ error }}</p>
-			<p v-if="!data && !error" class="ds_loading">Loading...</p>
+			<p v-if="!data && !error" class="ds_loading">Carregando...</p>
 
 			<div v-if="data" class="ds_grid">
-				<PeriodStatCard title="Orders Fulfilled" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
-				<PeriodStatCard title="Donations Completed" :counts="data.donations_completed" :trend="data.donations_trend" />
-				<BarBreakdownCard title="Donations in Progress" :rows="donationPipelineRows" />
-				<BarBreakdownCard title="Orders in Progress" :rows="orderPipelineRows" />
-				<BarBreakdownCard title="Orders by County" :rows="countyRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard title="Stock by Category" :rows="categoryRows" empty-text="No stock on hand yet." />
+				<PeriodStatCard title="Pedidos atendidos" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
+				<PeriodStatCard title="Doações concluídas" :counts="data.donations_completed" :trend="data.donations_trend" />
+				<BarBreakdownCard title="Doações em andamento" :rows="donationPipelineRows" />
+				<BarBreakdownCard title="Pedidos em andamento" :rows="orderPipelineRows" />
+				<BarBreakdownCard title="Pedidos por condado" :rows="countyRows" empty-text="Nenhum pedido registrado ainda." />
+				<BarBreakdownCard title="Estoque por categoria" :rows="categoryRows" empty-text="Nenhum item em estoque ainda." />
 				<div class="ds_card">
-					<h3>Stock on Hand</h3>
+					<h3>Estoque disponível</h3>
 					<div class="ds_inv">
-						<div><span class="ds_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="ds_inv_label">Item types stocked</span></div>
-						<div><span class="ds_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="ds_inv_label">Total units on hand</span></div>
+						<div><span class="ds_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="ds_inv_label">Tipos de item em estoque</span></div>
+						<div><span class="ds_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="ds_inv_label">Total de unidades disponíveis</span></div>
 					</div>
 				</div>
 			</div>

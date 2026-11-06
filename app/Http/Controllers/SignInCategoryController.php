@@ -54,7 +54,7 @@ class SignInCategoryController extends Controller
         $category = SignInCategory::create($data);
 
         return response()->json([
-            'message' => 'Category created successfully.',
+            'message' => 'Categoria criada com sucesso.',
             'record' => $category,
         ], 201);
     }

@@ -63,13 +63,27 @@ export default {
 				const response = await axios.get('/json/reports/orders');
 				this.records = response.data.records;
 			} catch (error) {
-				this.error = 'Could not load the outstanding orders report.';
+				this.error = 'Não foi possível carregar o relatório de pedidos em aberto.';
 			} finally {
 				this.loading = false;
 			}
 		},
 		toggleExpanded(id) {
 			this.expanded = { ...this.expanded, [id]: !this.expanded[id] };
+		},
+		statusLabel(status) {
+			return ({
+				'New Order': 'Novo pedido',
+				'Ready to Fill': 'Pronto para separação',
+				Filling: 'Em separação',
+				Filled: 'Separado',
+				Shipped: 'Enviado',
+				Delivered: 'Entregue',
+				Cancelled: 'Cancelado',
+			})[status] || status;
+		},
+		fulfillmentLabel(method) {
+			return ({ Pickup: 'Retirada', Delivery: 'Entrega', pickup: 'Retirada', delivery: 'Entrega' })[method] || method;
 		},
 	},
 	created() {
@@ -79,31 +93,31 @@ export default {
 </script>
 
 <template>
-	<Head title="Outstanding Orders Report" />
+	<Head title="Relatório de pedidos em aberto" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="oor_container">
 			<h2 class="ri_datatable_head oor_head">
-				Outstanding Orders Report
-				<a :href="$withWarehouse('/report/orders.csv')" class="ri_defaultbutton">Download CSV</a>
-				<PrintMenu document-key="outstanding-orders" media="report" label="Print / PDF"
+				Relatório de pedidos em aberto
+				<a :href="$withWarehouse('/report/orders.csv')" class="ri_defaultbutton">Baixar CSV</a>
+				<PrintMenu document-key="outstanding-orders" media="report" label="Imprimir / PDF"
 					download-href="/report/orders.pdf" />
 			</h2>
 
 			<p v-if="error" class="oor_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">Carregando...</p>
 
 			<div class="oor_toolbar">
 				<input
 					type="text"
 					v-model="search"
 					class="ri_forminput oor_search"
-					placeholder="Search by order # or partner..."
+					placeholder="Buscar por nº do pedido ou entidade parceira..."
 				/>
 				<select v-model="statusFilter" class="ri_forminput">
-					<option value="">All statuses</option>
-					<option v-for="s in statuses" :key="s" :value="s">{{ s }}</option>
+					<option value="">Todos os status</option>
+					<option v-for="s in statuses" :key="s" :value="s">{{ statusLabel(s) }}</option>
 				</select>
 			</div>
 
@@ -111,14 +125,14 @@ export default {
 				<thead>
 					<tr>
 						<th></th>
-						<th>Order #</th>
-						<th>Partner</th>
+						<th>Pedido nº</th>
+						<th>Entidade parceira</th>
 						<th>Status</th>
-						<th>Order Date</th>
-						<th>Needed By</th>
-						<th>Fulfillment</th>
-						<th>Lines</th>
-						<th>Qty Requested</th>
+						<th>Data do pedido</th>
+						<th>Necessário até</th>
+						<th>Forma de atendimento</th>
+						<th>Itens</th>
+						<th>Quantidade solicitada</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -126,11 +140,11 @@ export default {
 						<tr class="oor_rowlink" @click="toggleExpanded(record.id)">
 							<td class="oor_expander">{{ expanded[record.id] ? '−' : '+' }}</td>
 							<td>{{ record.id }}</td>
-							<td>{{ record.partner || '(no partner)' }}</td>
-							<td><span class="oor_status_badge">{{ record.status }}</span></td>
+							<td>{{ record.partner || '(sem entidade parceira)' }}</td>
+							<td><span class="oor_status_badge">{{ statusLabel(record.status) }}</span></td>
 							<td>{{ record.order_date }}</td>
 							<td>{{ record.needed_by_date || '—' }}</td>
-							<td>{{ record.fulfillment_method }}</td>
+							<td>{{ fulfillmentLabel(record.fulfillment_method) }}</td>
 							<td class="oor_num">{{ record.line_count }}</td>
 							<td class="oor_num">{{ record.qty_requested }}</td>
 						</tr>
@@ -138,35 +152,35 @@ export default {
 							<td></td>
 							<td colspan="8">
 								<p v-if="record.status === 'Filled'" class="oor_bollink">
-									<PrintMenu document-key="bol" media="report" label="Generate BOL" :params="{ id: record.id }"
+									<PrintMenu document-key="bol" media="report" label="Gerar conhecimento de embarque" :params="{ id: record.id }"
 										:download-href="'/report/bol/' + record.id + '.pdf'" />
-									<PrintMenu document-key="shipping-label" media="label_large" label="Shipping Label" :params="{ id: record.id }"
+									<PrintMenu document-key="shipping-label" media="label_large" label="Etiqueta de envio" :params="{ id: record.id }"
 										:download-href="'/report/shipping-label/' + record.id + '.pdf'" />
 								</p>
 								<table class="oor_subtable" v-if="record.lines.length">
 									<thead>
-										<tr><th>Item #</th><th>Item</th><th>Qty Requested</th><th>Unit</th></tr>
+										<tr><th>Nº do item</th><th>Item</th><th>Quantidade solicitada</th><th>Unidade</th></tr>
 									</thead>
 									<tbody>
 										<tr v-for="(line, idx) in record.lines" :key="idx">
-											<td>{{ line.display_number || '(unnumbered)' }}</td>
+											<td>{{ line.display_number || '(sem número)' }}</td>
 											<td>{{ line.itemtype }}</td>
 											<td class="oor_num">{{ line.qty_requested }}</td>
 											<td>{{ line.unit }}</td>
 										</tr>
 									</tbody>
 								</table>
-								<p v-else class="oor_empty">No lines on this order.</p>
+								<p v-else class="oor_empty">Nenhum item neste pedido.</p>
 							</td>
 						</tr>
 					</template>
 					<tr v-if="!filtered.length && !loading">
-						<td colspan="9" class="oor_empty">No outstanding orders match.</td>
+						<td colspan="9" class="oor_empty">Nenhum pedido em aberto corresponde à busca.</td>
 					</tr>
 				</tbody>
 				<tfoot v-if="filtered.length">
 					<tr class="oor_totalsrow">
-						<td colspan="7">Totals ({{ filtered.length }} order{{ filtered.length === 1 ? '' : 's' }})</td>
+						<td colspan="7">Totais ({{ filtered.length }} {{ filtered.length === 1 ? 'pedido' : 'pedidos' }})</td>
 						<td class="oor_num">{{ totals.line_count }}</td>
 						<td class="oor_num">{{ totals.qty_requested }}</td>
 					</tr>

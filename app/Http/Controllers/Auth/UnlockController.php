@@ -62,17 +62,17 @@ class UnlockController extends Controller
         $settings = $pinLogin->settings();
         $device = $pinLogin->currentDevice($request);
         if (! $settings->enabled || ! $settings->badge_login_enabled || ! $device?->isApproved()) {
-            return response()->json(['message' => 'PIN unlock is not available on this device.'], 403);
+            return response()->json(['message' => 'O desbloqueio por PIN não está disponível neste dispositivo.'], 403);
         }
 
         $person = Person::where('badge_code', $data['badge_code'])->first();
         if (! $person) {
-            return response()->json(['message' => 'Badge not recognized.'], 404);
+            return response()->json(['message' => 'Crachá não reconhecido.'], 404);
         }
 
         if (! $pinLogin->activeGrant($device, $person->id)) {
             return response()->json([
-                'message' => 'This badge isn\'t set up for quick login on this device yet — log in with email first.',
+                'message' => 'Este crachá ainda não está configurado para acesso rápido neste dispositivo — entre primeiro com seu e-mail.',
             ], 401);
         }
 
@@ -98,22 +98,22 @@ class UnlockController extends Controller
         $settings = $pinLogin->settings();
         $device = $pinLogin->currentDevice($request);
         if (! $settings->enabled || ! $device?->isApproved()) {
-            return response()->json(['message' => 'PIN unlock is not available on this device.'], 403);
+            return response()->json(['message' => 'O desbloqueio por PIN não está disponível neste dispositivo.'], 403);
         }
 
         if (! $pinLogin->activeGrant($device, $data['person_id'])) {
-            return response()->json(['message' => 'Your quick-login session has expired. Please log in with email.'], 401);
+            return response()->json(['message' => 'Sua sessão de acesso rápido expirou. Entre com seu e-mail.'], 401);
         }
 
         $rateLimitKey = 'pin-unlock:'.$device->device_token.':'.$data['person_id'];
         if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
             return response()->json([
-                'message' => 'Too many incorrect attempts. Please log in with email.',
+                'message' => 'Muitas tentativas incorretas. Entre com seu e-mail.',
             ], 429);
         }
 
         if ($settings->require_badge_and_pin && ! $this->badgeRecentlyVerified($request, $data['person_id'])) {
-            return response()->json(['message' => 'Please scan your badge first.'], 422);
+            return response()->json(['message' => 'Leia seu crachá primeiro.'], 422);
         }
 
         $person = Person::findOrFail($data['person_id']);
@@ -121,11 +121,11 @@ class UnlockController extends Controller
         if (! $person->verifyPin($data['pin'])) {
             RateLimiter::hit($rateLimitKey, 300);
 
-            return response()->json(['message' => 'Incorrect PIN.'], 401);
+            return response()->json(['message' => 'PIN incorreto.'], 401);
         }
 
         if ($person->isLoginDisabled()) {
-            return response()->json(['message' => 'This account has been deactivated.'], 403);
+            return response()->json(['message' => 'Esta conta foi desativada.'], 403);
         }
 
         RateLimiter::clear($rateLimitKey);

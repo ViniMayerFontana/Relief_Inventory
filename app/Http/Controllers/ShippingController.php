@@ -84,7 +84,7 @@ class ShippingController extends Controller
             $order->update(['driver_id' => $data['driver_id']]);
         } else {
             abort(response()->json([
-                'message' => 'Only a Filled or Ready to Ship order can be assigned a driver.',
+                'message' => 'Só é possível atribuir um motorista a um pedido com status Filled ou Ready to Ship.',
             ], 409));
         }
 
@@ -99,7 +99,7 @@ class ShippingController extends Controller
         $order = Transaction::where('type', 'order')->findOrFail($id);
         if ($order->status?->name !== Transaction::STATUS_READY_TO_SHIP) {
             abort(response()->json([
-                'message' => 'Only an order Ready to Ship can be marked Shipped.',
+                'message' => 'Só é possível marcar como enviado um pedido com status Ready to Ship.',
             ], 409));
         }
 
@@ -134,7 +134,7 @@ class ShippingController extends Controller
         $order = Transaction::where('type', 'order')->findOrFail($id);
         if ($order->status?->name !== Transaction::STATUS_DELIVERED) {
             abort(response()->json([
-                'message' => 'Only a Delivered order awaiting review can be approved.',
+                'message' => 'Só é possível aprovar um pedido entregue que esteja aguardando revisão.',
             ], 409));
         }
 
@@ -170,7 +170,7 @@ class ShippingController extends Controller
         $order = Transaction::where('type', 'order')->findOrFail($id);
         if ($order->status?->name !== Transaction::STATUS_DELIVERED) {
             abort(response()->json([
-                'message' => 'Only a Delivered order awaiting review can be rejected.',
+                'message' => 'Só é possível recusar um pedido entregue que esteja aguardando revisão.',
             ], 409));
         }
 

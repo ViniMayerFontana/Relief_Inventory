@@ -43,7 +43,7 @@ class UseController extends Controller
         $use = UseModel::create($data);
 
         return response()->json([
-            'message' => 'Use created successfully.',
+            'message' => 'Uso criado com sucesso.',
             'record' => $use,
         ], 201);
     }
@@ -65,7 +65,7 @@ class UseController extends Controller
         $use->update($data);
 
         return response()->json([
-            'message' => 'Use updated successfully.',
+            'message' => 'Uso atualizado com sucesso.',
             'record' => $use,
         ], 200);
     }
@@ -84,12 +84,12 @@ class UseController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Use deleted successfully.',
+                'message' => 'Uso excluído com sucesso.',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error deleting use: '.$e->getMessage(),
+                'message' => 'Erro ao excluir o uso: '.$e->getMessage(),
             ], 500);
         }
     }

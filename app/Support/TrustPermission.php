@@ -25,30 +25,30 @@ enum TrustPermission: string
     public function label(): string
     {
         return match ($this) {
-            self::PrintShare => 'Sharing printers',
-            self::FeedbackSend => 'Sending feedback',
-            self::FeedbackReceive => 'Receiving feedback',
-            self::OffersSend => 'Send donation offers',
-            self::OffersReceive => 'Receive donation offers',
-            self::InventoryQueryExact => 'Query exact inventory',
-            self::SuppliesRequest => 'Request supplies',
-            self::SuppliesQueryAvailable => 'Query items available for request',
-            self::OperatorFullRead => 'Backup and reporting operator (full read access)',
+            self::PrintShare => 'Compartilhamento de impressoras',
+            self::FeedbackSend => 'Envio de comentários',
+            self::FeedbackReceive => 'Recebimento de comentários',
+            self::OffersSend => 'Enviar ofertas de doação',
+            self::OffersReceive => 'Receber ofertas de doação',
+            self::InventoryQueryExact => 'Consultar quantidades exatas do estoque',
+            self::SuppliesRequest => 'Solicitar materiais',
+            self::SuppliesQueryAvailable => 'Consultar itens disponíveis para solicitação',
+            self::OperatorFullRead => 'Operador de backup e relatórios (acesso completo de leitura)',
         };
     }
 
     public function description(): string
     {
         return match ($this) {
-            self::PrintShare => 'The peer is a print server (or may use printers shared with it) and may claim print jobs.',
-            self::FeedbackSend => 'The peer may send bug and feature reports to this instance.',
-            self::FeedbackReceive => 'The peer may read the feedback reports this instance holds.',
-            self::OffersSend => 'The peer may offer donations to this instance.',
-            self::OffersReceive => 'The peer may receive donation offers from this instance.',
-            self::InventoryQueryExact => 'The peer may read exact stock quantities.',
-            self::SuppliesRequest => 'The peer may submit supply requests, which staff review like any other request.',
-            self::SuppliesQueryAvailable => 'The peer may see which items are available to request.',
-            self::OperatorFullRead => 'The peer may make and download backups of this instance (and, later, read its reports). A database backup holds credentials and personal data: grant this only to an operator you would trust with the whole system.',
+            self::PrintShare => 'A outra parte é um servidor de impressão (ou pode usar impressoras compartilhadas com ele) e pode reivindicar trabalhos de impressão.',
+            self::FeedbackSend => 'A outra parte pode enviar relatórios de erros e sugestões para esta instalação.',
+            self::FeedbackReceive => 'A outra parte pode ler os relatórios recebidos por esta instalação.',
+            self::OffersSend => 'A outra parte pode oferecer doações a esta instalação.',
+            self::OffersReceive => 'A outra parte pode receber ofertas de doação desta instalação.',
+            self::InventoryQueryExact => 'A outra parte pode consultar as quantidades exatas do estoque.',
+            self::SuppliesRequest => 'A outra parte pode enviar solicitações de materiais, que a equipe analisará como qualquer outro pedido.',
+            self::SuppliesQueryAvailable => 'A outra parte pode consultar quais itens estão disponíveis para solicitação.',
+            self::OperatorFullRead => 'A outra parte pode criar e baixar backups desta instalação (e, futuramente, ler seus relatórios). Um backup do banco de dados contém credenciais e dados pessoais: conceda esta permissão somente a um operador em quem você confiaria o sistema inteiro.',
         };
     }
 

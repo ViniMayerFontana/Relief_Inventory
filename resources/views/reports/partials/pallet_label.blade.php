@@ -17,6 +17,6 @@
     <div class="pallet-info pallet-contents">{{ $label['contents'] }}</div>
 @endif
 @if (!empty($label['location']))
-    <div class="pallet-info pallet-location">Location: {{ $label['location'] }}</div>
+    <div class="pallet-info pallet-location">Localização: {{ $label['location'] }}</div>
 @endif
-<div class="pallet-info">Created: {{ $label['date_created'] }}</div>
+<div class="pallet-info">Criado em: {{ $label['date_created'] }}</div>

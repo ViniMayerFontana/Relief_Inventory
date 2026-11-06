@@ -36,15 +36,15 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
 </script>
 
 <template>
-  <Head title="Item Category Entry" />
+  <Head title="Cadastro de categorias de itens" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <template #header>
     </template>
 
     <RIForm
-      title="Item Category Management"
+      title="Gerenciamento de categorias de itens"
       datasource="/json/categories"
-	  newrecordcaption="Add Category"
+	  newrecordcaption="Adicionar categoria"
 	  :filter="categoryMatchesSearch"
 	  :sort="categorySort">
       <template #listactions>
@@ -52,11 +52,11 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
           type="text"
           v-model="categorySearch"
           class="ri_forminput category_search"
-          placeholder="Search by Category Name..."
+          placeholder="Buscar por nome da categoria..."
         />
       </template>
       <template #thead>
-        <th class="ri_sortable" @click="setSort()">Category Name{{ sortArrow() }}</th>
+        <th class="ri_sortable" @click="setSort()">Nome da categoria{{ sortArrow() }}</th>
       </template>
       <template #tbody="{ record, index }">
         <td>{{ record.name }}</td>
@@ -64,7 +64,7 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
       <template #default="{ record, editing, templates }">
         <div class="ri_formtable">
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Category Name:</div>
+            <div class="ri_fieldlabel">Nome da categoria:</div>
             <TextInput
               v-model="record.name"
               required

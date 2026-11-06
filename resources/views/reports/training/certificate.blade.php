@@ -8,10 +8,10 @@
     $logo = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('img/relief-inventory-logo.png')));
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Training Certificates</title>
+    <title>Certificados de Treinamento</title>
     <style>
         @page { size: letter landscape; margin: 0.5in; }
         body { font-family: Georgia, 'Times New Roman', serif; color: #222; margin: 0; }
@@ -37,23 +37,23 @@
     @forelse ($trainees as $t)
         <div class="cert">
             <img class="logo" src="{{ $logo }}" alt="">
-            <h1>Certificate of Completion</h1>
-            <div class="lead">This certifies that</div>
+            <h1>Certificado de Conclusão</h1>
+            <div class="lead">Certificamos que</div>
             <div class="name">{{ $t['name'] }}</div>
-            <div class="lead">has completed</div>
-            <div class="event">{{ $eventTitle ?: 'Hands-on Warehouse Training' }}</div>
-            <div class="lead">{{ $eventLocation ? 'held at '.$eventLocation.' on ' : 'on ' }}{{ $date }}</div>
+            <div class="lead">concluiu</div>
+            <div class="event">{{ $eventTitle ?: 'Treinamento prático em armazém' }}</div>
+            <div class="lead">{{ $eventLocation ? 'realizado em '.$eventLocation.' em ' : 'em ' }}{{ $date }}</div>
             <div class="signers">
                 @foreach ($signers as $signer)
                     <div class="signer">
                         <div class="signature">@if ($signer['signature'])<img src="{{ $signer['signature'] }}" alt="">@endif</div>
-                        <div class="sign">{{ $signer['name'] ?: 'Trainer' }}</div>
+                        <div class="sign">{{ $signer['name'] ?: 'Instrutor(a)' }}</div>
                     </div>
                 @endforeach
             </div>
         </div>
     @empty
-        <p style="font-family: Arial, sans-serif;">No trainee has completed all six stations in this range yet.</p>
+        <p style="font-family: Arial, sans-serif;">Nenhum participante concluiu as seis estações neste período.</p>
     @endforelse
 </body>
 </html>

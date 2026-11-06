@@ -235,6 +235,6 @@ class ItemTypeController extends Controller
         $itemType = ItemType::findOrFail($id);
         $itemType->delete();
 
-        return response()->json(['message' => 'Item Type deleted successfully']);
+        return response()->json(['message' => 'Tipo de item excluído com sucesso.']);
     }
 }

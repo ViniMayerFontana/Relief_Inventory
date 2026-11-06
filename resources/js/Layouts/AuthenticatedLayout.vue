@@ -23,12 +23,13 @@ const notificationsLoaded = ref(false);
 
 function timeAgo(value) {
     const seconds = Math.max(0, Math.round((Date.now() - new Date(value)) / 1000));
-    if (seconds < 60) return 'just now';
+    const relativeTime = new Intl.RelativeTimeFormat(document.documentElement.lang || 'pt-BR', { numeric: 'auto' });
+    if (seconds < 60) return relativeTime.format(0, 'second');
     const minutes = Math.round(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
+    if (minutes < 60) return relativeTime.format(-minutes, 'minute');
     const hours = Math.round(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return `${Math.round(hours / 24)}d ago`;
+    if (hours < 24) return relativeTime.format(-hours, 'hour');
+    return relativeTime.format(-Math.round(hours / 24), 'day');
 }
 
 async function loadNotifications() {
@@ -51,19 +52,19 @@ async function markAllNotificationsRead() {
             <Banner @open-feedback="showingFeedbackModal = true" />
             <!-- A training warehouse (MULTI_WAREHOUSE.md §12): practice data, never real stock -->
             <div v-if="$page.props.warehouse?.training" class="bg-amber-100 text-amber-900 text-sm px-4 py-1">
-                Training warehouse &mdash; everything here is practice data.
+                Armazém de treinamento &mdash; todos os dados aqui são apenas para prática.
             </div>
             <!-- Instance administrators, until the instance has a recovery key and they have confirmed storing it (HandleInertiaRequests::recoveryKeyProps) -->
             <div v-if="$page.props.recoveryKey" class="bg-red-100 text-red-900 text-sm px-4 py-2 border-b border-red-300">
                 <template v-if="$page.props.recoveryKey.state === 'none'">
-                    <strong>Set up your recovery key.</strong>
-                    Without it, an automatic backup can't restore the warehouses' encrypted settings after a disaster.
+                    <strong>Configure sua chave de recuperação.</strong>
+                    Sem ela, um backup automático não poderá restaurar as configurações criptografadas dos armazéns após um desastre.
                 </template>
                 <template v-else>
-                    <strong>Confirm your recovery key is stored.</strong>
-                    It was made but never confirmed. If the printout wasn't kept, make a new one.
+                    <strong>Confirme que sua chave de recuperação está guardada.</strong>
+                    Ela foi criada, mas o armazenamento ainda não foi confirmado. Se você não guardou a cópia impressa, crie uma nova.
                 </template>
-                <a href="/setup/instance?tab=backups" class="underline font-semibold ml-1">Open Instance Admin</a>
+                <a href="/setup/instance?tab=backups" class="underline font-semibold ml-1">Abrir administração da instância</a>
             </div>
             <PrintToast />
 
@@ -85,7 +86,7 @@ async function markAllNotificationsRead() {
                                     :href="route('dashboard')"
                                     :active="fullroute == '/dashboard' || fullroute == '/dashboard#main'"
                                 >
-                                    Relief Inventory Dashboard
+                                    Painel do Relief Inventory
                                 </NavLink>
 								<NavLink
 								    v-for="crumb in breadcrumb"
@@ -117,18 +118,18 @@ async function markAllNotificationsRead() {
 
                                     <template #content>
                                         <div class="flex items-center justify-between px-4 py-2 text-sm font-semibold text-gray-700">
-                                            <span>Notifications</span>
+                                            <span>Notificações</span>
                                             <button
                                                 v-if="unreadCount > 0"
                                                 type="button"
                                                 class="text-xs font-normal text-indigo-600 hover:underline"
                                                 @click.stop="markAllNotificationsRead"
-                                            >Mark all read</button>
+                                            >Marcar todas como lidas</button>
                                         </div>
                                         <div class="max-h-96 overflow-y-auto">
-                                            <p v-if="!notificationsLoaded" class="px-4 py-3 text-sm text-gray-500">Loading…</p>
+                                            <p v-if="!notificationsLoaded" class="px-4 py-3 text-sm text-gray-500">Carregando…</p>
                                             <p v-else-if="notificationRecords.length === 0" class="px-4 py-3 text-sm text-gray-500">
-                                                No notifications yet.
+                                                Nenhuma notificação por enquanto.
                                             </p>
                                             <div
                                                 v-for="notification in notificationRecords"
@@ -177,26 +178,26 @@ async function markAllNotificationsRead() {
 
                                     <template #content>
                                         <div v-if="$page.props.warehouse?.name" class="border-b border-gray-200 px-4 py-2">
-                                            <div class="text-xs text-gray-500">Warehouse</div>
+                                            <div class="text-xs text-gray-500">Armazém</div>
                                             <div class="break-words text-sm font-medium text-gray-800">{{ $page.props.warehouse.name }}</div>
                                         </div>
                                         <DropdownLink
                                             :href="route('profile.edit')"
                                         >
-                                            Profile
+                                            Perfil
                                         </DropdownLink>
                                         <button
                                             type="button"
                                             class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                                             @click="showingFeedbackModal = true"
                                         >
-                                            Report an Issue
+                                            Relatar um problema
                                         </button>
                                         <DropdownLink
                                             v-if="$page.props.buildingSafety.canView"
                                             href="/building-safety"
                                         >
-                                            Who's In The Building
+                                            Quem está no prédio?
                                         </DropdownLink>
                                         <DropdownLink
                                             v-if="$page.props.pinLogin.switchUserAvailable"
@@ -204,23 +205,23 @@ async function markAllNotificationsRead() {
                                             method="post"
                                             as="button"
                                         >
-                                            Switch User
+                                            Trocar de usuário
                                         </DropdownLink>
                                         <DropdownLink v-if="$page.props.pendingInvitations > 0" :href="route('account.invitations')">
-                                            Invitations ({{ $page.props.pendingInvitations }})
+                                            Convites ({{ $page.props.pendingInvitations }})
                                         </DropdownLink>
                                         <DropdownLink href="/this-device">
-                                            PIN Login on This Device
+                                            Acesso por PIN neste dispositivo
                                         </DropdownLink>
                                         <DropdownLink href="/about-this-install">
-                                            About
+                                            Sobre
                                         </DropdownLink>
                                         <DropdownLink
                                             :href="route('logout')"
                                             method="post"
                                             as="button"
                                         >
-                                            Log Out
+                                            Sair
                                         </DropdownLink>
                                     </template>
                                 </Dropdown>
@@ -283,7 +284,7 @@ async function markAllNotificationsRead() {
                             :href="route('dashboard')"
                             :active="route().current('dashboard')"
                         >
-                            Dashboard
+                            Painel
                         </ResponsiveNavLink>
                     </div>
 
@@ -301,32 +302,32 @@ async function markAllNotificationsRead() {
                                 {{ $page.props.auth.user.email }}
                             </div>
                             <div v-if="$page.props.warehouse?.name" class="mt-1 text-sm text-gray-500">
-                                Warehouse: {{ $page.props.warehouse.name }}
+                                Armazém: {{ $page.props.warehouse.name }}
                             </div>
                         </div>
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
+                                Perfil
                             </ResponsiveNavLink>
                             <button
                                 type="button"
                                 class="block w-full ps-3 pe-4 py-2 text-start text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 focus:outline-none"
                                 @click="showingFeedbackModal = true"
                             >
-                                Report an Issue
+                                Relatar um problema
                             </button>
                             <ResponsiveNavLink
                                 v-if="$page.props.buildingSafety.canView"
                                 href="/building-safety"
                             >
-                                Who's In The Building
+                                Quem está no prédio?
                             </ResponsiveNavLink>
                             <ResponsiveNavLink v-if="$page.props.pendingInvitations > 0" :href="route('account.invitations')">
-                                Invitations ({{ $page.props.pendingInvitations }})
+                                Convites ({{ $page.props.pendingInvitations }})
                             </ResponsiveNavLink>
                             <ResponsiveNavLink href="/this-device">
-                                PIN Login on This Device
+                                Acesso por PIN neste dispositivo
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 v-if="$page.props.pinLogin.switchUserAvailable"
@@ -334,17 +335,17 @@ async function markAllNotificationsRead() {
                                 method="post"
                                 as="button"
                             >
-                                Switch User
+                                Trocar de usuário
                             </ResponsiveNavLink>
                             <ResponsiveNavLink href="/about-this-install">
-                                About
+                                Sobre
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('logout')"
                                 method="post"
                                 as="button"
                             >
-                                Log Out
+                                Sair
                             </ResponsiveNavLink>
                         </div>
                     </div>

@@ -42,7 +42,7 @@ function handleImageError() {
       <div class="container mx-auto px-4 py-4 flex justify-between items-center">
         <h1 class="text-xl sm:text-2xl font-bold text-blue-600 whitespace-nowrap">Relief Inventory</h1>
         <nav class="whitespace-nowrap">
-          <a href="/login" class="text-gray-700 hover:text-blue-600">Login</a>
+          <a href="/login" class="text-gray-700 hover:text-blue-600">Entrar</a>
         </nav>
       </div>
     </header>
@@ -52,29 +52,29 @@ function handleImageError() {
       <div class="container mx-auto px-4 py-16 text-center md:text-left md:flex md:items-center">
         <div class="md:w-1/2">
           <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
-            Welcome to Relief Inventory
+            Bem-vindo ao Relief Inventory
           </h2>
           <p class="text-gray-600 text-lg mb-8">
-            Manage and track donations efficiently to help communities in need.
+            Gerencie e acompanhe doações com eficiência para ajudar comunidades que precisam.
           </p>
           <div class="space-x-4">
 	    <a href="/login">
 	      <button class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700">
-                Login
+                Entrar
               </button>
 	    </a>
 	    <a href="/register">
               <button class="bg-gray-300 text-gray-800 px-6 py-3 rounded-lg shadow hover:bg-gray-400">
-                Register
+                Cadastrar
               </button>
 	    </a>
           </div>
         </div>
         <div class="mt-8 md:mt-0 md:w-1/2 flex flex-col items-center">
-          <img src="/img/warehouse.webp" alt="Welcome Illustration" class="w-3/4 md:w-full max-w-md">
+          <img src="/img/warehouse.webp" alt="Ilustração de boas-vindas" class="w-3/4 md:w-full max-w-md">
           <a href="/driver-portal" class="welcome_driverportal mt-6">
             <img src="/img/truck-box-icon.webp" alt="" class="welcome_driverportal_icon">
-            <span class="welcome_driverportal_label">Driver Portal</span>
+            <span class="welcome_driverportal_label">Portal do motorista</span>
           </a>
         </div>
       </div>
@@ -84,8 +84,8 @@ function handleImageError() {
     <footer class="bg-white border-t">
       <div class="container mx-auto px-4 py-6 text-center text-gray-600">
 	      &copy;  {{ new Date().getFullYear() }} Inventory Relief Project, 
-	      <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">Licensed under the GNU General Public License v. 3</a>
-	      Hosted by <a :href="hostedLink" target="_blank">{{ hostedBy }}</a>
+	      <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">Licenciado sob a GNU General Public License v. 3</a>
+	      Hospedado por <a :href="hostedLink" target="_blank">{{ hostedBy }}</a>
       </div>
     </footer>
   </div>
@@ -128,4 +128,3 @@ export default {
 	color: #333;
 }
 </style>
-

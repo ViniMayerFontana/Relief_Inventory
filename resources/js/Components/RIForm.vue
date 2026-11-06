@@ -150,7 +150,7 @@
     <div v-else class="ri_dataform_container">
       <h2 class="ri_dataform_head">
         <img :src="editing ? '/img/edit-icon.webp' : '/img/edit-padlock-icon.webp'" style="width: 1.5em; float: right; cursor:pointer;" @click="toggleEdit()" />
-        {{ title }} - Details
+        {{ title }} - Detalhes
       </h2>
       <slot :editing="editing" :record="record" :templates="templates"></slot>
       <p v-if="saveError" class="ri_error">{{ saveError }}</p>
@@ -165,13 +165,13 @@
         :keepRecord="() => (confirmingDelete = false)"
       >
         <div class="ri_formactions">
-          <button v-if="editing" @click="saveRecord()" class="ri_defaultbutton">Save</button>
-          <button v-if="editing" @click="cancelRecord()" class="ri_formbutton">Cancel Changes</button>
+          <button v-if="editing" @click="saveRecord()" class="ri_defaultbutton">Salvar</button>
+          <button v-if="editing" @click="cancelRecord()" class="ri_formbutton">Cancelar alterações</button>
           <button v-if="editing" @click="deleteRecord()" class="ri_deletebutton" :class="{ ri_confirming: confirmingDelete }">
-            {{ confirmingDelete ? 'Confirm Delete — cannot be undone' : 'Delete' }}
+            {{ confirmingDelete ? 'Confirmar exclusão — não será possível desfazer' : 'Excluir' }}
           </button>
-          <button v-if="editing && confirmingDelete" @click="confirmingDelete = false" class="ri_linkbutton">Keep Record</button>
-          <button v-if="!editing" @click="cancelRecord()" class="ri_defaultbutton">Back to List</button>
+          <button v-if="editing && confirmingDelete" @click="confirmingDelete = false" class="ri_linkbutton">Manter registro</button>
+          <button v-if="!editing" @click="cancelRecord()" class="ri_defaultbutton">Voltar à lista</button>
         </div>
       </slot>
     </div>
@@ -197,7 +197,7 @@ export default {
     },
     newrecordcaption: {
       type: String,
-      default: "New Record",
+      default: "Novo registro",
     },
     // Optional (record) => boolean predicate narrowing the list view. Pair
     // with the #listactions slot for the filter UI itself — see the doc
@@ -237,7 +237,7 @@ export default {
       if (errors) {
         return Object.values(errors).flat().join(' ');
       }
-      return error.response?.data?.message || 'Could not save. Please try again.';
+      return error.response?.data?.message || 'Não foi possível salvar. Tente novamente.';
     },
     fetchRecords() {
       axios
@@ -279,7 +279,7 @@ export default {
             this.records = [];
             this.cancelRecord();
             this.fetchRecords();
-            this.successMessage = isUpdate ? 'Record saved successfully.' : 'Record created successfully.';
+            this.successMessage = isUpdate ? 'Registro salvo com sucesso.' : 'Registro criado com sucesso.';
           }
           return true;
         })
@@ -303,7 +303,7 @@ export default {
           this.records = [];
           this.cancelRecord();
           this.fetchRecords();
-          this.successMessage = 'Record deleted successfully.';
+          this.successMessage = 'Registro excluído com sucesso.';
         })
         .catch((error) => {
           console.log(error);

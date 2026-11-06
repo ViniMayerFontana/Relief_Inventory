@@ -30,10 +30,10 @@ async function stopScanner() {
 
 function cameraErrorMessage(e) {
   const text = String(e?.message || e || '');
-  if (/permission|denied|NotAllowed/i.test(text)) return 'Camera permission was denied. Allow camera access for this site and try again.';
-  if (/NotFound|no camera|requested device/i.test(text)) return 'No camera was found on this device.';
-  if (/NotReadable|in use/i.test(text)) return 'The camera is in use by another app.';
-  return 'Could not start the camera' + (text ? ': ' + text : '.');
+  if (/permission|denied|NotAllowed/i.test(text)) return 'A permissão para usar a câmera foi negada. Autorize o acesso para este site e tente novamente.';
+  if (/NotFound|no camera|requested device/i.test(text)) return 'Nenhuma câmera foi encontrada neste dispositivo.';
+  if (/NotReadable|in use/i.test(text)) return 'A câmera está sendo usada por outro aplicativo.';
+  return 'Não foi possível iniciar a câmera' + (text ? ': ' + text : '.');
 }
 
 async function start() {
@@ -80,8 +80,8 @@ onBeforeUnmount(() => { unmounted = true; stopScanner(); });
 <template>
   <div class="qrs_wrap">
     <div :id="readerId" class="qrs_reader"></div>
-    <p v-if="starting" class="qrs_hint">Starting camera…</p>
-    <p v-else class="qrs_hint">Point the camera at the barcode.</p>
+    <p v-if="starting" class="qrs_hint">Iniciando a câmera…</p>
+    <p v-else class="qrs_hint">Aponte a câmera para o código de barras.</p>
     <button v-if="torchAvailable" type="button" class="qrs_torch" @click="toggleTorch">
       {{ torchOn ? 'Light off' : 'Light on' }}
     </button>

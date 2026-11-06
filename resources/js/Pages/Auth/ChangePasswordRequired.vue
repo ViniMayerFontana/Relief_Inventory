@@ -30,20 +30,20 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Choose a New Password" />
+        <Head title="Escolha uma nova senha" />
 
         <div class="mb-4 text-lg font-medium text-gray-900">
-            Choose a new password
+            Escolha uma nova senha
         </div>
 
         <div class="mb-4 text-sm text-gray-600">
-            Your account was set up with a temporary password. Please choose your own
-            password before continuing.
+            Sua conta foi criada com uma senha temporária. Escolha uma senha pessoal
+            antes de continuar.
         </div>
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="password" value="New Password" />
+                <InputLabel for="password" value="Nova senha" />
 
                 <TextInput
                     id="password"
@@ -61,7 +61,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm New Password"
+                    value="Confirme a nova senha"
                 />
 
                 <TextInput
@@ -85,13 +85,13 @@ const submit = () => {
                     method="post"
                     as="button"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >Log Out</Link>
+                >Sair</Link>
 
                 <PrimaryButton
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Save Password
+                    Salvar senha
                 </PrimaryButton>
             </div>
         </form>

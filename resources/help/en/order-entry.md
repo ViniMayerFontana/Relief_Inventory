@@ -1,94 +1,67 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 
-Take a partner's request — by phone, or from a paper form they sent back — and enter it so the warehouse can fill it.
-Once submitted, it goes to [Order Filling](/help/order-filling).
+Receba a solicitação de um parceiro — por telefone ou por um formulário em papel que ele enviou — e cadastre-a para que o armazém possa atendê-la.
+Depois de enviada, ela vai para [Preenchimento de pedido](/help/order-filling).
 
-## What Order Entry is for
+## Para que serve o cadastro de pedidos
 
-Partners call these *requests*; this screen (and the staff side of the app) still calls them **orders**. They are the
-same thing. You need the **manage-orders** permission to use the page.
+Parceiros chamam isso de *requests*; esta tela (e o lado da equipe do aplicativo) ainda chama de **orders**. São a mesma coisa. Você precisa da
+permissão **manage-orders** para usar a página.
 
-Entry saves as you go: the order is created the moment you confirm the partner, and every item line is sent to the
-server as soon as you add it. A dropped connection or a crash never loses more than the line you were typing.
+O cadastro salva conforme você avança: o pedido é criado no momento em que você confirma o parceiro, e cada linha de item é enviada ao servidor assim
+que você a adiciona. Uma conexão caindo ou uma falha nunca perde mais do que a linha que você estava digitando.
 
-## The order list
+## A lista de pedidos
 
-Open [Order Entry](/order-entry) to see two lists. Tap any row to open that order.
+Abra [Cadastro de pedidos](/order-entry) para ver duas listas. Toque em qualquer linha para abrir esse pedido.
 
-- **Open Orders - tap to open** — everything not yet finished: New Order, Ready to Fill, Filling, Filled, Ready to Ship,
-  Shipped and Delivered (including Delivered waiting on a signed BOL). Columns: Date, Partner, Lines, Items, Status,
-  Entered By.
-- **Recently Completed** — the latest 25 orders that are finished (for example Completed or Closed - Unfulfilled).
+- **Open Orders - tap to open** — tudo que ainda não foi concluído: New Order, Ready to Fill, Filling, Filled, Ready to Ship, Shipped e Delivered
+(incluindo Delivered esperando uma BOL assinada). Colunas: Date, Partner, Lines, Items, Status, Entered By.
+- **Recently Completed** — os últimos 25 pedidos concluídos (por exemplo, Completed ou Closed - Unfulfilled).
 
-**New Order** starts a request. **Offline Order Form** (a **Print**-style menu) produces a printable form listing the
-item numbers we currently have some of, to send to a partner who will fill in quantities by hand and send it back for
-you to key in. It never shows stock numbers.
+**New Order** começa uma solicitação. **Offline Order Form** (um menu no estilo **Print**) produz um formulário imprimível listando os números de item que temos em estoque para enviar a um parceiro, que preenche as quantidades manualmente e envia de volta para você digitar. Ele nunca mostra números de estoque.
 
-## Step 1 — Who is this for?
+## Etapa 1 — Para quem é este pedido?
 
-1. Click **New Order**. The screen is titled **New Order — Who is this for?**
-2. Search the **Partner** box by name, organization or city and pick the partner. (This is the receiving organization or
-   distribution site placing the request.)
-3. Not in the list? Type the name and choose the add option. A **New Partner** form opens: names, organization, phone,
-   email, **Zip** first, then **Address**, City, State and County. You need either a first and last name, or an
-   organization. When the zip/address is filled in, the app may look up the county and suggest a corrected address —
-   accept or keep what you typed. If a county is missing from the list, type it in the County box to add it (enter the
-   2-letter state first). Click **Save Partner**.
-4. **Confirm Contact & Shipping Details** appears with the partner's details. This is where the order ships, so check it
-   is current and fix anything that has changed. **Verify Address** re-checks the address if it hasn't been checked yet.
-   Pressing Enter in a box moves to the next box.
-5. Click **Start Order →**. If you changed anything the button says **Save Details & Start Order →**, and the changes
-   are saved to the partner's record for everyone.
+1. Clique em **New Order**. A tela se chama **New Order — Who is this for?**
+2. Pesquise a caixa **Partner** por nome, organização ou cidade e escolha o parceiro. (Esta é a organização receptora ou o ponto de distribuição que está fazendo o pedido.)
+3. Não está na lista? Digite o nome e escolha a opção de adicionar. Abre um formulário **New Partner**: nomes, organização, telefone, email, **Zip** primeiro, depois **Address**, City, State e County. Você precisa de nome e sobrenome, ou de uma organização. Quando o CEP/endereço for preenchido, o app pode procurar o município e sugerir um endereço corrigido — aceite ou mantenha o que você digitou. Se o município estiver ausente na lista, digite-o na caixa County para adicioná-lo (digite o estado de duas letras antes). Clique em **Save Partner**.
+4. **Confirm Contact & Shipping Details** aparece com os dados do parceiro. Este é o local para onde o pedido será enviado, então verifique se está atualizado e corrija o que mudou. **Verify Address** revalida o endereço se ele ainda não foi verificado. Pressionar Enter em uma caixa passa para a próxima.
+5. Clique em **Start Order →**. Se você mudou alguma coisa, o botão passa a dizer **Save Details & Start Order →**, e as mudanças são salvas no registro do parceiro para todos.
 
-## Step 2 — Entering the items
+## Etapa 2 — Inserindo os itens
 
-The header shows **Order #** and the date, and a slim bar shows the partner's name, city/state and phone. **Change**
-there lets you pick a different partner (while the order is still editable).
+O cabeçalho mostra **Order #** e a data, e uma barra fina mostra o nome do parceiro, cidade/estado e telefone. **Change** ali permite escolher outro parceiro (enquanto o pedido ainda é editável).
 
-1. Type an item number (or part of its name) into the **Item #** box and choose it. The cursor jumps to **Qty**. A note
-   beside the item name shows roughly how many are on hand (for example *~40 usable on hand*, or *none on hand*). This
-   is only a hint for you — never read stock numbers out to the partner, and you can still enter more than we have.
-2. Type the quantity (1 or more) and press **Enter** (or click **Add**). The line is saved and the cursor goes back to
-   **Item #** for the next one. A **Line comment (optional)** box is also available for notes on that line.
-3. When an item is running low (at or below its low-stock level), a **Need level (optional)** box appears: **Critical**,
-   **Moderate** or **Low**. Record what the partner tells you about how badly they need it. It is only context for
-   whoever divides up short items later — leave it blank if they don't say.
-4. Entered the same item twice? A box titled **Oops** shows what you already entered. Type an **Additional qty** and
-   click **Combine →** to add it to the existing line, or **Cancel** (or press Esc) to drop it.
-5. Wrong line? Click the trash icon beside it, then **Delete?** to confirm (or **Keep** to back out). To change a
-   quantity, delete the line and add it again, or use the Combine box to add more.
+1. Digite um número do item (ou parte do nome) na caixa **Item #** e escolha-o. O cursor salta para **Qty**. Uma nota ao lado do nome do item mostra aproximadamente quantos itens há em estoque (por exemplo, *~40 usable on hand* ou *none on hand*). Isso é apenas uma pista para você — nunca leia números de estoque ao parceiro, e você pode até inserir mais do que temos.
+2. Digite a quantidade (1 ou mais) e pressione **Enter** (ou clique em **Add**). A linha é salva e o cursor volta para **Item #** para o próximo. Há também uma caixa **Line comment (optional)** para observações dessa linha.
+3. Quando um item está acabando (no nível mínimo ou abaixo dele), aparece uma caixa **Need level (optional)**: **Critical**, **Moderate** ou **Low**. Registre o que o parceiro lhe diz sobre o quanto precisa dele. É apenas contexto para quem dividirá itens escassos depois — deixe em branco se não disserem.
+4. Digitou o mesmo item duas vezes? Uma caixa intitulada **Oops** mostra o que você já inseriu. Digite uma **Additional qty** e clique em **Combine →** para somar à linha existente, ou **Cancel** (ou pressione Esc) para descartar.
+5. Linha errada? Clique no ícone de lixeira ao lado dela e depois em **Delete?** para confirmar (ou **Keep** para desistir). Para alterar a quantidade, apague a linha e adicione novamente, ou use a caixa Combine para adicionar mais.
 
-The top bar shows *Saving…*, *All changes saved*, or *N line(s) failed to save* with **Retry All** (each failed line
-also has **Retry**; failed lines also retry on their own when the connection returns). Totals for **Lines** and **Total
-items** appear under the table. **← All Orders** goes back to the list; the order stays open for later.
+A barra superior mostra *Saving…*, *All changes saved*, ou *N line(s) failed to save* com **Retry All** (cada linha com falha também tem **Retry**; linhas com falha tentam de novo sozinhas quando a conexão volta). Totais de **Lines** e **Total items** aparecem abaixo da tabela. **← All Orders** volta para a lista; o pedido continua aberto para depois.
 
-## Step 3 — Review & confirm
+## Etapa 3 — Revisar e confirmar
 
-When every item is in, click **Complete Order** (top right). The **Review & Confirm — Order #** screen has:
+Quando todos os itens estiverem dentro, clique em **Complete Order** (canto superior direito). A tela **Review & Confirm — Order #** mostra:
 
-- **Order Summary** — partner, number of lines and total items.
-- **Comments** — anything the warehouse should know.
-- **Needed But Not in Catalog** — things the partner needs that aren't in our item list (the same as "Other Needs" on
-  the paper form).
-- **Delivery or Pickup** — choose one, plus a **Needed By Date**. For delivery also pick the days they can accept it
-  (**Any Day** or individual days) and a **Preferred Time**. For pickup, the warehouse sets days and times.
-- **Delivery Contact** (or **Pickup Contact**) — name and phone, filled from the partner; change them if someone else is
-  receiving it.
-- **Special Delivery Instructions** — gate codes, dock location, who to contact on arrival. These carry through to the
-  BOL when the order ships.
+- **Order Summary** — parceiro, número de linhas e total de itens.
+- **Comments** — qualquer coisa que o armazém deva saber.
+- **Needed But Not in Catalog** — itens de que o parceiro precisa e que não estão na nossa lista (o mesmo que “Other Needs” no formulário em papel).
+- **Delivery or Pickup** — escolha um, mais uma **Needed By Date**. Para entrega também escolha os dias em que aceitam (**Any Day** ou dias individuais) e um **Preferred Time**. Para retirada, o armazém define dias e horários.
+- **Delivery Contact** (ou **Pickup Contact**) — nome e telefone, preenchidos do parceiro; altere se outra pessoa estiver recebendo.
+- **Special Delivery Instructions** — códigos de portaria, local do dock, quem contatar na chegada. Isso vai para a BOL quando o pedido for enviado.
 
-Click **Submit Order** to finish. **← Back** returns to the items without submitting.
+Clique em **Submit Order** para concluir. **← Back** retorna aos itens sem enviar.
 
-## After you submit — the order lifecycle
+## Depois de enviar — o ciclo de vida do pedido
 
-Submitting moves the order from **New Order** to **Ready to Fill**. From there the system moves it along:
+Enviar move o pedido de **New Order** para **Ready to Fill**. A partir daí, o sistema o move assim:
 
 `New Order → Ready to Fill → Filling → Filled → Ready to Ship → Shipped →                               Delivered →
 Completed`
 
-- **Only a New Order can be edited.** Once submitted, lines and details are locked, because the floor is working from
-  them. Opening such an order shows the items read-only with its status badge.
-- Status is set by the app as work happens — you never pick it from a list. Filling is covered in [Order
-  Filling](/help/order-filling) and shipping in [Shipping](/help/shipping).
-- An order where nothing could be picked ends as **Closed - Unfulfilled** and never reaches Shipping.
+- **Only a New Order can be edited.** Depois de enviado, linhas e detalhes ficam bloqueados, porque a equipe do armazém está trabalhando com eles. Abrir um pedido assim mostra os itens em modo somente leitura com seu badge de status.
+- O status é definido pelo app conforme o trabalho avança — você nunca o escolhe em uma lista. O preenchimento é explicado em [Preenchimento de pedido](/help/order-filling) e o envio em [Envio](/help/shipping).
+- Um pedido em que nada pôde ser separado termina como **Closed - Unfulfilled** e nunca chega a Shipping.

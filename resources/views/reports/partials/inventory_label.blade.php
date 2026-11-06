@@ -12,10 +12,10 @@
 <div class="text">
     <div class="item-number">{{ $label['item_number'] }}</div>
     <div class="description">{{ $label['description'] }}</div>
-    <div class="qty">Qty {{ number_format($label['qty']) }}</div>
-    <div class="meta">Exp: {{ $label['expires_on'] ?? 'none' }}</div>
+    <div class="qty">Qtd.: {{ number_format($label['qty']) }}</div>
+    <div class="meta">Validade: {{ $label['expires_on'] ?? 'nenhuma' }}</div>
     @if ($label['pallet'])
-        <div class="meta">Pallet {{ $label['pallet'] }}</div>
+        <div class="meta">Palete {{ $label['pallet'] }}</div>
     @endif
 </div>
 @if ($compact)

@@ -43,22 +43,22 @@ const containerTypeOptions = [
 </script>
 
 <template>
-  <Head title="Pallet Management" />
+  <Head title="Gerenciamento de paletes" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <RIForm
-      title="Pallet Management"
+      title="Gerenciamento de paletes"
       datasource="/json/pallets"
 	  :precreate="false"
 	  >
       <template #listactions>
-        <HelpLink guide="inventory-movement">Inventory Movement Guide</HelpLink>
+        <HelpLink guide="inventory-movement">Guia de movimentação do estoque</HelpLink>
       </template>
 
       <template #thead>
-		<th>Tag</th>
-        <th>Kind</th>
-        <th>Packed Date</th>
-        <th>Location</th>
+		<th>Etiqueta</th>
+        <th>Tipo</th>
+        <th>Data de embalagem</th>
+        <th>Local</th>
         <th>Status</th>
       </template>
 
@@ -67,7 +67,7 @@ const containerTypeOptions = [
         <td>{{ record.kind }}</td>
         <td>{{ record.datepacked }}</td>
         <td v-if="record.location">{{ record.location.code }}</td>
-        <td v-else>Unknown</td>
+        <td v-else>Desconhecido</td>
         <td>{{ record.status }}</td>
       </template>
 
@@ -75,20 +75,20 @@ const containerTypeOptions = [
 
 		<div class="ri_formtable">
 		  <div class="ri_fieldset" v-if="record.id">
-		    <div class="ri_fieldlabel"> Pallet Tag </div>
+		    <div class="ri_fieldlabel"> Etiqueta do palete </div>
 		    <span style="font-weight: bold; font-size: 14pt;"> {{ record.kind }}{{ record.id.toString().padStart(8, "0") }}</span>
 		  </div>
 		</div>
 		  <div class="ri_fieldset" v-if="record.id">
 			<div class="ri_fieldlabel">  </div>
 			<p>
-			<PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" label="Print Pallet Label"
+			<PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" label="Imprimir etiqueta do palete"
 				:params="{ id: record.id }" :download-href="'/report/pallet/' + record.id" />
 			</p>
 		  </div>
 		  <div class="ri_formtable">
 		    <div class="ri_fieldset">
-		      <div class="ri_fieldlabel">Kind:</div>
+		      <div class="ri_fieldlabel">Tipo:</div>
 			  <!-- Fixed forever once labeled (new-label-per-trip rule) -->
 			  <ComboBox
 			  	v-model:keyValue="record.kind"
@@ -98,7 +98,7 @@ const containerTypeOptions = [
 		    </div>
 
 		    <div class="ri_fieldset">
-		      <div class="ri_fieldlabel">Date Packed:</div>
+		      <div class="ri_fieldlabel">Data de embalagem:</div>
 		      <TextInput
 		        id="datepacked"
 		        type="date"
@@ -110,7 +110,7 @@ const containerTypeOptions = [
 		    </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Location:</div>
+            <div class="ri_fieldlabel">Local:</div>
             <ComboBox
               v-model:keyValue="record.location_id"
               v-model:updates="record.location"
@@ -130,7 +130,7 @@ const containerTypeOptions = [
           </div>
 
 		  <div class="ri_fieldset">
-			<div class="ri_fieldlabel">Container Type:</div>
+			<div class="ri_fieldlabel">Tipo de recipiente:</div>
 			<ComboBox
 			  v-model:keyValue="record.container_type"
 			  :options="containerTypeOptions"
@@ -139,7 +139,7 @@ const containerTypeOptions = [
 		  </div>
 
 		  <div class="ri_fieldset" v-if="record.kind === 'R'">
-			<div class="ri_fieldlabel">Donor:</div>
+			<div class="ri_fieldlabel">Doador:</div>
 			<ComboBox
 			  v-model:keyValue="record.donor_person_id"
 			  v-model:updates="record.donor"
@@ -150,7 +150,7 @@ const containerTypeOptions = [
 		  </div>
 
 		  <div class="ri_fieldset" v-if="record.kind === 'H'">
-			<div class="ri_fieldlabel">Destination:</div>
+			<div class="ri_fieldlabel">Destino:</div>
 			<ComboBox
 			  v-model:keyValue="record.destination_person_id"
 			  v-model:updates="record.destination"
@@ -161,7 +161,7 @@ const containerTypeOptions = [
 		  </div>
 
 		  <div class="ri_fieldset" v-if="record.kind === 'W'">
-			<div class="ri_fieldlabel">Earliest Expiry:</div>
+			<div class="ri_fieldlabel">Vencimento mais próximo:</div>
 			<TextInput
 			  type="date"
 			  v-model="record.earliest_expiry"
@@ -170,26 +170,26 @@ const containerTypeOptions = [
 		  </div>
 
 		  <div class="ri_fieldset" v-if="record.condition">
-			<div class="ri_fieldlabel">Condition:</div>
+			<div class="ri_fieldlabel">Condição:</div>
 			<ComboBox
 			  v-model:keyValue="record.condition"
-			  :options="[{ id: 'pending', name: 'Pending QC' }, { id: 'good', name: 'Good' }, { id: 'condemned', name: 'Condemned' }]"
+			  :options="[{ id: 'pending', name: 'Aguardando controle de qualidade' }, { id: 'good', name: 'Bom' }, { id: 'condemned', name: 'Condenado' }]"
 			  :enabled="editing"
 			/>
 		  </div>
         </div>
 
         <RISubform
-          title="Pallet Status History"
+          title="Histórico de status do palete"
           v-model:records="record.statuses"
           :template="[]"
           :enabled="false">
 
           <template #thead>
-            <th>Date</th>
-            <th>Location</th>
+            <th>Data</th>
+            <th>Local</th>
             <th>Status</th>
-			<th>Notes</th>
+			<th>Observações</th>
           </template>
 
           <template #tbody="{ subrecord, index }">

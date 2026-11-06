@@ -210,13 +210,13 @@ class UserAdminController extends Controller
 
         if ($password === null) {
             Password::sendResetLink(['email' => $person->email]);
-            $message = 'User created. An email has been sent so they can set their password.';
+            $message = 'Usuário criado. Um e-mail foi enviado para que ele possa definir a senha.';
         } elseif ($data['send_login_email'] ?? false) {
             $message = $this->sendLoginEmail($person)
-                ? 'User created. Their login details (not the password) were emailed to them.'
-                : 'User created, but the login email could not be sent — check Email Settings. Give them the login details yourself.';
+                    ? 'Usuário criado. Os dados de acesso (não a senha) foram enviados por e-mail.'
+                : 'Usuário criado, mas não foi possível enviar o e-mail com os dados de acesso — confira as configurações de e-mail. Informe os dados de acesso diretamente.';
         } else {
-            $message = 'User created. Give them their password yourself — no email was sent.';
+            $message = 'Usuário criado. Informe a senha diretamente — nenhum e-mail foi enviado.';
         }
 
         return response()->json([
@@ -235,7 +235,7 @@ class UserAdminController extends Controller
         $warehouse = Warehouse::current();
         $account = Account::findByEmail($data['email']);
         if (Membership::where('account_id', $account->id)->where('warehouse_id', $warehouse->id)->exists()) {
-            return response()->json(['message' => 'That login already belongs to this warehouse.'], 422);
+            return response()->json(['message' => 'Esse acesso já pertence a este armazém.'], 422);
         }
 
         $person = DB::transaction(function () use ($data, $roleData, $permissionData) {
@@ -255,9 +255,9 @@ class UserAdminController extends Controller
         $result = app(MembershipInvitations::class)->invite($warehouse, $person->id, $data['email'], 'admin', Auth::user()->full_name, sendEmail: true);
 
         return response()->json([
-            'message' => 'That email already has a login, so it was invited instead. '.($result['mailed']
-                ? 'They have been emailed a link to accept; until they do they cannot sign in here.'
-                : 'The invitation email could not be sent (check Email Settings); they will still see it under Invitations after signing in elsewhere.'),
+            'message' => 'Esse e-mail já tem uma conta; por isso, foi enviado um convite. '.($result['mailed']
+                ? 'Um link de aceitação foi enviado por e-mail; até aceitarem, não poderão entrar aqui.'
+                : 'Não foi possível enviar o convite por e-mail (confira as configurações de e-mail); a pessoa ainda poderá vê-lo em Convites depois de entrar em outra instalação.'),
             'record' => $person,
             'invited' => true,
         ], 201);
@@ -287,14 +287,14 @@ class UserAdminController extends Controller
             Warehouse::current(), $invitation->person_id, $invitation->email, $invitation->source, Auth::user()->full_name, sendEmail: true,
         );
 
-        return response()->json(['message' => $result['mailed'] ? 'Invitation emailed again.' : 'The email could not be sent — check Email Settings.']);
+        return response()->json(['message' => $result['mailed'] ? 'O convite foi enviado novamente por e-mail.' : 'Não foi possível enviar o e-mail — confira as configurações de e-mail.']);
     }
 
     public function withdrawInvitation(int $id)
     {
         app(MembershipInvitations::class)->withdraw($this->ownInvitation($id));
 
-        return response()->json(['message' => 'Invitation withdrawn.']);
+        return response()->json(['message' => 'Convite cancelado.']);
     }
 
     private function ownInvitation(int $id): MembershipInvitation
@@ -332,7 +332,7 @@ class UserAdminController extends Controller
         ]);
         $this->permissionAssignment->syncRolesAndPermissions($person, $roleData, $permissionData);
 
-        return response()->json(['message' => 'User updated successfully.'], 200);
+        return response()->json(['message' => 'Usuário atualizado com sucesso.'], 200);
     }
 
     public function deactivate($id)
@@ -380,11 +380,11 @@ class UserAdminController extends Controller
             'password_change_required' => (bool) ($data['require_password_change'] ?? true),
         ])->save();
 
-        $message = 'Password set. Give it to them yourself.';
+        $message = 'Senha definida. Informe-a diretamente à pessoa.';
         if ($data['send_login_email'] ?? false) {
             $message = $this->sendLoginEmail($person)
-                ? 'Password set. Their login details (not the password) were emailed to them.'
-                : 'Password set, but the login email could not be sent — check Email Settings.';
+                ? 'Senha definida. Os dados de acesso (não a senha) foram enviados por e-mail.'
+                : 'Senha definida, mas não foi possível enviar o e-mail com os dados de acesso — confira as configurações de e-mail.';
         }
 
         return response()->json(['message' => $message], 200);
@@ -423,9 +423,9 @@ class UserAdminController extends Controller
             }
         }
 
-        $message = $done.' of '.$people->count().' '.($people->count() === 1 ? 'account' : 'accounts').' updated.';
+        $message = $done.' de '.$people->count().' '.($people->count() === 1 ? 'conta atualizada.' : 'contas atualizadas.');
         if ($skipped) {
-            $message .= ' '.count($skipped).' skipped.';
+            $message .= ' '.count($skipped).' ignoradas.';
         }
 
         return response()->json(['message' => $message, 'done' => $done, 'skipped' => $skipped], 200);
@@ -451,14 +451,14 @@ class UserAdminController extends Controller
             case 'deactivate':
                 // Block login without deleting the account or its history.
                 if ($person->id === Auth::id()) {
-                    throw new AccountActionRefused('You cannot deactivate your own account.', 422);
+                    throw new AccountActionRefused('Você não pode desativar sua própria conta.', 422);
                 }
                 $this->assertHoldsEverything($person, 'deactivate');
                 if (! $person->disabled_at) {
                     $person->update(['disabled_at' => now()]);
                 }
 
-                return 'User deactivated.';
+                return 'Usuário desativado.';
 
             case 'reactivate':
                 // Restore login access for a previously deactivated account.
@@ -477,7 +477,7 @@ class UserAdminController extends Controller
                 // it via reactivate. Never overwrites an existing approval.
                 $this->markApproved($person);
 
-                return 'User reactivated.';
+                return 'Usuário reativado.';
 
             case 'approve':
                 // Approve a self-registered account that's been reviewed — clears
@@ -490,35 +490,39 @@ class UserAdminController extends Controller
                 $person->update(['email_verified_at' => $person->email_verified_at ?? now()]);
                 $this->markApproved($person);
 
-                return 'User approved.';
+                return 'Usuário aprovado.';
 
             case 'resend_invite':
                 // Resend the "set your password" email — for an account that
                 // never completed setup, or whoever just forgot.
                 if ($person->disabled_at) {
-                    throw new AccountActionRefused('This account is deactivated.', 422);
+                    throw new AccountActionRefused('Esta conta está desativada.', 422);
                 }
                 $status = Password::sendResetLink(['email' => $person->email]);
                 if ($status !== Password::RESET_LINK_SENT) {
-                    throw new AccountActionRefused(__($status), 422);
+                    throw new AccountActionRefused(match ($status) {
+                        'passwords.user' => 'Não encontramos um usuário com este endereço de e-mail.',
+                        'passwords.throttled' => 'Aguarde um pouco antes de tentar novamente.',
+                        default => 'Não foi possível enviar o convite. Tente novamente.',
+                    }, 422);
                 }
 
-                return 'Invite email resent.';
+                return 'Convite enviado novamente por e-mail.';
 
             case 'require_password_change':
                 $this->assertCanTakeOver($person);
                 if (is_null($person->password)) {
-                    throw new AccountActionRefused('This account has no password yet — they will choose one when they accept their invite.', 422);
+                    throw new AccountActionRefused('Esta conta ainda não tem uma senha — a pessoa escolherá uma ao aceitar o convite.', 422);
                 }
                 $person->forceFill(['password_change_required' => true])->save();
 
-                return 'They will be asked to choose a new password the next time they use the app.';
+                return 'A pessoa será solicitada a escolher uma nova senha na próxima vez que usar o aplicativo.';
 
             case 'clear_password_change':
                 $this->assertCanTakeOver($person);
                 $person->forceFill(['password_change_required' => false])->save();
 
-                return 'No longer required to change their password.';
+                return 'A troca de senha não é mais obrigatória.';
         }
 
         throw new \InvalidArgumentException("Unknown account action {$action}");
@@ -542,7 +546,7 @@ class UserAdminController extends Controller
     private function assertCanTakeOver(Person $person): void
     {
         if ($person->id === Auth::id()) {
-            throw new AccountActionRefused('Change your own password from your Profile page.', 422);
+            throw new AccountActionRefused('Altere sua própria senha na página do Perfil.', 422);
         }
         $this->assertHoldsEverything($person, 'change the password of');
     }
@@ -555,7 +559,7 @@ class UserAdminController extends Controller
         $actingKeys = collect(Auth::user()->effectivePermissionKeys());
         $targetKeys = collect($person->effectivePermissionKeys());
         if ($targetKeys->diff($actingKeys)->isNotEmpty()) {
-            throw new AccountActionRefused("You cannot {$verb} a person who holds a permission you do not have yourself.", 403);
+            throw new AccountActionRefused('Você não pode realizar esta operação na conta de uma pessoa que tenha uma permissão que você não possui.', 403);
         }
     }
 

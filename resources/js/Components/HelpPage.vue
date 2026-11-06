@@ -27,7 +27,7 @@ defineProps({
 </script>
 
 <template>
-	<Head :title="'Help: ' + title" />
+	<Head :title="'Ajuda: ' + title" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
@@ -41,7 +41,7 @@ defineProps({
 					:document-key="'help-' + guide"
 					media="report"
 					variant="plain"
-					label="Print these instructions"
+					label="Imprimir estas instruções"
 					:download-href="'/report/help/' + guide"
 					extra-class="shrink-0 px-3 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
 				/>
@@ -50,8 +50,8 @@ defineProps({
 			<slot />
 
 			<p class="text-xs text-gray-500">
-				Questions or something not working the way this guide describes? Use
-				<strong>Report an Issue</strong> from the profile menu.
+				Dúvidas ou algo não está funcionando como descrito neste guia? Use
+				<strong>Relatar um problema</strong> no menu do perfil.
 			</p>
 		</div>
 	</AuthenticatedLayout>

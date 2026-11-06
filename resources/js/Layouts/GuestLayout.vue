@@ -13,7 +13,7 @@ import { Link } from '@inertiajs/vue3';
             href="/"
             class="absolute left-4 top-4 text-sm font-semibold text-indigo-600 hover:underline"
         >
-            &larr; Home
+            &larr; Início
         </Link>
 
         <!-- The splash image carries the logo and name; the box starts below them. -->

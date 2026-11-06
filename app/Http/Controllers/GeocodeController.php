@@ -37,12 +37,12 @@ class GeocodeController extends Controller
         ]);
 
         if (! $geocodio->enabled()) {
-            return response()->json(['message' => 'Address lookup is not configured on this instance.'], 503);
+            return response()->json(['message' => 'A busca de endereço não está configurada nesta instalação.'], 503);
         }
 
         $result = $geocodio->lookup($data);
         if (! $result || ! $result['county']) {
-            return response()->json(['message' => 'Could not determine a county for that address.'], 422);
+            return response()->json(['message' => 'Não foi possível identificar o município desse endereço.'], 422);
         }
 
         $county = County::whereRaw('LOWER(county) = ?', [strtolower($result['county'])])

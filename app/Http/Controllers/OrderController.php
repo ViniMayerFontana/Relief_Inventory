@@ -80,7 +80,7 @@ class OrderController extends Controller
     {
         if ($order->status?->name !== Transaction::STATUS_NEW_ORDER) {
             abort(response()->json([
-                'message' => 'This order is being filled and can no longer be edited.',
+                'message' => 'Este pedido está em separação e não pode mais ser editado.',
             ], 409));
         }
     }

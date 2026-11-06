@@ -53,7 +53,7 @@ class SetupController extends Controller
         ]);
 
         if (filled(config('app.setup_code')) && ! hash_equals((string) config('app.setup_code'), (string) $request->input('setup_code'))) {
-            throw ValidationException::withMessages(['setup_code' => 'That setup code is not correct.']);
+            throw ValidationException::withMessages(['setup_code' => 'O código de configuração está incorreto.']);
         }
 
         try {
@@ -70,14 +70,14 @@ class SetupController extends Controller
 
         // The simulation keeps running after this response; its progress page is the useful place to land.
         if ($result['simulation_started']) {
-            return redirect('/setup/testing')->with('status', 'Setup complete. The simulated warehouse year is being generated — this takes a minute or two.');
+            return redirect('/setup/testing')->with('status', 'Configuração concluída. O ano simulado do armazém está sendo gerado — isso leva um ou dois minutos.');
         }
 
         return redirect()->route('dashboard')->with(
             'status',
             $result['demo_failed']
-                ? 'Setup complete, but the starting data could not be loaded (see the server log). You can start entering real data.'
-                : 'Setup complete. Welcome to Relief Inventory!'
+                ? 'Configuração concluída, mas não foi possível carregar os dados iniciais (consulte o log do servidor). Você já pode começar a inserir dados reais.'
+                : 'Configuração concluída. Boas-vindas ao Relief Inventory!'
         );
     }
 }

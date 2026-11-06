@@ -40,21 +40,21 @@ const props = defineProps({
 const emit = defineEmits(['update:comment']);
 
 const statusLabels = {
-	new: 'New',
-	seen: 'Acknowledged',
-	in_development: 'In Development',
-	review: 'Review',
-	resolved: 'Resolved',
+	new: 'Novo',
+	seen: 'Recebido',
+	in_development: 'Em desenvolvimento',
+	review: 'Em revisão',
+	resolved: 'Resolvido',
 };
 
 // What the triage button says for the transition it starts, distinct from
 // the resulting status label (statusLabels) — "Acknowledge" reads far
 // clearer as an action than "Mark Acknowledged" would.
 const actionLabels = {
-	seen: 'Acknowledge',
-	in_development: 'Start Development',
-	review: 'Ready for Review',
-	resolved: 'Resolve',
+	seen: 'Confirmar recebimento',
+	in_development: 'Iniciar desenvolvimento',
+	review: 'Pronto para revisão',
+	resolved: 'Resolver',
 };
 
 const statusClasses = {
@@ -73,7 +73,7 @@ const nextStatus = {
 };
 
 function formatDateTime(value) {
-	return value ? new Date(value).toLocaleString() : '';
+	return value ? new Date(value).toLocaleString(document.documentElement.lang || 'pt-BR') : '';
 }
 
 // Turns a report's flat status_logs into a display list where each entry
@@ -95,18 +95,18 @@ function historyEntries(report) {
 <template>
 	<div class="border rounded-lg p-4" :class="{ 'border-red-400': report.flagged_for_review }">
 		<div v-if="report.flagged_for_review" class="mb-2 rounded bg-red-100 border border-red-400 text-red-800 px-3 py-2 text-sm">
-			⚠ Contains language matching a known prompt-injection/exfiltration pattern
+			⚠ Contém texto semelhante a um padrão conhecido de injeção de instruções ou exfiltração
 			<span v-if="report.flagged_reason" class="font-mono text-xs">({{ report.flagged_reason }})</span>
-			— review carefully before acting on this report, especially before letting an AI
-			assistant act on it unsupervised.
+			— analise com cuidado antes de agir com base neste relato, especialmente antes de permitir que um
+			assistente de IA aja sem supervisão.
 		</div>
 		<div class="flex items-start justify-between gap-4">
 			<div class="flex-1">
 				<div class="flex items-center gap-2 text-sm flex-wrap">
-					<span class="font-mono text-gray-500" title="Report number">#{{ report.id }}</span>
-					<span class="font-semibold">{{ report.type === 'bug' ? 'Bug' : 'Feature' }}</span>
+					<span class="font-mono text-gray-500" title="Número do relato">#{{ report.id }}</span>
+					<span class="font-semibold">{{ report.type === 'bug' ? 'Erro' : 'Melhoria' }}</span>
 					<span v-if="report.urgent && report.status !== 'resolved'" class="px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800">
-						URGENT
+						URGENTE
 					</span>
 					<span class="px-2 py-0.5 rounded text-xs font-medium" :class="statusClasses[report.status]">
 						{{ statusLabels[report.status] }}
@@ -116,10 +116,10 @@ function historyEntries(report) {
 						class="px-2 py-0.5 rounded text-xs font-medium"
 						:class="report.submitted_at ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'"
 					>
-						{{ report.submitted_at ? 'Submitted' : 'Not Sent' }}
+						{{ report.submitted_at ? 'Enviado' : 'Não enviado' }}
 					</span>
 					<span v-if="report.instance_identifier" class="px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
-						from: {{ report.instance_identifier }}
+						de: {{ report.instance_identifier }}
 					</span>
 					<span class="text-gray-500">{{ report.person?.full_name || report.reporter_name }}</span>
 					<span class="text-gray-400 font-mono text-xs">{{ report.page_title || report.page_url }}</span>
@@ -138,15 +138,15 @@ function historyEntries(report) {
 				target="_blank"
 				class="text-xs text-blue-600 underline shrink-0"
 			>
-				Screenshot
+				Captura de tela
 			</a>
 		</div>
 
 		<!-- History: always visible, indented cards — submission first, then every log entry -->
 		<div class="mt-3 pl-4 border-l-2 border-gray-200 space-y-2">
 			<div class="rounded border bg-gray-50 px-3 py-2 text-xs">
-				<span class="font-semibold">Submitted<template v-if="report.urgent"> - URGENT</template></span>
-				by {{ report.person?.full_name || report.reporter_name }}
+				<span class="font-semibold">Enviado<template v-if="report.urgent"> - URGENTE</template></span>
+				por {{ report.person?.full_name || report.reporter_name }}
 				<span class="text-gray-400">— {{ formatDateTime(report.created_at) }}</span>
 			</div>
 			<div
@@ -155,9 +155,9 @@ function historyEntries(report) {
 				class="rounded border bg-white shadow-sm px-3 py-2 text-xs"
 			>
 				<span class="font-semibold">
-					{{ log.isTransition ? `Moved to ${statusLabels[log.status]}` : `Note (${statusLabels[log.status]})` }}
+					{{ log.isTransition ? `Alterado para ${statusLabels[log.status]}` : `Nota (${statusLabels[log.status]})` }}
 				</span>
-				by {{ log.person?.full_name }}
+				por {{ log.person?.full_name }}
 				<span class="text-gray-400">— {{ formatDateTime(log.created_at) }}</span>
 				<div v-if="log.comment" class="text-gray-700 mt-1">{{ log.comment }}</div>
 			</div>
@@ -171,21 +171,21 @@ function historyEntries(report) {
 				rows="2"
 				class="block w-full border-gray-300 rounded-md shadow-sm text-sm"
 				:placeholder="composing.isNote
-					? 'Note to add to this ticket'
-					: (composing.reopening ? 'Required: why is this being reopened?' : (['review', 'resolved'].includes(composing.status) ? 'Required: what was done or decided' : 'Optional note to the reporter'))"
+					? 'Nota para adicionar a este relato'
+					: (composing.reopening ? 'Obrigatório: por que este relato está sendo reaberto?' : (['review', 'resolved'].includes(composing.status) ? 'Obrigatório: o que foi feito ou decidido?' : 'Nota opcional para quem enviou o relato'))"
 			></textarea>
 			<div v-if="error" class="text-red-700 text-xs">{{ error }}</div>
 			<div class="flex gap-2">
 				<PrimaryButton @click="onConfirmCompose">
-					{{ composing.isNote ? 'Add Note' : (composing.reopening ? 'Reopen' : actionLabels[composing.status]) }}
+					{{ composing.isNote ? 'Adicionar nota' : (composing.reopening ? 'Reabrir' : actionLabels[composing.status]) }}
 				</PrimaryButton>
-				<button class="text-xs text-gray-500 underline" @click="onCancelCompose">Cancel</button>
+				<button class="text-xs text-gray-500 underline" @click="onCancelCompose">Cancelar</button>
 			</div>
 		</div>
 
 		<div v-else-if="report.status !== 'resolved'" class="mt-3 pl-4 flex gap-4 text-xs">
 			<button class="text-blue-600 underline" @click="onStartNote(report)">
-				+ Add note
+				+ Adicionar nota
 			</button>
 			<button
 				v-if="nextStatus[report.status]"
@@ -209,7 +209,7 @@ function historyEntries(report) {
 
 		<div v-else-if="report.status === 'resolved'" class="mt-3 pl-4 text-xs">
 			<button class="text-blue-600 underline font-medium" @click="onStartReopen(report)">
-				Reopen
+				Reabrir
 			</button>
 		</div>
 	</div>

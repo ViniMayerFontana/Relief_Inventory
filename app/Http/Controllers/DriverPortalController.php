@@ -73,7 +73,7 @@ class DriverPortalController extends Controller
                 && $d->verifyPin($data['pin']));
 
         if (! $driver) {
-            return response()->json(['message' => 'Phone number or PIN not recognized.'], 422);
+            return response()->json(['message' => 'Número de telefone ou PIN não reconhecido.'], 422);
         }
 
         $request->session()->put('driver_id', $driver->id);
@@ -99,7 +99,7 @@ class DriverPortalController extends Controller
         $driver = $this->currentDriver($request);
 
         if (! $driver && ! $this->isStaffViewer()) {
-            return response()->json(['message' => 'Not signed in.'], 401);
+            return response()->json(['message' => 'Você não está conectado.'], 401);
         }
 
         $currentStatuses = [
@@ -144,13 +144,13 @@ class DriverPortalController extends Controller
         $staff = $this->isStaffViewer();
 
         if (! $staff && (! $driver || (int) $order->driver_id !== $driver->id)) {
-            abort(403, 'This load is not assigned to you.');
+            abort(403, 'Esta carga não foi atribuída a você.');
         }
 
         $awaitingBol = [Transaction::STATUS_READY_TO_SHIP, Transaction::STATUS_SHIPPED, Transaction::STATUS_DELIVERED_AWAITING_BOL];
         if (! in_array($order->status?->name, $awaitingBol, true)) {
             abort(response()->json([
-                'message' => 'This load is not currently awaiting a signed BOL.',
+                'message' => 'Esta carga não está aguardando o comprovante de entrega assinado.',
             ], 409));
         }
 

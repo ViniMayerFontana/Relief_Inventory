@@ -1,146 +1,128 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 
-Log what comes off the truck — a donation, purchased equipment, supplies, or anything else arriving at the warehouse —
-before it's sorted into inventory.
+Registre o que chega do caminhão — uma doação, equipamento comprado, suprimentos ou qualquer outra coisa que chegue ao armazém — antes de
+ser triada em estoque.
 
-In order to get the most out of these instructions, we suggest you print them so you can follow along step by step
-without switching between screens. You can also use a separate device, or if your device supports split-screen, pull up
-both pages side by side.
+Para aproveitar ao máximo estas instruções, sugerimos imprimi-las para acompanhar passo a passo sem alternar entre telas. Você também pode usar
+outro dispositivo, ou, se o seu dispositivo suportar tela dividida, abrir as duas páginas lado a lado.
 
-## Welcoming the driver & safety
+## Recebendo o motorista e segurança
 
-- Introduce yourself and welcome the driver.
-- If it's their first time at this warehouse, let them know where the restrooms are.
-- Let them know you'll need to get some information from them for our records.
-- No forklifts are allowed on or in box trucks.
-- Whenever warehouse personnel need to enter the truck or trailer to unload it, the driver must be in the warehouse —
-  not in the truck — while that's happening. Wheel chocks should be in place, and, where the warehouse is equipped for
-  it, the trailer lock engaged before anyone enters the trailer.
+- Apresente-se e acolha o motorista.
+- Se for a primeira vez neste armazém, informe onde ficam os banheiros.
+- Informe que você precisará de algumas informações dele para os registros.
+- Nenhuma empilhadeira pode entrar em caminhões-baú ou dentro deles.
+- Sempre que o pessoal do armazém precisar entrar no caminhão ou no reboque para descarregar, o motorista deve estar no armazém — não no
+caminhão — enquanto isso acontecer. Os calços de roda devem estar no lugar e, quando o armazém estiver equipado para isso, o travamento do reboque
+deve estar acionado antes que alguém entre no reboque.
 
-## What Receiving is for
+## Para que serve o Recebimento
 
-A Receiving record is the dock-side log entry for one arrival: who it came from (or unknown for now), what kind of load
-it is and roughly how many pallets, boxes, bags or totes there are, and — for donations — the labels that get attached
-to the containers and sent on to [Donation Sorting](/help/sorting). It is *not* the item-by-item count, and you do not
-list what is on each pallet here — opening the containers and counting is Sorting's job.
+Um registro de Recebimento é o registro no cais de uma chegada: de quem veio (ou desconhecido por enquanto), que tipo de carga é e quantas
+paletes, caixas, sacos ou totes há, aproximadamente, e — para doações — os rótulos que são presos aos contêineres e enviados para [Triagem de doações](/help/sorting). Ele não é a contagem item por item, e você não lista o que há em cada palete aqui — abrir os contêineres e contar é tarefa da Triagem.
 
-The screen walks you through three steps: **Details**, then **Photo**, then **Print Labels**. Your work is saved when
-you press **Continue** on the Details step.
+A tela o guia em três etapas: **Details**, depois **Photo**, depois **Print Labels**. Seu trabalho é salvo quando você clica em **Continue** na etapa Details.
 
-Was this donation phoned in ahead of time? See [Donation Offers](/help/donation-offers).
+Essa doação foi anunciada por telefone com antecedência? Consulte [Ofertas de doação](/help/donation-offers).
 
-## Step 1 — Details
+## Etapa 1 — Details
 
-1. Open [Receiving](/receiving) and click **Record an Intake** to start a record for the arrival in front of you. (The
-   list shows open donations, plus the most recent equipment, supplies and other intakes. Use the search box to find a
-   donor, or tick **Flagged for donor ID only** to see just the ones still needing a donor identified.)
+1. Abra [Recebimento](/receiving) e clique em **Record an Intake** para iniciar um registro da chegada à sua frente. (A lista mostra doações
+abertas, além dos equipamentos, suprimentos e outras entradas recentes. Use a caixa de busca para encontrar um doador ou marque **Flagged for donor ID
+only** para ver apenas os que ainda precisam de doador identificado.)
 
-2. If the donor phoned ahead, the top of the form shows **Does this match a phoned-in offer?** with a card for each
-   offer still waiting to arrive (donor, what was offered, and ETA). Click the card that matches. It fills in the donor,
-   contact person and the offer's description (added to Notes) for you, and marks that offer as received when you save.
-   Click the card again to un-select it. If no offers are waiting, you will see a note saying so — just carry on.
+2. Se o doador ligou antes, o topo do formulário mostra **Does this match a phoned-in offer?** com um cartão para cada oferta ainda pendente
+de chegada (doador, o que foi oferecido e ETA). Clique no cartão correspondente. Isso preenche o doador, a pessoa de contato e a descrição da oferta para você, e marca essa oferta como recebida quando você salvar. Clique no cartão novamente para desmarcar. Se não houver ofertas pendentes,
+você verá uma nota dizendo isso — basta seguir em frente.
 
-3. Check the **Date**, then pick a **Category** — Donation, Equipment, Supplies, or Other (for Other, type what it is
-   under **Describe**). **Equipment** and **Supplies** are both for items the warehouse itself will use, not donations
-   that will be distributed to partners or recipients. Equipment is durable stuff the warehouse keeps and reuses
-   (shelving, pallet jacks, tools, computers); Supplies are consumables the warehouse uses up (packing tape, gloves,
-   cleaning supplies, printer paper). Only Donations get labels and go on to sorting; the others are logged for the
-   record.
+3. Verifique a **Date**, depois escolha uma **Category** — Donation, Equipment, Supplies ou Other (para Other, digite o que é em **Describe**).
+**Equipment** e **Supplies** são ambos para itens que o próprio armazém usará, não doações que serão distribuídas para entidades parceiras ou destinatários.
+Equipment é material durável que o armazém mantém e reutiliza (prateleiras, paleteiras, ferramentas, computadores); Supplies são consumíveis
+que o armazém usa (fita de embalagem, luvas, materiais de limpeza, papel para impressora). Apenas doações recebem rótulos e seguem para triagem; as
+outras são apenas registradas no histórico.
 
-4. Tap the **Truck Size** picture that matches the vehicle (Semi, Box Truck, Personal Vehicle, Trailer, Delivery Truck,
-   or Other — for Other, describe it).
+4. Toque na imagem **Truck Size** que corresponde ao veículo (Semi, Box Truck, Personal Vehicle, Trailer, Delivery Truck ou Other — para Other,
+descreva-o).
 
-5. **Driver:** search for the driver by name, phone or carrier. If they aren't listed, choose the create option to add a
-   new driver (name, phone, and carrier if it's a trucking company). A driver's carrier fills in the **Carrier** box for
-   you; you can also type the Carrier directly (a trucking company, UPS, FedEx, Amazon, and so on). Drivers are just a
-   simple list for our records — they are not staff or donors.
+5. **Driver:** pesquise o motorista por nome, telefone ou transportadora. Se não estiver na lista, escolha a opção de criação para adicionar um
+novo motorista (nome, telefone e transportadora, se for uma empresa de transporte). A transportadora do motorista preenche o campo **Carrier** para
+você; você também pode digitar a transportadora diretamente (empresa de transporte, UPS, FedEx, Amazon e assim por diante). Os motoristas são apenas
+uma lista simples para registros — eles não são funcionários nem doadores.
 
-6. Answer **How did this arrive?**
+6. Responda **How did this arrive?**
 
-   - **Pallets** — the load is on pallets. Enter **Number of Pallets**. Pallets can't be combined with the other kinds.
-   - **Other** — tick **Which kind(s)?**: Boxes, Bags, Totes and/or Loose. A mixed load can be several at once. Boxes,
-     Bags and Totes each get a **Number of ...** box to fill in. Loose has no count.
+   - **Pallets** — a carga está em paletes. Digite **Number of Pallets**. Paletes não podem ser combinadas com os outros tipos.
+   - **Other** — marque **Which kind(s)?**: Boxes, Bags, Totes e/ou Loose. Uma carga mista pode incluir vários tipos ao mesmo tempo. Boxes, Bags e Totes
+cada um recebem um campo **Number of ...** para preencher. Loose não tem contagem.
 
-   These numbers decide how many labels are created later, so count carefully.
+   Esses números decidem quantos rótulos são criados depois, então conte com cuidado.
 
-7. **Donor / Source:** search by name or organization. If they're not in the system yet, use the create option — a first
-   name, last name, or organization is enough. If the driver brought the donation themselves, pick the driver and press
-   **This driver is also the donor**.
+7. **Donor / Source:** pesquise por nome ou organização. Se ainda não estiverem no sistema, use a opção de criação — primeiro nome, sobrenome ou
+organização basta. Se o motorista trouxe a doação pessoalmente, escolha o motorista e clique em **This driver is also the donor**.
 
-8. If the donor is an organization, a **Contact Person for this shipment** box appears. Search the organization's
-   contacts, or add a new one (name and phone) — this is who to call about *this* load.
+8. Se o doador for uma organização, aparece um campo **Contact Person for this shipment**. Procure o contato da organização ou adicione um novo
+(nome e telefone) — esta é a pessoa a quem ligar sobre *este* carregamento.
 
-9. If you genuinely don't know who dropped this off, tick **Donor Unknown** instead of guessing. This only flags the
-   record for follow-up — it shows a **donor ID pending** tag in the list and stays visible there (even after the
-   donation is marked Complete) until someone fixes the source. It doesn't hold up sorting.
+9. Se você realmente não sabe quem entregou isso, marque **Donor Unknown** em vez de adivinhar. Isso apenas sinaliza o registro para acompanhamento —
+mostra uma etiqueta **donor ID pending** na lista e continua visível ali (mesmo depois que a doação é marcada como Complete) até alguém corrigir a
+fonte. Isso não atrasa a triagem.
 
-10. Fill in the pickup location: **Record address where this donation was picked up**, plus **City / State / Zip**, with
-    whatever the driver can tell you — every time, whether or not you know the donor.
+10. Preencha o local de coleta: **Record address where this donation was picked up**, mais **City / State / Zip**, com qualquer informação que o motorista
+possa fornecer — todas as vezes, mesmo que você conheça o doador.
 
-11. Write a short **Summary of Items** (what the paperwork or a quick look says is on board) and any **Notes**. Neither
-    blocks sorting — they're context for whoever works this donation next.
+11. Escreva um breve **Summary of Items** (o que a documentação ou uma rápida olhada diz que está no veículo) e quaisquer **Notes**. Nenhum
+dos dois impede a triagem — são contextos para quem vai trabalhar nessa doação em seguida.
 
-12. Answer **Quick-Sort Candidate?** (Yes or No) — a rough, visible-only judgment call: is this load mostly one item (a
-    pallet of the same donated item, for example), making it eligible for Sorting's express lane? It's not a promise of
-    exact contents.
+12. Responda **Quick-Sort Candidate?** (Yes ou No) — um julgamento aproximado, baseado apenas no que é visível: essa carga é principalmente um item (uma palete do mesmo item
+doado, por exemplo), tornando-a elegível para a faixa expressa da Triagem? Não é uma promessa de conteúdo exato.
 
-13. Press **Continue**. This saves the record and moves to the photo step. **Cancel** asks you to confirm before
-    throwing away your changes. On a saved record without labels, a red **Delete Intake** link (also asks you to
-    confirm) removes it — once labels exist it can't be deleted.
+13. Clique em **Continue**. Isso salva o registro e passa para a etapa de foto. **Cancel** pede confirmação antes de descartar suas alterações. Em um
+registro salvo sem rótulos, um link vermelho **Delete Intake** (também pede confirmação) remove o registro — depois que os rótulos existem, ele não pode
+ser apagado.
 
-## Step 2 — Photo
+## Etapa 2 — Photo
 
-Take one reference photo of the shipment as it arrived. On a phone or tablet, **Take Photo** opens the camera; on a
-computer with a webcam it opens a preview. You can also use **Choose File** to pick a picture already on the device.
-Retaking replaces the earlier photo. The photo is optional: the button reads **Skip** for non-donations or **Proceed to
-Labels** for a donation if there is no photo yet, and **Continue** once one is attached. **Back to Details** returns to
-the form.
+Tire uma foto de referência do carregamento como ele chegou. Em um telefone ou tablet, **Take Photo** abre a câmera; em um computador com webcam,
+abre uma pré-visualização. Você também pode usar **Choose File** para escolher uma imagem já no dispositivo. Tirar outra foto substitui a anterior.
+A foto é opcional: o botão diz **Skip** para não doações ou **Proceed to Labels** para uma doação se ainda não houver foto, e **Continue** quando uma
+foto estiver anexada. **Back to Details** retorna ao formulário.
 
-## Step 3 — Print Labels (donations only)
+## Etapa 3 — Print Labels (somente doações)
 
-1. When you arrive at this step, the labels are created for you from the counts you entered on the Details step — one
-   for each pallet, box, bag or tote. (Loose items don't get a label.) Nothing is created twice: if you come back to
-   this step, only the labels still missing are added. The line at the top shows progress, such as **3 of 4 labeled**.
-2. Need an extra one? Under that, enter a **Qty**, choose the type (Pallet, Gaylord, Box, Bag or Tote) and click **Add
-   Label(s)**.
-3. Already stuck pre-printed labels on the containers (see **Pre-print Labels** below)? Type or scan the label numbers,
-   such as R00000042, into the box and click **Link Label(s)**. Any number that can't be linked is listed with the
-   reason (not valid, no such label, or already used on another donation).
-4. The table lists each label's **Tag**, **Type** and **Status**. Use **Label** in its row to print one, or **Print All
-   Labels** for the whole donation. Each option offers a PDF download or a printer at your site. Attach each printed
-   label to its pallet, gaylord, box, bag or tote before it leaves the dock.
-5. Click **Done**. The donation is now ready for [sorting](/help/sorting).
+1. Quando você chega a esta etapa, os rótulos são criados automaticamente a partir das contagens que você digitou na etapa Details — um para cada
+palete, caixa, saco ou tote. (Itens soltos não recebem rótulo.) Nada é criado duas vezes: se você voltar a esta etapa, apenas os rótulos que faltam
+serão adicionados. A linha no topo mostra o progresso, como **3 of 4 labeled**.
+2. Precisa de um extra? Abaixo disso, digite **Qty**, escolha o tipo (Pallet, Gaylord, Box, Bag ou Tote) e clique em **Add Label(s)**.
+3. Já colou rótulos pré-impressos nos contêineres (veja **Pre-print Labels** abaixo)? Digite ou escaneie os números dos rótulos, como `R00000042`, na
+caixa e clique em **Link Label(s)**. Qualquer número que não puder ser vinculado é listado com a razão (not valid, no such label ou already used on
+another donation).
+4. A tabela lista o **Tag**, **Type** e **Status** de cada rótulo. Use **Label** na linha para imprimir um ou **Print All Labels** para toda a doação.
+Cada opção oferece download em PDF ou uma impressora do seu site. Prenda cada rótulo impresso à sua palete, gaylord, caixa, saco ou tote antes de sair
+do dock.
+5. Clique em **Done**. A doação agora está pronta para [triagem](/help/sorting).
 
-Labels are about what the container *is*, not what's in it — there is no place to describe the contents of each pallet
-here. Sorting records that when the container is opened.
+Os rótulos dizem respeito ao que o contêiner *é*, não ao que há dentro — não há lugar para descrever o conteúdo de cada palete aqui. A triagem registra isso quando o contêiner é aberto.
 
-## Other things you can do on this page
+## Outras coisas que você pode fazer nesta página
 
-- **Pre-print Labels** (button at the top): print a batch of blank R labels (1 to 300, of a container type you pick)
-  before any donation is entered. Put them on containers as goods arrive, then link the numbers at the Print Labels
-  step.
-- **Donation Offers** (button at the top): the list of donations phoned in ahead of time — see the [Donation Offers
-  guide](/help/donation-offers).
-- **Re-print Labels** (Details step of a donation that already has labels): reprints every label. It asks you to confirm
-  so you don't end up with duplicate labels on the floor.
-- **Close Out**: shown on a record that's down to its last non-empty container, which is already being sorted. It marks
-  that last one empty so the donation can finish — use it for the forgotten pallet at the end of the day.
-- Changing the **Category** is only possible before labels have been created.
+- **Pre-print Labels** (botão no topo): imprime um lote de rótulos R em branco (1 a 300, de um tipo de contêiner que você escolher) antes que qualquer doação seja cadastrada. Coloque-os nos contêineres conforme os itens chegam e depois vincule os números na etapa Print Labels.
+- **Donation Offers** (botão no topo): a lista de doações anunciadas por telefone com antecedência — veja o guia [Ofertas de doação](/help/donation-offers).
+- **Re-print Labels** (etapa Details de uma doação que já tem rótulos): reimprime todos os rótulos. Pede confirmação para você não acabar com rótulos duplicados no chão.
+- **Close Out**: aparece em um registro que ficou com seu último contêiner não vazio, que já está sendo triado. Isso marca esse último contêiner como vazio para a doação terminar — use isso para a palete esquecida no fim do dia.
+- Alterar a **Category** só é possível antes dos rótulos serem criados.
 
-## What the pallet number means
+## O que o número da palete significa
 
-Every printed label starts with a letter, then an 8-digit number — for example **R00000042**. The number just counts up
-(it's never reused, even if that pallet later empties out), and the letter says what kind of record it is and where in
-the warehouse that unit lives, not what's on it:
+Cada rótulo impresso começa com uma letra, seguida de oito dígitos — por exemplo **R00000042**. O número apenas conta (nunca é reutilizado, mesmo que
+a palete depois esvazie), e a letra indica o tipo de registro e onde na unidade esse item fica no armazém, não o que está dentro:
 
-- **R** — Receiving (a fresh label from this page, not yet sorted)
-- **W** — Warehouse (a pallet of sorted goods built for the shelves)
-- **S** — Shipping (staged and building toward an outgoing order)
-- **H** — Hold (set aside for a specific order being filled)
-- **Q** — Quarantine (flagged for review before it can move again)
+- **R** — Receiving (um rótulo novo desta página, ainda não triado)
+- **W** — Warehouse (uma palete de itens triados montada para as prateleiras)
+- **S** — Shipping (encaminhada para montar um pedido de saída)
+- **H** — Hold (separada para um pedido específico em preenchimento)
+- **Q** — Quarantine (marcada para revisão antes de poder se mover novamente)
 
-A pallet record is one load's trip, not the physical pallet underneath it — the letter is fixed for that trip and never
-changes. The tag Receiving prints (an **R** label) is what Sorting scans to pull up this same donation; once sorted
-stock moves onward — into the warehouse, out to Shipping, on Hold for an order, or into Quarantine — that's tracked as a
-new pallet record with its own tag and letter, not a relabel of the original.
+Um registro de palete representa a jornada de uma carga, não a palete física embaixo dela — a letra é fixa para essa jornada e nunca muda. O rótulo que o
+Recebimento imprime (um rótulo **R**) é o que a Triagem escaneia para abrir essa mesma doação; depois que o estoque triado avança — para o armazém,
+para envio, para Hold de um pedido ou para Quarantine — isso é rastreado como um novo registro de palete com sua própria tag e letra, não como uma nova etiqueta no registro original.

@@ -1,29 +1,29 @@
 @php
     $range = match (true) {
-        ! empty($filters['from']) && ! empty($filters['to']) => 'orders dated '.$filters['from'].' to '.$filters['to'],
-        ! empty($filters['from']) => 'orders dated '.$filters['from'].' or later',
-        ! empty($filters['to']) => 'orders dated '.$filters['to'].' or earlier',
-        default => 'all orders',
+        ! empty($filters['from']) && ! empty($filters['to']) => 'pedidos de '.$filters['from'].' a '.$filters['to'],
+        ! empty($filters['from']) => 'pedidos a partir de '.$filters['from'],
+        ! empty($filters['to']) => 'pedidos até '.$filters['to'],
+        default => 'todos os pedidos',
     };
     $totals = $report['totals'];
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Unfulfilled Requests Report</title>
+    <title>Relatório de Solicitações Não Atendidas</title>
     <style>
         @page {
             size: letter;
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Unfulfilled Requests Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Relatório de Solicitações Não Atendidas — gerado em {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "Página " counter(page) " de " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -118,32 +118,32 @@
     </style>
 </head>
 <body>
-    <h1>Unfulfilled Requests Report</h1>
+    <h1>Relatório de Solicitações Não Atendidas</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; what was requested but not filled, {{ $range }}, generated
+        {{ config('app.name') }} &mdash; o que foi solicitado, mas não atendido, {{ $range }}, gerado em
         {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
     </div>
 
     <div class="summary">
-        <strong>{{ $totals['item_types'] }}</strong> item types short across
-        <strong>{{ $totals['requests'] }}</strong> request{{ $totals['requests'] === 1 ? '' : 's' }}:
-        <strong>{{ number_format($totals['requested']) }}</strong> requested,
-        <strong>{{ number_format($totals['filled']) }}</strong> filled,
-        <strong class="short">{{ number_format($totals['not_filled']) }}</strong> not filled
-        ({{ number_format($totals['cut_at_allocation']) }} cut at allocation,
-        {{ number_format($totals['short_at_picking']) }} short at picking).
+        <strong>{{ $totals['item_types'] }}</strong> tipos de item em falta em
+        <strong>{{ $totals['requests'] }}</strong> solicitações:
+        <strong>{{ number_format($totals['requested']) }}</strong> solicitadas,
+        <strong>{{ number_format($totals['filled']) }}</strong> atendidas,
+        <strong class="short">{{ number_format($totals['not_filled']) }}</strong> não atendidas
+        ({{ number_format($totals['cut_at_allocation']) }} reduzidas na alocação,
+        {{ number_format($totals['short_at_picking']) }} em falta na separação).
     </div>
 
     @if($report['items']->isEmpty())
-        <p>No unfulfilled requests{{ $range === 'all orders' ? '' : ' in this date range' }}.</p>
+        <p>Nenhuma solicitação não atendida{{ $range === 'todos os pedidos' ? '' : ' neste período' }}.</p>
     @else
         <div class="columns">
-            @foreach(['county' => 'County', 'zip' => 'Zip'] as $field => $label)
+            @foreach(['county' => 'Município', 'zip' => 'CEP'] as $field => $label)
                 <div>
-                    <h2>Not Filled by {{ $label }}</h2>
+                    <h2>Não atendidos por {{ $label }}</h2>
                     <table>
                         <thead><tr>
-                            <th>{{ $label }}</th><th class="num">Requests</th><th class="num">Item Types</th><th class="num">Not Filled</th>
+                            <th>{{ $label }}</th><th class="num">Solicitações</th><th class="num">Tipos de item</th><th class="num">Não atendidos</th>
                         </tr></thead>
                         <tbody>
                             @foreach($report['by_'.$field] as $row)
@@ -160,19 +160,19 @@
             @endforeach
         </div>
 
-        <h2>Items Not Filled</h2>
+        <h2>Itens não atendidos</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Item #</th>
-                    <th>Item / County &middot; Zip</th>
-                    <th>Unit</th>
-                    <th class="num">Requests</th>
-                    <th class="num">Requested</th>
-                    <th class="num">Filled</th>
-                    <th class="num">Not Filled</th>
-                    <th class="num">Cut at Allocation</th>
-                    <th class="num">Short at Picking</th>
+                    <th>Item nº</th>
+                    <th>Item / Município &middot; CEP</th>
+                    <th>Unidade</th>
+                    <th class="num">Solicitações</th>
+                    <th class="num">Solicitado</th>
+                    <th class="num">Atendido</th>
+                    <th class="num">Não atendido</th>
+                    <th class="num">Reduzido na alocação</th>
+                    <th class="num">Em falta na separação</th>
                 </tr>
             </thead>
             <tbody>
@@ -207,11 +207,11 @@
     @endif
 
     <div class="disclaimer">
-        Counts only requests whose filling is finished (Filled through Completed, plus Closed &ndash; Unfulfilled);
-        requests still being entered or filled aren't included. Not filled = requested &minus; filled. Cut at
-        allocation = less approved than requested in Review Allocation; short at picking = approved but not picked.
-        County and zip are the requesting partner's. Quantities are in each item's own unit, so totals across
-        different items mix units.
+        Contabiliza apenas solicitações cuja separação foi concluída (de Separado a Concluído, além de Fechado — Não atendido);
+        solicitações ainda em cadastro ou separação não são incluídas. Não atendido = solicitado &minus; atendido.
+        Reduzido na alocação = quantidade aprovada menor que a solicitada durante a revisão da alocação; em falta na
+        separação = quantidade aprovada, mas não separada. Município e CEP são os da entidade parceira solicitante.
+        As quantidades usam a unidade própria de cada item, portanto os totais de itens diferentes somam unidades distintas.
     </div>
 </body>
 </html>

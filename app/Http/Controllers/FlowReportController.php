@@ -65,7 +65,7 @@ class FlowReportController extends Controller
     public function pdf(Request $request)
     {
         $filters = $this->filters($request);
-        abort_if($this->rangeError($filters), 422, 'Date range too long for this bucket size.');
+        abort_if($this->rangeError($filters), 422, 'O intervalo de datas é longo demais para o nível de agrupamento selecionado.');
 
         return $this->pdfBuilder($filters);
     }
@@ -88,7 +88,7 @@ class FlowReportController extends Controller
     public function csv(Request $request)
     {
         $filters = $this->filters($request);
-        abort_if($this->rangeError($filters), 422, 'Date range too long for this bucket size.');
+        abort_if($this->rangeError($filters), 422, 'O intervalo de datas é longo demais para o nível de agrupamento selecionado.');
         $report = $this->buildReport($filters);
 
         $csv = Writer::fromString('');

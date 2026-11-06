@@ -105,7 +105,7 @@ class ItemController extends Controller
         $item = Item::findOrFail($id);
         $item->delete();
 
-        return response()->json(['message' => 'Item deleted successfully.'], 200);
+        return response()->json(['message' => 'Item excluído com sucesso.'], 200);
     }
 
     /**
@@ -141,7 +141,7 @@ class ItemController extends Controller
         $to = ItemType::findOrFail($data['itemtype_id']);
 
         if ((int) $item->itemtype_id === (int) $to->id) {
-            return response()->json(['message' => 'That item is already under '.$to->display_number.'.'], 422);
+            return response()->json(['message' => 'Esse item já está em '.$to->display_number.'.'], 422);
         }
 
         DB::transaction(fn () => $item->update(['itemtype_id' => $to->id]));

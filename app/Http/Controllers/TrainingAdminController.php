@@ -82,7 +82,7 @@ class TrainingAdminController extends Controller
     {
         $request->validate(['confirm' => 'required|string']);
         if (trim($request->input('confirm')) !== 'RESET') {
-            return response()->json(['message' => 'Type RESET to confirm.'], 422);
+            return response()->json(['message' => 'Digite RESET para confirmar.'], 422);
         }
         try {
             $archive = $reset->start();
@@ -205,7 +205,7 @@ class TrainingAdminController extends Controller
     public function setupPacketBuilder(): PdfBuilder
     {
         $summary = TrainingSetting::current()->prepared_summary;
-        abort_unless($summary, 404, 'Prepare Training has not been run yet.');
+        abort_unless($summary, 404, 'A opção Preparar treinamento ainda não foi executada.');
 
         return Pdf::view('reports.training.setup-packet', ['summary' => $summary, 'stations' => TrainingMode::STATIONS])
             ->driver('weasyprint')

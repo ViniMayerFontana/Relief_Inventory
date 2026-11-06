@@ -1,7 +1,10 @@
 # Help guides and localization plan
 
-Status: **proposal, nothing built.** Needs agreement from both maintainers before any phase starts. Phases run in order:
-each one makes the next cheaper, and no translation work starts until phases 1 and 2 are done.
+Status: **pt-BR localization is in progress.** This rollout supersedes the Spanish-first target and approval gate in the
+original proposal below. The initial pass sets Brazilian Portuguese as the app locale and translates the main user-facing
+screens, help guides, server messages, and rendered emails and reports. Dynamic status values, external-provider errors,
+and user-entered data may still use their original language. Review fingerprints, per-person language preferences, and
+translation of warehouse data remain future work; user-entered names and descriptions are not changed.
 
 1. Write each help guide once and generate both the screen page and the PDF from it.
 2. Review and correct the English help text.

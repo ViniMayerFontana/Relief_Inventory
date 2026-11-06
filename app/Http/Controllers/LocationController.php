@@ -68,7 +68,7 @@ class LocationController extends Controller
         $location = Location::create($data);
 
         return response()->json([
-            'message' => 'Location created successfully.',
+            'message' => 'Local criado com sucesso.',
             'record' => $location,
         ], 201);
     }
@@ -90,7 +90,7 @@ class LocationController extends Controller
         $location->update($data);
 
         return response()->json([
-            'message' => 'Location updated successfully.',
+            'message' => 'Local atualizado com sucesso.',
             'record' => $location,
         ], 200);
     }
@@ -117,7 +117,7 @@ class LocationController extends Controller
             }
         });
 
-        return response()->json(['message' => 'Pick path saved.']);
+        return response()->json(['message' => 'Caminho de coleta salvo.']);
     }
 
     public function destroy($id)
@@ -128,12 +128,12 @@ class LocationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Location deleted successfully.',
+                'message' => 'Local excluído com sucesso.',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error deleting location: '.$e->getMessage(),
+                'message' => 'Erro ao excluir o local: '.$e->getMessage(),
             ], 500);
         }
     }

@@ -46,11 +46,11 @@ import { playScanCarton, playScanError, playScanMatched, playScanUnknown, scanSo
 // count into inventory) and differ only in item_condition, which exists so
 // new goods can be reported separately.
 const DISPOSITIONS = [
-	{ key: 'new',      value: 'usable',   condition: 'new',  label: 'New',      hint: 'Unused, in original packaging - counted into inventory' },
-	{ key: 'usable',   value: 'usable',   condition: 'used', label: 'Usable',   hint: 'Used or opened, in good condition - counted into inventory' },
-	{ key: 'outdated', value: 'outdated', condition: null,   label: 'Outdated', hint: 'Expired on arrival - discarded' },
-	{ key: 'trashed',  value: 'trashed',  condition: null,   label: 'Trash',    hint: 'Damaged or unusable - discarded' },
-	{ key: 'diverted', value: 'diverted', condition: null,   label: 'Divert',   hint: 'Usable, but passed to another organization' },
+	{ key: 'new',      value: 'usable',   condition: 'new',  label: 'Novo',      hint: 'Sem uso, na embalagem original — incluído no estoque' },
+	{ key: 'usable',   value: 'usable',   condition: 'used', label: 'Aproveitável',   hint: 'Usado ou aberto, em boas condições — incluído no estoque' },
+	{ key: 'outdated', value: 'outdated', condition: null,   label: 'Vencido', hint: 'Vencido ao chegar — descartado' },
+	{ key: 'trashed',  value: 'trashed',  condition: null,   label: 'Descartar',    hint: 'Danificado ou inutilizável — descartado' },
+	{ key: 'diverted', value: 'diverted', condition: null,   label: 'Redirecionar',   hint: 'Aproveitável, mas destinado a outra organização' },
 ];
 
 // The button a saved line corresponds to (lines sorted before item_condition
@@ -179,7 +179,7 @@ export default {
 				const response = await axios.get('/json/sorting-sessions');
 				this.sessions = response.data;
 			} catch (error) {
-				this.listError = 'Could not load sorting sessions.';
+				this.listError = 'Não foi possível carregar as sessões de triagem.';
 			} finally {
 				this.listLoading = false;
 			}
@@ -190,7 +190,7 @@ export default {
 				const response = await axios.post('/json/sorting-sessions', donationId ? { donation_id: donationId } : {});
 				this.openSession(response.data.record);
 			} catch (error) {
-				this.listError = donationId ? 'Could not pick up that donation.' : 'Could not start a new sorting session.';
+				this.listError = donationId ? 'Não foi possível abrir essa doação.' : 'Não foi possível iniciar uma nova sessão de triagem.';
 			}
 		},
 		async resumeSession(id) {
@@ -199,7 +199,7 @@ export default {
 				const response = await axios.get('/json/sorting-sessions/' + id);
 				this.openSession(response.data.record);
 			} catch (error) {
-				this.listError = 'Could not open that session.';
+				this.listError = 'Não foi possível abrir essa sessão.';
 			}
 		},
 		openSession(record) {
@@ -272,7 +272,7 @@ export default {
 				const record = response.data.record;
 				this.session = { ...record, item_ledgers: undefined };
 			} catch (error) {
-				this.headerError = 'Could not save session details.';
+				this.headerError = 'Não foi possível salvar os detalhes da sessão.';
 			} finally {
 				this.headerSaving = false;
 			}
@@ -304,7 +304,7 @@ export default {
 			const hasName = this.newDonor.first_name.trim() && this.newDonor.last_name.trim();
 			const hasOrg = (this.newDonor.organization || '').trim();
 			if (!hasName && !hasOrg) {
-				this.donorError = 'Enter a name (first and last) or an organization.';
+				this.donorError = 'Informe o nome e o sobrenome ou uma organização.';
 				return;
 			}
 			this.donorSaving = true;
@@ -315,7 +315,7 @@ export default {
 				this.creatingDonor = false;
 				this.donorSelected(response.data.record);
 			} catch (error) {
-				this.donorError = error.response?.data?.message || 'Could not save donor.';
+				this.donorError = error.response?.data?.message || 'Não foi possível salvar o doador.';
 			} finally {
 				this.donorSaving = false;
 			}
@@ -326,7 +326,7 @@ export default {
 			if (this.entry.item_id) {
 				const raw = String(this.entry.qty ?? '').trim();
 				if (!/^\d{1,7}$/.test(raw) || parseInt(raw, 10) < 1) {
-					this.lineError = 'Enter a quantity for the selected item (or clear it) before completing.';
+					this.lineError = 'Informe a quantidade do item selecionado (ou limpe o campo) antes de concluir.';
 					this.$refs.qtyInput?.focus();
 					return false;
 				}
@@ -406,9 +406,9 @@ export default {
 				const merged = response.data.merged;
 				this.notice = merged
 					? 'Combined ' + merged + ' duplicate line' + (merged === 1 ? '' : 's') + '.'
-					: 'No duplicate lines to combine.';
+					: 'Não há linhas duplicadas para combinar.';
 			} catch (error) {
-				this.headerError = error.response?.data?.message || 'Could not combine the lines. Try again.';
+				this.headerError = error.response?.data?.message || 'Não foi possível combinar as linhas. Tente novamente.';
 			} finally {
 				this.consolidating = false;
 			}
@@ -430,7 +430,7 @@ export default {
 				this.$refs.itemSelect?.focus();
 			} catch (error) {
 				this.pallet = null;
-				this.palletError = 'Unknown pallet tag "' + tag + '". Check the label, or continue without a pallet.';
+				this.palletError = 'Etiqueta de palete desconhecida "' + tag + '". Confira a etiqueta ou continue sem um palete.';
 			}
 		},
 		clearPallet() {
@@ -453,14 +453,14 @@ export default {
 					'/json/sorting-sessions/pallet/' + encodeURIComponent(tag) + '/empty',
 					{ observation }
 				);
-				this.notice = 'Pallet ' + tag + ' marked empty'
+				this.notice = 'Palete ' + tag + ' marcado como vazio'
 					+ (observation === 'damaged' ? ' and flagged for QC' : '')
 					+ (response.data.donation_status === 'Complete'
 						? ' — that was the last pallet, donation is fully sorted!' : '.');
 				this.clearPallet();
 			} catch (error) {
 				this.emptyingPallet = false;
-				this.palletError = error.response?.data?.message || 'Could not mark the pallet empty.';
+				this.palletError = error.response?.data?.message || 'Não foi possível marcar o palete como vazio.';
 			}
 		},
 		// Where the entry-row camera scan goes: the carton dialog's box if it is open, else Qty when an item is waiting
@@ -566,12 +566,12 @@ export default {
 			this.lineError = null;
 			this.confirmingLineKey = null;
 			if (!this.entry.item_id) {
-				this.lineError = 'Choose an item first.';
+				this.lineError = 'Escolha um item primeiro.';
 				return;
 			}
 			const qty = parseInt(this.entry.qty, 10);
 			if (!qty || qty < 1) {
-				this.lineError = 'Enter a quantity of 1 or more.';
+				this.lineError = 'Informe uma quantidade igual ou superior a 1.';
 				return;
 			}
 			const line = {
@@ -645,7 +645,7 @@ export default {
 				await axios.delete('/json/sorting-sessions/' + this.session.id + '/lines/' + line.id);
 				this.lines = this.lines.filter((entry) => entry !== line);
 			} catch (error) {
-				this.lineError = 'Could not delete the line. Try again.';
+				this.lineError = 'Não foi possível excluir a linha. Tente novamente.';
 			}
 		},
 		retryFailed() {
@@ -696,7 +696,7 @@ export default {
 				}
 			} catch (error) {
 				playScanError();
-				this.lineError = error.response?.data?.message || 'Could not look up that barcode. Search for the item instead.';
+				this.lineError = error.response?.data?.message || 'Não foi possível localizar esse código de barras. Busque o item.';
 				this.$refs.itemSelect?.clearSelection();
 			} finally {
 				this.upcResolving = false;
@@ -838,7 +838,7 @@ export default {
 				}
 			} catch (error) {
 				playScanError();
-				d.error = error.response?.data?.message || 'Could not look up that barcode.';
+				d.error = error.response?.data?.message || 'Não foi possível localizar esse código de barras.';
 				this.$refs.cartonItemSelect?.clearSelection();
 			}
 		},
@@ -846,11 +846,11 @@ export default {
 			const d = this.cartonDialog;
 			d.error = null;
 			if (!d.item_id) {
-				d.error = 'Choose (or scan) the item that is inside the carton.';
+				d.error = 'Escolha (ou leia) o item que está dentro da caixa.';
 				return;
 			}
 			if (this.cartonTotal() < 1) {
-				d.error = 'Enter how many packs are in the carton and how many items are in each pack.';
+				d.error = 'Informe quantos pacotes há na caixa e quantos itens há em cada pacote.';
 				return;
 			}
 			d.saving = true;
@@ -867,7 +867,7 @@ export default {
 			} catch (error) {
 				d.error = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not save the carton.';
+					|| 'Não foi possível salvar a caixa.';
 			} finally {
 				d.saving = false;
 			}
@@ -906,26 +906,26 @@ export default {
 </script>
 
 <template>
-	<Head title="Donation Sorting" />
+	<Head title="Triagem de doações" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<!-- ======================= SESSION LIST ======================= -->
 		<div v-if="view === 'list'" class="sort_container">
 			<h2 class="ri_datatable_head">
-				Donation Sorting
-				<HelpLink guide="sorting">Donation Sorting Guide</HelpLink>
-				<button @click="startSession()" class="ri_defaultbutton">Start Sorting (untagged)</button>
+				Triagem de doações
+				<HelpLink guide="sorting">Guia de triagem de doações</HelpLink>
+				<button @click="startSession()" class="ri_defaultbutton">Iniciar triagem (sem etiqueta)</button>
 			</h2>
 
 			<p v-if="listError" class="sort_error">{{ listError }}</p>
-			<p v-if="listLoading">Loading sessions...</p>
+			<p v-if="listLoading">Carregando sessões...</p>
 
 			<div v-if="sessions.open.length" class="sort_section">
-				<h3>In Progress - tap to resume</h3>
+				<h3>Em andamento — toque para continuar</h3>
 				<div class="sort_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Date</th><th>Started By</th><th>Donor</th><th>Lines</th><th>Items</th></tr>
+						<tr><th>Data</th><th>Iniciada por</th><th>Doador</th><th>Linhas</th><th>Itens</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in sessions.open" :key="record.id"
@@ -934,7 +934,7 @@ export default {
 							<td>{{ personLabel(record.entered_by) }}</td>
 							<td>
 							{{ personLabel(record.person) }}
-							<span v-if="record.donor_identification_pending" class="sort_badge_id">donor ID pending</span>
+							<span v-if="record.donor_identification_pending" class="sort_badge_id">identificação do doador pendente</span>
 						</td>
 							<td>{{ sessionSummary(record).lines }}</td>
 							<td>{{ sessionSummary(record).total }}</td>
@@ -944,10 +944,10 @@ export default {
 			</div>
 
 			<div v-if="sessions.receivable.length" class="sort_section">
-				<h3>Ready to Sort - tap to pick up</h3>
+				<h3>Pronto para triagem — toque para iniciar</h3>
 				<div class="sort_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Date Received</th><th>Donor</th><th>Manifest</th></tr>
+						<tr><th>Data de recebimento</th><th>Doador</th><th>Manifesto</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in sessions.receivable" :key="record.id"
@@ -955,7 +955,7 @@ export default {
 							<td>{{ record.order_date }}</td>
 							<td>
 							{{ personLabel(record.person) }}
-							<span v-if="record.donor_identification_pending" class="sort_badge_id">donor ID pending</span>
+							<span v-if="record.donor_identification_pending" class="sort_badge_id">identificação do doador pendente</span>
 						</td>
 							<td>{{ record.manifest }}</td>
 						</tr>
@@ -964,11 +964,11 @@ export default {
 			</div>
 
 			<div class="sort_section">
-				<h3>Recently Completed</h3>
-				<p v-if="!sessions.recent.length && !listLoading">No completed sorting sessions yet.</p>
+				<h3>Concluídas recentemente</h3>
+				<p v-if="!sessions.recent.length && !listLoading">Nenhuma sessão de triagem concluída ainda.</p>
 				<div v-else class="sort_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Completed</th><th>Completed By</th><th>Donor</th><th>Lines</th><th>Items</th></tr>
+						<tr><th>Concluída em</th><th>Concluída por</th><th>Doador</th><th>Linhas</th><th>Itens</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in sessions.recent" :key="record.id"
@@ -977,7 +977,7 @@ export default {
 							<td>{{ completedByLabel(record) }}</td>
 							<td>
 							{{ personLabel(record.person) }}
-							<span v-if="record.donor_identification_pending" class="sort_badge_id">donor ID pending</span>
+							<span v-if="record.donor_identification_pending" class="sort_badge_id">identificação do doador pendente</span>
 						</td>
 							<td>{{ sessionSummary(record).lines }}</td>
 							<td>{{ sessionSummary(record).total }}</td>
@@ -990,42 +990,42 @@ export default {
 		<!-- ======================= ACTIVE SESSION ======================= -->
 		<div v-else-if="session" class="sort_container">
 			<div class="sort_topbar">
-				<button @click="leaveSession" class="ri_formbutton">&larr; All Sessions</button>
+				<button @click="leaveSession" class="ri_formbutton">&larr; Todas as sessões</button>
 				<span class="sort_title">
-					Sorting Session &mdash; {{ session.order_date }}
-					<span v-if="readonly" class="sort_completed_badge">Completed</span>
+					Sessão de triagem &mdash; {{ session.order_date }}
+					<span v-if="readonly" class="sort_completed_badge">Concluída</span>
 				</span>
 				<span class="sort_savestate" v-if="!readonly">
 					<span v-if="failedLines.length" class="sort_error_inline">
-						{{ failedLines.length }} line(s) failed to save
-						<button @click="retryFailed" class="ri_linkbutton">Retry All</button>
+						{{ failedLines.length }} linha(s) não puderam ser salvas
+						<button @click="retryFailed" class="ri_linkbutton">Tentar novamente</button>
 					</span>
-					<span v-else-if="headerSaving || pendingCount > 0">Saving...</span>
-					<span v-else class="sort_saved">All changes saved</span>
+					<span v-else-if="headerSaving || pendingCount > 0">Salvando...</span>
+					<span v-else class="sort_saved">Todas as alterações foram salvas</span>
 				</span>
 				<template v-if="!readonly">
-					<button v-if="confirmingConsolidate" @click="confirmingConsolidate = false" class="ri_linkbutton">Cancel</button>
+					<button v-if="confirmingConsolidate" @click="confirmingConsolidate = false" class="ri_linkbutton">Cancelar</button>
 					<button v-if="mergeableCount > 0 || confirmingConsolidate" @click="consolidateLines"
 						:disabled="consolidating || pendingCount > 0"
 						:class="confirmingConsolidate ? 'ri_deletebutton' : 'ri_formbutton'"
-						title="Add up identical lines (same item, pallet, disposition and condition) into one">
+						title="Agrupar linhas idênticas (mesmo item, palete, destino e condição)">
 						{{ confirmingConsolidate
-							? 'Combine ' + mergeableCount + ' duplicate line(s)? Cannot be undone'
-							: 'Combine duplicate lines' }}
+							? 'Combinar ' + mergeableCount + ' linha(s) duplicada(s)? Não será possível desfazer'
+							: 'Combinar linhas duplicadas' }}
 					</button>
-					<button v-if="confirmingComplete" @click="confirmingComplete = false" class="ri_linkbutton">Keep Sorting</button>
+					<button v-if="confirmingComplete" @click="confirmingComplete = false" class="ri_linkbutton">Continuar triagem</button>
 					<button @click="completeSession" :class="confirmingComplete ? 'ri_deletebutton' : 'ri_defaultbutton'">
 						{{ confirmingComplete
-							? 'Complete with ' + pendingCount + ' unsaved line(s)' + (failedLines.length ? ' (' + failedLines.length + ' failed)' : '') + '?'
-							: 'Complete Session' }}
+							? 'Concluir com ' + pendingCount + ' linha(s) não salva(s)' + (failedLines.length ? ' (' + failedLines.length + ' com falha)' : '') + '?'
+							: 'Concluir sessão' }}
 					</button>
 					<button type="button" @click="toggleScanSounds" class="sort_sound_toggle"
-						:aria-label="scanSounds ? 'Scan sounds on' : 'Scan sounds off'"
-						:title="scanSounds ? 'Scan sounds on (beep = matched, low tone = not found). Click to mute.' : 'Scan sounds off. Click to turn on.'">
+						:aria-label="scanSounds ? 'Sons da leitura ativados' : 'Sons da leitura desativados'"
+						:title="scanSounds ? 'Sons da leitura ativados (bipe = encontrado, tom grave = não encontrado). Clique para silenciar.' : 'Sons da leitura desativados. Clique para ativar.'">
 						{{ scanSounds ? '🔊' : '🔇' }}
 					</button>
 				</template>
-				<button v-else @click="reopenSession" class="ri_defaultbutton">Reopen Session</button>
+				<button v-else @click="reopenSession" class="ri_defaultbutton">Reabrir sessão</button>
 			</div>
 			<p v-if="headerError" class="sort_error">{{ headerError }}</p>
 			<p v-if="notice" class="sort_notice">{{ notice }}</p>
@@ -1036,13 +1036,13 @@ export default {
 			     sessions edit the donor directly. -->
 			<div class="sort_header">
 				<div class="sort_field sort_field_stacked sort_header_donor">
-					<label>Donor / Source:</label>
+					<label>Doador / origem:</label>
 					<div v-if="readonly || (fromReceiving && !editingDonor)" class="sort_donor_read">
 						<span>
 							{{ personLabel(session.person) }}
-							<em v-if="fromReceiving" class="sort_donor_src">(recorded at receiving)</em>
+							<em v-if="fromReceiving" class="sort_donor_src">(registrado no recebimento)</em>
 						</span>
-						<button v-if="!readonly" @click="editingDonor = true" class="ri_linkbutton">Edit</button>
+						<button v-if="!readonly" @click="editingDonor = true" class="ri_linkbutton">Editar</button>
 					</div>
 					<SearchSelect
 						v-else
@@ -1051,36 +1051,36 @@ export default {
 						optionsource="/json/people"
 						display="search_label"
 						:searchfields="['organization', 'first_name', 'last_name']"
-						placeholder="Search donors..."
+						placeholder="Buscar doadores..."
 						:allowcreate="true"
 						@selected="donorSelected"
 						@create="startNewDonor"
 					/>
 					<Modal :show="creatingDonor" @close="creatingDonor = false" max-width="sm">
 						<div class="p-6 space-y-4">
-							<h2 class="text-lg font-semibold">New Donor</h2>
+							<h2 class="text-lg font-semibold">Novo doador</h2>
 							<div>
-								<InputLabel value="First Name" />
+								<InputLabel value="Nome" />
 								<TextInput v-model="newDonor.first_name" class="mt-1 block w-full" autofocus />
 							</div>
 							<div>
-								<InputLabel value="Last Name" />
+								<InputLabel value="Sobrenome" />
 								<TextInput v-model="newDonor.last_name" class="mt-1 block w-full" />
 							</div>
 							<div>
-								<InputLabel value="Organization" />
+								<InputLabel value="Organização" />
 								<TextInput v-model="newDonor.organization" class="mt-1 block w-full" />
 							</div>
 							<p v-if="donorError" class="text-sm text-red-700">{{ donorError }}</p>
 							<div class="flex justify-end gap-3">
-								<SecondaryButton :disabled="donorSaving" @click="creatingDonor = false">Cancel</SecondaryButton>
-								<PrimaryButton :disabled="donorSaving" @click="saveNewDonor">Save Donor</PrimaryButton>
+								<SecondaryButton :disabled="donorSaving" @click="creatingDonor = false">Cancelar</SecondaryButton>
+								<PrimaryButton :disabled="donorSaving" @click="saveNewDonor">Salvar doador</PrimaryButton>
 							</div>
 						</div>
 					</Modal>
 				</div>
 				<div class="sort_field sort_field_stacked sort_header_comments">
-					<label>Comments:</label>
+					<label>Observações:</label>
 					<TextArea v-model="session.comments" :enabled="!readonly" @change="commentsChanged" />
 				</div>
 				<div class="sort_field sort_header_check">
@@ -1091,7 +1091,7 @@ export default {
 							:disabled="readonly"
 							@change="donorIdPendingChanged"
 						/>
-						Donor unidentified &mdash; flag for follow-up
+						Doador não identificado &mdash; sinalizar para acompanhamento
 					</label>
 				</div>
 			</div>
@@ -1099,38 +1099,38 @@ export default {
 			<!-- pallet context: scanned once, applied to every following line -->
 			<div v-if="!readonly" class="sort_pallet" :class="pallet ? 'sort_pallet_active' : ''">
 				<template v-if="!pallet">
-					<label>Pallet Tag:</label>
+					<label>Etiqueta do palete:</label>
 					<span class="sort_scangroup">
 						<input
 							ref="palletInput"
 							type="text"
 							v-model="palletTagInput"
 							class="ri_forminput"
-							placeholder="Scan or type pallet tag (e.g. R00000042)"
+							placeholder="Leia ou digite a etiqueta do palete (ex.: R00000042)"
 							@keydown.enter.prevent="resolvePallet"
 						/>
 						<ScanButton :target="() => $refs.palletInput" compact />
 					</span>
-					<button @click="resolvePallet" class="ri_formbutton">Set Pallet</button>
-					<span class="sort_pallet_hint">Lines entered without a pallet won't be source-traceable.</span>
+					<button @click="resolvePallet" class="ri_formbutton">Definir palete</button>
+					<span class="sort_pallet_hint">Não será possível rastrear a origem das linhas registradas sem um palete.</span>
 				</template>
 				<template v-else-if="!emptyingPallet">
 					<span class="sort_pallet_label">
-						Sorting from pallet <strong>{{ palletTagStr(pallet.id) }}</strong>
-						(packed {{ pallet.datepacked }}<span v-if="pallet.location">, at {{ pallet.location.code }}</span>)
+						Triagem do palete <strong>{{ palletTagStr(pallet.id) }}</strong>
+						(embalado em {{ pallet.datepacked }}<span v-if="pallet.location">, em {{ pallet.location.code }}</span>)
 						<span v-if="palletContents(pallet)" class="sort_pallet_contents">&mdash; {{ palletContents(pallet) }}</span>
 					</span>
-					<button @click="emptyingPallet = true" class="ri_defaultbutton">Pallet Empty</button>
-					<button @click="clearPallet" class="ri_formbutton">Change Pallet</button>
+					<button @click="emptyingPallet = true" class="ri_defaultbutton">Palete vazio</button>
+					<button @click="clearPallet" class="ri_formbutton">Trocar palete</button>
 				</template>
 				<template v-else>
 					<!-- one optional observation tap; final QC stays with a supervisor -->
 					<span class="sort_pallet_label">
-						Pallet <strong>{{ palletTagStr(pallet.id) }}</strong> finished &mdash; how did it look?
+						Palete <strong>{{ palletTagStr(pallet.id) }}</strong> finalizado &mdash; qual era a condição?
 					</span>
-					<button @click="markPalletEmpty('ok')" class="ri_defaultbutton">Pallet looks OK</button>
-					<button @click="markPalletEmpty('damaged')" class="ri_deletebutton">Set aside &mdash; damaged?</button>
-					<button @click="emptyingPallet = false" class="ri_linkbutton">Cancel</button>
+					<button @click="markPalletEmpty('ok')" class="ri_defaultbutton">Palete em boas condições</button>
+					<button @click="markPalletEmpty('damaged')" class="ri_deletebutton">Separar &mdash; danificado?</button>
+					<button @click="emptyingPallet = false" class="ri_linkbutton">Cancelar</button>
 				</template>
 			</div>
 			<p v-if="palletError" class="sort_error">{{ palletError }}</p>
@@ -1145,7 +1145,7 @@ export default {
 						optionsource="/json/items"
 						display="name"
 						:searchfields="['name', 'upc', 'description']"
-						placeholder="Scan UPC or search items..."
+						placeholder="Leia o UPC ou busque itens..."
 						:allowcreate="true"
 						:scanDigits="true"
 						:smartOpen="true"
@@ -1158,7 +1158,7 @@ export default {
 					/>
 					<ScanButton :target="itemScanTarget" compact />
 					</div>
-					<span v-if="upcResolving" class="sort_notice">Looking up barcode...</span>
+					<span v-if="upcResolving" class="sort_notice">Buscando código de barras...</span>
 				</div>
 				<!-- type=text on purpose: a number input's v-model rewrites "012..." to 12...,
 				     which drops a scanned UPC's leading zero when a scan lands here -->
@@ -1169,8 +1169,8 @@ export default {
 					autocomplete="off"
 					v-model="entry.qty"
 					class="ri_forminput sort_qty"
-					placeholder="Qty"
-					title="Type a quantity and press Enter - or scan the next barcode to save this item as 1 and move on"
+					placeholder="Qtd."
+					title="Digite a quantidade e pressione Enter — ou leia o próximo código de barras para salvar este item como 1 e continuar"
 					@focus="$event.target.select()"
 					@keydown="onQtyKeydown"
 					@keydown.enter.prevent="onQtyEnter"
@@ -1180,12 +1180,12 @@ export default {
 						type="button"
 						class="sort_exp_btn"
 						:class="{ sort_exp_set: entry.expires_on }"
-						:title="entry.expires_on ? 'Expires ' + entry.expires_on + ' - click to change' : 'Add an expiration date (optional)'"
+						:title="entry.expires_on ? 'Vencimento ' + entry.expires_on + ' — clique para alterar' : 'Adicionar data de vencimento (opcional)'"
 						@click="toggleExpiry"
 					>&#128197;<span v-if="entry.expires_on" class="sort_exp_date">{{ entry.expires_on }}</span></button>
 					<div v-if="expOpen" class="sort_exp_pop">
 						<label class="sort_exp_label">
-							<span class="sort_exp_sub">Expiration Date</span>
+							<span class="sort_exp_sub">Data de vencimento</span>
 							<input
 								ref="expInput"
 								type="date"
@@ -1196,8 +1196,8 @@ export default {
 							/>
 						</label>
 						<div class="sort_exp_actions">
-							<button type="button" class="ri_formbutton" @click="entry.expires_on = null; expOpen = false">Clear</button>
-							<button type="button" class="ri_defaultbutton" @click="expOpen = false">Done</button>
+							<button type="button" class="ri_formbutton" @click="entry.expires_on = null; expOpen = false">Limpar</button>
+							<button type="button" class="ri_defaultbutton" @click="expOpen = false">Concluir</button>
 						</div>
 					</div>
 				</span>
@@ -1206,11 +1206,11 @@ export default {
 					class="ri_forminput sort_disp_select"
 					:class="'sort_disp_' + entry.choice"
 					:title="dispositions.find((d) => d.key === entry.choice)?.hint"
-					aria-label="Condition / disposition"
+					aria-label="Condição / destino"
 				>
 					<option v-for="d in dispositions" :key="d.key" :value="d.key" :title="d.hint">{{ d.label }}</option>
 				</select>
-				<button @click="addLine" class="ri_defaultbutton">Add</button>
+				<button @click="addLine" class="ri_defaultbutton">Adicionar</button>
 			</div>
 			<p v-if="lineError" class="sort_error">{{ lineError }}</p>
 
@@ -1218,7 +1218,7 @@ export default {
 			<div class="sort_tablewrap"><table class="ri_datatable sort_lines" border="1">
 				<thead>
 					<tr>
-						<th>ACS #</th><th>Item</th><th>Qty</th><th>Expires</th><th>Disposition</th><th>Pallet</th><th></th>
+						<th>Nº ACS</th><th>Item</th><th>Qtd.</th><th>Vencimento</th><th>Destino</th><th>Palete</th><th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -1231,55 +1231,55 @@ export default {
 						<td><span class="sort_badge" :class="'sort_disp_' + dispositionKey(line)">{{ dispositionLabel(line) }}</span></td>
 						<td>{{ line.pallet ? palletTagStr(line.pallet.id) : (line.pallet_id ? palletTagStr(line.pallet_id) : '-') }}</td>
 						<td class="sort_line_actions">
-							<span v-if="line.status === 'saving'">saving...</span>
+							<span v-if="line.status === 'saving'">salvando...</span>
 							<template v-else-if="line.status === 'failed'">
-								<span :title="line.errorMessage">failed</span>
-								<button @click="saveLine(line)" class="ri_formbutton">Retry</button>
+								<span :title="line.errorMessage">falha</span>
+								<button @click="saveLine(line)" class="ri_formbutton">Tentar novamente</button>
 							</template>
 							<template v-else-if="confirmingLineKey === lineKey(line)">
-								<button @click="deleteLine(line)" class="sort_confirm_delete">Delete?</button>
-								<button @click="confirmingLineKey = null" class="ri_linkbutton">Keep</button>
+								<button @click="deleteLine(line)" class="sort_confirm_delete">Excluir?</button>
+								<button @click="confirmingLineKey = null" class="ri_linkbutton">Manter</button>
 							</template>
 							<img v-else-if="!readonly" src="/img/delete-icon.webp" class="sort_delete" @click="deleteLine(line)" />
 						</td>
 					</tr>
 					<tr v-if="!lines.length">
-						<td colspan="7" class="sort_empty">No lines yet - scan a pallet tag, then start entering items.</td>
+						<td colspan="7" class="sort_empty">Nenhuma linha ainda — leia a etiqueta de um palete e comece a informar os itens.</td>
 					</tr>
 				</tbody>
 			</table></div>
 
 			<!-- running totals -->
 			<div class="sort_totals" v-if="lines.length">
-				<span>Usable: <strong>{{ totals.usable }}</strong></span>
-				<span>Outdated: <strong>{{ totals.outdated }}</strong></span>
-				<span>Trash: <strong>{{ totals.trashed }}</strong></span>
-				<span>Diverted: <strong>{{ totals.diverted }}</strong></span>
-				<span>Discard rate: <strong>{{ totals.trashPct }}%</strong></span>
+				<span>Aproveitáveis: <strong>{{ totals.usable }}</strong></span>
+				<span>Vencidos: <strong>{{ totals.outdated }}</strong></span>
+				<span>Descartados: <strong>{{ totals.trashed }}</strong></span>
+				<span>Redirecionados: <strong>{{ totals.diverted }}</strong></span>
+				<span>Taxa de descarte: <strong>{{ totals.trashPct }}%</strong></span>
 			</div>
 		</div>
 
 		<!-- ======================= UNKNOWN CARTON MODAL ======================= -->
 		<div v-if="cartonDialog" class="sort_modal_overlay">
 			<div class="sort_modal">
-				<h3>New Carton Barcode {{ displayCode(cartonDialog.code) }}</h3>
+				<h3>Novo código de barras da caixa {{ displayCode(cartonDialog.code) }}</h3>
 				<p v-if="cartonDialog.error" class="sort_error">{{ cartonDialog.error }}</p>
 				<p class="sort_upc_note" v-if="cartonDialog.guessItem">
-					This carton's number matches <strong>{{ cartonDialog.guessItem.name }}</strong>. Check that, then enter how many are inside.
+					O número desta caixa corresponde a <strong>{{ cartonDialog.guessItem.name }}</strong>. Confira e informe quantos itens há dentro.
 				</p>
 				<p class="sort_upc_note" v-else>
-					We haven't seen this carton before. <strong>Scan one of the single items inside it</strong> (or search for it) so every future scan of this carton counts the items for you.
+					Esta caixa ainda não foi identificada. <strong>Leia um dos itens individuais dentro dela</strong> (ou busque-o) para que, nas próximas leituras, a quantidade de itens seja calculada automaticamente.
 				</p>
 
 				<div class="sort_field sort_field_stacked">
-					<label>Item inside the carton:</label>
+					<label>Item dentro da caixa:</label>
 					<SearchSelect
 						ref="cartonItemSelect"
 						v-model="cartonDialog.item_id"
 						optionsource="/json/items"
 						display="name"
 						:searchfields="['name', 'upc', 'description']"
-						placeholder="Scan a single item, or search..."
+						placeholder="Leia um item individual ou busque..."
 						:allowcreate="true"
 						:scanDigits="true"
 						:smartOpen="true"
@@ -1290,28 +1290,28 @@ export default {
 					/>
 				</div>
 				<div class="sort_field" v-if="cartonDialog.candidates.length && !cartonDialog.item_id">
-					<label>Same manufacturer:</label>
+					<label>Mesmo fabricante:</label>
 					<button v-for="candidate in cartonDialog.candidates" :key="candidate.id" type="button"
 						class="ri_formbutton" @click="cartonDialog.item_id = candidate.id">{{ candidate.name }}</button>
 				</div>
 				<div class="sort_field">
-					<label>Packs in the carton:</label>
+					<label>Pacotes na caixa:</label>
 					<input type="text" inputmode="numeric" v-model="cartonDialog.packs" class="ri_forminput sort_qty" />
-					<label>Items in each pack:</label>
+					<label>Itens em cada pacote:</label>
 					<input ref="cartonPerPack" type="text" inputmode="numeric" v-model="cartonDialog.per_pack" class="ri_forminput sort_qty"
 						@keydown.enter.prevent="saveCartonDialog" />
 				</div>
 				<p class="sort_upc_note">
-					= <strong>{{ cartonTotal() }}</strong> items per carton
-					<span class="sort_donor_src">(loose items with no inner packs: leave Packs at 1 and put the count in Items in each pack)</span>
+					= <strong>{{ cartonTotal() }}</strong> itens por caixa
+					<span class="sort_donor_src">(para itens soltos, sem pacotes internos: mantenha Pacotes em 1 e informe a quantidade em Itens em cada pacote)</span>
 				</p>
 
 				<div class="sort_modal_buttons">
 					<button @click="saveCartonDialog" class="ri_defaultbutton" :disabled="cartonDialog.saving">
-						{{ cartonDialog.saving ? 'Saving...' : 'Confirm & Use' }}
+						{{ cartonDialog.saving ? 'Salvando...' : 'Confirmar e usar' }}
 					</button>
-					<button @click="cancelCartonDialog" class="ri_formbutton">Cancel</button>
-					<button @click="cartonIsSingle" class="ri_linkbutton">This is a single item, not a carton</button>
+					<button @click="cancelCartonDialog" class="ri_formbutton">Cancelar</button>
+					<button @click="cartonIsSingle" class="ri_linkbutton">Isto é um item individual, não uma caixa</button>
 				</div>
 			</div>
 		</div>

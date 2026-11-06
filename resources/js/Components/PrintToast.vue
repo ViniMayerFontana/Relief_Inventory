@@ -45,9 +45,9 @@ export default {
 			if (job.requested_by !== this.$page.props.auth?.user?.id) return;
 			const where = job.printer_name ? ` on ${job.printer_name}` : '';
 			if (job.status === 'printed') {
-				this.onNotice({ detail: { type: 'ok', text: `“${job.title}” printed${where}.` } });
+				this.onNotice({ detail: { type: 'ok', text: `“${job.title}” impresso${where}.` } });
 			} else if (job.status === 'failed') {
-				this.onNotice({ detail: { type: 'error', text: `“${job.title}” failed${where}${job.error_message ? ': ' + job.error_message : '.'}` } });
+				this.onNotice({ detail: { type: 'error', text: `“${job.title}” falhou${where}${job.error_message ? ': ' + job.error_message : '.'}` } });
 			}
 		},
 		onNotice(event) {
@@ -62,8 +62,8 @@ export default {
 <template>
 	<div v-if="notice" class="pt_toast" :class="'pt_' + notice.type" role="status">
 		<span>{{ notice.text }}</span>
-		<a v-if="canViewQueue && notice.type !== 'error'" href="/print-queue" class="pt_link">View queue</a>
-		<button type="button" class="pt_close" aria-label="Dismiss" @click="notice = null">&times;</button>
+		<a v-if="canViewQueue && notice.type !== 'error'" href="/print-queue" class="pt_link">Ver fila</a>
+		<button type="button" class="pt_close" aria-label="Dispensar" @click="notice = null">&times;</button>
 	</div>
 </template>
 

@@ -172,7 +172,7 @@ class PalletStockController extends Controller
             }
 
             return response()->json([
-                'message' => "Pallet {$pallet->tag} filled.",
+                'message' => "Palete {$pallet->tag} abastecido.",
                 'record' => $this->payload($pallet->fresh('location:id,code')),
                 'assignment_ids' => $assignmentIds,
             ], 201);
@@ -206,10 +206,10 @@ class PalletStockController extends Controller
     private function notWarehouseOr(Pallet $pallet, string $needs, string $verb)
     {
         if ($pallet->kind !== PalletKind::WAREHOUSE) {
-            return response()->json(['message' => 'Only Warehouse pallets are sealed and unsealed.'], 422);
+            return response()->json(['message' => 'Somente paletes do armazém podem ser lacrados e abertos.'], 422);
         }
         if ($pallet->status !== $needs) {
-            return response()->json(['message' => "{$pallet->tag} is {$pallet->status}; only a {$needs} pallet can be {$verb}."], 422);
+            return response()->json(['message' => "{$pallet->tag} está com status {$pallet->status}; somente um palete {$needs} pode ser {$verb}."], 422);
         }
 
         return null;
@@ -233,13 +233,13 @@ class PalletStockController extends Controller
         ]);
 
         if ($pallet->kind !== PalletKind::WAREHOUSE) {
-            return response()->json(['message' => 'Only Warehouse pallets can be adjusted.'], 422);
+            return response()->json(['message' => 'Somente paletes do armazém podem ser ajustados.'], 422);
         }
         if ($pallet->status !== 'open') {
-            return response()->json(['message' => "{$pallet->tag} is {$pallet->status} — it must be unsealed to adjust it."], 422);
+            return response()->json(['message' => "{$pallet->tag} está com status {$pallet->status} — é preciso abri-lo para ajustá-lo."], 422);
         }
         if (! $pallet->location_id) {
-            return response()->json(['message' => "{$pallet->tag} has no location yet — place it before adjusting it."], 422);
+            return response()->json(['message' => "{$pallet->tag} ainda não tem um local — coloque-o antes de ajustá-lo."], 422);
         }
 
         $changes = collect($data['lines'])->groupBy('item_id')->map(fn ($rows) => (int) $rows->sum('qty'))->filter();
@@ -285,7 +285,7 @@ class PalletStockController extends Controller
                 $pallet->transitionTo('empty', null, 'Adjusted to empty');
             }
 
-            return response()->json(['message' => "{$pallet->tag} adjusted.", 'record' => $this->payload($pallet->fresh('location:id,code'))], 201);
+            return response()->json(['message' => "{$pallet->tag} ajustado.", 'record' => $this->payload($pallet->fresh('location:id,code'))], 201);
         });
     }
 
@@ -319,7 +319,7 @@ class PalletStockController extends Controller
     private function notFillable(Pallet $pallet): ?string
     {
         if ($pallet->kind !== PalletKind::WAREHOUSE) {
-            return 'That is a '.(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).' pallet, not a Warehouse pallet.';
+            return 'Esse é um palete de '.(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).', não um palete de armazém.';
         }
         if ($pallet->status === 'sealed') {
             return "{$pallet->tag} is sealed — unseal it before adding to it.";

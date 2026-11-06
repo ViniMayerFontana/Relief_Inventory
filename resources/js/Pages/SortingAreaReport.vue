@@ -28,7 +28,7 @@ async function load() {
 	try {
 		report.value = (await axios.get('/json/reports/sorting-area', { params: { from: from.value, to: to.value || from.value } })).data;
 	} catch (e) {
-		error.value = e.response?.data?.message || Object.values(e.response?.data?.errors || {}).flat().join(' ') || 'Could not load the report.';
+		error.value = e.response?.data?.message || Object.values(e.response?.data?.errors || {}).flat().join(' ') || 'Não foi possível carregar o relatório.';
 	} finally {
 		loading.value = false;
 	}
@@ -43,31 +43,31 @@ onMounted(load);
 </script>
 
 <template>
-	<Head title="Sorting Area Report" />
+	<Head title="Relatório da área de triagem" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="sa_page">
 			<h2 class="sa_title">
-				Sorting Area Report
-				<a :href="csvHref" class="ri_defaultbutton sa_csv">Download CSV</a>
+				Relatório da área de triagem
+				<a :href="csvHref" class="ri_defaultbutton sa_csv">Baixar CSV</a>
 			</h2>
 			<p class="ri_hint">
-				What sorters produced against what has been put on a pallet. "Still in sorting area" is right now — everything on hand
-				that isn't on a pallet, including earlier days — so anything left over at close of day shows here.
+				O que foi produzido na triagem em comparação ao que foi colocado em paletes. "Ainda na área de triagem" mostra o saldo atual —
+				tudo que não está em um palete, inclusive de dias anteriores — para que qualquer sobra no fim do dia apareça aqui.
 			</p>
 
 			<form class="sa_toolbar" @submit.prevent="load">
-				<label>From <input type="date" v-model="from" class="ri_forminput" /></label>
-				<label>To <input type="date" v-model="to" class="ri_forminput" /></label>
-				<button type="submit" class="ri_formbutton" :disabled="loading">Run</button>
-				<label class="sa_toggle"><input type="checkbox" v-model="onlyWaiting" /> Only items still in the sorting area</label>
+				<label>De <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>Até <input type="date" v-model="to" class="ri_forminput" /></label>
+				<button type="submit" class="ri_formbutton" :disabled="loading">Executar</button>
+				<label class="sa_toggle"><input type="checkbox" v-model="onlyWaiting" /> Apenas itens ainda na área de triagem</label>
 			</form>
 
 			<p v-if="error" class="ri_error">{{ error }}</p>
-			<p v-else-if="!report">Loading…</p>
+			<p v-else-if="!report">Carregando…</p>
 			<div v-else class="sa_wrap">
 				<table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Item #</th><th>Item</th><th>Sorted</th><th>Put on pallets</th><th>Still in sorting area</th><th>Waiting since</th></tr>
+						<tr><th>Nº do item</th><th>Item</th><th>Triado</th><th>Colocado em paletes</th><th>Ainda na área de triagem</th><th>Aguardando desde</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="r in rows" :key="r.item_id" :class="{ sa_flag: leftBehind(r) }">
@@ -78,7 +78,7 @@ onMounted(load);
 							<td class="sa_num">{{ r.in_area || '' }}</td>
 							<td>{{ r.waiting_since || '' }}</td>
 						</tr>
-						<tr v-if="!rows.length"><td colspan="6">Nothing sorted, moved or waiting in this range.</td></tr>
+						<tr v-if="!rows.length"><td colspan="6">Nada triado, movido ou aguardando neste período.</td></tr>
 					</tbody>
 					<tfoot v-if="rows.length">
 						<tr>
@@ -90,7 +90,7 @@ onMounted(load);
 						</tr>
 					</tfoot>
 				</table>
-				<p class="ri_hint">Highlighted rows were sorted in this range and some of it is still in the sorting area.</p>
+				<p class="ri_hint">As linhas destacadas foram triadas neste período e parte dos itens ainda está na área de triagem.</p>
 			</div>
 		</div>
 	</AuthenticatedLayout>

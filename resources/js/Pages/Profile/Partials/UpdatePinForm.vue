@@ -60,20 +60,21 @@ const removePin = () => {
 	<section>
 		<header>
 			<h2 class="text-lg font-medium text-gray-900">
-				Quick-Unlock PIN
+				PIN de acesso rápido
 			</h2>
 
 			<p class="mt-1 text-sm text-gray-600">
-				A 5-digit PIN for faster re-login on a shared warehouse terminal your administrator has
-				approved for PIN unlock. It never works on a device that hasn't been approved, and never
-				replaces your real password anywhere else. It can't repeat the same digit more than
-				twice in a row, or contain more than 3 sequential digits in a row (like 1234 or 4321).
+				Um PIN de 5 dígitos para entrar mais rápido em um terminal compartilhado do armazém,
+				aprovado pela administração para desbloqueio por PIN. Ele não funciona em dispositivos
+				não aprovados e não substitui sua senha em nenhum outro lugar. O mesmo dígito não pode se
+				repetir mais de duas vezes seguidas, nem pode haver mais de 3 dígitos sequenciais
+				(como 1234 ou 4321).
 			</p>
 		</header>
 
 		<form @submit.prevent="updatePin" class="mt-6 space-y-6">
 			<div>
-				<InputLabel for="pin_current_password" value="Current Password" />
+				<InputLabel for="pin_current_password" value="Senha atual" />
 
 				<TextInput
 					id="pin_current_password"
@@ -88,7 +89,7 @@ const removePin = () => {
 			</div>
 
 			<div>
-				<InputLabel for="pin" :value="hasPin ? 'New PIN (5 digits)' : 'PIN (5 digits)'" />
+				<InputLabel for="pin" :value="hasPin ? 'Novo PIN (5 dígitos)' : 'PIN (5 dígitos)'" />
 
 				<TextInput
 					id="pin"
@@ -105,7 +106,7 @@ const removePin = () => {
 			</div>
 
 			<div>
-				<InputLabel for="pin_confirmation" value="Confirm PIN" />
+				<InputLabel for="pin_confirmation" value="Confirmar PIN" />
 
 				<TextInput
 					id="pin_confirmation"
@@ -121,20 +122,20 @@ const removePin = () => {
 			</div>
 
 			<div class="flex items-center gap-4">
-				<PrimaryButton :disabled="form.processing">{{ hasPin ? 'Update PIN' : 'Set PIN' }}</PrimaryButton>
+				<PrimaryButton :disabled="form.processing">{{ hasPin ? 'Atualizar PIN' : 'Definir PIN' }}</PrimaryButton>
 
 				<Transition
 					enter-active-class="transition ease-in-out"
 					leave-active-class="transition ease-in-out"
 					leave-to-class="opacity-0"
 				>
-					<p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Saved.</p>
+					<p v-if="form.recentlySuccessful" class="text-sm text-gray-600">Salvo.</p>
 				</Transition>
 			</div>
 		</form>
 
 		<div v-if="hasPin" class="mt-6 pt-6 border-t">
-			<InputLabel for="pin_remove_password" value="Remove PIN (requires current password)" />
+			<InputLabel for="pin_remove_password" value="Remover PIN (exige a senha atual)" />
 			<div class="flex items-end gap-3 mt-1">
 				<TextInput
 					id="pin_remove_password"
@@ -149,7 +150,7 @@ const removePin = () => {
 					class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white whitespace-nowrap"
 					:class="removing ? 'bg-red-600 hover:bg-red-500' : 'bg-gray-500 hover:bg-gray-400'"
 				>
-					{{ removing ? 'Confirm Remove' : 'Remove PIN' }}
+					{{ removing ? 'Confirmar remoção' : 'Remover PIN' }}
 				</button>
 			</div>
 			<InputError :message="removeForm.errors.current_password" class="mt-2" />

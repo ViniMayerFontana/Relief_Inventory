@@ -14,20 +14,20 @@ const tracks = [
 	{
 		value: 'volunteer',
 		icon: '🙋',
-		label: 'Volunteer',
-		description: 'I want to help out at the warehouse.',
+		label: 'Voluntário',
+		description: 'Quero ajudar no armazém.',
 	},
 	{
 		value: 'donor',
 		icon: '📦',
-		label: 'Offer a Donation',
-		description: 'I have goods or services I\'d like to donate.',
+		label: 'Oferecer uma doação',
+		description: 'Tenho bens ou serviços que gostaria de doar.',
 	},
 	{
 		value: 'partner',
 		icon: '🏢',
-		label: 'Request Supplies',
-		description: 'Get approved to receive supplies.',
+		label: 'Solicitar suprimentos',
+		description: 'Solicite aprovação para receber suprimentos.',
 	},
 ];
 
@@ -50,17 +50,17 @@ const choose = (value) => {
 
 <template>
 	<GuestLayout>
-		<Head title="Welcome" />
+		<Head title="Boas-vindas" />
 
 		<div class="mb-4 text-sm font-medium text-green-600">
-			Your email is verified — you've taken the first step!
+			Seu e-mail foi verificado — você já deu o primeiro passo!
 		</div>
 
 		<div class="mb-2 text-lg font-medium text-gray-900">
-			What brings you here?
+			O que traz você até aqui?
 		</div>
 		<div class="mb-6 text-sm text-gray-600">
-			Let us know why you're signing up so we can route your account to the right reviewer.
+			Conte por que está se cadastrando para encaminharmos sua conta à pessoa responsável pela análise.
 		</div>
 
 		<div class="choosetrack_grid">
@@ -85,7 +85,7 @@ const choose = (value) => {
 				method="post"
 				as="button"
 				class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-				>Log Out</Link
+				>Sair</Link
 			>
 		</div>
 	</GuestLayout>

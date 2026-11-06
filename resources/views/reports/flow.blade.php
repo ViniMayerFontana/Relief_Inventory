@@ -4,20 +4,20 @@
     $signed = fn ($n) => ($n > 0 ? '+' : '').number_format($n);
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Inventory Flow Report</title>
+    <title>Relatório de Movimentação de Estoque</title>
     <style>
         @page {
             size: letter;
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Inventory Flow Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Relatório de Movimentação de Estoque — gerado em {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "Página " counter(page) " de " counter(pages);
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
         }
@@ -42,27 +42,27 @@
     </style>
 </head>
 <body>
-    <h1>Inventory Flow Report</h1>
+    <h1>Relatório de Movimentação de Estoque</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; {{ $f->from }} to {{ $f->to }}, by {{ $f->bucket }}, generated
+        {{ config('app.name') }} &mdash; de {{ $f->from }} a {{ $f->to }}, por {{ $f->bucket }}, gerado em
         {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
     </div>
 
     <div class="summary">
-        Opening on hand <strong>{{ number_format($t['opening']) }}</strong>
-        + received <strong>{{ number_format($t['received']) }}</strong>
-        &minus; picked <strong>{{ number_format($t['picked']) }}</strong>
-        {{ $t['adjustments'] < 0 ? '&minus;' : '+' }} adjustments <strong>{{ number_format(abs($t['adjustments'])) }}</strong>
-        = closing on hand <strong>{{ number_format($t['closing']) }}</strong>.
-        Not stock: {{ number_format($t['outdated']) }} outdated, {{ number_format($t['trashed']) }} trashed,
-        {{ number_format($t['diverted']) }} diverted.
+        Saldo inicial <strong>{{ number_format($t['opening']) }}</strong>
+        + recebidos <strong>{{ number_format($t['received']) }}</strong>
+        &minus; separados <strong>{{ number_format($t['picked']) }}</strong>
+        {{ $t['adjustments'] < 0 ? '&minus;' : '+' }} ajustes <strong>{{ number_format(abs($t['adjustments'])) }}</strong>
+        = saldo final <strong>{{ number_format($t['closing']) }}</strong>.
+        Fora do estoque: {{ number_format($t['outdated']) }} vencidos, {{ number_format($t['trashed']) }} descartados,
+        {{ number_format($t['diverted']) }} redirecionados.
     </div>
 
-    <h2>By {{ $f->bucket }}</h2>
+    <h2>Por {{ $f->bucket }}</h2>
     <table>
         <thead><tr>
-            <th>Period starting</th><th class="num">Received</th><th class="num">Picked</th><th class="num">Adjustments</th>
-            <th class="num">On hand (end)</th><th class="num">Outdated</th><th class="num">Trashed</th><th class="num">Diverted</th>
+            <th>Início do período</th><th class="num">Recebidos</th><th class="num">Separados</th><th class="num">Ajustes</th>
+            <th class="num">Saldo final</th><th class="num">Vencidos</th><th class="num">Descartados</th><th class="num">Redirecionados</th>
         </tr></thead>
         <tbody>
             @foreach($report['buckets'] as $b)
@@ -81,9 +81,9 @@
     </table>
 
     @if(count($report['adjustment_reasons']))
-        <h2>Adjustments by reason</h2>
+        <h2>Ajustes por motivo</h2>
         <table>
-            <thead><tr><th>Reason</th><th class="num">Added</th><th class="num">Removed</th></tr></thead>
+            <thead><tr><th>Motivo</th><th class="num">Adicionados</th><th class="num">Removidos</th></tr></thead>
             <tbody>
                 @foreach($report['adjustment_reasons'] as $r)
                     <tr><td>{{ $r['label'] }}</td><td class="num">{{ number_format($r['added']) }}</td><td class="num">{{ number_format($r['removed']) }}</td></tr>
@@ -92,12 +92,12 @@
         </table>
     @endif
 
-    <h2>By item</h2>
+    <h2>Por item</h2>
     <table>
         <thead><tr>
-            <th>Item #</th><th>Item</th><th>Unit</th><th class="num">Opening</th><th class="num">Received</th>
-            <th class="num">Picked</th><th class="num">Adjust.</th><th class="num">Closing</th>
-            <th class="num">Outdated</th><th class="num">Trashed</th><th class="num">Diverted</th>
+            <th>Item nº</th><th>Item</th><th>Unidade</th><th class="num">Saldo inicial</th><th class="num">Recebidos</th>
+            <th class="num">Separados</th><th class="num">Ajustes</th><th class="num">Saldo final</th>
+            <th class="num">Vencidos</th><th class="num">Descartados</th><th class="num">Redirecionados</th>
         </tr></thead>
         <tbody>
             @foreach($report['items'] as $i)
@@ -119,10 +119,10 @@
     </table>
 
     <div class="disclaimer">
-        Received = usable goods sorted in; picked = filled onto requests; adjustments = manual inventory corrections
-        (net). Outdated, trashed and diverted goods are not stock and don't change on-hand. Moving a pallet changes
-        where stock is, not how much, so it isn't shown. Quantities are in each item's own unit, so totals across
-        different items mix units.
+        Recebidos = itens aproveitáveis triados; separados = itens incluídos nos pedidos; ajustes = correções
+        manuais de estoque (saldo líquido). Itens vencidos, descartados e redirecionados não fazem parte do estoque
+        nem alteram o saldo disponível. Mover um palete altera a localização, não a quantidade, por isso não aparece
+        aqui. As quantidades usam a unidade própria de cada item; portanto, os totais de itens diferentes somam unidades distintas.
     </div>
 </body>
 </html>

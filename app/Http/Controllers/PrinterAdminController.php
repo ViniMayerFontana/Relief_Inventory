@@ -82,7 +82,7 @@ class PrinterAdminController extends Controller
             'inventory_label_media' => ['sometimes', 'required', 'string', Rule::in(config('printing.inventory_label_media'))],
         ]);
         if (! $data) {
-            throw ValidationException::withMessages(['pallet_label_media' => 'Choose a label size.']);
+            throw ValidationException::withMessages(['pallet_label_media' => 'Escolha o tamanho da etiqueta.']);
         }
 
         LabelSetting::current()->update($data);
@@ -102,7 +102,7 @@ class PrinterAdminController extends Controller
             }
         });
 
-        return response()->json(['message' => 'Order saved.']);
+        return response()->json(['message' => 'Ordem salva.']);
     }
 
     public function update(Request $request, Printer $printer)
@@ -120,14 +120,14 @@ class PrinterAdminController extends Controller
         // be sent somewhere it can't be matched or routed.
         if (($data['active'] ?? false) && (empty($data['media']) || empty($data['kiosk_location_id']))) {
             throw ValidationException::withMessages([
-                'active' => 'Choose a site and a paper type before switching a printer on.',
+                'active' => 'Escolha um local e um tipo de papel antes de ativar a impressora.',
             ]);
         }
         // Changing media under waiting jobs would strand them on the wrong paper.
         if ($printer->media && ($data['media'] ?? null) !== $printer->media
             && $printer->jobs()->whereIn('status', [PrintJob::STATUS_QUEUED, PrintJob::STATUS_CLAIMED])->exists()) {
             throw ValidationException::withMessages([
-                'media' => 'This printer has jobs waiting. Clear or divert them before changing its paper type.',
+                'media' => 'Esta impressora tem trabalhos aguardando. Limpe a fila ou encaminhe-os antes de alterar o tipo de papel.',
             ]);
         }
 
@@ -139,10 +139,10 @@ class PrinterAdminController extends Controller
     public function destroy(Printer $printer)
     {
         if ($printer->jobs()->whereIn('status', [PrintJob::STATUS_QUEUED, PrintJob::STATUS_CLAIMED])->exists()) {
-            return response()->json(['message' => 'This printer has jobs waiting. Clear or divert them first.'], 409);
+            return response()->json(['message' => 'Esta impressora tem trabalhos aguardando. Limpe a fila ou encaminhe-os primeiro.'], 409);
         }
         $printer->delete();
 
-        return response()->json(['message' => 'Printer removed. It will reappear if its print server still reports it.']);
+        return response()->json(['message' => 'Impressora removida. Ela reaparecerá se o servidor de impressão continuar informando sua presença.']);
     }
 }

@@ -15,10 +15,10 @@
     };
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Mailing Labels</title>
+    <title>Etiquetas de Endereçamento</title>
     <style>
         @page { size: letter; margin: 0; }
         body { font-family: Arial, sans-serif; color: #000; margin: 0; }
@@ -32,7 +32,7 @@
 </head>
 <body>
 @if ($count === 0)
-    <div class="empty">No mailing labels: nobody selected has a complete address.</div>
+    <div class="empty">Nenhuma etiqueta de endereçamento: ninguém entre os selecionados tem endereço completo.</div>
 @endif
 @foreach ($sheets as $sheet)
     @if ($count > 0)

@@ -49,7 +49,7 @@ class KioskLocationController extends Controller
         $location = KioskLocation::create($data);
 
         return response()->json([
-            'message' => 'Location created successfully.',
+            'message' => 'Local criado com sucesso.',
             'record' => $location,
         ], 201);
     }
@@ -60,7 +60,7 @@ class KioskLocationController extends Controller
         $kioskLocation->update($data);
 
         return response()->json([
-            'message' => 'Location updated successfully.',
+            'message' => 'Local atualizado com sucesso.',
             'record' => $kioskLocation->fresh(),
         ]);
     }

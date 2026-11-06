@@ -60,7 +60,7 @@ function capture() {
 	canvas.toBlob(
 		(blob) => {
 			if (!blob) {
-				error.value = 'Could not capture the photo.';
+				error.value = 'Não foi possível capturar a foto.';
 				return;
 			}
 			stop();
@@ -85,7 +85,7 @@ function close() {
 			<button v-if="!error" type="button" class="ri_defaultbutton" :disabled="!ready" @click="capture">
 				Capture
 			</button>
-			<button type="button" class="ri_formbutton" @click="close">Cancel</button>
+			<button type="button" class="ri_formbutton" @click="close">Cancelar</button>
 		</div>
 	</div>
 </template>

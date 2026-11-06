@@ -30,13 +30,13 @@ class DeviceApprovalRequested extends Notification
     public function toDatabase($notifiable): array
     {
         $this->device->loadMissing('requester');
-        $what = $this->device->label ?: trim(($this->device->browser ?? 'A browser').' on '.($this->device->os ?? 'an unknown system'));
+        $what = $this->device->label ?: trim(($this->device->browser ?? 'Um navegador').' em '.($this->device->os ?? 'um sistema desconhecido'));
 
         return [
             'kind' => 'device_approval_requested',
             'trusted_device_id' => $this->device->id,
-            'category_label' => 'PIN login request',
-            'name' => $what.' — '.($this->device->requester?->full_name ?? 'someone'),
+            'category_label' => 'Solicitação de acesso por PIN',
+            'name' => $what.' — '.($this->device->requester?->full_name ?? 'alguém'),
             'url' => '/setup/pin-login',
         ];
     }

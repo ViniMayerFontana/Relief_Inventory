@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Outstanding Orders Report</title>
+    <title>Relatório de Pedidos em Aberto</title>
     <style>
         @page {
             size: letter;
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Outstanding Orders Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Relatório de Pedidos em Aberto — gerado em {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "Página " counter(page) " de " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -95,29 +95,29 @@
     </style>
 </head>
 <body>
-    <h1>Outstanding Orders Report</h1>
+    <h1>Relatório de Pedidos em Aberto</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; every order not yet shipped, generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
+        {{ config('app.name') }} &mdash; todos os pedidos ainda não enviados, gerado em {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Order #</th>
-                <th>Partner</th>
+                <th>Pedido nº</th>
+                <th>Entidade parceira</th>
                 <th>Status</th>
-                <th>Order Date</th>
-                <th>Needed By</th>
-                <th>Fulfillment</th>
-                <th class="num">Lines</th>
-                <th class="num">Qty Requested</th>
+                <th>Data do pedido</th>
+                <th>Necessário até</th>
+                <th>Atendimento</th>
+                <th class="num">Itens</th>
+                <th class="num">Qtd. solicitada</th>
             </tr>
         </thead>
         <tbody>
             @forelse($records as $order)
                 <tr class="order-row">
                     <td>{{ $order['id'] }}</td>
-                    <td>{{ $order['partner'] ?? '(no partner)' }}</td>
+                    <td>{{ $order['partner'] ?? '(sem entidade parceira)' }}</td>
                     <td><span class="status-badge">{{ $order['status'] }}</span></td>
                     <td>{{ $order['order_date'] }}</td>
                     <td>{{ $order['needed_by_date'] ?: '—' }}</td>
@@ -129,19 +129,19 @@
                     <tr>
                         <td colspan="8" class="lines">
                             @foreach($order['lines'] as $line)
-                                <span>{{ $line['display_number'] ?? '(unnumbered)' }} {{ $line['itemtype'] }} &times; {{ $line['qty_requested'] }} {{ $line['unit'] }}</span>
+                                <span>{{ $line['display_number'] ?? '(sem número)' }} {{ $line['itemtype'] }} &times; {{ $line['qty_requested'] }} {{ $line['unit'] }}</span>
                             @endforeach
                         </td>
                     </tr>
                 @endif
             @empty
-                <tr><td colspan="8">No outstanding orders.</td></tr>
+                <tr><td colspan="8">Não há pedidos em aberto.</td></tr>
             @endforelse
         </tbody>
     </table>
 
     <div class="disclaimer">
-        Includes every order in New Order, Ready to Fill, Filling, or Filled status — anything not yet Shipped.
+        Inclui todos os pedidos com status Novo pedido, Pronto para separação, Em separação ou Separado — tudo o que ainda não foi Enviado.
     </div>
 </body>
 </html>

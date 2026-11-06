@@ -67,7 +67,7 @@ export default {
 				const response = await axios.get('/json/dashboard');
 				this.data = response.data;
 			} catch (error) {
-				this.error = 'Could not load the dashboard.';
+				this.error = 'Não foi possível carregar o painel.';
 			} finally {
 				this.loading = false;
 			}
@@ -80,61 +80,61 @@ export default {
 </script>
 
 <template>
-	<Head title="Warehouse Dashboard" />
+	<Head title="Painel do armazém" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="wd_container">
 			<div class="wd_topbar">
-				<h2 class="ri_datatable_head">Warehouse Dashboard</h2>
+				<h2 class="ri_datatable_head">Painel do armazém</h2>
 				<span v-if="data" class="wd_generated">
-					Live as of {{ new Date(data.generated_at).toLocaleString() }}
-					<button @click="fetchDashboard" class="ri_linkbutton">Refresh</button>
+					Dados atualizados em {{ new Date(data.generated_at).toLocaleString() }}
+					<button @click="fetchDashboard" class="ri_linkbutton">Atualizar</button>
 				</span>
 			</div>
 
 			<p v-if="error" class="wd_error">{{ error }}</p>
-			<p v-if="loading && !data">Loading...</p>
+			<p v-if="loading && !data">Carregando...</p>
 
 			<div v-if="data" class="wd_grid">
-				<PeriodStatCard title="Orders Fulfilled" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
-				<PeriodStatCard title="Donations Completed" :counts="data.donations_completed" :trend="data.donations_trend" />
+				<PeriodStatCard title="Pedidos atendidos" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
+				<PeriodStatCard title="Doações concluídas" :counts="data.donations_completed" :trend="data.donations_trend" />
 
-				<BarBreakdownCard title="Donations in Progress" :rows="donationPipelineRows" />
-				<BarBreakdownCard title="Orders in Progress" :rows="orderPipelineRows" />
+				<BarBreakdownCard title="Doações em andamento" :rows="donationPipelineRows" />
+				<BarBreakdownCard title="Pedidos em andamento" :rows="orderPipelineRows" />
 
-				<BarBreakdownCard title="Orders by County" :rows="countyRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard title="Stock by Category" :rows="categoryRows" empty-text="No stock on hand yet." />
+				<BarBreakdownCard title="Pedidos por município" :rows="countyRows" empty-text="Nenhum pedido realizado ainda." />
+				<BarBreakdownCard title="Estoque por categoria" :rows="categoryRows" empty-text="Nenhum item em estoque." />
 
 				<div class="wd_card wd_inventory">
-					<h3>Inventory Summary</h3>
+					<h3>Resumo do estoque</h3>
 					<div class="wd_inv_stats">
-						<div><span class="wd_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="wd_inv_label">Item types stocked</span></div>
-						<div><span class="wd_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="wd_inv_label">Total units on hand</span></div>
+						<div><span class="wd_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="wd_inv_label">Tipos de itens em estoque</span></div>
+						<div><span class="wd_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="wd_inv_label">Total de unidades disponíveis</span></div>
 					</div>
-					<Link href="/reports/inventory" class="ri_linkbutton">View full Inventory Report &rarr;</Link>
+					<Link href="/reports/inventory" class="ri_linkbutton">Ver relatório completo do estoque &rarr;</Link>
 				</div>
 
 				<div class="wd_card wd_donorquality">
-					<h3>Donor Quality (last 30 days)</h3>
+					<h3>Qualidade das doações (últimos 30 dias)</h3>
 					<div class="wd_dq_stats">
-						<span class="wd_dq_usable">{{ data.donor_quality.usable }} usable</span>
-						<span class="wd_dq_loss">{{ data.donor_quality.outdated }} outdated</span>
-						<span class="wd_dq_loss">{{ data.donor_quality.trashed }} trashed</span>
-						<span class="wd_dq_diverted">{{ data.donor_quality.diverted }} diverted</span>
+						<span class="wd_dq_usable">{{ data.donor_quality.usable }} aproveitáveis</span>
+						<span class="wd_dq_loss">{{ data.donor_quality.outdated }} vencidos</span>
+						<span class="wd_dq_loss">{{ data.donor_quality.trashed }} descartados</span>
+						<span class="wd_dq_diverted">{{ data.donor_quality.diverted }} redirecionados</span>
 					</div>
 					<p v-if="data.donor_quality.loss_rate_percent !== null" class="wd_dq_rate">
-						Loss rate: <strong>{{ data.donor_quality.loss_rate_percent }}%</strong>
+						Taxa de perda: <strong>{{ data.donor_quality.loss_rate_percent }}%</strong>
 					</p>
 				</div>
 			</div>
 
 			<div v-if="data" class="wd_links">
-				<Link href="/order-entry" class="ri_formbutton">Order Entry</Link>
-				<Link href="/donation-sorting" class="ri_formbutton">Donation Sorting</Link>
-				<Link href="/receiving" class="ri_formbutton">Receiving</Link>
-				<Link href="/reports/inventory" class="ri_formbutton">Inventory Report</Link>
-				<Link href="/reports/sitrep" class="ri_formbutton">Situation Report &rarr;</Link>
+				<Link href="/order-entry" class="ri_formbutton">Cadastro de pedidos</Link>
+				<Link href="/donation-sorting" class="ri_formbutton">Triagem de doações</Link>
+				<Link href="/receiving" class="ri_formbutton">Recebimento</Link>
+				<Link href="/reports/inventory" class="ri_formbutton">Relatório de estoque</Link>
+				<Link href="/reports/sitrep" class="ri_formbutton">Relatório situacional &rarr;</Link>
 			</div>
 		</div>
 	</AuthenticatedLayout>

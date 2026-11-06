@@ -11,8 +11,8 @@ const handleScan = (code) => {
 
 <template>
   <div>
-    <h2>Scan Item QR Code</h2>
+    <h2>Ler código QR do item</h2>
     <QrScanner @scanned="handleScan" />
-    <p>Scanned Code: {{ scannedCode }}</p>
+    <p>Código lido: {{ scannedCode }}</p>
   </div>
 </template>

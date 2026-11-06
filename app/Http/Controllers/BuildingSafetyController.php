@@ -126,7 +126,7 @@ class BuildingSafetyController extends Controller
             'notes' => $data['notes'] ?? null,
         ]);
 
-        return response()->json(['message' => 'Building confirmed empty.']);
+        return response()->json(['message' => 'Foi confirmado que o prédio está vazio.']);
     }
 
     public function startRollCall(Request $request): JsonResponse
@@ -137,7 +137,7 @@ class BuildingSafetyController extends Controller
         }
 
         if (BuildingRollCall::whereNull('closed_at')->exists()) {
-            return response()->json(['message' => 'A roll call is already in progress.'], 422);
+            return response()->json(['message' => 'Já há uma chamada em andamento.'], 422);
         }
 
         $rollCall = BuildingRollCall::create([
@@ -156,7 +156,7 @@ class BuildingSafetyController extends Controller
     public function closeRollCall(Request $request, BuildingRollCall $buildingRollCall): JsonResponse
     {
         if ($buildingRollCall->closed_at) {
-            return response()->json(['message' => 'This roll call is already closed.'], 422);
+            return response()->json(['message' => 'Esta chamada já foi encerrada.'], 422);
         }
 
         $actor = $this->resolvePinActor($request);
@@ -184,7 +184,7 @@ class BuildingSafetyController extends Controller
     public function confirmPerson(Request $request, BuildingRollCall $buildingRollCall, VolunteerSignIn $volunteerSignIn): JsonResponse
     {
         if ($buildingRollCall->closed_at) {
-            return response()->json(['message' => 'This roll call is already closed.'], 422);
+            return response()->json(['message' => 'Esta chamada já foi encerrada.'], 422);
         }
 
         BuildingRollCallConfirmation::firstOrCreate(
@@ -207,18 +207,18 @@ class BuildingSafetyController extends Controller
 
         $rateLimitKey = 'kiosk-safety-pin:'.$data['person_id'];
         if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
-            return response()->json(['message' => 'Too many incorrect attempts.'], 429);
+            return response()->json(['message' => 'Muitas tentativas incorretas.'], 429);
         }
 
         $person = Person::find($data['person_id']);
         if (! $person || ! $person->hasPermission('operate-kiosk') || ! $person->verifyPin($data['pin'])) {
             RateLimiter::hit($rateLimitKey, 300);
 
-            return response()->json(['message' => 'Incorrect PIN.'], 401);
+            return response()->json(['message' => 'PIN incorreto.'], 401);
         }
 
         if ($person->isLoginDisabled()) {
-            return response()->json(['message' => 'This account has been deactivated.'], 403);
+            return response()->json(['message' => 'Esta conta foi desativada.'], 403);
         }
 
         RateLimiter::clear($rateLimitKey);

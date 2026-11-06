@@ -47,7 +47,7 @@ async function onScanned(code) {
   try { el = props.target ? props.target() : null; } catch (e) { el = null; }
   el = el?.$el?.querySelector?.('input') ?? el; // a component instance → its input
   if (!isTextField(el)) el = lastField && document.contains(lastField) ? lastField : null;
-  if (!injectScan(code, el)) error.value = 'Scanned ' + code + ', but there is no scan field to put it in.';
+  if (!injectScan(code, el)) error.value = 'O código ' + code + ' foi lido, mas não há um campo de leitura disponível.';
 }
 
 function onCameraError(message) {
@@ -58,13 +58,13 @@ function onCameraError(message) {
 
 <template>
   <span class="scanbtn">
-    <button type="button" class="ri_formbutton" :class="{ scanbtn_compact: compact }" :title="compact ? 'Scan with camera' : null" :aria-label="compact ? 'Scan with camera' : null" @click="begin">📷<template v-if="!compact"> {{ label }}</template></button>
+    <button type="button" class="ri_formbutton" :class="{ scanbtn_compact: compact }" :title="compact ? 'Ler com a câmera' : null" :aria-label="compact ? 'Ler com a câmera' : null" @click="begin">📷<template v-if="!compact"> {{ label }}</template></button>
     <span v-if="error" class="scanbtn_error" role="alert">{{ error }}</span>
     <Teleport to="body">
       <div v-if="open" class="scanbtn_overlay" @click.self="open = false">
         <div class="scanbtn_panel">
           <QrScanner @scanned="onScanned" @error="onCameraError" />
-          <button type="button" class="ri_formbutton scanbtn_cancel" @click="open = false">Cancel</button>
+          <button type="button" class="ri_formbutton scanbtn_cancel" @click="open = false">Cancelar</button>
         </div>
       </div>
     </Teleport>

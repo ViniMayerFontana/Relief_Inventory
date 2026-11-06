@@ -1,20 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Inventory Report</title>
+    <title>Relatório de Estoque</title>
     <style>
         @page {
             size: letter;
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Inventory Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Relatório de Estoque — gerado em {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "Página " counter(page) " de " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -96,32 +96,32 @@
     </style>
 </head>
 <body>
-    <h1>Inventory Report</h1>
+    <h1>Relatório de Estoque</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; stock on hand, generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
+        {{ config('app.name') }} &mdash; estoque disponível, gerado em {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
     </div>
 
     @foreach($records->groupBy('category') as $category => $rows)
         <table>
             <thead>
                 <tr>
-                    <th class="category-heading" colspan="8">{{ $category ?? 'Uncategorized' }}</th>
+                    <th class="category-heading" colspan="8">{{ $category ?? 'Sem categoria' }}</th>
                 </tr>
                 <tr>
-                    <th>Item #</th>
-                    <th>Name</th>
-                    <th>Unit</th>
-                    <th class="num">On Hand</th>
-                    <th class="num">Received New</th>
-                    <th class="num">Outdated</th>
-                    <th class="num">Trashed</th>
-                    <th class="num">Diverted</th>
+                    <th>Item nº</th>
+                    <th>Nome</th>
+                    <th>Unidade</th>
+                    <th class="num">Em estoque</th>
+                    <th class="num">Novos recebidos</th>
+                    <th class="num">Vencidos</th>
+                    <th class="num">Descartados</th>
+                    <th class="num">Redirecionados</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($rows as $row)
                     <tr>
-                        <td>{{ $row['display_number'] ?? '(unnumbered)' }}</td>
+                        <td>{{ $row['display_number'] ?? '(sem número)' }}</td>
                         <td>{{ $row['name'] }}</td>
                         <td>{{ $row['unit'] }}</td>
                         <td class="num">{{ $row['on_hand'] }}</td>
@@ -136,12 +136,12 @@
     @endforeach
 
     @if($records->isEmpty())
-        <p>No stock on hand yet.</p>
+        <p>Ainda não há itens em estoque.</p>
     @else
         <table>
             <tbody>
                 <tr class="totals">
-                    <td colspan="3">Totals ({{ $records->count() }} item type{{ $records->count() === 1 ? '' : 's' }})</td>
+                    <td colspan="3">Totais ({{ $records->count() }} {{ $records->count() === 1 ? 'tipo de item' : 'tipos de item' }})</td>
                     <td class="num">{{ $records->sum('on_hand') }}</td>
                     <td class="num">{{ $records->sum('received_new') ?: '' }}</td>
                     <td class="num">{{ $records->sum('outdated') ?: '' }}</td>
@@ -153,8 +153,8 @@
     @endif
 
     <div class="disclaimer">
-        Generated at the moment of viewing from currently recorded ledger activity. Only item types with recorded
-        usable, outdated, trashed, or diverted quantity are listed; the full catalog is larger.
+        Gerado com base nas movimentações registradas no momento da consulta. São listados apenas os tipos de item
+        com quantidades registradas como aproveitáveis, vencidas, descartadas ou redirecionadas; o catálogo completo é maior.
     </div>
 </body>
 </html>

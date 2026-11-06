@@ -98,7 +98,7 @@ export default {
 				this.completed = response.data.completed || [];
 				this.drivers = response.data.drivers || [];
 			} catch (e) {
-				this.error = 'Could not load the shipping queue.';
+				this.error = 'Não foi possível carregar a fila de expedição.';
 			} finally {
 				this.loading = false;
 			}
@@ -116,7 +116,7 @@ export default {
 				await axios.patch('/json/shipping/' + order.id + '/assign', { driver_id: driverId });
 				await this.fetchAll();
 			} catch (e) {
-				this.error = e.response?.data?.message || 'Could not assign that driver.';
+				this.error = e.response?.data?.message || 'Não foi possível atribuir esse motorista.';
 			} finally {
 				this.assigning = { ...this.assigning, [order.id]: false };
 			}
@@ -128,7 +128,7 @@ export default {
 				await axios.patch('/json/shipping/' + order.id + '/mark-shipped');
 				await this.fetchAll();
 			} catch (e) {
-				this.error = e.response?.data?.message || 'Could not mark that order Shipped.';
+				this.error = e.response?.data?.message || 'Não foi possível marcar esse pedido como enviado.';
 			} finally {
 				this.shipping = { ...this.shipping, [order.id]: false };
 			}
@@ -142,7 +142,7 @@ export default {
 				this.showNewDriver = false;
 				await this.fetchAll();
 			} catch (e) {
-				this.driverError = e.response?.data?.message || 'Could not save that driver.';
+				this.driverError = e.response?.data?.message || 'Não foi possível salvar esse motorista.';
 			} finally {
 				this.savingDriver = false;
 			}
@@ -160,7 +160,7 @@ export default {
 				this.pinDriverId = null;
 				await this.fetchAll();
 			} catch (e) {
-				this.pinError = e.response?.data?.errors?.pin?.[0] || e.response?.data?.message || 'Could not set that PIN.';
+				this.pinError = e.response?.data?.errors?.pin?.[0] || e.response?.data?.message || 'Não foi possível definir esse PIN.';
 			} finally {
 				this.savingPin = false;
 			}
@@ -185,7 +185,7 @@ export default {
 				this.reviewImageFailed = !response.data.type?.startsWith('image/');
 			} catch (e) {
 				this.reviewImageFailed = true;
-				this.reviewError = 'Could not load the signed BOL file.';
+				this.reviewError = 'Não foi possível carregar o comprovante de embarque assinado.';
 			}
 		},
 		closeReview() {
@@ -251,7 +251,7 @@ export default {
 				this.closeReview();
 				await this.fetchAll();
 			} catch (e) {
-				this.reviewError = e.response?.data?.message || 'Could not approve that BOL.';
+				this.reviewError = e.response?.data?.message || 'Não foi possível aprovar esse comprovante de entrega.';
 			} finally {
 				this.reviewApproving = false;
 			}
@@ -265,7 +265,7 @@ export default {
 				this.closeReview();
 				await this.fetchAll();
 			} catch (e) {
-				this.reviewError = e.response?.data?.message || 'Could not reject that BOL.';
+				this.reviewError = e.response?.data?.message || 'Não foi possível rejeitar esse comprovante de entrega.';
 			} finally {
 				this.reviewRejecting = false;
 			}
@@ -278,20 +278,20 @@ export default {
 </script>
 
 <template>
-	<Head title="Shipping" />
+	<Head title="Expedição" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="ship_container">
 			<p v-if="error" class="ship_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
-			<p class="ship_helplink"><HelpLink guide="shipping">Shipping Guide</HelpLink></p>
+			<p v-if="loading">Carregando...</p>
+			<p class="ship_helplink"><HelpLink guide="shipping">Guia de expedição</HelpLink></p>
 
-			<h2 class="ri_datatable_head">Filled — Ready to Assign a Driver ({{ filled.length }})</h2>
-			<p class="ship_hint">Assigning a driver moves the order to Ready to Ship.</p>
+			<h2 class="ri_datatable_head">Separados — prontos para atribuir um motorista ({{ filled.length }})</h2>
+			<p class="ship_hint">Atribuir um motorista altera o status do pedido para pronto para envio.</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>Order #</th><th>Partner</th><th>Lines</th><th>Qty</th><th>Driver</th><th></th></tr>
+					<tr><th>Nº do pedido</th><th>Entidade parceira</th><th>Linhas</th><th>Qtd.</th><th>Motorista</th><th></th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="order in filled" :key="order.id">
@@ -301,7 +301,7 @@ export default {
 						<td class="ship_num">{{ totals(order).qty }}</td>
 						<td>
 							<select v-model="assignDriverId[order.id]" class="ri_forminput">
-								<option :value="undefined" disabled>Select a driver...</option>
+								<option :value="undefined" disabled>Selecione um motorista...</option>
 								<option v-for="d in drivers" :key="d.id" :value="d.id">{{ d.name }}</option>
 							</select>
 						</td>
@@ -310,65 +310,65 @@ export default {
 								class="ri_defaultbutton"
 								:disabled="!assignDriverId[order.id] || assigning[order.id]"
 								@click="assignDriver(order)"
-							>{{ assigning[order.id] ? 'Assigning...' : 'Assign' }}</button>
+							>{{ assigning[order.id] ? 'Atribuindo...' : 'Atribuir' }}</button>
 						</td>
 					</tr>
-					<tr v-if="!filled.length && !loading"><td colspan="6" class="ship_empty">No Filled orders waiting for a driver.</td></tr>
+					<tr v-if="!filled.length && !loading"><td colspan="6" class="ship_empty">Nenhum pedido separado aguardando motorista.</td></tr>
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Ready to Ship ({{ readyToShip.length }})</h2>
-			<p class="ship_hint">A driver is assigned. Mark Shipped once the truck actually leaves the dock.</p>
+			<h2 class="ri_datatable_head ship_sectionhead">Prontos para envio ({{ readyToShip.length }})</h2>
+			<p class="ship_hint">O motorista foi atribuído. Marque como enviado quando o caminhão realmente sair da doca.</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>Order #</th><th>Partner</th><th>Driver</th><th>Generated BOL</th><th></th></tr>
+					<tr><th>Nº do pedido</th><th>Entidade parceira</th><th>Motorista</th><th>Comprovante de entrega gerado</th><th></th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="order in readyToShip" :key="order.id">
 						<td>{{ order.id }}</td>
 						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
 						<td>{{ order.driver?.name }}<span v-if="order.driver?.phone"> — {{ order.driver.phone }}</span></td>
-						<td><PrintMenu document-key="bol" media="report" variant="link" label="View BOL" :params="{ id: order.id }"
+						<td><PrintMenu document-key="bol" media="report" variant="link" label="Ver comprovante de entrega" :params="{ id: order.id }"
 							:download-href="'/report/bol/' + order.id + '.pdf'" />
-							&nbsp;<PrintMenu document-key="shipping-label" media="label_large" variant="link" label="Shipping Label" :params="{ id: order.id }"
+							&nbsp;<PrintMenu document-key="shipping-label" media="label_large" variant="link" label="Etiqueta de envio" :params="{ id: order.id }"
 							:download-href="'/report/shipping-label/' + order.id + '.pdf'" /></td>
 						<td>
 							<button
 								class="ri_defaultbutton"
 								:disabled="shipping[order.id]"
 								@click="markShipped(order)"
-							>{{ shipping[order.id] ? 'Marking...' : 'Mark Shipped' }}</button>
+							>{{ shipping[order.id] ? 'Atualizando...' : 'Marcar como enviado' }}</button>
 						</td>
 					</tr>
-					<tr v-if="!readyToShip.length && !loading"><td colspan="5" class="ship_empty">Nothing currently Ready to Ship.</td></tr>
+					<tr v-if="!readyToShip.length && !loading"><td colspan="5" class="ship_empty">Nenhum pedido pronto para envio no momento.</td></tr>
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Shipped ({{ shipped.length }})</h2>
-			<p class="ship_hint">Left the dock. Waiting for the driver to upload a signed BOL through the Driver Portal.</p>
+			<h2 class="ri_datatable_head ship_sectionhead">Enviados ({{ shipped.length }})</h2>
+			<p class="ship_hint">Saiu da doca. Aguardando o motorista enviar o comprovante de entrega assinado pelo portal.</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>Order #</th><th>Partner</th><th>Driver</th><th>Generated BOL</th></tr>
+					<tr><th>Nº do pedido</th><th>Entidade parceira</th><th>Motorista</th><th>Comprovante de entrega gerado</th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="order in shipped" :key="order.id">
 						<td>{{ order.id }}</td>
 						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
 						<td>{{ order.driver?.name }}<span v-if="order.driver?.phone"> — {{ order.driver.phone }}</span></td>
-						<td><PrintMenu document-key="bol" media="report" variant="link" label="View BOL" :params="{ id: order.id }"
+						<td><PrintMenu document-key="bol" media="report" variant="link" label="Ver comprovante de entrega" :params="{ id: order.id }"
 							:download-href="'/report/bol/' + order.id + '.pdf'" />
-							&nbsp;<PrintMenu document-key="shipping-label" media="label_large" variant="link" label="Shipping Label" :params="{ id: order.id }"
+							&nbsp;<PrintMenu document-key="shipping-label" media="label_large" variant="link" label="Etiqueta de envio" :params="{ id: order.id }"
 							:download-href="'/report/shipping-label/' + order.id + '.pdf'" /></td>
 					</tr>
-					<tr v-if="!shipped.length && !loading"><td colspan="4" class="ship_empty">Nothing currently Shipped.</td></tr>
+					<tr v-if="!shipped.length && !loading"><td colspan="4" class="ship_empty">Nenhum pedido enviado no momento.</td></tr>
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Delivered — Pending Review ({{ delivered.length }})</h2>
-			<p class="ship_hint">Signed BOL uploaded by the driver. Review it to approve (moves to Completed) or reject (moves to Waiting on BOL, back to the driver).</p>
+			<h2 class="ri_datatable_head ship_sectionhead">Entregues — aguardando revisão ({{ delivered.length }})</h2>
+			<p class="ship_hint">Comprovante de entrega assinado enviado pelo motorista. Revise para aprovar (altera o status para concluído) ou rejeitar (retorna para aguardando comprovante e para o motorista).</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>Order #</th><th>Partner</th><th>Driver</th><th>Delivered</th><th></th></tr>
+					<tr><th>Nº do pedido</th><th>Entidade parceira</th><th>Motorista</th><th>Entregue em</th><th></th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="order in delivered" :key="order.id">
@@ -376,17 +376,17 @@ export default {
 						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
 						<td>{{ order.driver?.name }}</td>
 						<td>{{ order.status_changed_at ? new Date(order.status_changed_at).toLocaleDateString() : '' }}</td>
-						<td><button class="ri_defaultbutton" @click="openReview(order)">Review</button></td>
+						<td><button class="ri_defaultbutton" @click="openReview(order)">Revisar</button></td>
 					</tr>
-					<tr v-if="!delivered.length && !loading"><td colspan="5" class="ship_empty">Nothing awaiting review.</td></tr>
+					<tr v-if="!delivered.length && !loading"><td colspan="5" class="ship_empty">Nenhum pedido aguardando revisão.</td></tr>
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Delivered — Waiting on BOL ({{ awaitingBol.length }})</h2>
-			<p class="ship_hint">Delivered, but the uploaded signed BOL was rejected. Waiting for the driver to upload a usable one through the Driver Portal.</p>
+			<h2 class="ri_datatable_head ship_sectionhead">Entregues — aguardando comprovante ({{ awaitingBol.length }})</h2>
+			<p class="ship_hint">Entregue, mas o comprovante assinado enviado foi rejeitado. Aguardando o motorista enviar um comprovante válido pelo portal.</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>Order #</th><th>Partner</th><th>Driver</th><th>Rejected</th><th>Reason</th></tr>
+					<tr><th>Nº do pedido</th><th>Entidade parceira</th><th>Motorista</th><th>Rejeitado em</th><th>Motivo</th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="order in awaitingBol" :key="order.id">
@@ -396,15 +396,15 @@ export default {
 						<td>{{ order.status_changed_at ? new Date(order.status_changed_at).toLocaleDateString() : '' }}</td>
 						<td>{{ order.bol_rejection_reason || '—' }}</td>
 					</tr>
-					<tr v-if="!awaitingBol.length && !loading"><td colspan="5" class="ship_empty">No rejected BOLs outstanding.</td></tr>
+					<tr v-if="!awaitingBol.length && !loading"><td colspan="5" class="ship_empty">Nenhum comprovante rejeitado pendente.</td></tr>
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Recently Completed ({{ completed.length }})</h2>
-			<p class="ship_hint">Signed BOL approved — most recent 25.</p>
+			<h2 class="ri_datatable_head ship_sectionhead">Concluídos recentemente ({{ completed.length }})</h2>
+			<p class="ship_hint">Comprovante assinado aprovado — 25 mais recentes.</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>Order #</th><th>Partner</th><th>Driver</th><th>Completed</th><th>Signed BOL</th></tr>
+					<tr><th>Nº do pedido</th><th>Entidade parceira</th><th>Motorista</th><th>Concluído em</th><th>Comprovante assinado</th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="order in completed" :key="order.id">
@@ -412,19 +412,19 @@ export default {
 						<td>{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</td>
 						<td>{{ order.driver?.name }}</td>
 						<td>{{ order.status_changed_at ? new Date(order.status_changed_at).toLocaleDateString() : '' }}</td>
-						<td><a :href="$withWarehouse('/json/shipping/' + order.id + '/signed-bol')" target="_blank">View Signed BOL</a></td>
+						<td><a :href="$withWarehouse('/json/shipping/' + order.id + '/signed-bol')" target="_blank">Ver comprovante assinado</a></td>
 					</tr>
-					<tr v-if="!completed.length && !loading"><td colspan="5" class="ship_empty">Nothing completed yet.</td></tr>
+					<tr v-if="!completed.length && !loading"><td colspan="5" class="ship_empty">Nada concluído ainda.</td></tr>
 				</tbody>
 			</table></div>
 
 			<Modal :show="!!reviewOrder" @close="closeReview" max-width="2xl">
 				<div class="ship_reviewmodal" v-if="reviewOrder">
-					<h3 class="ship_reviewtitle">Review Signed BOL — Order #{{ reviewOrder.id }}</h3>
-					<p class="ship_hint">{{ reviewOrder.person?.full_name || reviewOrder.person?.organization }} — driver: {{ reviewOrder.driver?.name }}</p>
+					<h3 class="ship_reviewtitle">Revisar comprovante assinado — Pedido nº {{ reviewOrder.id }}</h3>
+					<p class="ship_hint">{{ reviewOrder.person?.full_name || reviewOrder.person?.organization }} — motorista: {{ reviewOrder.driver?.name }}</p>
 
 					<template v-if="!reviewImageFailed">
-						<p class="ship_hint">Drag to select the area to keep, then Approve — or Approve as-is to skip cropping.</p>
+						<p class="ship_hint">Arraste para selecionar a área que deseja manter e clique em Aprovar — ou aprove sem alterações para não recortar.</p>
 						<div
 							ref="cropWrap"
 							class="ship_cropwrap"
@@ -440,52 +440,52 @@ export default {
 							/>
 							<div v-if="crop.w > 0" class="ship_cropbox" :style="cropBoxStyle"></div>
 						</div>
-						<button v-if="hasCropSelection" class="ship_pinlink" @click="resetCrop">Clear selection</button>
+						<button v-if="hasCropSelection" class="ship_pinlink" @click="resetCrop">Limpar seleção</button>
 					</template>
 					<template v-else>
-						<p class="ship_hint">Can't preview this file as an image (likely a PDF).
-							<a :href="reviewImageUrl" target="_blank">Open it in a new tab</a> to review.
+						<p class="ship_hint">Não é possível exibir este arquivo como imagem (provavelmente é um PDF).
+							<a :href="reviewImageUrl" target="_blank">Abra em uma nova aba</a> para revisar.
 						</p>
 					</template>
 
 					<p v-if="reviewError" class="ship_error">{{ reviewError }}</p>
 
 					<div v-if="showRejectForm" class="ship_rejectform">
-						<textarea v-model="rejectReason" class="ri_forminput" rows="2" placeholder="What's wrong with it? (shown to the driver)"></textarea>
+						<textarea v-model="rejectReason" class="ri_forminput" rows="2" placeholder="Qual é o problema? (esta mensagem será exibida ao motorista)"></textarea>
 						<div class="ship_reviewactions">
-							<button class="ship_pinlink" @click="showRejectForm = false">Cancel</button>
+							<button class="ship_pinlink" @click="showRejectForm = false">Cancelar</button>
 							<button class="ri_defaultbutton ship_rejectbutton" :disabled="reviewRejecting" @click="rejectReview">
-								{{ reviewRejecting ? 'Rejecting...' : 'Confirm Reject' }}
+								{{ reviewRejecting ? 'Rejeitando...' : 'Confirmar rejeição' }}
 							</button>
 						</div>
 					</div>
 					<div v-else class="ship_reviewactions">
-						<button class="ship_rejectbutton ri_defaultbutton" @click="showRejectForm = true">Reject</button>
+						<button class="ship_rejectbutton ri_defaultbutton" @click="showRejectForm = true">Rejeitar</button>
 						<button class="ri_defaultbutton" :disabled="reviewApproving" @click="approveReview">
-							{{ reviewApproving ? 'Approving...' : (hasCropSelection ? 'Approve Cropped' : 'Approve') }}
+							{{ reviewApproving ? 'Aprovando...' : (hasCropSelection ? 'Aprovar recortado' : 'Aprovar') }}
 						</button>
 					</div>
 				</div>
 			</Modal>
 
 			<h2 class="ri_datatable_head ship_sectionhead">
-				Drivers
+				Motoristas
 				<button class="ri_defaultbutton ship_titleaction" @click="showNewDriver = !showNewDriver">
-					{{ showNewDriver ? 'Cancel' : '+ New Driver' }}
+					{{ showNewDriver ? 'Cancelar' : '+ Novo motorista' }}
 				</button>
 			</h2>
 			<div v-if="showNewDriver" class="ship_newdriver">
-				<TextInput v-model="newDriver.name" placeholder="Name" class="ri_forminput" />
-				<TextInput v-model="newDriver.phone" placeholder="Phone" class="ri_forminput" />
-				<TextInput v-model="newDriver.carrier" placeholder="Carrier (if a trucking company)" class="ri_forminput" />
+				<TextInput v-model="newDriver.name" placeholder="Nome" class="ri_forminput" />
+				<TextInput v-model="newDriver.phone" placeholder="Telefone" class="ri_forminput" />
+				<TextInput v-model="newDriver.carrier" placeholder="Transportadora (se for empresa de transporte)" class="ri_forminput" />
 				<button class="ri_defaultbutton" :disabled="!newDriver.name || savingDriver" @click="saveNewDriver">
-					{{ savingDriver ? 'Saving...' : 'Save Driver' }}
+					{{ savingDriver ? 'Salvando...' : 'Salvar motorista' }}
 				</button>
 				<p v-if="driverError" class="ship_error">{{ driverError }}</p>
 			</div>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>Name</th><th>Phone</th><th>Carrier</th><th>Driver Portal PIN</th></tr>
+					<tr><th>Nome</th><th>Telefone</th><th>Transportadora</th><th>PIN do portal do motorista</th></tr>
 				</thead>
 				<tbody>
 					<template v-for="d in drivers" :key="d.id">
@@ -494,27 +494,27 @@ export default {
 							<td>{{ d.phone }}</td>
 							<td>{{ d.carrier }}</td>
 							<td>
-								<span v-if="d.has_pin">Set</span>
-								<span v-else class="ship_nopin">Not set</span>
-								<button class="ship_pinlink" @click="openPinForm(d)">{{ d.has_pin ? 'Reset PIN' : 'Set PIN' }}</button>
+								<span v-if="d.has_pin">Definido</span>
+								<span v-else class="ship_nopin">Não definido</span>
+								<button class="ship_pinlink" @click="openPinForm(d)">{{ d.has_pin ? 'Redefinir PIN' : 'Definir PIN' }}</button>
 							</td>
 						</tr>
 						<tr v-if="pinDriverId === d.id">
 							<td colspan="4" class="ship_pinrow">
-								<input type="password" v-model="pinForm.pin" placeholder="5-digit PIN" class="ri_forminput" maxlength="5" />
-								<input type="password" v-model="pinForm.pin_confirmation" placeholder="Confirm PIN" class="ri_forminput" maxlength="5" />
+								<input type="password" v-model="pinForm.pin" placeholder="PIN de 5 dígitos" class="ri_forminput" maxlength="5" />
+								<input type="password" v-model="pinForm.pin_confirmation" placeholder="Confirmar PIN" class="ri_forminput" maxlength="5" />
 								<button class="ri_defaultbutton" :disabled="savingPin" @click="savePin(d)">
-									{{ savingPin ? 'Saving...' : 'Save PIN' }}
+									{{ savingPin ? 'Salvando...' : 'Salvar PIN' }}
 								</button>
-								<button class="ship_pinlink" @click="pinDriverId = null">Cancel</button>
+								<button class="ship_pinlink" @click="pinDriverId = null">Cancelar</button>
 								<p v-if="pinError" class="ship_error">{{ pinError }}</p>
 							</td>
 						</tr>
 					</template>
-					<tr v-if="!drivers.length"><td colspan="4" class="ship_empty">No drivers in the directory yet.</td></tr>
+					<tr v-if="!drivers.length"><td colspan="4" class="ship_empty">Nenhum motorista cadastrado ainda.</td></tr>
 				</tbody>
 			</table></div>
-			<p class="ship_hint">Give a driver their phone number + PIN so they can sign into <a href="/driver-portal">the Driver Portal</a> and upload a signed BOL for their own loads.</p>
+			<p class="ship_hint">Informe ao motorista o telefone e o PIN para que ele possa entrar no <a href="/driver-portal">portal do motorista</a> e enviar o comprovante de entrega assinado das próprias cargas.</p>
 		</div>
 	</AuthenticatedLayout>
 </template>

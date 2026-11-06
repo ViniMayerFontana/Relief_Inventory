@@ -183,7 +183,7 @@ export default {
 				const response = await axios.get('/json/orders');
 				this.orders = response.data;
 			} catch (error) {
-				this.listError = 'Could not load orders.';
+				this.listError = 'Não foi possível carregar os pedidos.';
 			} finally {
 				this.listLoading = false;
 			}
@@ -194,7 +194,7 @@ export default {
 				const response = await axios.get('/json/orders/' + id);
 				this.openOrder(response.data.record);
 			} catch (error) {
-				this.listError = 'Could not open that order.';
+				this.listError = 'Não foi possível abrir esse pedido.';
 			}
 		},
 		personLabel(person) {
@@ -281,7 +281,7 @@ export default {
 			if (!hasName && !hasOrg) {
 				// An order/partner contact may only have an organization known
 				// (no specific person) — that's fine.
-				this.partnerError = 'Enter a name (first and last) or an organization.';
+				this.partnerError = 'Informe o nome e o sobrenome ou uma organização.';
 				return;
 			}
 			this.partnerSaving = true;
@@ -294,7 +294,7 @@ export default {
 			} catch (error) {
 				this.partnerError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not save the new partner.';
+					|| 'Não foi possível salvar a nova entidade parceira.';
 			} finally {
 				this.partnerSaving = false;
 			}
@@ -313,7 +313,7 @@ export default {
 			if (!trimmed) return;
 			const state = (target.state || '').trim().toUpperCase();
 			if (state.length !== 2) {
-				this.countyError = 'Enter the partner\'s 2-letter state above before adding a new county.';
+				this.countyError = 'Informe acima a sigla de duas letras do estado da entidade parceira antes de adicionar um novo município.';
 				return;
 			}
 			try {
@@ -323,7 +323,7 @@ export default {
 			} catch (error) {
 				this.countyError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not save the new county.';
+					|| 'Não foi possível salvar o novo município.';
 			}
 		},
 		// Looks up county/city/state/zip once there's enough to geocode —
@@ -395,7 +395,7 @@ export default {
 				// (offline mode, or no API key configured) — also expected,
 				// not a fault; address entry works fine without it either way.
 				if (![422, 503].includes(error.response?.status)) {
-					this.countyError = error.response?.data?.message || 'Could not look up that address.';
+					this.countyError = error.response?.data?.message || 'Não foi possível consultar esse endereço.';
 				}
 			}
 		},
@@ -467,7 +467,7 @@ export default {
 		 */
 		async confirmPartner() {
 			if (!this.partnerId) {
-				this.partnerError = 'Choose or add a partner first.';
+				this.partnerError = 'Escolha ou adicione uma entidade parceira primeiro.';
 				return;
 			}
 			this.partnerError = null;
@@ -492,7 +492,7 @@ export default {
 			} catch (error) {
 				this.partnerError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not start the order.';
+					|| 'Não foi possível iniciar o pedido.';
 			} finally {
 				this.partnerSaving = false;
 			}
@@ -566,7 +566,7 @@ export default {
 			} catch (error) {
 				this.reviewError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not complete the order.';
+					|| 'Não foi possível concluir o pedido.';
 			} finally {
 				this.headerSaving = false;
 			}
@@ -597,12 +597,12 @@ export default {
 			this.lineError = null;
 			this.confirmingLineKey = null;
 			if (!this.entry.itemtype_id) {
-				this.lineError = 'Choose an item first.';
+				this.lineError = 'Escolha um item primeiro.';
 				return;
 			}
 			const qty = parseInt(this.entry.qty, 10);
 			if (!qty || qty < 1) {
-				this.lineError = 'Enter a quantity of 1 or more.';
+				this.lineError = 'Informe uma quantidade igual ou superior a 1.';
 				return;
 			}
 
@@ -633,7 +633,7 @@ export default {
 				if (idx !== -1) this.lines.splice(idx, 1, { ...response.data.record, status: 'saved' });
 				this.resetEntry();
 			} catch (error) {
-				this.lineError = 'Could not combine with the existing line.';
+				this.lineError = 'Não foi possível combinar com a linha existente.';
 			}
 		},
 		cancelDuplicate() {
@@ -685,7 +685,7 @@ export default {
 				const idx = this.findLineIndex(line);
 				const errorMessage = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Network error';
+					|| 'Erro de conexão';
 				if (idx !== -1) {
 					this.lines.splice(idx, 1, { ...line, status: 'failed', errorMessage });
 				}
@@ -709,7 +709,7 @@ export default {
 				await axios.delete('/json/orders/' + this.order.id + '/lines/' + line.id);
 				this.lines = this.lines.filter((entry) => entry !== line);
 			} catch (error) {
-				this.lineError = 'Could not delete the line. Try again.';
+				this.lineError = 'Não foi possível excluir a linha. Tente novamente.';
 			}
 		},
 		retryFailed() {
@@ -750,31 +750,31 @@ export default {
 </script>
 
 <template>
-	<Head title="Order Entry" />
+	<Head title="Cadastro de pedidos" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<!-- ======================= ORDER LIST ======================= -->
 		<div v-if="view === 'list'" class="oe_container">
 			<h2 class="ri_datatable_head">
-				Order Entry
-				<HelpLink guide="order-entry">Order Entry Guide</HelpLink>
+				Cadastro de pedidos
+				<HelpLink guide="order-entry">Guia de cadastro de pedidos</HelpLink>
 				<span class="oe_headeractions">
-					<PrintMenu document-key="order-form" media="report" variant="form" label="Offline Order Form"
+					<PrintMenu document-key="order-form" media="report" variant="form" label="Formulário de pedido impresso"
 						download-href="/report/order-form.pdf" />
-					<button @click="startNewOrder" class="ri_defaultbutton">New Order</button>
+					<button @click="startNewOrder" class="ri_defaultbutton">Novo pedido</button>
 				</span>
 			</h2>
 
 			<p v-if="listError" class="oe_error">{{ listError }}</p>
-			<p v-if="listLoading">Loading orders...</p>
+			<p v-if="listLoading">Carregando pedidos...</p>
 
 			<div class="oe_section">
-				<h3>Open Orders - tap to open</h3>
-				<p v-if="!orders.open.length && !listLoading">No open orders.</p>
+				<h3>Pedidos em aberto — toque para abrir</h3>
+				<p v-if="!orders.open.length && !listLoading">Nenhum pedido em aberto.</p>
 				<div v-else class="oe_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Date</th><th>Partner</th><th>Lines</th><th>Items</th><th>Status</th><th>Entered By</th></tr>
+						<tr><th>Data</th><th>Entidade parceira</th><th>Linhas</th><th>Itens</th><th>Status</th><th>Registrado por</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in orders.open" :key="record.id"
@@ -791,10 +791,10 @@ export default {
 			</div>
 
 			<div v-if="orders.recent.length" class="oe_section">
-				<h3>Recently Completed</h3>
+				<h3>Concluídos recentemente</h3>
 				<div class="oe_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Date</th><th>Partner</th><th>Lines</th><th>Items</th><th>Status</th><th>Entered By</th></tr>
+						<tr><th>Data</th><th>Entidade parceira</th><th>Linhas</th><th>Itens</th><th>Status</th><th>Registrado por</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in orders.recent" :key="record.id"
@@ -814,22 +814,22 @@ export default {
 		<!-- ======================= PARTNER SCREEN ======================= -->
 		<div v-else-if="view === 'partner'" class="oe_container oe_partner">
 			<div class="oe_topbar">
-				<button @click="cancelPartnerScreen" class="ri_formbutton">&larr; Back</button>
+				<button @click="cancelPartnerScreen" class="ri_formbutton">&larr; Voltar</button>
 				<span class="oe_title">
-					{{ partnerMode === 'change' ? 'Change Partner' : 'New Order — Who is this for?' }}
+					{{ partnerMode === 'change' ? 'Alterar entidade parceira' : 'Novo pedido — para quem?' }}
 				</span>
 			</div>
 			<p v-if="partnerError" class="oe_error">{{ partnerError }}</p>
 
 			<div class="oe_field">
-				<label>Partner:</label>
+				<label>Entidade parceira:</label>
 				<SearchSelect
 					ref="partnerSelect"
 					v-model="partnerId"
 					optionsource="/json/people"
 					display="search_label"
 					:searchfields="['full_name', 'organization', 'city']"
-					placeholder="Search by name or organization..."
+					placeholder="Buscar por nome ou organização..."
 					:allowcreate="true"
 					@selected="partnerSelected"
 					@create="startNewPartner"
@@ -838,7 +838,7 @@ export default {
 
 			<!-- quick-add: a phone-in partner who isn't in People yet -->
 			<div v-if="creatingPartner" class="oe_card">
-				<h3>New Partner</h3>
+				<h3>Nova entidade parceira</h3>
 				<!-- ZIP before Address: geocod.io resolves city/state/county
 				     confidently from street+zip alone (tested rooftop
 				     accuracy), so asking ZIP first (quick to state on a call)
@@ -847,25 +847,25 @@ export default {
 				     confirmation pass over already-filled fields, not the
 				     only source of them. See maybeAutoLookupCounty(). -->
 				<div class="oe_contactgrid" @blur.capture="maybeAutoLookupCounty(newPartner)">
-					<div class="oe_field"><label>First Name:</label>
+					<div class="oe_field"><label>Nome:</label>
 						<input type="text" v-model="newPartner.first_name" class="ri_forminput"
 							autofocus @keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Last Name:</label>
+					<div class="oe_field"><label>Sobrenome:</label>
 						<input type="text" v-model="newPartner.last_name" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Organization:</label>
+					<div class="oe_field"><label>Organização:</label>
 						<input type="text" v-model="newPartner.organization" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Phone:</label>
+					<div class="oe_field"><label>Telefone:</label>
 						<input type="text" v-model="newPartner.phone" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Email:</label>
+					<div class="oe_field"><label>E-mail:</label>
 						<input type="email" v-model="newPartner.email" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Zip:</label>
+					<div class="oe_field"><label>CEP:</label>
 						<input type="text" v-model="newPartner.zip" maxlength="10" class="ri_forminput oe_zip"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Address:</label>
+					<div class="oe_field"><label>Endereço:</label>
 						<input type="text" v-model="newPartner.address" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
 					<AddressCorrectionCheck v-if="addressCheckTarget === newPartner"
@@ -876,18 +876,18 @@ export default {
 						&& !(addressCheckTarget === newPartner && addressCheck.status !== 'idle')" class="oe_hint">
 						<button type="button" class="ri_formbutton" :disabled="$page.props.offlineMode"
 							@click="verifyAddress(newPartner)">
-							{{ $page.props.offlineMode ? "Can't verify address — offline" : 'Verify Address' }}
+							{{ $page.props.offlineMode ? "Não é possível verificar o endereço sem conexão" : 'Verificar endereço' }}
 						</button>
 					</p>
-					<div class="oe_field"><label>City:</label>
+					<div class="oe_field"><label>Cidade:</label>
 						<input type="text" v-model="newPartner.city" class="ri_forminput"
 							:disabled="addressCheckTarget === newPartner && addressCheck.status === 'checking'"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>State:</label>
+					<div class="oe_field"><label>Estado:</label>
 						<input type="text" v-model="newPartner.state" maxlength="2" class="ri_forminput oe_state"
 							:disabled="addressCheckTarget === newPartner && addressCheck.status === 'checking'"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>County:</label>
+					<div class="oe_field"><label>Município:</label>
 						<SearchSelect
 							ref="newPartnerCountySelect"
 							v-model="newPartner.county_id"
@@ -896,7 +896,7 @@ export default {
 							secondary="state"
 							:searchfields="['county']"
 							:filter="(c) => !newPartner.state || c.state === newPartner.state.toUpperCase()"
-							placeholder="Search counties..."
+							placeholder="Buscar municípios..."
 							:allowcreate="true"
 							@create="(name) => createCounty(name, newPartner, 'newPartnerCountySelect')"
 						/></div>
@@ -906,38 +906,38 @@ export default {
 				<div class="oe_actions">
 					<button @click="saveNewPartner" class="ri_defaultbutton"
 						:disabled="partnerSaving || (addressCheckTarget === newPartner && addressCheck.status !== 'idle')">
-						{{ partnerSaving ? 'Saving...'
-							: (addressCheckTarget === newPartner && addressCheck.status === 'checking') ? 'Checking address…'
-							: 'Save Partner' }}
+						{{ partnerSaving ? 'Salvando...'
+							: (addressCheckTarget === newPartner && addressCheck.status === 'checking') ? 'Verificando endereço…'
+							: 'Salvar entidade parceira' }}
 					</button>
-					<button @click="creatingPartner = false" class="ri_formbutton">Cancel</button>
+					<button @click="creatingPartner = false" class="ri_formbutton">Cancelar</button>
 				</div>
 			</div>
 
 			<!-- confirm/update contact & shipping details before starting -->
 			<div v-else-if="contact" class="oe_card">
-				<h3>Confirm Contact &amp; Shipping Details</h3>
-				<p class="oe_hint">Make sure this is up to date — it's where the order ships.</p>
+				<h3>Confirme o contato e os dados de entrega</h3>
+				<p class="oe_hint">Confira se os dados estão atualizados — este é o endereço para onde o pedido será enviado.</p>
 				<div class="oe_contactgrid" @blur.capture="maybeAutoLookupCounty(contact)">
-					<div class="oe_field"><label>First Name:</label>
+					<div class="oe_field"><label>Nome:</label>
 						<input type="text" v-model="contact.first_name" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Last Name:</label>
+					<div class="oe_field"><label>Sobrenome:</label>
 						<input type="text" v-model="contact.last_name" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Organization:</label>
+					<div class="oe_field"><label>Organização:</label>
 						<input type="text" v-model="contact.organization" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Phone:</label>
+					<div class="oe_field"><label>Telefone:</label>
 						<input type="text" v-model="contact.phone" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Email:</label>
+					<div class="oe_field"><label>E-mail:</label>
 						<input type="email" v-model="contact.email" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Zip:</label>
+					<div class="oe_field"><label>CEP:</label>
 						<input type="text" v-model="contact.zip" maxlength="10" class="ri_forminput oe_zip"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Address:</label>
+					<div class="oe_field"><label>Endereço:</label>
 						<input type="text" v-model="contact.address" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
 					<AddressCorrectionCheck v-if="addressCheckTarget === contact"
@@ -948,18 +948,18 @@ export default {
 						&& !(addressCheckTarget === contact && addressCheck.status !== 'idle')" class="oe_hint">
 						<button type="button" class="ri_formbutton" :disabled="$page.props.offlineMode"
 							@click="verifyAddress(contact)">
-							{{ $page.props.offlineMode ? "Can't verify address — offline" : 'Verify Address' }}
+							{{ $page.props.offlineMode ? "Não é possível verificar o endereço sem conexão" : 'Verificar endereço' }}
 						</button>
 					</p>
-					<div class="oe_field"><label>City:</label>
+					<div class="oe_field"><label>Cidade:</label>
 						<input type="text" v-model="contact.city" class="ri_forminput"
 							:disabled="addressCheckTarget === contact && addressCheck.status === 'checking'"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>State:</label>
+					<div class="oe_field"><label>Estado:</label>
 						<input type="text" v-model="contact.state" maxlength="2" class="ri_forminput oe_state"
 							:disabled="addressCheckTarget === contact && addressCheck.status === 'checking'"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>County:</label>
+					<div class="oe_field"><label>Município:</label>
 						<SearchSelect
 							ref="countySelect"
 							v-model="contact.county_id"
@@ -968,7 +968,7 @@ export default {
 							secondary="state"
 							:searchfields="['county']"
 							:filter="(c) => !contact.state || c.state === contact.state.toUpperCase()"
-							placeholder="Search counties..."
+							placeholder="Buscar municípios..."
 							:allowcreate="true"
 							@create="(name) => createCounty(name, contact, 'countySelect')"
 						/></div>
@@ -978,10 +978,10 @@ export default {
 				<div class="oe_actions">
 					<button @click="confirmPartner" class="ri_defaultbutton"
 						:disabled="partnerSaving || (addressCheckTarget === contact && addressCheck.status !== 'idle')">
-						{{ partnerSaving ? 'Saving...'
-							: (addressCheckTarget === contact && addressCheck.status === 'checking') ? 'Checking address…'
-							: (contactDirty ? 'Save Details & ' : '')
-								+ (partnerMode === 'change' ? 'Use This Partner' : 'Start Order') }} &rarr;
+						{{ partnerSaving ? 'Salvando...'
+							: (addressCheckTarget === contact && addressCheck.status === 'checking') ? 'Verificando endereço…'
+							: (contactDirty ? 'Salvar dados e ' : '')
+								+ (partnerMode === 'change' ? 'Usar esta entidade parceira' : 'Iniciar pedido') }} &rarr;
 					</button>
 				</div>
 			</div>
@@ -990,53 +990,53 @@ export default {
 		<!-- ======================= REVIEW & CONFIRM ======================= -->
 		<div v-else-if="view === 'review' && order && review" class="oe_container oe_partner">
 			<div class="oe_topbar">
-				<button @click="backFromReview" class="ri_formbutton">&larr; Back</button>
-				<span class="oe_title">Review &amp; Confirm — Order #{{ order.id }}</span>
+				<button @click="backFromReview" class="ri_formbutton">&larr; Voltar</button>
+				<span class="oe_title">Revisar e confirmar — Pedido nº {{ order.id }}</span>
 			</div>
 			<p v-if="reviewError" class="oe_error">{{ reviewError }}</p>
 			<p v-if="headerError" class="oe_error">{{ headerError }}</p>
 
 			<div class="oe_card">
-				<h3>Order Summary</h3>
+				<h3>Resumo do pedido</h3>
 				<p class="oe_hint">
-					{{ personLabel(order.person) }} &mdash; {{ totals.lines }} line(s), {{ totals.qty }} item(s) total.
+					{{ personLabel(order.person) }} &mdash; {{ totals.lines }} linha(s), {{ totals.qty }} item(ns) no total.
 				</p>
 			</div>
 
 			<div class="oe_card">
-				<h3>Comments</h3>
-				<TextArea v-model="review.comments" placeholder="Anything the warehouse should know about this order..." />
+				<h3>Observações</h3>
+				<TextArea v-model="review.comments" placeholder="Alguma informação que o armazém precisa saber sobre este pedido..." />
 			</div>
 
 			<div class="oe_card">
-				<h3>Needed But Not in Catalog</h3>
-				<p class="oe_hint">Anything this partner needs that isn't listed in our items — same as "Other Needs" on the offline order form.</p>
-				<TextArea v-model="review.other_needs" placeholder="Items not available to order..." />
+				<h3>Itens necessários fora do catálogo</h3>
+				<p class="oe_hint">Itens de que esta entidade parceira precisa, mas que não estão no catálogo — corresponde ao campo "Outras necessidades" do formulário impresso.</p>
+				<TextArea v-model="review.other_needs" placeholder="Itens que não estão disponíveis para pedido..." />
 			</div>
 
 			<div class="oe_card">
-				<h3>Delivery or Pickup</h3>
+				<h3>Entrega ou retirada</h3>
 				<div class="oe_radiogroup">
-					<label><input type="radio" value="delivery" v-model="review.fulfillment_method" /> Delivery</label>
-					<label><input type="radio" value="pickup" v-model="review.fulfillment_method" /> Pickup</label>
+					<label><input type="radio" value="delivery" v-model="review.fulfillment_method" /> Entrega</label>
+					<label><input type="radio" value="pickup" v-model="review.fulfillment_method" /> Retirada</label>
 				</div>
 
 				<div class="oe_field">
-					<label>Needed By Date:</label>
+					<label>Data necessária:</label>
 					<!-- blur on pick: the native picker otherwise leaves focus parked in the field -->
 					<input type="date" v-model="review.needed_by_date" class="ri_forminput" @change="$event.target.blur()" />
 				</div>
 
 				<template v-if="review.fulfillment_method === 'delivery'">
 					<div class="oe_field oe_daysfield">
-						<label>Can Accept Delivery:</label>
+						<label>Pode receber entregas:</label>
 						<div class="oe_daypicker">
 							<button
 								type="button"
 								class="oe_daychip"
 								:class="{ oe_daychip_active: review.delivery_days.length === weekDays.length }"
 								@click="selectAllDays"
-							>Any Day</button>
+							>Qualquer dia</button>
 							<button
 								v-for="day in weekDays" :key="day"
 								type="button"
@@ -1047,36 +1047,36 @@ export default {
 						</div>
 					</div>
 					<p class="oe_hint">
-						{{ review.delivery_days.length ? 'Available: ' + review.delivery_days.join(', ') : 'No days selected' }}
+						{{ review.delivery_days.length ? 'Disponível: ' + review.delivery_days.join(', ') : 'Nenhum dia selecionado' }}
 					</p>
 					<div class="oe_field">
-						<label>Preferred Time:</label>
-						<input type="text" v-model="review.preferred_time" class="ri_forminput" placeholder="e.g. 10am - 2pm" />
+						<label>Horário preferido:</label>
+						<input type="text" v-model="review.preferred_time" class="ri_forminput" placeholder="ex.: das 10h às 14h" />
 					</div>
 				</template>
-				<p v-else class="oe_hint">Pickup days and times are set by the warehouse.</p>
+				<p v-else class="oe_hint">Os dias e horários de retirada são definidos pelo armazém.</p>
 			</div>
 
 			<div class="oe_card">
-				<h3>{{ review.fulfillment_method === 'pickup' ? 'Pickup' : 'Delivery' }} Contact</h3>
-				<p class="oe_hint">Defaults to the partner on file — change it if someone else is receiving this order.</p>
+				<h3>Contato para {{ review.fulfillment_method === 'pickup' ? 'retirada' : 'entrega' }}</h3>
+				<p class="oe_hint">Usa por padrão o contato cadastrado para a entidade parceira — altere se outra pessoa receberá este pedido.</p>
 				<div class="oe_contactgrid">
-					<div class="oe_field"><label>Contact Name:</label>
+					<div class="oe_field"><label>Nome do contato:</label>
 						<input type="text" v-model="review.contact_name" class="ri_forminput" /></div>
-					<div class="oe_field"><label>Contact Phone:</label>
+					<div class="oe_field"><label>Telefone do contato:</label>
 						<input type="text" v-model="review.contact_phone" class="ri_forminput" /></div>
 				</div>
 			</div>
 
 			<div class="oe_card">
-				<h3>Special Delivery Instructions</h3>
-				<p class="oe_hint">Gate codes, dock location, who to contact on arrival &mdash; carried through to the BOL when this order ships. Not the same as "Needed But Not in Catalog" above.</p>
-				<TextArea v-model="review.special_instructions" placeholder="Instructions for the driver..." />
+				<h3>Instruções especiais de entrega</h3>
+				<p class="oe_hint">Códigos de acesso, localização da doca, contato na chegada — essas informações serão incluídas no comprovante de entrega quando o pedido for enviado. Não confunda com "Itens necessários fora do catálogo".</p>
+				<TextArea v-model="review.special_instructions" placeholder="Instruções para o motorista..." />
 			</div>
 
 			<div class="oe_actions">
 				<button @click="completeOrder" class="ri_defaultbutton" :disabled="headerSaving">
-					{{ headerSaving ? 'Saving...' : 'Submit Order' }}
+					{{ headerSaving ? 'Salvando...' : 'Enviar pedido' }}
 				</button>
 			</div>
 		</div>
@@ -1084,20 +1084,20 @@ export default {
 		<!-- ======================= LINE ENTRY ======================= -->
 		<div v-else-if="order" class="oe_container">
 			<div class="oe_topbar">
-				<button @click="closeOrder" class="ri_formbutton">&larr; All Orders</button>
+				<button @click="closeOrder" class="ri_formbutton">&larr; Todos os pedidos</button>
 				<span class="oe_title">
-					Order #{{ order.id }}<span v-if="order.order_date" class="oe_title_date"> &middot; {{ order.order_date }}</span>
+					Pedido nº {{ order.id }}<span v-if="order.order_date" class="oe_title_date"> &middot; {{ order.order_date }}</span>
 					<span v-if="readonly" class="oe_status_badge">{{ order.status ? order.status.name : '' }}</span>
 				</span>
 				<span class="oe_savestate" v-if="!readonly">
 					<span v-if="failedLines.length" class="oe_error_inline">
-						{{ failedLines.length }} line(s) failed to save
-						<button @click="retryFailed" class="ri_linkbutton">Retry All</button>
+						{{ failedLines.length }} linha(s) não puderam ser salvas
+						<button @click="retryFailed" class="ri_linkbutton">Tentar novamente</button>
 					</span>
-					<span v-else-if="headerSaving || pendingCount > 0">Saving...</span>
-					<span v-else class="oe_saved">All changes saved</span>
+					<span v-else-if="headerSaving || pendingCount > 0">Salvando...</span>
+					<span v-else class="oe_saved">Todas as alterações foram salvas</span>
 				</span>
-				<button v-if="!readonly" @click="openReview" class="ri_defaultbutton">Complete Order</button>
+				<button v-if="!readonly" @click="openReview" class="ri_defaultbutton">Concluir pedido</button>
 			</div>
 			<p v-if="headerError" class="oe_error">{{ headerError }}</p>
 
@@ -1108,7 +1108,7 @@ export default {
 					{{ [order.person.city, order.person.state].filter(Boolean).join(', ') }}
 				</span>
 				<span v-if="order.person && order.person.phone" class="oe_partner_where">{{ order.person.phone }}</span>
-				<button v-if="!readonly" @click="changePartner" class="ri_linkbutton">Change</button>
+				<button v-if="!readonly" @click="changePartner" class="ri_linkbutton">Alterar</button>
 			</div>
 
 			<p v-if="lineError" class="oe_error">{{ lineError }}</p>
@@ -1127,7 +1127,7 @@ export default {
 				</colgroup>
 				<thead>
 					<tr>
-						<th>Item #</th><th>Qty</th><th>Item</th><th>Unit</th><th>Comments</th><th></th>
+						<th>Nº do item</th><th>Qtd.</th><th>Item</th><th>Unidade</th><th>Observações</th><th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -1141,7 +1141,7 @@ export default {
 								display="display_number"
 								secondary="name"
 								:searchfields="['display_number', 'name']"
-								placeholder="Item #..."
+								placeholder="Nº do item..."
 								:openOnFocus="false"
 								@selected="itemChosen"
 							/>
@@ -1153,7 +1153,7 @@ export default {
 								min="1"
 								v-model="entry.qty"
 								class="ri_forminput oe_qty"
-								placeholder="Qty"
+								placeholder="Qtd."
 								@keydown.enter.prevent="addLine"
 							/>
 						</td>
@@ -1161,10 +1161,10 @@ export default {
 							{{ entry.itemtype ? entry.itemtype.name : '' }}
 							<span v-if="entryHint" class="oe_entry_hint">&mdash; {{ entryHint }}</span>
 							<select v-if="entryAvailabilityLow" v-model="entry.need_level" class="ri_forminput oe_need_level">
-								<option :value="null">Need level (optional)</option>
-								<option value="critical">Critical</option>
-								<option value="moderate">Moderate</option>
-								<option value="low">Low</option>
+								<option :value="null">Nível de necessidade (opcional)</option>
+								<option value="critical">Crítico</option>
+								<option value="moderate">Moderado</option>
+								<option value="low">Baixo</option>
 							</select>
 						</td>
 						<td class="oe_entry_unit">
@@ -1175,11 +1175,11 @@ export default {
 								type="text"
 								v-model="entry.comments"
 								class="ri_forminput oe_entry_comment"
-								placeholder="Line comment (optional)"
+								placeholder="Observação da linha (opcional)"
 								@keydown.enter.prevent="addLine"
 							/>
 						</td>
-						<td><button @click="addLine" class="ri_defaultbutton">Add</button></td>
+						<td><button @click="addLine" class="ri_defaultbutton">Adicionar</button></td>
 					</tr>
 
 					<tr v-for="line in sortedLines" :key="lineKey(line)"
@@ -1188,55 +1188,55 @@ export default {
 						<td>{{ line.qty_requested }}</td>
 						<td>
 							{{ line.itemtype ? line.itemtype.name : '(item type #' + line.itemtype_id + ')' }}
-							<span v-if="line.need_level" class="oe_entry_hint">&mdash; {{ line.need_level }} need</span>
+							<span v-if="line.need_level" class="oe_entry_hint">&mdash; {{ { critical: 'Crítico', moderate: 'Moderado', low: 'Baixo' }[line.need_level] || line.need_level }}: necessidade</span>
 						</td>
 						<td>{{ line.itemtype && line.itemtype.unit ? line.itemtype.unit.name : '' }}</td>
 						<td>{{ line.comments }}</td>
 						<td class="oe_line_actions">
-							<span v-if="line.status === 'saving'">saving...</span>
+							<span v-if="line.status === 'saving'">salvando...</span>
 							<template v-else-if="line.status === 'failed'">
-								<span :title="line.errorMessage">failed</span>
-								<button @click="saveLine(line)" class="ri_formbutton">Retry</button>
+								<span :title="line.errorMessage">falha</span>
+								<button @click="saveLine(line)" class="ri_formbutton">Tentar novamente</button>
 							</template>
 							<template v-else-if="confirmingLineKey === lineKey(line)">
-								<button @click="deleteLine(line)" class="oe_confirm_delete">Delete?</button>
-								<button @click="confirmingLineKey = null" class="ri_linkbutton">Keep</button>
+								<button @click="deleteLine(line)" class="oe_confirm_delete">Excluir?</button>
+								<button @click="confirmingLineKey = null" class="ri_linkbutton">Manter</button>
 							</template>
 							<img v-else-if="!readonly" src="/img/delete-icon.webp" class="oe_delete" @click="deleteLine(line)" />
 						</td>
 					</tr>
 					<tr v-if="!lines.length && readonly">
-						<td colspan="6" class="oe_empty">No items on this order.</td>
+						<td colspan="6" class="oe_empty">Nenhum item neste pedido.</td>
 					</tr>
 				</tbody>
 			</table></div>
 
 			<div class="oe_totals" v-if="lines.length">
-				<span>Lines: <strong>{{ totals.lines }}</strong></span>
-				<span>Total items: <strong>{{ totals.qty }}</strong></span>
+				<span>Linhas: <strong>{{ totals.lines }}</strong></span>
+				<span>Total de itens: <strong>{{ totals.qty }}</strong></span>
 			</div>
 
 			<!-- duplicate item: almost always a re-scan/typo, not an intentional
 			     split order line — the only ways out are Combine or Cancel. -->
 			<div v-if="duplicateOf" class="oe_modal_backdrop" @click.self="cancelDuplicate" @keydown.tab="onDuplicateTab">
 				<div class="oe_modal">
-					<h3>Oops</h3>
-					<p>You already entered this item - here's what you requested:</p>
+					<h3>Ops</h3>
+					<p>Este item já foi adicionado. Veja a quantidade solicitada:</p>
 					<table class="oe_modal_table">
 						<thead>
-							<tr><th>Qty</th><th>Item #</th><th>Item</th><th>Unit</th></tr>
+							<tr><th>Qtd.</th><th>Nº do item</th><th>Item</th><th>Unidade</th></tr>
 						</thead>
 						<tbody>
 							<tr>
 								<td>{{ duplicateOf.qty_requested }}</td>
 								<td>{{ duplicateOf.itemtype ? duplicateOf.itemtype.display_number : '' }}</td>
-								<td>{{ duplicateOf.itemtype ? duplicateOf.itemtype.name : 'This item' }}</td>
+								<td>{{ duplicateOf.itemtype ? duplicateOf.itemtype.name : 'Este item' }}</td>
 								<td>{{ duplicateOf.itemtype && duplicateOf.itemtype.unit ? duplicateOf.itemtype.unit.name : '' }}</td>
 							</tr>
 						</tbody>
 					</table>
 					<div class="oe_modal_qty">
-						<label>Additional qty:</label>
+						<label>Quantidade adicional:</label>
 						<input
 							ref="duplicateQtyInput"
 							type="number"
@@ -1247,9 +1247,9 @@ export default {
 						/>
 					</div>
 					<div class="oe_modal_actions">
-						<button ref="cancelDuplicateBtn" @click="cancelDuplicate" class="ri_defaultbutton">Cancel</button>
+						<button ref="cancelDuplicateBtn" @click="cancelDuplicate" class="ri_defaultbutton">Cancelar</button>
 						<button ref="combineDuplicateBtn" @click="combineDuplicate" class="ri_formbutton" :disabled="!duplicateQty">
-							Combine &rarr; {{ Number(duplicateOf.qty_requested) + duplicateQty }}
+							Combinar &rarr; {{ Number(duplicateOf.qty_requested) + duplicateQty }}
 						</button>
 					</div>
 				</div>

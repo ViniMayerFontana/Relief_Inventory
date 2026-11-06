@@ -5,10 +5,10 @@
         : \Carbon\Carbon::parse($f['from'])->format('M j, Y').' – '.\Carbon\Carbon::parse($f['to'])->format('M j, Y');
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Training Report Cards</title>
+    <title>Fichas de Avaliação do Treinamento</title>
     <style>
         @page { size: letter landscape; margin: 0.5in; }
         body { font-family: Arial, sans-serif; color: #222; margin: 0; font-size: 11px; }
@@ -24,24 +24,24 @@
     </style>
 </head>
 <body>
-    <h1>Training Report Cards</h1>
+    <h1>Fichas de Avaliação do Treinamento</h1>
     <div class="subtitle">
-        {{ config('app.name') }} — {{ $range }}{{ ! empty($f['team']) ? ', Team '.$f['team'] : '' }}
-        — {{ $report['totals']['complete'] }} of {{ $report['totals']['trainees'] }} trainees completed all six stations
+        {{ config('app.name') }} — {{ $range }}{{ ! empty($f['team']) ? ', Equipe '.$f['team'] : '' }}
+        — {{ $report['totals']['complete'] }} de {{ $report['totals']['trainees'] }} participantes concluíram as seis estações
     </div>
 
     @if (count($report['trainees']) === 0)
-        <p>No trainee activity in this range.</p>
+        <p>Nenhuma atividade de participantes neste período.</p>
     @else
         <table>
             <thead>
                 <tr>
-                    <th>Trainee</th>
-                    <th>Team</th>
+                    <th>Participante</th>
+                    <th>Equipe</th>
                     @foreach ($report['stations'] as $n => $name)
                         <th>{{ $n }}. {{ $name }}</th>
                     @endforeach
-                    <th>Result</th>
+                    <th>Resultado</th>
                 </tr>
             </thead>
             <tbody>
@@ -58,12 +58,12 @@
                                 @endif
                             </td>
                         @endforeach
-                        <td class="{{ $t['complete'] ? 'complete' : '' }}">{{ $t['complete'] ? 'Complete' : $t['done'].' of 6' }}</td>
+                        <td class="{{ $t['complete'] ? 'complete' : '' }}">{{ $t['complete'] ? 'Concluído' : $t['done'].' de 6' }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
-        <p style="color:#666; margin-top: 8px;">Each number is how many actions the trainee recorded at that station.</p>
+        <p style="color:#666; margin-top: 8px;">Cada número indica quantas ações o participante registrou naquela estação.</p>
     @endif
 </body>
 </html>

@@ -65,8 +65,8 @@ export default {
 				data: {
 					labels: rows.map((r) => r.county),
 					datasets: [
-						{ label: 'Requested', data: rows.map((r) => r.requested), backgroundColor: '#2a78d6', borderRadius: 4 },
-						{ label: 'Filled', data: rows.map((r) => r.filled), backgroundColor: '#eb6834', borderRadius: 4 },
+						{ label: 'Solicitados', data: rows.map((r) => r.requested), backgroundColor: '#2a78d6', borderRadius: 4 },
+						{ label: 'Atendidos', data: rows.map((r) => r.filled), backgroundColor: '#eb6834', borderRadius: 4 },
 					],
 				},
 				options: {
@@ -95,7 +95,7 @@ export default {
 			} catch (error) {
 				this.error = error.response?.status === 422
 					? 'Check the dates: the "to" date can\'t be before the "from" date.'
-					: 'Could not load the partner report.';
+					: 'Não foi possível carregar o relatório de entidades parceiras.';
 			} finally {
 				this.loading = false;
 			}
@@ -123,71 +123,71 @@ export default {
 </script>
 
 <template>
-	<Head title="Partner Report" />
+	<Head title="Relatório de entidades parceiras" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="ptr_container">
 			<h2 class="ri_datatable_head ptr_head">
-				Partner Report
+				Relatório de entidades parceiras
 				<span class="ptr_exports">
-					<a :href="$withWarehouse('/report/partners.csv' + query)" class="ri_defaultbutton">Download CSV</a>
-					<PrintMenu document-key="partner-report" media="report" label="Print / PDF"
+					<a :href="$withWarehouse('/report/partners.csv' + query)" class="ri_defaultbutton">Baixar CSV</a>
+					<PrintMenu document-key="partner-report" media="report" label="Imprimir / PDF"
 						:params="appliedParams" :download-href="'/report/partners.pdf' + query" />
 				</span>
 			</h2>
 
 			<p class="ptr_intro">
-				What each partner has requested and received. The fill rate counts only requests whose filling
-				is finished; for what was short and why, see the
-				<a href="/reports/unfulfilled">Unfulfilled Requests Report</a>.
+				O que cada entidade parceira solicitou e recebeu. A taxa de atendimento considera apenas pedidos
+				com separação concluída; para ver o que faltou e por quê, consulte o
+				<a href="/reports/unfulfilled">Relatório de pedidos não atendidos</a>.
 			</p>
 
 			<form class="ptr_toolbar" @submit.prevent="fetchReport">
-				<label>Ordered from <input type="date" v-model="from" class="ri_forminput" /></label>
-				<label>to <input type="date" v-model="to" class="ri_forminput" /></label>
-				<label>County
+				<label>Pedidos de <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>até <input type="date" v-model="to" class="ri_forminput" /></label>
+				<label>Condado
 					<select v-model="countyId" class="ri_forminput" @change="fetchReport">
-						<option value="">All</option>
+						<option value="">Todos</option>
 						<option v-for="c in report?.options?.counties || []" :key="c.id" :value="c.id">{{ c.county }}, {{ c.state }}</option>
 					</select>
 				</label>
-				<button type="submit" class="ri_defaultbutton">Apply</button>
-				<button v-if="from || to || countyId" type="button" class="ri_defaultbutton" @click="clearFilters">Clear</button>
+				<button type="submit" class="ri_defaultbutton">Aplicar</button>
+				<button v-if="from || to || countyId" type="button" class="ri_defaultbutton" @click="clearFilters">Limpar</button>
 				<input type="text" v-model="search" class="ri_forminput ptr_search"
-					placeholder="Search partner, county or zip..." />
+					placeholder="Buscar entidade parceira, condado ou CEP..." />
 			</form>
 
 			<p v-if="error" class="ptr_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">Carregando...</p>
 
 			<template v-if="report && !loading">
 				<div class="ptr_cards">
-					<div class="ptr_card"><span>Partners</span><strong>{{ n(totals.partners) }}</strong></div>
-					<div class="ptr_card"><span>Requests</span><strong>{{ n(totals.requests) }}</strong></div>
-					<div class="ptr_card"><span>Requested</span><strong>{{ n(totals.requested) }}</strong></div>
-					<div class="ptr_card"><span>Filled</span><strong>{{ n(totals.filled) }}</strong></div>
-					<div class="ptr_card"><span>Fill rate (finished)</span><strong>{{ rate(totals.fill_rate) }}</strong></div>
+					<div class="ptr_card"><span>Entidades parceiras</span><strong>{{ n(totals.partners) }}</strong></div>
+					<div class="ptr_card"><span>Pedidos</span><strong>{{ n(totals.requests) }}</strong></div>
+					<div class="ptr_card"><span>Solicitado</span><strong>{{ n(totals.requested) }}</strong></div>
+					<div class="ptr_card"><span>Atendido</span><strong>{{ n(totals.filled) }}</strong></div>
+					<div class="ptr_card"><span>Taxa de atendimento (concluídos)</span><strong>{{ rate(totals.fill_rate) }}</strong></div>
 					<div class="ptr_card">
-						<span>Shipped / delivered</span><strong>{{ n(totals.shipped) }} / {{ n(totals.delivered) }}</strong>
-						<small>requests</small>
+						<span>Enviados / entregues</span><strong>{{ n(totals.shipped) }} / {{ n(totals.delivered) }}</strong>
+						<small>pedidos</small>
 					</div>
 				</div>
 
 				<p v-if="!report.partners.length" class="ptr_empty">
-					No requests{{ report.filters.from || report.filters.to || report.filters.county_id ? ' for these filters' : '' }}.
+					Nenhum pedido{{ report.filters.from || report.filters.to || report.filters.county_id ? ' com estes filtros' : '' }}.
 				</p>
 
 				<template v-else>
 					<div class="ptr_places">
 						<div class="ptr_chartbox">
-							<h3>Requested vs. filled by county</h3>
-							<ChartCanvas :config="countyChart" :height="chartHeight" label="Units requested and filled per county" />
+							<h3>Solicitados x atendidos por condado</h3>
+							<ChartCanvas :config="countyChart" :height="chartHeight" label="Unidades solicitadas e atendidas por condado" />
 						</div>
 						<div class="ptr_tablewrap">
-							<h3>By County</h3>
+							<h3>Por condado</h3>
 							<table class="ri_datatable" border="1">
-								<thead><tr><th>County</th><th>Partners</th><th>Requests</th><th>Requested</th><th>Filled</th></tr></thead>
+								<thead><tr><th>Condado</th><th>Entidades parceiras</th><th>Pedidos</th><th>Solicitado</th><th>Atendido</th></tr></thead>
 								<tbody>
 									<tr v-for="row in report.by_county" :key="row.county">
 										<td>{{ row.county }}</td>
@@ -201,13 +201,13 @@ export default {
 						</div>
 					</div>
 
-					<h3>Partners</h3>
+					<h3>Entidades parceiras</h3>
 					<div class="ptr_tablewrap"><table class="ri_datatable" border="1">
 						<thead>
 							<tr>
-								<th></th><th>Partner</th><th>County</th><th>Zip</th><th>Requests</th><th>Requested</th>
-								<th>Filled</th><th title="Filled ÷ requested, finished requests only">Fill Rate</th>
-								<th>Shipped</th><th>Delivered</th><th>Last Request</th>
+								<th></th><th>Entidade parceira</th><th>Condado</th><th>CEP</th><th>Pedidos</th><th>Solicitado</th>
+								<th>Atendido</th><th title="Quantidade atendida ÷ solicitada, somente pedidos concluídos">Taxa de atendimento</th>
+								<th>Enviado</th><th>Entregue</th><th>Último pedido</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -229,7 +229,7 @@ export default {
 									<td></td>
 									<td colspan="10">
 										<table class="ptr_subtable">
-											<thead><tr><th>Request #</th><th>Order Date</th><th>Status</th><th>Requested</th><th>Filled</th></tr></thead>
+											<thead><tr><th>Pedido nº</th><th>Data do pedido</th><th>Status</th><th>Solicitado</th><th>Atendido</th></tr></thead>
 											<tbody>
 												<tr v-for="o in p.orders" :key="o.id">
 													<td>{{ o.id }}</td>
@@ -243,12 +243,12 @@ export default {
 									</td>
 								</tr>
 							</template>
-							<tr v-if="!partners.length"><td colspan="11" class="ptr_empty">No partners match.</td></tr>
+							<tr v-if="!partners.length"><td colspan="11" class="ptr_empty">Nenhuma entidade parceira corresponde à busca.</td></tr>
 						</tbody>
 					</table></div>
 					<p class="ptr_note">
-						Quantities are in each item's own unit, so unit totals are a volume count, not a weight.
-						County and zip are the partner's.
+						As quantidades usam a unidade de cada item, portanto o total é uma contagem de unidades, não de peso.
+						O condado e o CEP são os da entidade parceira.
 					</p>
 				</template>
 			</template>

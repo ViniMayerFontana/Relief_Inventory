@@ -47,8 +47,8 @@ class KioskCheckInAlert extends Notification
             'person_id' => $person?->id,
             'name' => $person?->full_name,
             'category_label' => $isVolunteer
-                ? 'New Volunteer'
-                : ($this->signIn->otherCategory?->name ?? $this->signIn->other_category_text ?? 'Other'),
+                ? 'Novo voluntário'
+                : ($this->signIn->otherCategory?->name ?? $this->signIn->other_category_text ?? 'Outro'),
             'signed_in_at' => $this->signIn->signed_in_at?->toIso8601String(),
         ];
     }

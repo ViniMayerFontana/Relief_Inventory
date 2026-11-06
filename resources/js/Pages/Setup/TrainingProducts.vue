@@ -25,7 +25,7 @@ defineProps({
 	breadcrumb: { type: Array },
 });
 
-const STATION_NAMES = { 1: 'Receiving', 2: 'Sorting', 3: 'Inventory', 4: 'Picking', 5: 'Shipping', 6: 'Delivery / Ordering' };
+const STATION_NAMES = { 1: 'Recebimento', 2: 'Triagem', 3: 'Estoque', 4: 'Separação', 5: 'Expedição', 6: 'Entrega / Pedidos' };
 
 const data = ref(null);
 const error = ref(null);
@@ -47,7 +47,7 @@ async function load() {
 	try {
 		data.value = (await axios.get('/json/training/products')).data;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load the product list.';
+		error.value = e.response?.data?.message || 'Não foi possível carregar a lista de produtos.';
 	}
 }
 
@@ -66,7 +66,7 @@ function onPageClick() {
 }
 
 function counted(name, added, total) {
-	scanMessage.value = { ok: true, text: `Counted ${name}${added > 1 ? ' (+' + added + ')' : ''} — ${total} scanned.` };
+	scanMessage.value = { ok: true, text: `Contabilizado: ${name}${added > 1 ? ' (+' + added + ')' : ''} — total escaneado: ${total}.` };
 }
 
 async function submitScan() {
@@ -86,15 +86,15 @@ async function submitScan() {
 			scan.kind === 'carton' ? playScanCarton() : playScanMatched();
 		} else if (scan.kind === 'carton') {
 			playScanUnknown();
-			scanMessage.value = { ok: false, text: 'That is a case barcode this system doesn\'t know yet. Scan one of the single items inside instead, and count the rest with Add by hand below.' };
+			scanMessage.value = { ok: false, text: 'Este é o código de barras de uma caixa que o sistema ainda não reconhece. Escaneie um dos itens avulsos que estão dentro e conte os demais usando Adicionar manualmente abaixo.' };
 		} else {
 			playScanUnknown();
-			scanMessage.value = { ok: false, text: 'New barcode — add the item, then it is counted.' };
+			scanMessage.value = { ok: false, text: 'Novo código de barras — adicione o item para contabilizá-lo.' };
 			modalInit.value = { scan: { code: scan.code, online: scan.online, suggestion: scan.suggestion } };
 		}
 	} catch (e) {
 		playScanError();
-		scanMessage.value = { ok: false, text: e.response?.data?.message || 'Could not look up that barcode.' };
+		scanMessage.value = { ok: false, text: e.response?.data?.message || 'Não foi possível consultar esse código de barras.' };
 	} finally {
 		busy.value = false;
 		if (!modalInit.value) focusScan();
@@ -115,7 +115,7 @@ async function onItemSaved(item) {
 		await addItem(item.id, 1);
 		playScanMatched();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'The item was added, but could not be counted. Scan it again.';
+		error.value = e.response?.data?.message || 'O item foi adicionado, mas não foi possível contabilizá-lo. Escaneie-o novamente.';
 	}
 	focusScan();
 }
@@ -134,7 +134,7 @@ async function addManual() {
 		manual.value = { item_id: null, qty: 1 };
 		manualSelect.value?.clearSelection?.();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not add that item.';
+		error.value = e.response?.data?.message || 'Não foi possível adicionar esse item.';
 	}
 	focusScan();
 }
@@ -146,7 +146,7 @@ async function setQty(record, value) {
 	try {
 		data.value = (await axios.patch('/json/training/products/' + record.id, { qty })).data;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not change that count.';
+		error.value = e.response?.data?.message || 'Não foi possível alterar essa quantidade.';
 	}
 }
 
@@ -155,7 +155,7 @@ async function remove(record) {
 	try {
 		data.value = (await axios.delete('/json/training/products/' + record.id)).data;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not remove that product.';
+		error.value = e.response?.data?.message || 'Não foi possível remover esse produto.';
 	}
 	focusScan();
 }
@@ -170,7 +170,7 @@ async function clearAll() {
 		data.value = (await axios.delete('/json/training/products')).data;
 		scanMessage.value = null;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not clear the list.';
+		error.value = e.response?.data?.message || 'Não foi possível limpar a lista.';
 	}
 	focusScan();
 }
@@ -191,37 +191,37 @@ onBeforeUnmount(() => document.removeEventListener('click', onPageClick));
 </script>
 
 <template>
-	<Head title="Scan Training Products" />
+	<Head title="Escanear produtos para treinamento" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
 			<div class="flex flex-wrap items-center justify-between gap-2">
-				<h1 class="text-2xl font-bold">Scan Training Products</h1>
-				<Link href="/setup/training" class="ri_formbutton">Back to Training Warehouse</Link>
+				<h1 class="text-2xl font-bold">Escanear produtos para treinamento</h1>
+				<Link href="/setup/training" class="ri_formbutton">Voltar ao armazém de treinamento</Link>
 			</div>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
-			<p v-if="!data && !error" class="text-gray-500">Loading…</p>
+			<p v-if="!data && !error" class="text-gray-500">Carregando…</p>
 
 			<template v-if="data">
 				<!-- ======================= PROGRESS ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-3">
 					<p class="text-sm text-gray-700">
-						Scan the goods that start out already in the warehouse — the sorting area table, the trays on the
-						table spots and the loads waiting to ship (Stations 3–5) — one at a time; each scan counts one.
-						Scan a variety: at least <strong>{{ plan.min_products }} different products</strong>. Goods for
-						Receiving are not scanned here: put them out yourself, and the teams receive and sort them. Prepare
-						Training decides which scanned items go where, and the setup packet tells you where to put each
-						one. Items scanned here are not stock until Prepare Training.
+						Escaneie os produtos que já estarão no armazém — na mesa da área de triagem, nas bandejas dos espaços de mesa e nas cargas
+						aguardando expedição (estações 3 a 5) — um por vez; cada leitura conta um item.
+						Escaneie uma variedade: pelo menos <strong>{{ plan.min_products }} produtos diferentes</strong>. Os produtos do
+						Recebimento não são escaneados aqui: disponha-os você mesmo para que as equipes os recebam e façam a triagem. A preparação
+						do treinamento define onde cada item escaneado ficará, e o pacote de configuração inicial informa onde colocar cada
+						um. Os itens escaneados aqui não fazem parte do estoque até a preparação do treinamento.
 					</p>
 					<div class="flex flex-wrap items-baseline gap-x-6 gap-y-1">
-						<div><span class="text-3xl font-bold">{{ data.units }}</span> <span class="text-gray-600">of {{ plan.target }} items</span></div>
-						<div><span class="text-3xl font-bold">{{ data.distinct }}</span> <span class="text-gray-600">of {{ plan.min_products }} different products</span></div>
+						<div><span class="text-3xl font-bold">{{ data.units }}</span> <span class="text-gray-600">de {{ plan.target }} itens</span></div>
+						<div><span class="text-3xl font-bold">{{ data.distinct }}</span> <span class="text-gray-600">de {{ plan.min_products }} produtos diferentes</span></div>
 					</div>
 					<div class="h-3 bg-gray-200 rounded">
 						<div class="h-3 rounded" :class="data.units >= plan.target ? 'bg-green-600' : 'bg-blue-600'" :style="{ width: percent + '%' }"></div>
 					</div>
 					<table class="ri_datatable w-full text-sm" border="1">
-						<thead><tr><th>Station</th><th>Items needed</th></tr></thead>
+						<thead><tr><th>Estação</th><th>Itens necessários</th></tr></thead>
 						<tbody>
 							<tr v-for="(n, station) in plan.stations" :key="station">
 								<td>{{ station }} {{ STATION_NAMES[station] }}</td>
@@ -230,8 +230,8 @@ onBeforeUnmount(() => document.removeEventListener('click', onPageClick));
 						</tbody>
 					</table>
 					<p class="text-xs text-gray-500">
-						Prepare Training needs at least {{ plan.target }} items. Scanning more is fine: the extra goes on
-						the Station 4 trays, so there is more to pick.
+						A preparação do treinamento precisa de pelo menos {{ plan.target }} itens. Você pode escanear mais: o excedente vai para
+						as bandejas da estação 4, aumentando a quantidade disponível para separação.
 					</p>
 				</section>
 
@@ -239,24 +239,24 @@ onBeforeUnmount(() => document.removeEventListener('click', onPageClick));
 				<section class="bg-white shadow rounded-lg p-6 space-y-3">
 					<div class="flex flex-wrap items-center gap-2">
 						<input ref="scanInput" v-model="scanText" type="text" autocomplete="off" inputmode="numeric"
-							class="ri_forminput flex-1 min-w-[14rem] text-lg" placeholder="Scan an item's barcode"
+							class="ri_forminput flex-1 min-w-[14rem] text-lg" placeholder="Escaneie o código de barras de um item"
 							@keydown.enter.prevent="submitScan" />
-						<button type="button" class="ri_defaultbutton" :disabled="busy" @click="submitScan">Count</button>
+						<button type="button" class="ri_defaultbutton" :disabled="busy" @click="submitScan">Contar</button>
 						<ScanButton :target="() => scanInput" />
 						<button type="button" class="ri_formbutton" @click="toggleSounds"
-							:title="sounds ? 'Scan sounds on. Click to mute.' : 'Scan sounds off. Click to turn on.'">{{ sounds ? '🔊' : '🔇' }}</button>
+							:title="sounds ? 'Sons de leitura ativados. Clique para silenciar.' : 'Sons de leitura desativados. Clique para ativar.'">{{ sounds ? '🔊' : '🔇' }}</button>
 					</div>
 					<p v-if="scanMessage" :class="scanMessage.ok ? 'text-green-700 font-semibold' : 'text-amber-700 font-semibold'">{{ scanMessage.text }}</p>
 
 					<details class="text-sm">
-						<summary class="cursor-pointer text-gray-700">Add by hand (no barcode, or several of the same at once)</summary>
+						<summary class="cursor-pointer text-gray-700">Adicionar manualmente (sem código de barras ou vários iguais de uma vez)</summary>
 						<div class="flex flex-wrap items-center gap-2 mt-2">
 							<div class="flex-1 min-w-[16rem]">
 								<SearchSelect ref="manualSelect" v-model="manual.item_id" optionsource="/json/items" display="name"
-									:searchfields="['name', 'upc']" placeholder="Search items…" />
+									:searchfields="['name', 'upc']" placeholder="Buscar itens…" />
 							</div>
 							<input v-model="manual.qty" type="number" min="1" class="ri_forminput w-20" />
-							<button type="button" class="ri_defaultbutton" :disabled="!manual.item_id" @click="addManual">Add</button>
+							<button type="button" class="ri_defaultbutton" :disabled="!manual.item_id" @click="addManual">Adicionar</button>
 						</div>
 					</details>
 				</section>
@@ -264,29 +264,29 @@ onBeforeUnmount(() => document.removeEventListener('click', onPageClick));
 				<!-- ======================= LIST ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-3">
 					<div class="flex flex-wrap items-center justify-between gap-2">
-						<h2 class="text-lg font-semibold">Scanned products</h2>
+						<h2 class="text-lg font-semibold">Produtos escaneados</h2>
 						<div v-if="data.records.length" class="flex items-center gap-2">
 							<button type="button" class="ri_formbutton" :class="{ 'text-red-700': confirmingClear }" @click="clearAll">
-								{{ confirmingClear ? 'Confirm — clear the whole list' : 'Clear list' }}
+								{{ confirmingClear ? 'Confirmar — limpar a lista inteira' : 'Limpar lista' }}
 							</button>
-							<button v-if="confirmingClear" type="button" class="text-sm underline" @click="confirmingClear = false">Cancel</button>
+							<button v-if="confirmingClear" type="button" class="text-sm underline" @click="confirmingClear = false">Cancelar</button>
 						</div>
 					</div>
-					<p v-if="!data.records.length" class="text-sm text-gray-400">Nothing scanned yet.</p>
+					<p v-if="!data.records.length" class="text-sm text-gray-400">Nada escaneado ainda.</p>
 					<table v-else class="ri_datatable w-full text-sm" border="1">
-						<thead><tr><th>Product</th><th>ACS item type</th><th>UPC</th><th>Count</th><th></th></tr></thead>
+						<thead><tr><th>Produto</th><th>Tipo de item ACS</th><th>UPC</th><th>Quantidade</th><th></th></tr></thead>
 						<tbody>
 							<tr v-for="r in data.records" :key="r.id" :class="{ 'bg-green-50': r.id === lastId }">
 								<td>{{ r.name }}</td>
 								<td>{{ r.number }} {{ r.type }}</td>
 								<td class="font-mono text-xs">{{ r.upc }}</td>
 								<td><input type="number" min="0" :value="r.qty" class="ri_forminput w-20" @change="setQty(r, $event.target.value)" /></td>
-								<td><button type="button" class="text-sm underline" @click="remove(r)">Remove</button></td>
+								<td><button type="button" class="text-sm underline" @click="remove(r)">Remover</button></td>
 							</tr>
 						</tbody>
 					</table>
 					<p class="text-xs text-gray-500">
-						Removing a product here only takes it off this list; the item stays in the Master Item List.
+						Remover um produto daqui apenas o tira desta lista; o item continua na lista principal de itens.
 					</p>
 				</section>
 			</template>

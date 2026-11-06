@@ -4,27 +4,27 @@
     $c = $report['thresholds'];
     $pct = fn ($v) => $v === null ? '—' : $v.'%';
     $range = match (true) {
-        ! empty($f->from) && ! empty($f->to) => 'donations dated '.$f->from.' to '.$f->to,
-        ! empty($f->from) => 'donations dated '.$f->from.' or later',
-        ! empty($f->to) => 'donations dated '.$f->to.' or earlier',
-        default => 'all donations',
+        ! empty($f->from) && ! empty($f->to) => 'doações de '.$f->from.' a '.$f->to,
+        ! empty($f->from) => 'doações a partir de '.$f->from,
+        ! empty($f->to) => 'doações até '.$f->to,
+        default => 'todas as doações',
     };
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Donor Report</title>
+    <title>Relatório de Doadores</title>
     <style>
         @page {
             size: letter;
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Donor Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Relatório de Doadores — gerado em {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "Página " counter(page) " de " counter(pages);
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
         }
@@ -53,29 +53,29 @@
     </style>
 </head>
 <body>
-    <h1>Donor Report</h1>
+    <h1>Relatório de Doadores</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; what each donor sent and how much was usable, {{ $range }}, generated
+        {{ config('app.name') }} &mdash; o que cada doador enviou e quanto pôde ser aproveitado, {{ $range }}, gerado em
         {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
     </div>
 
     <div class="summary">
-        <strong>{{ $t['donors'] }}</strong> donor{{ $t['donors'] === 1 ? '' : 's' }},
-        <strong>{{ $t['donations'] }}</strong> sorted donation{{ $t['donations'] === 1 ? '' : 's' }},
-        <strong>{{ number_format($t['units']) }}</strong> units sorted, overall loss <strong>{{ $pct($t['loss_percent']) }}</strong>.
-        {{ $t['watch'] }} on watch, {{ $t['decline'] }} on decline; {{ $t['needs_review'] }} with a suggestion that differs from their standing.
+        <strong>{{ $t['donors'] }}</strong> {{ $t['donors'] === 1 ? 'doador' : 'doadores' }},
+        <strong>{{ $t['donations'] }}</strong> {{ $t['donations'] === 1 ? 'doação triada' : 'doações triadas' }},
+        <strong>{{ number_format($t['units']) }}</strong> unidades triadas, perda geral de <strong>{{ $pct($t['loss_percent']) }}</strong>.
+        {{ $t['watch'] }} em observação, {{ $t['decline'] }} com recomendação de recusa; {{ $t['needs_review'] }} com recomendação diferente da classificação atual.
     </div>
 
     @if($report['donors']->isEmpty())
-        <p>No donations{{ $range === 'all donations' ? '' : ' in this date range' }}.</p>
+        <p>Nenhuma doação{{ $range === 'todas as doações' ? '' : ' neste período' }}.</p>
     @else
-        <h2>Donors</h2>
+        <h2>Doadores</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Donor / Donation</th><th>Standing</th><th>Suggested</th><th class="num">Donations</th>
-                    <th class="num">Units</th><th class="num">Usable</th><th class="num">Outdated</th>
-                    <th class="num">Trashed</th><th class="num">Diverted</th><th class="num">Loss %</th>
+                    <th>Doador / Doação</th><th>Classificação atual</th><th>Recomendação</th><th class="num">Doações</th>
+                    <th class="num">Unidades</th><th class="num">Aproveitáveis</th><th class="num">Vencidos</th>
+                    <th class="num">Descartados</th><th class="num">Redirecionados</th><th class="num">Perda %</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,7 +83,7 @@
                     <tr class="donor">
                         <td>{{ $d['name'] }}</td>
                         <td>{{ $d['is_system'] ? '' : ucfirst($d['standing']) }}</td>
-                        <td>{!! $d['is_system'] ? '' : ($d['suggested'] ? ucfirst($d['suggested']) : '<span class="muted">not enough data</span>') !!}</td>
+                        <td>{!! $d['is_system'] ? '' : ($d['suggested'] ? ucfirst($d['suggested']) : '<span class="muted">dados insuficientes</span>') !!}</td>
                         <td class="num">{{ $d['donations'] }}</td>
                         <td class="num">{{ number_format($d['units']) }}</td>
                         <td class="num">{{ number_format($d['usable']) }}</td>
@@ -109,12 +109,13 @@
     @endif
 
     <div class="disclaimer">
-        Loss % = (outdated + trashed) &divide; everything sorted; diverted goods aren't counted against a donor.
-        Suggested standing needs {{ $c['min_donations'] }}+ sorted donations and {{ $c['min_units'] }}+ units: watch at
-        {{ $c['watch_loss_percent'] }}%+ loss, decline at {{ $c['decline_loss_percent'] }}%+ over {{ $c['decline_min_donations'] }}+
-        donations, preferred at {{ $c['preferred_loss_percent'] }}% or less over {{ $c['preferred_min_donations'] }}+ donations and
-        {{ $c['preferred_min_units'] }}+ units. A suggestion is not a decision: the standing shown is the one staff set.
-        Quantities are in each item's own unit.
+        Perda % = (vencidos + descartados) &divide; total triado; itens redirecionados não são contabilizados como perda do doador.
+        A recomendação de classificação exige pelo menos {{ $c['min_donations'] }} doações triadas e {{ $c['min_units'] }} unidades:
+        observação a partir de {{ $c['watch_loss_percent'] }}% de perda; recusa a partir de {{ $c['decline_loss_percent'] }}% em
+        {{ $c['decline_min_donations'] }} ou mais doações; preferência com perda de até {{ $c['preferred_loss_percent'] }}% em
+        {{ $c['preferred_min_donations'] }} ou mais doações e {{ $c['preferred_min_units'] }} ou mais unidades.
+        A recomendação não é uma decisão: a classificação exibida foi definida pela equipe.
+        As quantidades usam a unidade própria de cada item.
     </div>
 </body>
 </html>

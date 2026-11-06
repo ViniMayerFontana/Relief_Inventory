@@ -62,7 +62,7 @@ class PublicFormController extends Controller
         $turnstileEnabled = $this->turnstileRequired();
         if ($turnstileEnabled && $this->turnstile->misconfigured()) {
             return response()->json([
-                'message' => 'This form can\'t accept submissions right now because its spam protection isn\'t set up on this server. Please contact the organization that sent you this link.',
+                'message' => 'Este formulário não pode receber respostas no momento porque a proteção contra spam não está configurada neste servidor. Entre em contato com a entidade que enviou este link.',
             ], 503);
         }
 
@@ -87,7 +87,7 @@ class PublicFormController extends Controller
             $answer = $data['answers'][$question->id] ?? null;
             if ($answer === null || $answer === '' || $answer === []) {
                 throw ValidationException::withMessages([
-                    "answers.{$question->id}" => ["{$question->label} is required."],
+                    "answers.{$question->id}" => ["O campo {$question->label} é obrigatório."],
                 ]);
             }
         }
@@ -128,7 +128,7 @@ class PublicFormController extends Controller
 
         $this->notify($form, $submission);
 
-        return response()->json(['message' => 'Thank you — your submission has been received.']);
+        return response()->json(['message' => 'Obrigado — sua resposta foi recebida.']);
     }
 
     private function assertAccessAllowed(Form $form): void
@@ -136,8 +136,8 @@ class PublicFormController extends Controller
         $allowed = Auth::check() ? $form->allowsStaffAccess() : $form->allowsPublicAccess();
 
         abort_unless($allowed, Auth::check() ? 403 : 401, Auth::check()
-            ? 'This form is not available.'
-            : 'Please log in to access this form.');
+            ? 'Este formulário não está disponível.'
+            : 'Entre para acessar este formulário.');
     }
 
     private function turnstileRequired(): bool

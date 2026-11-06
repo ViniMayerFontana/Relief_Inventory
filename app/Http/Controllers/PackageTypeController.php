@@ -59,7 +59,7 @@ class PackageTypeController extends Controller
         $packageType = PackageType::create($data);
 
         return response()->json([
-            'message' => 'Package type created successfully.',
+            'message' => 'Tipo de embalagem criado com sucesso.',
             'record' => $packageType,
         ], 201);
     }
@@ -78,7 +78,7 @@ class PackageTypeController extends Controller
         $packageType->update($data);
 
         return response()->json([
-            'message' => 'Package type updated successfully.',
+            'message' => 'Tipo de embalagem atualizado com sucesso.',
             'record' => $packageType,
         ], 200);
     }
@@ -95,7 +95,7 @@ class PackageTypeController extends Controller
         $packageType->delete();
 
         return response()->json([
-            'message' => 'Package type deleted successfully.',
+            'message' => 'Tipo de embalagem excluído com sucesso.',
             'success' => true,
         ], 200);
     }

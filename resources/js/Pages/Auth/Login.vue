@@ -41,13 +41,13 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Log in" />
+        <Head title="Entrar" />
 
         <div v-if="$page.props.warehouse.multiple" class="mb-4 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-            Signing in to <strong>{{ $page.props.warehouse.name }}</strong>
+            Entrando em <strong>{{ $page.props.warehouse.name }}</strong>
             <template v-if="chooser">
                 &middot;
-                <button type="button" class="underline text-blue-700" @click="choosing = !choosing">Not the right warehouse?</button>
+                <button type="button" class="underline text-blue-700" @click="choosing = !choosing">Este não é o armazém correto?</button>
             </template>
         </div>
 
@@ -59,10 +59,10 @@ const submit = () => {
             </ul>
             <form class="mt-2 flex items-start gap-2" @submit.prevent="chooseByCode">
                 <div class="flex-1">
-                    <TextInput type="text" class="block w-full font-mono uppercase" v-model="codeForm.code" placeholder="Or enter a warehouse code" autocomplete="off" />
+                    <TextInput type="text" class="block w-full font-mono uppercase" v-model="codeForm.code" placeholder="Ou informe o código do armazém" autocomplete="off" />
                     <InputError class="mt-1" :message="codeForm.errors.code" />
                 </div>
-                <PrimaryButton type="submit" :disabled="codeForm.processing || !codeForm.code">Go</PrimaryButton>
+                <PrimaryButton type="submit" :disabled="codeForm.processing || !codeForm.code">Acessar</PrimaryButton>
             </form>
         </div>
 
@@ -72,7 +72,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="E-mail" />
 
                 <TextInput
                     id="email"
@@ -88,7 +88,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" value="Senha" />
 
                 <TextInput
                     id="password"
@@ -106,7 +106,7 @@ const submit = () => {
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
                     <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
+                        >Manter conectado</span
                     >
                 </label>
             </div>
@@ -117,7 +117,7 @@ const submit = () => {
                     :href="route('password.request')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    Forgot your password?
+                    Esqueceu sua senha?
                 </Link>
 
                 <PrimaryButton
@@ -125,7 +125,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Log in
+                    Entrar
                 </PrimaryButton>
             </div>
         </form>

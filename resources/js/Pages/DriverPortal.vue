@@ -115,7 +115,7 @@ export default {
 				this.loginForm = { phone: '', pin: '' };
 				await this.fetchLoads();
 			} catch (e) {
-				this.loginError = e.response?.data?.message || 'Could not sign in.';
+				this.loginError = e.response?.data?.message || 'Não foi possível entrar.';
 			} finally {
 				this.loggingIn = false;
 			}
@@ -134,7 +134,7 @@ export default {
 				this.current = response.data.current || [];
 				this.delivered = response.data.delivered || [];
 			} catch (e) {
-				this.loadError = 'Could not load your assigned loads.';
+				this.loadError = 'Não foi possível carregar as cargas atribuídas a você.';
 			} finally {
 				this.loading = false;
 			}
@@ -157,7 +157,7 @@ export default {
 				await axios.post('/driver-portal/loads/' + order.id + '/bol', formData);
 				await this.fetchLoads();
 			} catch (e) {
-				this.uploadError = { ...this.uploadError, [order.id]: e.response?.data?.message || 'Could not upload that file.' };
+				this.uploadError = { ...this.uploadError, [order.id]: e.response?.data?.message || 'Não foi possível enviar esse arquivo.' };
 			} finally {
 				this.uploadingId = null;
 			}
@@ -170,21 +170,21 @@ export default {
 </script>
 
 <template>
-	<Head title="Driver Portal" />
+	<Head title="Portal do motorista" />
 	<component :is="isAuthenticated ? 'AuthenticatedLayout' : 'div'" :breadcrumb="isAuthenticated ? breadcrumb : undefined">
 		<div class="dp_page" :class="{ dp_page_bare: !isAuthenticated, dp_page_login: !signedIn && !isAuthenticated }">
-			<a v-if="!signedIn && !isAuthenticated" href="/" class="dp_homelink">&larr; Home</a>
+			<a v-if="!signedIn && !isAuthenticated" href="/" class="dp_homelink">&larr; Início</a>
 			<div class="dp_brand" :class="{ dp_title_centered: !signedIn && !isAuthenticated }">Relief Inventory</div>
-			<h1 class="dp_title" :class="{ dp_title_centered: !signedIn && !isAuthenticated }">Driver Portal</h1>
+			<h1 class="dp_title" :class="{ dp_title_centered: !signedIn && !isAuthenticated }">Portal do motorista</h1>
 
 			<template v-if="!signedIn">
 				<div class="dp_loginwrap">
-					<p class="dp_hint">Enter the phone number and PIN your warehouse contact gave you.</p>
+					<p class="dp_hint">Informe o telefone e o PIN fornecidos pelo contato do armazém.</p>
 					<div class="dp_loginform">
-						<input type="tel" v-model="loginForm.phone" placeholder="Phone Number" class="ri_forminput dp_input" />
+						<input type="tel" v-model="loginForm.phone" placeholder="Número de telefone" class="ri_forminput dp_input" />
 						<input type="password" inputmode="numeric" pattern="[0-9]*" v-model="loginForm.pin" placeholder="PIN" class="ri_forminput dp_input" maxlength="5" />
 						<button class="ri_defaultbutton dp_loginbutton" :disabled="loggingIn || !loginForm.phone || !loginForm.pin" @click="login">
-							{{ loggingIn ? 'Signing In...' : 'Sign In' }}
+							{{ loggingIn ? 'Entrando...' : 'Entrar' }}
 						</button>
 						<p v-if="loginError" class="dp_error">{{ loginError }}</p>
 					</div>
@@ -193,52 +193,52 @@ export default {
 
 			<template v-else>
 				<p v-if="signedInAs" class="dp_hint">
-					Signed in as <strong>{{ signedInAs }}</strong>.
-					<button class="dp_logoutlink" @click="logout">Sign Out</button>
+					Conectado como <strong>{{ signedInAs }}</strong>.
+					<button class="dp_logoutlink" @click="logout">Sair</button>
 				</p>
-				<p v-else-if="isStaffViewer" class="dp_hint">Staff view — every load currently Ready to Ship, Shipped, or waiting on a re-uploaded BOL, across all drivers.</p>
+				<p v-else-if="isStaffViewer" class="dp_hint">Visualização da equipe — todas as cargas prontas para envio, enviadas ou aguardando um novo envio do comprovante de entrega, de todos os motoristas.</p>
 
 				<p v-if="loadError" class="dp_error">{{ loadError }}</p>
-				<p v-if="loading">Loading...</p>
+				<p v-if="loading">Carregando...</p>
 
-				<h2 class="dp_sectionhead">Current Loads ({{ current.length }})</h2>
+				<h2 class="dp_sectionhead">Cargas atuais ({{ current.length }})</h2>
 				<div v-for="order in current" :key="order.id" class="dp_card">
 					<div class="dp_cardhead">
-						<span class="dp_ordernum">Order #{{ order.id }}</span>
+						<span class="dp_ordernum">Pedido nº {{ order.id }}</span>
 						<span class="dp_status_badge">{{ order.status?.name }}</span>
 					</div>
 					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</p>
 					<p class="dp_meta">
-						{{ totals(order).lines }} line(s), {{ totals(order).qty }} item(s)<span v-if="order.pallet_count"> — {{ order.pallet_count }} pallet{{ order.pallet_count === 1 ? '' : 's' }}</span><span v-if="isStaffViewer && order.driver"> — driver: {{ order.driver.name }}</span>
+						{{ totals(order).lines }} linha(s), {{ totals(order).qty }} item(ns)<span v-if="order.pallet_count"> — {{ order.pallet_count }} palete(s)</span><span v-if="isStaffViewer && order.driver"> — motorista: {{ order.driver.name }}</span>
 					</p>
 					<p v-if="order.special_instructions" class="dp_instructions">{{ order.special_instructions }}</p>
 					<p v-if="order.bol_rejection_reason" class="dp_rejection">
-						<strong>The last upload was rejected:</strong> {{ order.bol_rejection_reason }}
+						<strong>O último envio foi rejeitado:</strong> {{ order.bol_rejection_reason }}
 					</p>
 
 					<div v-if="expandedIds[order.id]" class="dp_details">
 						<div v-if="deliveryAddress(order)" class="dp_detailrow">
-							<span class="dp_detaillabel">Address</span>
+							<span class="dp_detaillabel">Endereço</span>
 							<a :href="mapsUrl(order)" target="_blank" rel="noopener" class="dp_addresslink">
 								<span v-for="(line, i) in deliveryAddress(order)" :key="i">{{ line }}<br v-if="i < deliveryAddress(order).length - 1" /></span>
 							</a>
-							<button class="dp_copybutton" @click="copyAddress(order)">{{ copiedId === order.id ? 'Copied!' : 'Copy' }}</button>
+							<button class="dp_copybutton" @click="copyAddress(order)">{{ copiedId === order.id ? 'Copiado!' : 'Copiar' }}</button>
 						</div>
 						<div v-if="contactName(order) || contactPhone(order)" class="dp_detailrow">
-							<span class="dp_detaillabel">Contact</span>
+							<span class="dp_detaillabel">Contato</span>
 							<span>{{ contactName(order) }}</span>
 							<a v-if="contactPhone(order)" :href="'tel:' + contactPhone(order)" class="dp_phonelink">{{ contactPhone(order) }}</a>
 						</div>
 						<div v-if="deliveryWindow(order)" class="dp_detailrow">
-							<span class="dp_detaillabel">Window</span>
+							<span class="dp_detaillabel">Período</span>
 							<span>{{ deliveryWindow(order) }}</span>
 						</div>
-						<p v-if="!deliveryAddress(order) && !contactName(order) && !contactPhone(order) && !deliveryWindow(order)" class="dp_hint">No delivery address or contact on file for this order.</p>
+						<p v-if="!deliveryAddress(order) && !contactName(order) && !contactPhone(order) && !deliveryWindow(order)" class="dp_hint">Não há endereço de entrega nem contato registrado para este pedido.</p>
 					</div>
 
 					<div class="dp_cardactions">
 						<button class="ri_formbutton dp_detailstoggle" @click="toggleDetails(order)">
-							{{ expandedIds[order.id] ? 'Hide Details ▲' : 'Delivery Details ▼' }}
+							{{ expandedIds[order.id] ? 'Ocultar detalhes ▲' : 'Detalhes da entrega ▼' }}
 						</button>
 						<template v-if="!isStaffViewer">
 							<input
@@ -249,23 +249,23 @@ export default {
 								@change="onFileChosen(order, $event)"
 							/>
 							<button class="ri_defaultbutton" :disabled="uploadingId === order.id" @click="triggerUpload(order)">
-								{{ uploadingId === order.id ? 'Uploading...' : 'Upload Signed BOL' }}
+								{{ uploadingId === order.id ? 'Enviando...' : 'Enviar comprovante assinado' }}
 							</button>
 						</template>
 					</div>
 					<p v-if="!isStaffViewer && uploadError[order.id]" class="dp_error">{{ uploadError[order.id] }}</p>
 				</div>
-				<p v-if="!current.length && !loading" class="dp_empty">No loads currently out.</p>
+				<p v-if="!current.length && !loading" class="dp_empty">Nenhuma carga está em trânsito no momento.</p>
 
-				<h2 class="dp_sectionhead">Recently Delivered</h2>
+				<h2 class="dp_sectionhead">Entregas recentes</h2>
 				<div v-for="order in delivered" :key="order.id" class="dp_card dp_card_muted">
 					<div class="dp_cardhead">
-						<span class="dp_ordernum">Order #{{ order.id }}</span>
-						<span class="dp_status_badge dp_status_badge_done">Delivered</span>
+						<span class="dp_ordernum">Pedido nº {{ order.id }}</span>
+						<span class="dp_status_badge dp_status_badge_done">Entregue</span>
 					</div>
 					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</p>
 				</div>
-				<p v-if="!delivered.length && !loading" class="dp_empty">Nothing delivered yet.</p>
+				<p v-if="!delivered.length && !loading" class="dp_empty">Nenhuma entrega realizada ainda.</p>
 			</template>
 		</div>
 	</component>

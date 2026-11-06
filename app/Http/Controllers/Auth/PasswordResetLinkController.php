@@ -60,7 +60,7 @@ class PasswordResetLinkController extends Controller
         // Always return the same response to avoid user enumeration
         Password::sendResetLink($request->only('email'));
 
-        return back()->with('status', __('If the email exists, a reset link has been sent.'));
+        return back()->with('status', __('Se esse e-mail estiver cadastrado, um link de redefinição foi enviado.'));
 
     }
 }

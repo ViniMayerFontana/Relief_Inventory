@@ -165,7 +165,7 @@ class PalletStatusController extends Controller
         if ($assignmentId = InventoryLabelCode::parse($tag)) {
             $assignment = PalletStockAssignment::with('item.itemtype')->find($assignmentId);
             if (! $assignment) {
-                return response()->json(['message' => 'Unknown inventory label: '.$tag], 404);
+                return response()->json(['message' => 'Etiqueta de estoque desconhecida: '.$tag], 404);
             }
             $id = $assignment->pallet_id;
         } else {
@@ -174,7 +174,7 @@ class PalletStatusController extends Controller
         $pallet = $id ? Pallet::with('location:id,code')->find($id) : null;
 
         if (! $pallet) {
-            return response()->json(['message' => 'Unknown pallet: '.$tag], 404);
+            return response()->json(['message' => 'Palete desconhecido: '.$tag], 404);
         }
 
         $last = $pallet->statuses()->with('location:id,code')->latest('id')->first();
@@ -238,7 +238,7 @@ class PalletStatusController extends Controller
             $pallet->markMissing($data['notes'] ?? null);
         } elseif (! PalletKind::isValidStatus($pallet->kind, $data['status'])) {
             return response()->json([
-                'errors' => ['status' => ["\"{$data['status']}\" is not valid for a ".(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).' pallet.'],
+                'errors' => ['status' => ["\"{$data['status']}\" não é válido para um palete de ".(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).'.'],
                 ],
             ], 422);
         } else {
@@ -246,7 +246,7 @@ class PalletStatusController extends Controller
         }
 
         return response()->json([
-            'message' => 'Pallet status recorded successfully.',
+            'message' => 'Status do palete registrado com sucesso.',
             'record' => $pallet->statuses()->latest('id')->first(),
         ], 201);
     }
@@ -257,14 +257,14 @@ class PalletStatusController extends Controller
         // entry in place would let the record silently drift from what
         // actually happened. Log a new entry via store() instead.
         return response()->json([
-            'message' => 'Pallet status history cannot be edited after the fact. Log a new status change instead.',
+            'message' => 'O histórico de status do palete não pode ser editado. Registre uma nova alteração de status.',
         ], 405);
     }
 
     public function destroy($id)
     {
         return response()->json([
-            'message' => 'Pallet status history cannot be deleted.',
+            'message' => 'O histórico de status do palete não pode ser excluído.',
         ], 405);
     }
 }

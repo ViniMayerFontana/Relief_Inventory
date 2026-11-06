@@ -65,7 +65,7 @@ class RegisteredUserController extends Controller
         }
 
         if (BannedEmail::isBanned($request->email)) {
-            throw ValidationException::withMessages(['email' => 'Registration with this email is not allowed.']);
+            throw ValidationException::withMessages(['email' => 'Não é permitido fazer o cadastro com este e-mail.']);
         }
 
         $user = User::create([

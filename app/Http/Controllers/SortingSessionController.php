@@ -71,7 +71,7 @@ class SortingSessionController extends Controller
     {
         if ($session->status?->name === self::STATUS_COMPLETED) {
             abort(response()->json([
-                'message' => 'This session is completed. Reopen it before making changes.',
+                'message' => 'Esta sessão foi concluída. Reabra-a antes de fazer alterações.',
             ], 409));
         }
     }
@@ -211,13 +211,13 @@ class SortingSessionController extends Controller
 
         if (! $pallet) {
             return response()->json([
-                'message' => 'Unknown pallet tag: '.$tag,
+                'message' => 'Etiqueta de palete desconhecida: '.$tag,
             ], 404);
         }
 
         if ($pallet->kind !== PalletKind::RECEIVING) {
             return response()->json([
-                'message' => 'That tag belongs to a '.(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).' pallet, not a Receiving pallet.',
+                'message' => 'Essa etiqueta pertence a um palete de '.(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).', não a um palete de recebimento.',
             ], 422);
         }
 
@@ -244,11 +244,11 @@ class SortingSessionController extends Controller
         $pallet = $id ? Pallet::find($id) : null;
 
         if (! $pallet) {
-            return response()->json(['message' => 'Unknown pallet tag: '.$tag], 404);
+            return response()->json(['message' => 'Etiqueta de palete desconhecida: '.$tag], 404);
         }
         if ($pallet->kind !== PalletKind::RECEIVING) {
             return response()->json([
-                'message' => 'That tag belongs to a '.(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).' pallet, not a Receiving pallet.',
+                'message' => 'Essa etiqueta pertence a um palete de '.(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).', não a um palete de recebimento.',
             ], 422);
         }
 

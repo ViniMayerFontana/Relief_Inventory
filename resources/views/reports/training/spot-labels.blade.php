@@ -2,10 +2,10 @@
      pallet label stock, to tape on the tables. The barcode is the location code itself, which is what Inventory Movement
      matches a scanned location against. The compact barcode is drawn in whole printer dots (App\Support\LabelBarcode). --}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Table Spot Labels</title>
+    <title>Etiquetas de Posições das Mesas</title>
     <style>
         @page { size: {{ $paper['width'] }}in {{ $paper['height'] }}in; margin: 0; }
         body { margin: 0; text-align: center; font-family: Arial, sans-serif; }
@@ -21,7 +21,7 @@
 <body>
 @foreach ($spots as $spot)
     <div class="label-page">
-        <div class="table-name">Table {{ explode('-', $spot)[0] }}</div>
+        <div class="table-name">Mesa {{ explode('-', $spot)[0] }}</div>
         <div class="spot">{{ $spot }}</div>
         <div class="barcode">
             @php

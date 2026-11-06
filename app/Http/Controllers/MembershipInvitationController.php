@@ -62,7 +62,7 @@ class MembershipInvitationController extends Controller
         $request->session()->regenerate();
         $pinLogin->grantTrust($pinLogin->currentDevice($request), $membership->person_id);
 
-        return redirect()->route('dashboard')->with('status', 'Welcome to '.$this->context->current()->display_name.'.');
+        return redirect()->route('dashboard')->with('status', 'Boas-vindas ao armazém '.$this->context->current()->display_name.'.');
     }
 
     public function index(Request $request): Response
@@ -113,7 +113,7 @@ class MembershipInvitationController extends Controller
 
     private function account(Request $request): Account
     {
-        return $request->user()->account ?? abort(403, 'This login has no account to invite.');
+        return $request->user()->account ?? abort(403, 'Este acesso não tem uma conta para convidar.');
     }
 
     private function mine(Account $account, int $id): MembershipInvitation
@@ -125,12 +125,12 @@ class MembershipInvitationController extends Controller
     private function proved(string $email, string $password, string $key): Account
     {
         if (RateLimiter::tooManyAttempts($key, 5)) {
-            throw ValidationException::withMessages(['password' => 'Too many wrong tries. Wait a few minutes and try again.']);
+            throw ValidationException::withMessages(['password' => 'Muitas tentativas incorretas. Aguarde alguns minutos e tente novamente.']);
         }
         $account = Account::verified($email, $password);
         if (! $account) {
             RateLimiter::hit($key, 15 * 60);
-            throw ValidationException::withMessages(['password' => 'That password is not correct.']);
+            throw ValidationException::withMessages(['password' => 'A senha está incorreta.']);
         }
         RateLimiter::clear($key);
 

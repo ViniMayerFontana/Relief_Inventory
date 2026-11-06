@@ -62,7 +62,7 @@ class TrainingLoginController extends Controller
 
         $person = Person::where('is_trainee', true)->whereNull('disabled_at')->find($data['person_id']);
         if (! $person) {
-            return response()->json(['message' => 'That name isn\'t on the training list.'], 404);
+            return response()->json(['message' => 'Esse nome não está na lista de treinamento.'], 404);
         }
 
         $person->training_team = $data['team'];
@@ -83,7 +83,7 @@ class TrainingLoginController extends Controller
         $last = trim($data['last_name']);
 
         if (Person::where('is_trainee', true)->where('first_name', $first)->where('last_name', $last)->exists()) {
-            return response()->json(['message' => "$first $last is already on the list — tap the name to log in."], 409);
+            return response()->json(['message' => "$first $last já está na lista — toque no nome para entrar."], 409);
         }
 
         $person = DB::transaction(fn () => self::createTrainee($first, $last, $data['team']));
@@ -114,7 +114,7 @@ class TrainingLoginController extends Controller
     {
         $user = User::find($person->id);
         if (! $user || $user->isLoginDisabled()) {
-            return response()->json(['message' => 'This account can\'t log in.'], 403);
+            return response()->json(['message' => 'Não é possível entrar com esta conta.'], 403);
         }
 
         Auth::login($user);
@@ -127,7 +127,7 @@ class TrainingLoginController extends Controller
     private function ensureAvailable(Request $request, PinLoginService $pinLogin): void
     {
         if (! TrainingMode::availableOn($pinLogin->currentDevice($request))) {
-            abort(response()->json(['message' => 'Training login is not available on this device.'], 403));
+            abort(response()->json(['message' => 'O acesso de treinamento não está disponível neste dispositivo.'], 403));
         }
     }
 }

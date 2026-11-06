@@ -57,6 +57,6 @@ class ContainerController extends Controller
     {
         Container::findOrFail($id)->delete();
 
-        return response()->json(['message' => 'Container deleted successfully.']);
+        return response()->json(['message' => 'Contêiner excluído com sucesso.']);
     }
 }

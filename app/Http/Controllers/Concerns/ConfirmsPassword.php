@@ -30,7 +30,7 @@ trait ConfirmsPassword
         if (! $user->password || ! Hash::check($request->input('password'), $user->password)) {
             Log::warning('Instance change refused: wrong or missing password', ['person' => $user->id, 'action' => $what]);
             InstanceAuditLog::record('instance.password_refused', null, ['action' => $what], $user->email);
-            $message = $user->password ? 'That password is not correct.' : 'Your account has no password set, so this cannot be done.';
+            $message = $user->password ? 'A senha está incorreta.' : 'Sua conta não tem uma senha definida, portanto não é possível concluir esta operação.';
 
             return response()->json(['message' => $message, 'errors' => ['password' => [$message]]], 422);
         }
@@ -42,7 +42,7 @@ trait ConfirmsPassword
         } catch (Throwable $e) {
             report($e);
 
-            return response()->json(['message' => 'That did not work: '.$e->getMessage()], 500);
+            return response()->json(['message' => 'Não foi possível concluir a operação: '.$e->getMessage()], 500);
         }
     }
 }

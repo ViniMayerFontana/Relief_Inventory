@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>Pick Sheets</title>
@@ -8,13 +8,13 @@
             size: letter;
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Pick Sheet — generated {{ $generatedAt->format('F j, Y g:ia') }}";
+                content: "Lista de Separação — gerada em {{ $generatedAt->format('F j, Y g:ia') }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "Página " counter(page) " de " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -101,21 +101,21 @@
 <body>
 @foreach($orders as $order)
     <div class="order-page">
-        <h1>Pick Sheet — Order #{{ $order->id }}</h1>
+        <h1>Lista de Separação — Pedido nº {{ $order->id }}</h1>
         <div class="subtitle">
-            {{ $order->person?->full_name ?? 'Unknown' }}
+            {{ $order->person?->full_name ?? 'Não informado' }}
             @if($order->order_date) &mdash; {{ \Illuminate\Support\Carbon::parse($order->order_date)->format('F j, Y') }} @endif
         </div>
 
         <table>
             <thead>
                 <tr>
-                    <th>Item #</th>
-                    <th>Name</th>
-                    <th>Unit</th>
-                    <th>Where</th>
-                    <th class="qty">Qty to Pick</th>
-                    <th class="picked">Picked</th>
+                    <th>Item nº</th>
+                    <th>Nome</th>
+                    <th>Unidade</th>
+                    <th>Local</th>
+                    <th class="qty">Qtd. a separar</th>
+                    <th class="picked">Separado</th>
                 </tr>
             </thead>
             <tbody>
@@ -134,31 +134,31 @@
                             @foreach(($plans[$line->id]['steps'] ?? []) as $step)
                                 <div>
                                     @if($step['kind'] === 'pool')
-                                        Sorting area &times;{{ $step['qty'] }}
+                                        Área de triagem &times;{{ $step['qty'] }}
                                     @else
-                                        <strong>{{ $step['location'] ?? 'no location' }}</strong> {{ $step['tag'] }} &times;{{ $step['qty'] }}@if(!empty($step['expires_on'])) (exp {{ $step['expires_on'] }})@endif @if(!empty($step['whole'])) <em>(take the whole pallet)</em>@elseif($step['needs_open']) <em>(open pallet first)</em>@endif
+                                        <strong>{{ $step['location'] ?? 'sem localização' }}</strong> {{ $step['tag'] }} &times;{{ $step['qty'] }}@if(!empty($step['expires_on'])) (validade {{ $step['expires_on'] }})@endif @if(!empty($step['whole'])) <em>(retirar o palete inteiro)</em>@elseif($step['needs_open']) <em>(abrir o palete primeiro)</em>@endif
                                     @endif
                                 </div>
                             @endforeach
                             @if(($plans[$line->id]['pallet_short'] ?? 0) > 0)
-                                @php($others = collect($plans[$line->id]['others'] ?? [])->map(fn ($o) => 'sorting area × '.$o['qty'])->implode(', '))
-                                <div><em>{{ $plans[$line->id]['pallet_short'] }} not on a pallet — look for others{{ $others !== '' ? ': '.$others : '' }}</em></div>
+                                @php($others = collect($plans[$line->id]['others'] ?? [])->map(fn ($o) => 'área de triagem × '.$o['qty'])->implode(', '))
+                                <div><em>{{ $plans[$line->id]['pallet_short'] }} fora de paletes — procure também{{ $others !== '' ? ': '.$others : '' }}</em></div>
                             @endif
                             @if(($plans[$line->id]['short'] ?? 0) > 0)
-                                <div><em>{{ $plans[$line->id]['short'] }} not found in stock</em></div>
+                                <div><em>{{ $plans[$line->id]['short'] }} não encontrado no estoque</em></div>
                             @endif
                         </td>
                         <td class="qty">{{ $line->qty_to_pick }}</td>
                         <td class="picked"></td>
                     </tr>
                 @empty
-                    <tr><td colspan="6">Nothing to pick on this order.</td></tr>
+                    <tr><td colspan="6">Não há itens para separar neste pedido.</td></tr>
                 @endforelse
             </tbody>
         </table>
 
         <div class="signoff">
-            Pulled by: <span class="line"></span> Date: <span class="line" style="width:120px;"></span>
+            Separado por: <span class="line"></span> Data: <span class="line" style="width:120px;"></span>
         </div>
     </div>
 @endforeach

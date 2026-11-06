@@ -83,7 +83,7 @@ async function begin() {
 		await uploadFilesThenLaunch();
 	} catch (e) {
 		if (!current.value.task.id) phase.value = 'idle'; // never started (wrong code, not a fresh instance, ...)
-		failWith(e, 'The upload was interrupted. Choose Resume to carry on from where it stopped.');
+		failWith(e, 'O envio foi interrompido. Selecione Retomar para continuar de onde parou.');
 	}
 }
 
@@ -109,7 +109,7 @@ async function resumeUpload() {
 			await uploadFilesThenLaunch();
 		}
 	} catch (e) {
-		failWith(e, 'The upload was interrupted again. Choose Resume to try once more.');
+		failWith(e, 'O envio foi interrompido novamente. Selecione Retomar para tentar mais uma vez.');
 	}
 }
 
@@ -170,123 +170,123 @@ onUnmounted(() => clearInterval(timer));
 		<!-- choose a file -->
 		<div v-if="phase === 'idle'" class="mt-3 space-y-4">
 			<p v-if="own" class="text-sm text-gray-600">
-				Choose a backup file (.zip) of <strong>this warehouse</strong>, made by <strong>Updates &amp; Backups</strong>.
+				Selecione um arquivo de backup (.zip) deste <strong>armazém</strong>, criado em <strong>Atualizações e backups</strong>.
 			</p>
 			<p v-else class="text-sm text-gray-600">
-				Choose a backup file (.zip) made by <strong>Updates &amp; Backups</strong> in Relief Inventory. The whole system — data
-				and, if the backup included them, uploaded photos and documents — is restored onto this new installation.
+				Selecione um arquivo de backup (.zip) criado em <strong>Atualizações e backups</strong> no Relief Inventory. O sistema inteiro — dados
+				e, se incluídos no backup, fotos e documentos enviados — será restaurado nesta nova instalação.
 			</p>
 
 			<div v-if="codeRequired && !own">
-				<InputLabel for="restore_code" value="Setup code" />
+				<InputLabel for="restore_code" value="Código de configuração" />
 				<TextInput id="restore_code" type="password" class="mt-1 block w-full" v-model="setupCode" autocomplete="off" />
 				<InputError class="mt-2" :message="codeError" />
 			</div>
 
 			<div>
-				<InputLabel for="restore_file" value="Backup file" />
+				<InputLabel for="restore_file" value="Arquivo de backup" />
 				<input id="restore_file" type="file" accept=".zip,application/zip" class="mt-1 block w-full text-sm" @change="pick" />
 				<p v-if="file" class="mt-1 text-xs text-gray-500">{{ file.name }} — {{ human(file.size) }}</p>
 			</div>
 
 			<details class="rounded border border-gray-200 p-3 text-sm">
-				<summary class="cursor-pointer text-gray-700">Recovering from a damaged database? Add a separate backup of the files</summary>
+				<summary class="cursor-pointer text-gray-700">Recuperando um banco de dados danificado? Adicione um backup separado dos arquivos</summary>
 				<p class="mt-2 text-xs text-gray-600">
-					If the backup above holds only the database, or you have a newer or more complete copy of the uploaded files
-					(a “files only” or “database + files” backup), choose it here. The uploaded files come from this one; if it also
-					contains a database, that part is ignored.
+					Se o backup acima contiver somente o banco de dados ou se você tiver uma cópia mais recente ou completa dos arquivos enviados
+					(um backup “somente arquivos” ou “banco de dados + arquivos”), selecione-o aqui. Os arquivos enviados virão deste backup; se ele também
+					contiver um banco de dados, essa parte será ignorada.
 				</p>
 				<input id="restore_files_file" type="file" accept=".zip,application/zip" class="mt-2 block w-full text-sm" @change="pickFiles" />
 				<p v-if="filesFile" class="mt-1 text-xs text-gray-500">{{ filesFile.name }} — {{ human(filesFile.size) }}</p>
 			</details>
 
 			<details v-if="!own" class="rounded border border-gray-200 p-3 text-sm">
-				<summary class="cursor-pointer text-gray-700">Key from the old system (so encrypted settings carry over)</summary>
+				<summary class="cursor-pointer text-gray-700">Chave do sistema antigo (para manter as configurações criptografadas)</summary>
 				<p class="mt-2 text-xs text-gray-600">
-					A backup never contains the warehouse key. If you wrote it down (Updates &amp; Backups &gt; “Warehouse key” on the old system),
-					paste it here and the settings it encrypted — email password, shared secrets — are restored too. Without it they are cleared
-					and listed afterwards so you can enter them again.
+					O backup nunca contém a chave do armazém. Se você a anotou (Atualizações e backups &gt; “Chave do armazém” no sistema antigo),
+					cole-a aqui para também restaurar as configurações que ela criptografou — senha de e-mail e segredos compartilhados. Sem ela, essas configurações serão apagadas
+					e listadas depois para que você possa informá-las novamente.
 				</p>
 				<input id="restore_key" type="text" v-model="warehouseKey" autocomplete="off" spellcheck="false" placeholder="base64:…" class="mt-2 block w-full rounded-md border-gray-300 font-mono text-xs shadow-sm" />
 			</details>
 
 			<div v-if="own" class="rounded border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 space-y-1">
-				<p>This <strong>replaces everything in this warehouse</strong> (its data and its uploaded files) with what the backup holds. The warehouse is out of service while it runs and everyone is signed out.</p>
+				<p>Esta operação <strong>substitui tudo neste armazém</strong> (dados e arquivos enviados) pelo conteúdo do backup. O armazém ficará indisponível durante a operação e todos sairão do sistema.</p>
 				<p>
-					You stay Administrator. Everyone else in the backup who already has a login elsewhere is <em>invited</em> and joins only when they accept;
-					the Users page lets you send those invitations. A few encrypted settings can't be carried over and are listed afterwards.
+					Você continuará como administrador. As demais pessoas do backup que já têm uma conta em outro lugar serão <em>convidadas</em> e só entrarão quando aceitarem;
+					a página Usuários permite enviar esses convites. Algumas configurações criptografadas não podem ser mantidas e serão listadas depois.
 				</p>
 			</div>
 			<div v-else class="rounded border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 space-y-1">
-				<p>This installation must be new and empty — a backup can only be restored onto one that has never been set up.</p>
+				<p>Esta instalação deve ser nova e vazia — um backup só pode ser restaurado em uma instalação que nunca foi configurada.</p>
 				<p>
-					The backup does not contain the warehouse key. Everything works without it, but a few encrypted settings (for
-					example the centralized-feedback shared secret) can't be carried over unless you give the old key above; they are cleared
-					and listed for you afterwards so you can re-enter them, and everyone signs in again.
+					O backup não contém a chave do armazém. Tudo funciona sem ela, mas algumas configurações criptografadas (por
+					exemplo, o segredo compartilhado do feedback centralizado) não podem ser mantidas sem a chave antiga acima; elas serão apagadas
+					e listadas depois para que você possa informá-las novamente, e todos precisarão entrar no sistema outra vez.
 				</p>
-				<p>The software here must be the same version as the one that made the backup, or newer — never older.</p>
+				<p>O software instalado deve ser da mesma versão que criou o backup ou de uma versão mais recente — nunca mais antiga.</p>
 			</div>
 
 			<div v-if="error" class="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800">{{ error }}</div>
 
 			<div class="flex items-center justify-between">
-				<SecondaryButton type="button" @click="$emit('back')">Back</SecondaryButton>
-				<PrimaryButton type="button" :disabled="!file" @click="begin">Upload and restore</PrimaryButton>
+				<SecondaryButton type="button" @click="$emit('back')">Voltar</SecondaryButton>
+				<PrimaryButton type="button" :disabled="!file" @click="begin">Enviar e restaurar</PrimaryButton>
 			</div>
 		</div>
 
 		<!-- uploading -->
 		<div v-else-if="phase === 'uploading'" class="mt-3 space-y-3">
 			<p class="text-sm text-gray-700">
-				Uploading {{ task.file?.name }}…
-				<span v-if="filesFile" class="text-gray-500">(file {{ stage === 'main' ? 1 : 2 }} of 2)</span>
+				Enviando {{ task.file?.name }}…
+				<span v-if="filesFile" class="text-gray-500">(arquivo {{ stage === 'main' ? 1 : 2 }} de 2)</span>
 			</p>
 			<div class="h-3 w-full overflow-hidden rounded bg-gray-200"><div class="h-3 bg-blue-600" :style="{ width: percent + '%' }"></div></div>
-			<p class="text-xs text-gray-500">{{ human(task.received) }} of {{ human(task.size) }} ({{ percent }}%). Keep this page open.</p>
+			<p class="text-xs text-gray-500">{{ human(task.received) }} de {{ human(task.size) }} ({{ percent }}%). Mantenha esta página aberta.</p>
 			<div v-if="error" class="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800">{{ error }}</div>
 			<div class="flex items-center gap-3">
-				<PrimaryButton v-if="task.failed && !task.running && task.id" type="button" @click="resumeUpload">Resume</PrimaryButton>
-				<SecondaryButton type="button" @click="cancelUpload">Cancel</SecondaryButton>
+				<PrimaryButton v-if="task.failed && !task.running && task.id" type="button" @click="resumeUpload">Retomar</PrimaryButton>
+				<SecondaryButton type="button" @click="cancelUpload">Cancelar</SecondaryButton>
 			</div>
 		</div>
 
 		<!-- the server is restoring -->
 		<div v-else-if="phase === 'restoring'" class="mt-3 space-y-3">
-			<p class="text-sm text-gray-700">Restoring… this can take a while for a large backup. You can leave this page open or come back to it.</p>
+			<p class="text-sm text-gray-700">Restaurando… isso pode demorar se o backup for grande. Você pode deixar esta página aberta ou voltar a ela depois.</p>
 			<div class="h-3 w-full overflow-hidden rounded bg-gray-200"><div class="h-3 bg-blue-600" :style="{ width: (status.percent || 1) + '%' }"></div></div>
-			<p class="text-xs text-gray-500">{{ status.phase || 'Starting' }}</p>
+			<p class="text-xs text-gray-500">{{ status.phase || 'Iniciando' }}</p>
 		</div>
 
 		<!-- done -->
 		<div v-else-if="phase === 'complete'" class="mt-3 space-y-3">
 			<div class="rounded border border-green-300 bg-green-50 p-3 text-sm text-green-900">
-				The backup was restored<span v-if="status.backup_created_at"> (made {{ new Date(status.backup_created_at).toLocaleString() }})</span>.
+				O backup foi restaurado<span v-if="status.backup_created_at"> (criado em {{ new Date(status.backup_created_at).toLocaleString() }})</span>.
 			</div>
 			<div v-if="status.blanked?.length" class="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-				<p class="font-medium">These settings were encrypted with the old system's key and could not be carried over. Re-enter them after signing in:</p>
+				<p class="font-medium">Estas configurações foram criptografadas com a chave do sistema antigo e não puderam ser mantidas. Informe-as novamente depois de entrar:</p>
 				<ul class="mt-1 list-disc pl-5"><li v-for="label in status.blanked" :key="label">{{ label }}</li></ul>
 			</div>
 			<div v-if="status.notes?.length" class="rounded border border-gray-300 bg-gray-50 p-3 text-sm text-gray-700">
 				<p v-for="note in status.notes" :key="note">{{ note }}</p>
 			</div>
-			<div v-if="!status.includes_uploads" class="text-xs text-gray-600">This backup did not include uploaded photos and documents.</div>
+			<div v-if="!status.includes_uploads" class="text-xs text-gray-600">Este backup não incluía fotos e documentos enviados.</div>
 			<div v-else-if="status.files_created_at && status.files_created_at !== status.backup_created_at" class="text-xs text-gray-600">
-				Uploaded files are from the backup made {{ new Date(status.files_created_at).toLocaleString() }}.
+				Os arquivos enviados são do backup criado em {{ new Date(status.files_created_at).toLocaleString() }}.
 			</div>
 			<div v-if="status.admin_missing" class="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-				The restored data has no administrator account. Continue to create one.
-				<a href="/install" class="block mt-2 underline">Continue to setup</a>
+				Os dados restaurados não têm uma conta de administrador. Continue para criar uma.
+				<a href="/install" class="block mt-2 underline">Continuar para a configuração inicial</a>
 			</div>
-			<a v-else href="/login" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700">Sign in</a>
+			<a v-else href="/login" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700">Entrar</a>
 		</div>
 
 		<!-- failed -->
 		<div v-else-if="phase === 'failed'" class="mt-3 space-y-3">
 			<div class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-				<p class="font-medium">The restore did not finish.</p>
+				<p class="font-medium">A restauração não foi concluída.</p>
 				<p class="mt-1">{{ status.error }}</p>
 			</div>
-			<PrimaryButton type="button" @click="reset">Try again</PrimaryButton>
+			<PrimaryButton type="button" @click="reset">Tentar novamente</PrimaryButton>
 		</div>
 	</div>
 </template>

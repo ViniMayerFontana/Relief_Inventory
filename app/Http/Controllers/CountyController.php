@@ -59,7 +59,7 @@ class CountyController extends Controller
         $county = County::create($data);
 
         return response()->json([
-            'message' => 'County created successfully.',
+            'message' => 'Condado criado com sucesso.',
             'record' => $county,
         ], 201);
     }
@@ -78,7 +78,7 @@ class CountyController extends Controller
         $county->update($data);
 
         return response()->json([
-            'message' => 'County updated successfully.',
+            'message' => 'Condado atualizado com sucesso.',
             'record' => $county,
         ], 200);
     }
@@ -96,11 +96,11 @@ class CountyController extends Controller
             $county->delete();
 
             return response()->json([
-                'message' => 'County deleted successfully.',
+                'message' => 'Condado excluído com sucesso.',
             ], 200);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Error deleting county: '.$e->getMessage(),
+                'message' => 'Erro ao excluir o condado: '.$e->getMessage(),
             ], 500);
         }
     }

@@ -42,7 +42,7 @@ import { playScanError, playScanMatched } from '@/scanSounds';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import axios from 'axios';
 
-const NEED_LEVEL_LABELS = { critical: 'Critical', moderate: 'Moderate', low: 'Low' };
+const NEED_LEVEL_LABELS = { critical: 'Crítico', moderate: 'Moderado', low: 'Baixo' };
 
 export default {
 	components: { AuthenticatedLayout, HelpLink, Head, SearchSelect, ScanButton, PrintMenu },
@@ -173,7 +173,7 @@ export default {
 				this.filling = response.data.filling || [];
 				this.seedApprovalDrafts();
 			} catch (error) {
-				this.listError = 'Could not load the filling queue.';
+				this.listError = 'Não foi possível carregar a fila de separação.';
 			} finally {
 				this.listLoading = false;
 			}
@@ -204,7 +204,7 @@ export default {
 				await axios.post('/json/order-filling/pallets/' + pallet.id + '/open');
 				await this.fetchPlan();
 			} catch (error) {
-				this.fillError = error.response?.data?.message || 'Could not open that pallet.';
+				this.fillError = error.response?.data?.message || 'Não foi possível abrir esse palete.';
 			} finally {
 				this.openingPalletId = null;
 			}
@@ -246,7 +246,7 @@ export default {
 			} catch (error) {
 				this.approvalError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not save approved quantities.';
+					|| 'Não foi possível salvar as quantidades aprovadas.';
 			} finally {
 				this.savingApprovals = false;
 			}
@@ -269,7 +269,7 @@ export default {
 				const response = await axios.patch('/json/order-filling/' + order.id + '/start');
 				await this.openFillScreen(response.data.record.id);
 			} catch (error) {
-				this.listError = error.response?.data?.message || 'Could not start filling that order.';
+				this.listError = error.response?.data?.message || 'Não foi possível iniciar a separação desse pedido.';
 			}
 		},
 		// Run by PrintMenu on any choice (download or a printer): locks every
@@ -285,7 +285,7 @@ export default {
 				if (!ids.length) return null;
 				return { params: { ids }, downloadHref: this.pickSheetsHref(ids) };
 			} catch (error) {
-				this.listError = error.response?.data?.message || 'Could not print pick sheets.';
+				this.listError = error.response?.data?.message || 'Não foi possível imprimir as listas de separação.';
 				return null;
 			}
 		},
@@ -305,7 +305,7 @@ export default {
 					.find((o) => o.id === orderId);
 				this.order = found || null;
 				if (!this.order) {
-					this.listError = 'Could not open that order.';
+					this.listError = 'Não foi possível abrir esse pedido.';
 					return;
 				}
 				this.orderLines.forEach((line) => {
@@ -314,7 +314,7 @@ export default {
 				this.view = 'fill';
 				await Promise.all([this.fetchStockHints(), this.fetchItems(), this.fetchPlan()]);
 			} catch (error) {
-				this.listError = 'Could not open that order.';
+				this.listError = 'Não foi possível abrir esse pedido.';
 			}
 		},
 		async continueFilling(order) {
@@ -349,7 +349,7 @@ export default {
 				const match = item && this.itemsForItemtype(line.itemtype_id).find((i) => i.id === item.id);
 				if (!match) {
 					playScanError();
-					this.fillError = 'Scanned code did not match an item for this line.';
+					this.fillError = 'O código lido não corresponde a um item desta linha.';
 					this.$refs['itemSelect_' + line.id]?.[0]?.clearSelection();
 					return;
 				}
@@ -359,7 +359,7 @@ export default {
 				playScanMatched();
 			} catch (error) {
 				playScanError();
-				this.fillError = error.response?.data?.message || 'Could not look up that barcode. Search for the item instead.';
+				this.fillError = error.response?.data?.message || 'Não foi possível localizar esse código de barras. Busque o item.';
 			}
 		},
 		async addFill(line) {
@@ -368,12 +368,12 @@ export default {
 			const variants = this.itemsForItemtype(line.itemtype_id);
 			const itemId = variants.length === 1 ? variants[0].id : entry.item_id;
 			if (!itemId) {
-				this.fillError = 'Choose an item for this line first.';
+				this.fillError = 'Escolha primeiro um item para esta linha.';
 				return;
 			}
 			const qty = entry.qty === '' || entry.qty === null ? null : parseInt(entry.qty, 10);
 			if (qty === null || isNaN(qty) || qty < 0) {
-				this.fillError = 'Enter a quantity of 0 or more.';
+				this.fillError = 'Informe uma quantidade igual ou superior a 0.';
 				return;
 			}
 
@@ -392,7 +392,7 @@ export default {
 			} catch (error) {
 				this.fillError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not record that fill.';
+					|| 'Não foi possível registrar essa separação.';
 				this.fetchPlan();
 			}
 		},
@@ -407,7 +407,7 @@ export default {
 				line.item_ledgers = (line.item_ledgers || []).filter((f) => f.id !== fill.id);
 				this.fetchStockHints();
 			} catch (error) {
-				this.fillError = 'Could not delete that fill record.';
+				this.fillError = 'Não foi possível excluir esse registro de separação.';
 			}
 		},
 		allLinesAccounted() {
@@ -422,7 +422,7 @@ export default {
 				});
 				this.backToList();
 			} catch (error) {
-				this.fillError = error.response?.data?.message || 'Could not complete filling this order.';
+				this.fillError = error.response?.data?.message || 'Não foi possível concluir a separação deste pedido.';
 			} finally {
 				this.savingComplete = false;
 			}
@@ -436,43 +436,43 @@ export default {
 </script>
 
 <template>
-	<Head title="Order Filling" />
+	<Head title="Separação de pedidos" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<!-- ======================= QUEUE LIST ======================= -->
 		<div v-if="view === 'list'" class="of_container">
 			<h2 class="ri_datatable_head">
-				Order Filling
-				<HelpLink guide="order-filling">Order Filling Guide</HelpLink>
+				Separação de pedidos
+				<HelpLink guide="order-filling">Guia de separação de pedidos</HelpLink>
 				<span class="of_headeractions">
 					<button @click="showAllocation = !showAllocation" class="ri_formbutton">
-						{{ showAllocation ? 'Hide' : 'Review' }} Allocation
+						{{ showAllocation ? 'Ocultar' : 'Revisar' }} alocação
 					</button>
-					<PrintMenu document-key="pick-sheets" media="report" label="Print Pick Sheets"
+					<PrintMenu document-key="pick-sheets" media="report" label="Imprimir listas de separação"
 						:disabled="!readyToFill.length" :prepare="preparePickSheets" />
 				</span>
 			</h2>
 
 			<p v-if="listError" class="of_error">{{ listError }}</p>
-			<p v-if="listLoading">Loading…</p>
+			<p v-if="listLoading">Carregando…</p>
 
 			<!-- Allocation Review: optional — approving is what changes the picker's number -->
 			<div v-if="showAllocation" class="of_card">
-				<h3>Allocation Review</h3>
+				<h3>Revisão da alocação</h3>
 				<p class="of_hint">
-					Items where total requested across Ready-to-Fill orders exceeds on-hand. Suggested quantities
-					are straight-proportional; need level is self-reported context. Saving sets each line's
-					approved quantity — that's what the picker sees on the pick sheet and fill screen (a line
-					approved at 0 is left off). Leave a box blank to give the picker the full request. Nothing
-					here is required before printing or filling.
+					Itens cuja quantidade total solicitada nos pedidos prontos para separação excede o estoque disponível. As quantidades sugeridas
+					são proporcionais; o nível de necessidade é uma informação autodeclarada. Ao salvar, você define a
+					quantidade aprovada para cada linha — ela será exibida na lista de separação e na tela de separação (linhas
+					aprovadas com quantidade 0 serão omitidas). Deixe o campo em branco para permitir a quantidade solicitada completa. Nada
+					aqui é obrigatório antes de imprimir ou separar.
 				</p>
-				<p v-if="!allocationRows.length" class="of_hint">Nothing is currently short.</p>
+				<p v-if="!allocationRows.length" class="of_hint">Nenhum item está em falta no momento.</p>
 				<div v-for="row in allocationRows" :key="row.itemtype?.id" class="of_allocation_group">
-					<h4>{{ row.itemtype?.name }} — {{ row.onHand }} on hand, {{ row.totalRequested }} requested</h4>
+					<h4>{{ row.itemtype?.name }} — {{ row.onHand }} em estoque, {{ row.totalRequested }} solicitados</h4>
 					<table class="ri_datatable" border="1">
 						<thead>
-							<tr><th>Order</th><th>Partner</th><th>Requested</th><th>Suggested</th><th>Approve</th><th>Need</th></tr>
+							<tr><th>Pedido</th><th>Entidade parceira</th><th>Solicitado</th><th>Sugerido</th><th>Aprovar</th><th>Necessidade</th></tr>
 						</thead>
 						<tbody>
 							<tr v-for="entry in row.lines" :key="entry.order.id + '-' + entry.line.id">
@@ -485,7 +485,7 @@ export default {
 										v-model="approvalDrafts[entry.line.id]" class="ri_forminput of_qty"
 										@input="approvalSaved = false" />
 									<span v-if="entry.line.qty_approved !== null && entry.line.qty_approved !== undefined"
-										class="of_hint" title="Saved approved quantity">&#10003; {{ entry.line.qty_approved }}</span>
+										class="of_hint" title="Quantidade aprovada salva">&#10003; {{ entry.line.qty_approved }}</span>
 								</td>
 								<td>{{ needLevelLabels[entry.line.need_level] || '—' }}</td>
 							</tr>
@@ -494,46 +494,46 @@ export default {
 				</div>
 				<div v-if="allocationRows.length" class="of_approvalactions">
 					<button @click="saveApprovals" :disabled="savingApprovals" class="ri_defaultbutton">
-						{{ savingApprovals ? 'Saving…' : 'Save Approved Quantities' }}
+						{{ savingApprovals ? 'Salvando…' : 'Salvar quantidades aprovadas' }}
 					</button>
-					<span v-if="approvalSaved" class="of_hint">Saved — pickers will see the approved quantities.</span>
+					<span v-if="approvalSaved" class="of_hint">Salvo — as quantidades aprovadas serão exibidas para quem faz a separação.</span>
 					<span v-if="approvalError" class="of_error">{{ approvalError }}</span>
 				</div>
 			</div>
 
 			<div class="of_section">
-				<h3>Ready to Fill</h3>
-				<p v-if="!readyToFill.length && !listLoading">Nothing waiting to be filled.</p>
+				<h3>Prontos para separação</h3>
+				<p v-if="!readyToFill.length && !listLoading">Nenhum pedido aguardando separação.</p>
 				<div v-else class="of_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Order</th><th>Partner</th><th>Lines</th><th></th></tr>
+						<tr><th>Pedido</th><th>Entidade parceira</th><th>Linhas</th><th></th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="order in readyToFill" :key="order.id">
 							<td>#{{ order.id }}</td>
 							<td>{{ personLabel(order.person) }}</td>
 							<td>{{ (order.order_lines || []).length }}</td>
-							<td><button @click="startFilling(order)" class="ri_formbutton">Start Filling</button></td>
+							<td><button @click="startFilling(order)" class="ri_formbutton">Iniciar separação</button></td>
 						</tr>
 					</tbody>
 				</table></div>
 			</div>
 
 			<div class="of_section">
-				<h3>Filling</h3>
-				<p v-if="!filling.length && !listLoading">No orders currently being filled.</p>
+				<h3>Em separação</h3>
+				<p v-if="!filling.length && !listLoading">Nenhum pedido em separação no momento.</p>
 				<div v-else class="of_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Order</th><th>Partner</th><th>Progress</th><th></th></tr>
+						<tr><th>Pedido</th><th>Entidade parceira</th><th>Andamento</th><th></th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="order in filling" :key="order.id">
 							<td>#{{ order.id }}</td>
 							<td>{{ personLabel(order.person) }}</td>
-							<td>{{ orderProgress(order).filled }} of {{ orderProgress(order).total }} lines filled</td>
+							<td>{{ orderProgress(order).filled }} de {{ orderProgress(order).total }} linhas separadas</td>
 							<td>
-								<button @click="continueFilling(order)" class="ri_formbutton">Continue</button>
-								<PrintMenu document-key="pick-sheets" media="report" variant="form" label="Print"
+								<button @click="continueFilling(order)" class="ri_formbutton">Continuar</button>
+								<PrintMenu document-key="pick-sheets" media="report" variant="form" label="Imprimir"
 									:params="{ ids: [order.id] }" :download-href="pickSheetsHref([order.id])" />
 							</td>
 						</tr>
@@ -545,14 +545,14 @@ export default {
 		<!-- ======================= FILL SCREEN ======================= -->
 		<div v-else-if="view === 'fill' && order" class="of_container">
 			<div class="of_topbar">
-				<button @click="backToList" class="ri_formbutton">&larr; Back</button>
-				<span class="of_title">Order #{{ order.id }} — {{ personLabel(order.person) }}</span>
+				<button @click="backToList" class="ri_formbutton">&larr; Voltar</button>
+				<span class="of_title">Pedido nº {{ order.id }} — {{ personLabel(order.person) }}</span>
 			</div>
 			<p v-if="fillError" class="of_error">{{ fillError }}</p>
 
 			<div class="of_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>Item</th><th>Qty to Pick</th><th>Filled</th><th>On Hand</th><th>Add Fill</th></tr>
+					<tr><th>Item</th><th>Qtd. a separar</th><th>Separado</th><th>Em estoque</th><th>Adicionar separação</th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="line in pickableLines" :key="line.id">
@@ -572,7 +572,7 @@ export default {
 									:options="itemsForItemtype(line.itemtype_id)"
 									display="name"
 									:searchfields="['name', 'upc', 'description']"
-									placeholder="Scan or search item..."
+									placeholder="Leia ou busque um item..."
 									@selected="(item) => itemChosenForLine(line, item)"
 								/>
 								<ScanButton v-if="itemsForItemtype(line.itemtype_id).length > 1"
@@ -582,53 +582,53 @@ export default {
 									type="number" min="0"
 									v-model="entryByLine[line.id].qty"
 									class="ri_forminput of_qty"
-									placeholder="Qty"
+									placeholder="Qtd."
 									@keydown.enter.prevent="addFill(line)"
 								/>
 								<input
 									type="text"
 									v-model="entryByLine[line.id].pallet_tag"
 									class="ri_forminput of_pallet"
-									placeholder="From open pallet (optional)"
-									title="Leave blank to take from the sorting area, then the oldest open pallets. A sealed pallet must be opened first."
+									placeholder="Do palete aberto (opcional)"
+									title="Deixe em branco para retirar da área de triagem e, depois, dos paletes abertos mais antigos. Um palete lacrado precisa ser aberto primeiro."
 									@keydown.enter.prevent="addFill(line)"
 								/>
-								<button @click="addFill(line)" class="ri_defaultbutton">Add</button>
+								<button @click="addFill(line)" class="ri_defaultbutton">Adicionar</button>
 							</div>
 							<div v-if="plans[line.id]" class="of_where">
-								<span class="of_where_title">Pick:</span>
+								<span class="of_where_title">Separar:</span>
 								<span v-for="(step, i) in plans[line.id].steps" :key="i" class="of_where_chip"
 									:class="{ of_pallet_sealed: step.needs_open }">
 									<template v-if="true">
-										<strong>{{ step.location || 'no location' }}</strong> {{ step.tag }} &times;{{ step.qty }}<span v-if="step.expires_on"> (exp {{ step.expires_on }})</span>
+										<strong>{{ step.location || 'sem local' }}</strong> {{ step.tag }} &times;{{ step.qty }}<span v-if="step.expires_on"> (venc. {{ step.expires_on }})</span>
 										<template v-if="step.status === 'sealed'">
-											<em>{{ step.whole ? 'sealed — take the whole pallet' : 'sealed — open it first' }}</em>
+											<em>{{ step.whole ? 'lacrado — retirar o palete inteiro' : 'lacrado — abrir primeiro' }}</em>
 											<button v-if="!step.whole" type="button" class="ri_formbutton" :disabled="openingPalletId === step.pallet_id"
-												@click="openPallet({ id: step.pallet_id })">Open pallet</button>
+												@click="openPallet({ id: step.pallet_id })">Abrir palete</button>
 										</template>
-										<em v-else>open</em>
+										<em v-else>aberto</em>
 									</template>
 									<button type="button" class="ri_formbutton of_use" :disabled="step.status === 'sealed' && !step.whole"
-										:title="step.status === 'sealed' && !step.whole ? 'Open the pallet first' : 'Fill the entry row from this step'"
-										@click="useStep(line, step)">Use</button>
+										:title="step.status === 'sealed' && !step.whole ? 'Abra o palete primeiro' : 'Preencher a linha usando esta etapa'"
+										@click="useStep(line, step)">Usar</button>
 								</span>
 								<template v-if="plans[line.id].pallet_short > 0">
-									<span class="of_hint">{{ plans[line.id].pallet_short }} not on a pallet.</span>
-									<span v-if="plans[line.id].others.length" class="of_hint">Look for others:</span>
+									<span class="of_hint">{{ plans[line.id].pallet_short }} não estão em um palete.</span>
+									<span v-if="plans[line.id].others.length" class="of_hint">Procurar outros:</span>
 									<span v-for="(step, i) in plans[line.id].others" :key="'o' + i" class="of_where_chip">
-										Sorting area &times;{{ step.qty }}
-										<button type="button" class="ri_formbutton of_use" @click="useStep(line, step)">Use</button>
+										Área de triagem &times;{{ step.qty }}
+										<button type="button" class="ri_formbutton of_use" @click="useStep(line, step)">Usar</button>
 									</span>
 								</template>
-								<span v-if="plans[line.id].short > 0" class="of_hint">{{ plans[line.id].short }} not found in stock</span>
-								<span v-if="!plans[line.id].steps.length && !(plans[line.id].short > 0)" class="of_hint">fully picked</span>
+								<span v-if="plans[line.id].short > 0" class="of_hint">{{ plans[line.id].short }} não encontrados no estoque</span>
+								<span v-if="!plans[line.id].steps.length && !(plans[line.id].short > 0)" class="of_hint">separado integralmente</span>
 							</div>
 							<ul v-if="(line.item_ledgers || []).length" class="of_filllist">
 								<li v-for="fill in line.item_ledgers" :key="fill.id">
 									{{ fill.qty_subtracted }} &mdash; {{ fill.item?.name }}
 									<template v-if="confirmingFillKey === fillKey(fill)">
-										<button @click="deleteFill(line, fill)" class="of_confirm_delete">Delete?</button>
-										<button @click="confirmingFillKey = null" class="ri_linkbutton">Keep</button>
+										<button @click="deleteFill(line, fill)" class="of_confirm_delete">Excluir?</button>
+										<button @click="confirmingFillKey = null" class="ri_linkbutton">Manter</button>
 									</template>
 									<img v-else src="/img/delete-icon.webp" class="of_delete" @click="deleteFill(line, fill)" />
 								</li>
@@ -636,25 +636,25 @@ export default {
 						</td>
 					</tr>
 					<tr v-if="!pickableLines.length">
-						<td colspan="5">Nothing to pick on this order.</td>
+						<td colspan="5">Não há itens para separar neste pedido.</td>
 					</tr>
 				</tbody>
 			</table></div>
 
 			<div class="of_actions">
 				<label class="of_palletlabel">
-					Pallets packed
+					Paletes embalados
 					<input type="number" min="1" step="1" v-model.number="palletCount" class="ri_forminput of_palletinput" placeholder="#" />
 				</label>
 				<button :disabled="!allLinesAccounted() || savingComplete" @click="completeFilling" class="ri_defaultbutton">
-					{{ savingComplete ? 'Completing…' : 'Complete Filling' }}
+					{{ savingComplete ? 'Concluindo…' : 'Concluir separação' }}
 				</button>
 				<span v-if="!allLinesAccounted()" class="of_hint">
-					Every line needs at least one fill record (even 0) before this order can be marked Filled.
+					Todas as linhas precisam de pelo menos um registro de separação (mesmo 0) antes que este pedido possa ser marcado como separado.
 				</span>
 				<span v-else-if="nothingPicked" class="of_hint">
-					Nothing has been picked — completing will close this request as Unfulfilled instead of
-					sending it to Shipping.
+					Nenhum item foi separado — ao concluir, este pedido será encerrado como não atendido em vez de
+					ser enviado para expedição.
 				</span>
 			</div>
 		</div>

@@ -36,7 +36,7 @@ async function loadSummary() {
 	try {
 		summary.value = (await axios.get('/json/palletstatus/summary')).data;
 	} catch (e) {
-		summaryError.value = e.response?.data?.message || 'Could not load locations.';
+		summaryError.value = e.response?.data?.message || 'Não foi possível carregar os locais.';
 	}
 }
 
@@ -53,8 +53,8 @@ const statusColumns = computed(() => {
 const locationRows = computed(() => {
 	const rows = (summary.value?.locations || []).map((l) => ({ key: l.id, label: l.code, total: l.total, by_status: l.by_status || {}, zero: !l.total }));
 	const s = summary.value;
-	if (s?.no_location?.total) rows.push({ key: 'none', label: 'No location recorded', total: s.no_location.total, by_status: s.no_location.by_status || {}, special: true });
-	if (s?.other_locations?.total) rows.push({ key: 'other', label: 'Archived / other locations', total: s.other_locations.total, by_status: s.other_locations.by_status || {}, special: true });
+	if (s?.no_location?.total) rows.push({ key: 'none', label: 'Nenhum local registrado', total: s.no_location.total, by_status: s.no_location.by_status || {}, special: true });
+	if (s?.other_locations?.total) rows.push({ key: 'other', label: 'Arquivados / outros locais', total: s.other_locations.total, by_status: s.other_locations.by_status || {}, special: true });
 	return rows;
 });
 
@@ -78,7 +78,7 @@ async function toggleLocation(key, label) {
 		const pallets = (await axios.get(`/json/palletstatus/location/${key}`)).data.records;
 		if (openLocation.value?.key === key) openLocation.value.pallets = pallets;
 	} catch (e) {
-		if (openLocation.value?.key === key) openLocation.value.error = e.response?.data?.message || 'Could not load pallets.';
+		if (openLocation.value?.key === key) openLocation.value.error = e.response?.data?.message || 'Não foi possível carregar os paletes.';
 	}
 }
 
@@ -141,11 +141,11 @@ async function showPallet(tag) {
 		await applyPallet(pallet);
 		scannedLabelId.value = pallet.scanned_label?.id ?? null;
 		if (pallet.scanned_label) {
-			scanMessage.value = { ok: true, text: `Inventory label: ${pallet.scanned_label.name} (${pallet.scanned_label.qty} added) is on ${pallet.tag}.` };
+			scanMessage.value = { ok: true, text: `Etiqueta de estoque: ${pallet.scanned_label.name} (${pallet.scanned_label.qty} adicionados) está no palete ${pallet.tag}.` };
 		}
 		playScanMatched();
 	} catch (e) {
-		scanMessage.value = { ok: false, text: e.response?.data?.message || 'Could not look up that pallet.' };
+		scanMessage.value = { ok: false, text: e.response?.data?.message || 'Não foi possível localizar esse palete.' };
 		playScanError();
 	}
 }
@@ -194,7 +194,7 @@ const locationChanged = computed(() => {
 	if (!pallet) return false;
 	return (chosenLocation.value?.id ?? null) !== (pallet.location_id ?? null) && move.value.locationCode.trim() !== '';
 });
-const saveLabel = computed(() => (locationChanged.value ? 'Record Movement' : 'Record Status'));
+const saveLabel = computed(() => (locationChanged.value ? 'Registrar movimentação' : 'Registrar status'));
 
 async function postStatus(pallet, locationId, status, notes) {
 	await axios.post('/json/palletstatus', {
@@ -226,7 +226,7 @@ async function recordMovement() {
 		scanMessage.value = { ok: true, text: `${pallet.tag}: ${locationChanged.value ? 'moved to ' + move.value.locationCode : 'status recorded as ' + move.value.status}.` };
 		await applyPallet(await lookupPallet(pallet.tag));
 	} catch (e) {
-		scanMessage.value = { ok: false, text: errorText(e, 'Could not save.') };
+		scanMessage.value = { ok: false, text: errorText(e, 'Não foi possível salvar.') };
 		playScanError();
 	} finally {
 		saving.value = false;
@@ -248,7 +248,7 @@ async function quickMove(location) {
 		scanMessage.value = { ok: true, text: `${pallet.tag}: moved to ${location.code}.` };
 		await applyPallet(await lookupPallet(pallet.tag));
 	} catch (e) {
-		scanMessage.value = { ok: false, text: errorText(e, 'Could not save the move.') };
+		scanMessage.value = { ok: false, text: errorText(e, 'Não foi possível registrar a movimentação.') };
 		playScanError();
 	}
 }
@@ -284,7 +284,7 @@ async function loadStaging() {
 		const [records] = await Promise.all([axios.get('/json/pallet-stock/staging').then((r) => r.data.records), loadItemTypes()]);
 		staging.value = records;
 	} catch (e) {
-		fillError.value = e.response?.data?.message || 'Could not load the sorting-area list.';
+		fillError.value = e.response?.data?.message || 'Não foi possível carregar a lista da área de triagem.';
 	}
 }
 
@@ -345,11 +345,11 @@ const adjusting = ref(false);
 const adjPick = ref(null);
 const sealing = ref(false);
 const ADJUST_REASONS = [
-	['shrinkage', 'Shrinkage'],
-	['damaged', 'Damaged items'],
-	['correcting_count', 'Correcting count'],
-	['correcting_item_type', 'Correcting item type'],
-	['other', 'Other'],
+	['shrinkage', 'Perda'],
+	['damaged', 'Itens danificados'],
+	['correcting_count', 'Correção de quantidade'],
+	['correcting_item_type', 'Correção do tipo de item'],
+	['other', 'Outro'],
 ];
 const adjPending = computed(() => adj.value.rows.some((r) => String(r.delta).trim() !== ''));
 const adjChanges = computed(() => adj.value.rows.map((r) => ({ ...r, n: parseInt(r.delta, 10) })).filter((r) => Number.isInteger(r.n) && r.n !== 0));
@@ -376,11 +376,11 @@ async function sealOrUnseal(action) {
 	scanMessage.value = null;
 	try {
 		await axios.post(`/json/pallet-stock/${pallet.id}/${action}`);
-		scanMessage.value = { ok: true, text: `${pallet.tag}: ${action === 'open' ? 'unsealed' : 're-sealed'}.` };
+		scanMessage.value = { ok: true, text: `${pallet.tag}: ${action === 'open' ? 'deslacrado' : 'lacrado novamente'}.` };
 		playScanMatched();
 		await applyPallet(await lookupPallet(pallet.tag));
 	} catch (e) {
-		scanMessage.value = { ok: false, text: errorText(e, 'Could not change the seal.') };
+		scanMessage.value = { ok: false, text: errorText(e, 'Não foi possível alterar o lacre.') };
 		playScanError();
 	} finally {
 		sealing.value = false;
@@ -391,15 +391,15 @@ async function sealOrUnseal(action) {
 async function submitAdjust() {
 	adjError.value = null;
 	if (!adjChanges.value.length) {
-		adjError.value = 'Enter at least one change (use a minus sign to remove).';
+		adjError.value = 'Informe pelo menos uma alteração (use o sinal de menos para remover).';
 		return;
 	}
 	if (!adj.value.reason) {
-		adjError.value = 'Choose a reason.';
+		adjError.value = 'Escolha um motivo.';
 		return;
 	}
 	if (adj.value.reason === 'other' && !adj.value.notes.trim()) {
-		adjError.value = 'Say what the reason is in the notes.';
+		adjError.value = 'Informe o motivo nas observações.';
 		return;
 	}
 	adjusting.value = true;
@@ -410,12 +410,12 @@ async function submitAdjust() {
 			notes: adj.value.notes || null,
 			lines: adjChanges.value.map((r) => ({ item_id: r.item_id, qty: r.n })),
 		});
-		scanMessage.value = { ok: true, text: `${pallet.tag}: inventory adjusted.` };
+		scanMessage.value = { ok: true, text: `${pallet.tag}: estoque ajustado.` };
 		playScanMatched();
 		await applyPallet(await lookupPallet(pallet.tag));
 		resetAdjust();
 	} catch (e) {
-		adjError.value = errorText(e, 'Could not save the adjustment.');
+		adjError.value = errorText(e, 'Não foi possível salvar o ajuste.');
 		playScanError();
 	} finally {
 		adjusting.value = false;
@@ -435,11 +435,11 @@ async function submitFill() {
 	fillError.value = null;
 	fillResult.value = null;
 	if (!fill.value.lines.length) {
-		fillError.value = 'Add at least one item.';
+		fillError.value = 'Adicione pelo menos um item.';
 		return;
 	}
 	if (fill.value.locationCode.trim() && !fillLocation.value) {
-		fillError.value = `"${fill.value.locationCode}" is not a known active location.`;
+		fillError.value = `"${fill.value.locationCode}" não é um local ativo conhecido.`;
 		return;
 	}
 	filling.value = true;
@@ -464,7 +464,7 @@ async function submitFill() {
 		nextTick(() => fillResultBox.value?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
 	} catch (e) {
 		const errors = e.response?.data?.errors;
-		fillError.value = (errors && Object.values(errors).flat().join(' ')) || e.response?.data?.message || 'Could not save.';
+		fillError.value = (errors && Object.values(errors).flat().join(' ')) || e.response?.data?.message || 'Não foi possível salvar.';
 		playScanError();
 	} finally {
 		filling.value = false;
@@ -520,17 +520,17 @@ onMounted(() => {
 </script>
 
 <template>
-	<Head title="Inventory Movement" />
+	<Head title="Movimentação do estoque" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="pm_page">
-			<h2 class="pm_title">Inventory Movement <HelpLink guide="inventory-movement">Inventory Movement Guide</HelpLink></h2>
+			<h2 class="pm_title">Movimentação do estoque <HelpLink guide="inventory-movement">Guia de movimentação do estoque</HelpLink></h2>
 
 			<div class="pm_tabs">
-				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'pallet' }]" @click="show('pallet')">Pallets</button>
-				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'locations' }]" @click="show('locations')">Locations</button>
-				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'recent' }]" @click="show('recent')">Recent Movements</button>
+				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'pallet' }]" @click="show('pallet')">Paletes</button>
+				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'locations' }]" @click="show('locations')">Locais</button>
+				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'recent' }]" @click="show('recent')">Movimentações recentes</button>
 			</div>
 
 			<datalist id="pm_locations">
@@ -540,13 +540,13 @@ onMounted(() => {
 			<!-- Locations -->
 			<div v-if="tab === 'locations'">
 				<p v-if="summaryError" class="ri_error">{{ summaryError }}</p>
-				<p v-else-if="!summary">Loading…</p>
+				<p v-else-if="!summary">Carregando…</p>
 				<div v-else class="pm_tablewrap">
 					<table class="ri_datatable" border="1">
 						<thead>
 							<tr>
-								<th>Location</th>
-								<th>Pallets</th>
+								<th>Local</th>
+								<th>Paletes</th>
 								<th v-for="s in statusColumns" :key="s" class="pm_status_head">{{ s }}</th>
 							</tr>
 						</thead>
@@ -563,7 +563,7 @@ onMounted(() => {
 										<p v-else-if="!openLocation.pallets">Loading…</p>
 										<table v-else class="ri_datatable" border="1">
 											<thead>
-												<tr><th>Pallet</th><th>Type</th><th>Status</th><th>Last moved</th></tr>
+												<tr><th>Palete</th><th>Tipo</th><th>Status</th><th>Última movimentação</th></tr>
 											</thead>
 											<tbody>
 												<tr v-for="p in openLocation.pallets" :key="p.id">
@@ -572,19 +572,19 @@ onMounted(() => {
 													<td>{{ p.status }}</td>
 													<td>{{ formatDate(p.last_moved_at) }}</td>
 												</tr>
-												<tr v-if="!openLocation.pallets.length"><td colspan="4">No live pallets here.</td></tr>
+												<tr v-if="!openLocation.pallets.length"><td colspan="4">Nenhum palete ativo neste local.</td></tr>
 											</tbody>
 										</table>
 									</td>
 								</tr>
 							</template>
 							<tr v-if="!summary.locations.length">
-								<td :colspan="2 + statusColumns.length">No active locations are set up yet.</td>
+								<td :colspan="2 + statusColumns.length">Nenhum local ativo cadastrado ainda.</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				<p class="ri_hint">Click a location to list its pallets. Click a pallet number to see its history and contents. Counts are live pallets only — emptied, shipped, collected, released, condemned and missing pallets aren't included.</p>
+				<p class="ri_hint">Clique em um local para listar os paletes. Clique no número de um palete para ver seu histórico e conteúdo. As contagens incluem apenas paletes ativos — não incluem paletes vazios, enviados, coletados, liberados, condenados ou desaparecidos.</p>
 			</div>
 
 			<!-- Pallets: one scan-driven screen -->
@@ -596,23 +596,23 @@ onMounted(() => {
 						type="text"
 						autocomplete="off"
 						class="ri_forminput pm_scaninput"
-						:placeholder="current ? 'Scan another pallet — or a location to move ' + current.tag + ' there' : 'Scan a pallet barcode'"
+						:placeholder="current ? 'Leia outro palete — ou um local para mover ' + current.tag + ' para lá' : 'Leia o código de barras de um palete'"
 						@keydown.enter.prevent="submitScan"
 					/>
-					<button type="button" class="ri_defaultbutton" @click="submitScan">Find</button>
+					<button type="button" class="ri_defaultbutton" @click="submitScan">Buscar</button>
 					<ScanButton :target="() => scanInput" />
 					<button type="button" class="pm_sound" @click="toggleSounds"
-						:title="sounds ? 'Scan sounds on. Click to mute.' : 'Scan sounds off. Click to turn on.'">{{ sounds ? '🔊' : '🔇' }}</button>
+						:title="sounds ? 'Sons da leitura ativados. Clique para silenciar.' : 'Sons da leitura desativados. Clique para ativar.'">{{ sounds ? '🔊' : '🔇' }}</button>
 				</div>
 				<p v-if="scanMessage" :class="scanMessage.ok ? 'pm_ok' : 'ri_error'">{{ scanMessage.text }}</p>
 				<p v-if="fillError" class="ri_error">{{ fillError }}</p>
 				<div v-if="fillResult" ref="fillResultBox" class="pm_current">
-					<strong>{{ fillResult.tag }}</strong> sealed<span v-if="fillResult.location"> at <strong>{{ fillResult.location.code }}</strong></span>:
+					<strong>{{ fillResult.tag }}</strong> lacrado<span v-if="fillResult.location"> em <strong>{{ fillResult.location.code }}</strong></span>:
 					<span v-for="(c, i) in fillResult.contents" :key="c.item_id">{{ c.qty }} × {{ c.name }}<span v-if="i < fillResult.contents.length - 1">, </span></span>.
-					<PrintMenu v-if="fillResult.isNew" document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="form" label="Print Pallet Label"
+					<PrintMenu v-if="fillResult.isNew" document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="form" label="Imprimir etiqueta do palete"
 						:params="{ id: fillResult.id }" :download-href="'/report/pallet/' + fillResult.id" />
 					<PrintMenu v-if="fillResult.assignmentIds?.length" document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="form"
-						:label="'Print Item Labels (' + fillResult.assignmentIds.length + ')'"
+						:label="'Imprimir etiquetas dos itens (' + fillResult.assignmentIds.length + ')'"
 						:params="{ ids: fillResult.assignmentIds }" :download-href="'/report/inventory-labels?ids=' + fillResult.assignmentIds.join(',')" />
 				</div>
 
@@ -620,15 +620,15 @@ onMounted(() => {
 				<div v-if="current" class="pm_card">
 					<p class="pm_current">
 						<strong class="pm_mono">{{ current.tag }}</strong> ({{ current.kind_label }}) —
-						<strong>{{ current.location ? 'at ' + current.location.code : 'no location recorded' }}</strong>,
-						status <strong>{{ current.status }}</strong><span v-if="current.last_moved_at">, last updated {{ formatDate(current.last_moved_at) }}</span><span v-if="current.expires_on">, earliest expiration <strong>{{ current.expires_on }}</strong></span>.
-						<button type="button" class="ri_linkbutton" @click="clearPallet">Clear / new pallet</button>
+						<strong>{{ current.location ? 'em ' + current.location.code : 'nenhum local registrado' }}</strong>,
+						status <strong>{{ current.status }}</strong><span v-if="current.last_moved_at">, última atualização {{ formatDate(current.last_moved_at) }}</span><span v-if="current.expires_on">, vencimento mais próximo <strong>{{ current.expires_on }}</strong></span>.
+						<button type="button" class="ri_linkbutton" @click="clearPallet">Limpar / novo palete</button>
 					</p>
 
 					<div class="pm_fillrow">
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Location:</span>
-							<input v-model="move.locationCode" class="ri_forminput" list="pm_locations" placeholder="Unknown — scan or type a location" />
+							<span class="ri_fieldlabel">Local:</span>
+							<input v-model="move.locationCode" class="ri_forminput" list="pm_locations" placeholder="Desconhecido — leia ou digite um local" />
 						</label>
 						<label v-if="!isWarehouse" class="pm_fillfield">
 							<span class="ri_fieldlabel">Status:</span>
@@ -637,75 +637,75 @@ onMounted(() => {
 							</select>
 						</label>
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Notes:</span>
+							<span class="ri_fieldlabel">Observações:</span>
 							<input v-model="move.notes" class="ri_forminput" />
 						</label>
 						<button type="button" class="ri_defaultbutton" :disabled="saving" @click="recordMovement">{{ saveLabel }}</button>
-						<button v-if="isWarehouse && current.status === 'sealed'" type="button" class="ri_formbutton" :disabled="sealing" @click="sealOrUnseal('open')">Unseal</button>
-						<button v-if="isWarehouse && current.status === 'open'" type="button" class="ri_formbutton" :disabled="sealing" @click="sealOrUnseal('seal')">Re-seal</button>
+						<button v-if="isWarehouse && current.status === 'sealed'" type="button" class="ri_formbutton" :disabled="sealing" @click="sealOrUnseal('open')">Deslacrar</button>
+						<button v-if="isWarehouse && current.status === 'open'" type="button" class="ri_formbutton" :disabled="sealing" @click="sealOrUnseal('seal')">Lacrar novamente</button>
 					</div>
-					<p v-if="isWarehouse && current.status === 'sealed'" class="ri_hint">This pallet is sealed. Unseal it to add items or adjust what is on it.</p>
+					<p v-if="isWarehouse && current.status === 'sealed'" class="ri_hint">Este palete está lacrado. Remova o lacre para adicionar itens ou ajustar seu conteúdo.</p>
 
-					<h3 class="pm_sub">Pallet Contents</h3>
+					<h3 class="pm_sub">Conteúdo do palete</h3>
 					<template v-if="current.contents">
-						<p v-if="!current.contents.length" class="ri_hint">Nothing is recorded as being on this pallet.</p>
+						<p v-if="!current.contents.length" class="ri_hint">Não há itens registrados neste palete.</p>
 						<div v-else class="pm_tablewrap">
 							<table class="ri_datatable" border="1">
-								<thead><tr><th>Item</th><th>Quantity</th></tr></thead>
+								<thead><tr><th>Item</th><th>Quantidade</th></tr></thead>
 								<tbody>
 									<tr v-for="c in current.contents" :key="c.item_id"><td>{{ c.name }}</td><td>{{ c.qty }}</td></tr>
 								</tbody>
 							</table>
 						</div>
 						<template v-if="current.labels?.length">
-							<h3 class="pm_sub">Inventory Labels</h3>
-							<p class="ri_hint">One label for each set of items put on this pallet, as it was added (picks and corrections since aren't reflected). Reprint any of them here.</p>
+							<h3 class="pm_sub">Etiquetas de estoque</h3>
+							<p class="ri_hint">Uma etiqueta para cada conjunto de itens adicionado a este palete. As separações e correções posteriores não são refletidas. Reimprima as etiquetas aqui.</p>
 							<div class="pm_tablewrap">
 								<table class="ri_datatable" border="1">
-									<thead><tr><th>Item</th><th>Added</th><th>Expires</th><th></th></tr></thead>
+									<thead><tr><th>Item</th><th>Adicionado</th><th>Vencimento</th><th></th></tr></thead>
 									<tbody>
 										<tr v-for="l in current.labels" :key="l.id" :style="l.id === scannedLabelId ? 'background: #fff3b0' : null">
 											<td>{{ l.name }}</td><td>{{ l.qty }}</td><td>{{ l.expires_on || '' }}</td>
-											<td><PrintMenu document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="link" label="Print"
+											<td><PrintMenu document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="link" label="Imprimir"
 												:params="{ ids: [l.id] }" :download-href="'/report/inventory-labels?ids=' + l.id" /></td>
 										</tr>
 									</tbody>
 								</table>
 							</div>
-							<PrintMenu document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="form" label="Print All Item Labels"
+							<PrintMenu document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="form" label="Imprimir todas as etiquetas dos itens"
 								:params="{ ids: current.labels.map((l) => l.id) }" :download-href="'/report/inventory-labels?ids=' + current.labels.map((l) => l.id).join(',')" />
 						</template>
 					</template>
 					<template v-else-if="current.sorted_from">
-						<p class="ri_hint">Receiving pallets aren't tracked item by item; this is what sorting recorded coming off it.</p>
-						<p v-if="!current.sorted_from.length" class="ri_hint">Nothing sorted from this pallet yet.</p>
+						<p class="ri_hint">Os paletes de recebimento não são rastreados item por item; este é o registro da triagem do que saiu dele.</p>
+						<p v-if="!current.sorted_from.length" class="ri_hint">Nenhum item foi triado deste palete ainda.</p>
 						<div v-else class="pm_tablewrap">
 							<table class="ri_datatable" border="1">
-								<thead><tr><th>Item</th><th>Disposition</th><th>Quantity</th></tr></thead>
+								<thead><tr><th>Item</th><th>Destino</th><th>Quantidade</th></tr></thead>
 								<tbody>
 									<tr v-for="(c, i) in current.sorted_from" :key="i"><td>{{ c.name }}</td><td>{{ c.disposition }}</td><td>{{ c.qty }}</td></tr>
 								</tbody>
 							</table>
 						</div>
 					</template>
-					<p v-else class="ri_hint">Contents aren't tracked for this kind of pallet.</p>
+					<p v-else class="ri_hint">O conteúdo deste tipo de palete não é rastreado.</p>
 				</div>
-				<p v-else class="ri_hint">Scan a pallet to see where it is, what is on it and move it — or build a new Warehouse pallet below.</p>
+				<p v-else class="ri_hint">Leia um palete para ver sua localização e conteúdo e movimentá-lo — ou monte um novo palete do armazém abaixo.</p>
 
 				<!-- put stock from the sorting area onto this (or a new) Warehouse pallet -->
 				<div v-if="canAdjust" class="pm_modes">
-					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'add' }]" :disabled="adjPending" :title="adjPending ? 'Finish or clear the adjustment first' : ''" @click="setMode('add')">Add from sorting area</button>
-					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'adjust' }]" :disabled="fill.lines.length > 0" :title="fill.lines.length ? 'Finish or clear the items staged to add first' : ''" @click="setMode('adjust')">Adjust inventory</button>
+					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'add' }]" :disabled="adjPending" :title="adjPending ? 'Conclua ou limpe o ajuste primeiro' : ''" @click="setMode('add')">Adicionar da área de triagem</button>
+					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'adjust' }]" :disabled="fill.lines.length > 0" :title="fill.lines.length ? 'Conclua ou limpe os itens separados para adicionar primeiro' : ''" @click="setMode('adjust')">Ajustar estoque</button>
 				</div>
 
 				<!-- adjust what is on an unsealed, placed pallet -->
 				<div v-if="canAdjust && mode === 'adjust'">
-					<h3 class="pm_sub">Adjust inventory on {{ current.tag }}</h3>
-					<p class="ri_hint">Correct what is on this pallet. Use a minus sign to remove (-3), a plain number to add. This is logged as an inventory adjustment, separate from adding stock from the sorting area.</p>
+					<h3 class="pm_sub">Ajustar estoque no palete {{ current.tag }}</h3>
+					<p class="ri_hint">Corrija o conteúdo deste palete. Use o sinal de menos para remover (-3) ou apenas o número para adicionar. Isso será registrado como um ajuste de estoque, separado da adição de itens da área de triagem.</p>
 					<p v-if="adjError" class="ri_error">{{ adjError }}</p>
 					<div class="pm_tablewrap">
 						<table class="ri_datatable" border="1">
-							<thead><tr><th>Item</th><th>Now</th><th>Change</th><th>After</th></tr></thead>
+							<thead><tr><th>Item</th><th>Atual</th><th>Alteração</th><th>Depois</th></tr></thead>
 							<tbody>
 								<tr v-for="r in adj.rows" :key="r.item_id">
 									<td>{{ r.name }}</td>
@@ -713,99 +713,99 @@ onMounted(() => {
 									<td><input v-model="r.delta" type="text" inputmode="numeric" autocomplete="off" class="ri_forminput pm_qty" placeholder="0" @focus="$event.target.select()" /></td>
 									<td>{{ Number.isInteger(parseInt(r.delta, 10)) ? r.qty + parseInt(r.delta, 10) : r.qty }}</td>
 								</tr>
-								<tr v-if="!adj.rows.length"><td colspan="4">Nothing is recorded on this pallet — add an item below.</td></tr>
+								<tr v-if="!adj.rows.length"><td colspan="4">Nenhum item registrado neste palete — adicione um item abaixo.</td></tr>
 							</tbody>
 						</table>
 					</div>
 					<div class="pm_fillrow">
 						<span class="pm_fillfield">
-							<span class="ri_fieldlabel">Another item:</span>
+							<span class="ri_fieldlabel">Outro item:</span>
 							<SearchSelect v-model="adjPick" optionsource="/json/items" display="name" :searchfields="['name', 'upc', 'description']"
-								placeholder="Search items..." :smartOpen="true" :debounce="150" :openOnFocus="false" @selected="addAdjustItem" />
+								placeholder="Buscar itens..." :smartOpen="true" :debounce="150" :openOnFocus="false" @selected="addAdjustItem" />
 						</span>
 					</div>
 					<div class="pm_fillrow">
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Reason:</span>
+							<span class="ri_fieldlabel">Motivo:</span>
 							<select v-model="adj.reason" class="ri_forminput">
-								<option value="" disabled>Choose a reason…</option>
+								<option value="" disabled>Escolha um motivo…</option>
 								<option v-for="[key, label] in ADJUST_REASONS" :key="key" :value="key">{{ label }}</option>
 							</select>
 						</label>
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Notes<span v-if="adj.reason === 'other'"> (required)</span>:</span>
+							<span class="ri_fieldlabel">Observações<span v-if="adj.reason === 'other'"> (obrigatório)</span>:</span>
 							<input v-model="adj.notes" class="ri_forminput" />
 						</label>
-						<button type="button" class="ri_defaultbutton" :disabled="adjusting || !adjChanges.length" @click="submitAdjust">Record Adjustment ({{ adjChanges.length }})</button>
-						<button type="button" class="ri_formbutton" :disabled="!adjPending" @click="resetAdjust">Clear</button>
+						<button type="button" class="ri_defaultbutton" :disabled="adjusting || !adjChanges.length" @click="submitAdjust">Registrar ajuste ({{ adjChanges.length }})</button>
+						<button type="button" class="ri_formbutton" :disabled="!adjPending" @click="resetAdjust">Limpar</button>
 					</div>
 				</div>
 
 				<div v-if="!current || (fillTarget && mode === 'add')">
-					<h3 class="pm_sub">{{ fillTarget ? 'Add items to ' + fillTarget.tag : 'Build a new Warehouse pallet' }}</h3>
-					<p v-if="!fillTarget" class="ri_hint">Tap items in the sorting area below, set where it is going, then Seal &amp; Place. Scan an existing Warehouse pallet instead to add to that one.</p>
+					<h3 class="pm_sub">{{ fillTarget ? 'Adicionar itens a ' + fillTarget.tag : 'Montar um novo palete do armazém' }}</h3>
+					<p v-if="!fillTarget" class="ri_hint">Toque nos itens da área de triagem abaixo, escolha o destino e depois sele Lacrar e posicionar. Leia um palete existente do armazém para adicionar os itens a ele.</p>
 
 					<div class="pm_tablewrap" v-if="fill.lines.length">
 						<table class="ri_datatable" border="1">
-							<thead><tr><th>Item</th><th>Quantity</th><th>Expires</th><th></th></tr></thead>
+							<thead><tr><th>Item</th><th>Quantidade</th><th>Vencimento</th><th></th></tr></thead>
 							<tbody>
 								<tr v-for="(l, i) in fill.lines" :key="l.item_id">
 									<td>{{ l.name }}</td>
 									<td><input type="text" inputmode="numeric" autocomplete="off" :value="l.qty" class="ri_forminput pm_qty" @focus="$event.target.select()" @change="setLineQty(l, $event)" /></td>
-									<td><input type="date" class="ri_forminput" v-model="l.expires_on" title="Earliest expiration of this quantity — printed on its inventory label" /></td>
-									<td><button type="button" class="ri_linkbutton" @click="fill.lines.splice(i, 1)">Remove</button></td>
+									<td><input type="date" class="ri_forminput" v-model="l.expires_on" title="Vencimento mais próximo desta quantidade — impresso na etiqueta de estoque" /></td>
+									<td><button type="button" class="ri_linkbutton" @click="fill.lines.splice(i, 1)">Remover</button></td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
-					<p v-else class="ri_hint">Tap items below to put them on this pallet.</p>
+					<p v-else class="ri_hint">Toque nos itens abaixo para adicioná-los a este palete.</p>
 
 					<div class="pm_fillrow">
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Location:</span>
-							<input v-model="fill.locationCode" class="ri_forminput" list="pm_locations" placeholder="Where it's going" />
+							<span class="ri_fieldlabel">Local:</span>
+							<input v-model="fill.locationCode" class="ri_forminput" list="pm_locations" placeholder="Destino" />
 						</label>
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Expires:</span>
-							<input type="date" class="ri_forminput" :value="fillExpiry" title="Earliest expiration date of anything on this pallet"
+							<span class="ri_fieldlabel">Vencimento:</span>
+							<input type="date" class="ri_forminput" :value="fillExpiry" title="Data de vencimento mais próxima dos itens deste palete"
 								@input="fill.expires = $event.target.value" />
-							<button v-if="fill.expires !== null" type="button" class="ri_linkbutton" title="Go back to the earliest date of the items" @click="fill.expires = null">Auto</button>
+							<button v-if="fill.expires !== null" type="button" class="ri_linkbutton" title="Voltar à data mais próxima dos itens" @click="fill.expires = null">Automático</button>
 						</label>
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Notes:</span>
+							<span class="ri_fieldlabel">Observações:</span>
 							<input v-model="fill.notes" class="ri_forminput" />
 						</label>
 						<button type="button" class="ri_defaultbutton" :disabled="filling || !fill.lines.length" @click="submitFill">
-							{{ fillTarget ? 'Add to pallet' : 'Seal & Place' }} ({{ fillTotal }})
+							{{ fillTarget ? 'Adicionar ao palete' : 'Lacrar e posicionar' }} ({{ fillTotal }})
 						</button>
 					</div>
 
-					<h3 class="pm_sub">In the sorting area</h3>
-					<p v-if="!staging">Loading…</p>
-					<p v-else-if="!stagingLeft.length" class="ri_hint">Nothing waiting — everything sorted is already on a pallet.</p>
+					<h3 class="pm_sub">Na área de triagem</h3>
+					<p v-if="!staging">Carregando…</p>
+					<p v-else-if="!stagingLeft.length" class="ri_hint">Nada aguardando — todos os itens triados já estão em um palete.</p>
 					<div v-else class="pm_tablewrap">
 						<table class="ri_datatable" border="1">
-							<thead><tr><th>Item</th><th>Waiting</th><th>Expires</th><th></th></tr></thead>
+							<thead><tr><th>Item</th><th>Aguardando</th><th>Vencimento</th><th></th></tr></thead>
 							<tbody>
 								<template v-for="g in stagingGroups" :key="g.key">
 									<tr v-if="g.rows.length === 1">
 										<td>{{ g.type?.number ? 'ACS #' + g.type.number + ' ' : '' }}{{ g.rows[0].name }}</td>
 										<td>{{ g.left }}</td>
 										<td>{{ g.expires }}</td>
-										<td><button type="button" class="ri_formbutton" @click="addFillLine(g.rows[0])">Put all {{ g.left }} on pallet</button></td>
+										<td><button type="button" class="ri_formbutton" @click="addFillLine(g.rows[0])">Colocar {{ g.left }} no palete</button></td>
 									</tr>
 									<template v-else>
 										<tr class="pm_group pm_clickable" @click="toggleGroup(g.key)">
-											<td>{{ expandedGroups.has(g.key) ? '▾' : '▸' }} ACS #{{ g.type.number }} ({{ g.type.name }}) — {{ g.rows.length }} items</td>
+											<td>{{ expandedGroups.has(g.key) ? '▾' : '▸' }} ACS #{{ g.type.number }} ({{ g.type.name }}) — {{ g.rows.length }} itens</td>
 											<td>{{ g.left }}</td>
 											<td>{{ g.expires }}</td>
-											<td><button type="button" class="ri_formbutton" @click.stop="addGroup(g)">Put all {{ g.left }} on pallet</button></td>
+											<td><button type="button" class="ri_formbutton" @click.stop="addGroup(g)">Colocar {{ g.left }} no palete</button></td>
 										</tr>
 										<tr v-for="row in expandedGroups.has(g.key) ? g.rows : []" :key="row.item_id" class="pm_sku">
 											<td>{{ row.name }}</td>
 											<td>{{ row.left }}</td>
 											<td>{{ row.expires_on || '' }}</td>
-											<td><button type="button" class="ri_formbutton" @click="addFillLine(row)">Put all {{ row.left }} on pallet</button></td>
+											<td><button type="button" class="ri_formbutton" @click="addFillLine(row)">Colocar {{ row.left }} no palete</button></td>
 										</tr>
 									</template>
 								</template>
@@ -813,17 +813,17 @@ onMounted(() => {
 						</table>
 					</div>
 				</div>
-				<p v-else-if="fill.lines.length && !(fillTarget && mode === 'adjust')" class="ri_hint">{{ fill.lines.length }} item line(s) are staged for a Warehouse pallet — use Clear / new pallet to go back to them.</p>
+				<p v-else-if="fill.lines.length && !(fillTarget && mode === 'adjust')" class="ri_hint">{{ fill.lines.length }} linha(s) de itens estão separadas para um palete do armazém — use "Limpar / novo palete" para voltar a elas.</p>
 
 				<div v-if="current" class="pm_history">
-					<h3 class="pm_sub">Movement History</h3>
+					<h3 class="pm_sub">Histórico de movimentações</h3>
 					<div class="pm_tablewrap">
 						<table class="ri_datatable" border="1">
-							<thead><tr><th>Date</th><th>Location</th><th>Status</th><th>Notes</th></tr></thead>
+							<thead><tr><th>Data</th><th>Local</th><th>Status</th><th>Observações</th></tr></thead>
 							<tbody>
 								<tr v-for="h in history" :key="h.id">
 									<td>{{ formatDate(h.created_at) }}</td>
-									<td>{{ h.location ? h.location.code : 'Unknown' }}</td>
+									<td>{{ h.location ? h.location.code : 'Desconhecido' }}</td>
 									<td>{{ h.status }}</td>
 									<td>{{ h.notes }}</td>
 								</tr>
@@ -835,23 +835,23 @@ onMounted(() => {
 
 			<!-- Recent movements -->
 			<div v-else-if="tab === 'recent'">
-				<p v-if="!recent">Loading…</p>
+				<p v-if="!recent">Carregando…</p>
 				<div v-else class="pm_tablewrap">
 					<table class="ri_datatable" border="1">
-						<thead><tr><th>Date</th><th>Pallet</th><th>Location</th><th>Status</th><th>Notes</th></tr></thead>
+						<thead><tr><th>Data</th><th>Palete</th><th>Local</th><th>Status</th><th>Observações</th></tr></thead>
 						<tbody>
 							<tr v-for="r in recent" :key="r.id">
 								<td>{{ formatDate(r.created_at) }}</td>
 								<td class="pm_mono">{{ r.pallet ? r.pallet.tag : r.pallet_id }}</td>
-								<td>{{ r.location ? r.location.code : 'Unknown' }}</td>
+								<td>{{ r.location ? r.location.code : 'Desconhecido' }}</td>
 								<td>{{ r.status }}</td>
 								<td>{{ r.notes }}</td>
 							</tr>
-							<tr v-if="!recent.length"><td colspan="5">No movements recorded yet.</td></tr>
+							<tr v-if="!recent.length"><td colspan="5">Nenhuma movimentação registrada ainda.</td></tr>
 						</tbody>
 					</table>
 				</div>
-				<p class="ri_hint">Showing the 100 most recent entries.</p>
+				<p class="ri_hint">Exibindo os 100 registros mais recentes.</p>
 			</div>
 		</div>
 	</AuthenticatedLayout>

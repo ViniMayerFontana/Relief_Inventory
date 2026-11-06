@@ -20,10 +20,10 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 
 const STANDINGS = [
-	{ value: 'preferred', label: 'Preferred' },
+	{ value: 'preferred', label: 'Preferencial' },
 	{ value: 'normal', label: 'Normal' },
-	{ value: 'watch', label: 'Watch' },
-	{ value: 'decline', label: 'Decline' },
+	{ value: 'watch', label: 'Observar' },
+	{ value: 'decline', label: 'Recusar' },
 ];
 
 export default {
@@ -80,7 +80,7 @@ export default {
 				data: {
 					labels: rows.map((d) => d.name),
 					datasets: [{
-						label: 'Loss % (outdated + trashed)', data: rows.map((d) => d.loss_percent),
+						label: 'Perda % (vencidos + descartados)', data: rows.map((d) => d.loss_percent),
 						backgroundColor: '#eb6834', borderRadius: 4,
 					}],
 				},
@@ -115,7 +115,7 @@ export default {
 			} catch (error) {
 				this.error = error.response?.status === 422
 					? 'Check the dates: the "to" date can\'t be before the "from" date.'
-					: 'Could not load the donor report.';
+					: 'Não foi possível carregar o relatório de doadores.';
 			} finally {
 				this.loading = false;
 			}
@@ -170,69 +170,70 @@ export default {
 </script>
 
 <template>
-	<Head title="Donor Report" />
+	<Head title="Relatório de doadores" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="dnr_container">
 			<h2 class="ri_datatable_head dnr_head">
-				Donor Report
+				Relatório de doadores
 				<span class="dnr_exports">
-					<a :href="$withWarehouse('/report/donors.csv' + query)" class="ri_defaultbutton">Download CSV</a>
-					<PrintMenu document-key="donor-report" media="report" label="Print / PDF"
+					<a :href="$withWarehouse('/report/donors.csv' + query)" class="ri_defaultbutton">Baixar CSV</a>
+					<PrintMenu document-key="donor-report" media="report" label="Imprimir / PDF"
 						:params="appliedParams" :download-href="'/report/donors.pdf' + query" />
 				</span>
 			</h2>
 
 			<p class="dnr_intro">
-				What each donor sent and how much of it couldn't be used. Loss % is outdated + trashed over
-				everything sorted (diverted goods aren't counted against a donor). A suggested standing needs
-				at least {{ thresholds.min_donations }} sorted donations and {{ thresholds.min_units }} units; it is
-				only a suggestion &mdash; the standing you set is what shows at Receiving.
+				O que cada doador enviou e quanto não pôde ser aproveitado. O percentual de perda corresponde
+				a itens vencidos e descartados em relação ao total triado (itens desviados não são contabilizados
+				contra o doador). Uma recomendação de classificação exige pelo menos {{ thresholds.min_donations }}
+				doações triadas e {{ thresholds.min_units }} unidades; é apenas uma sugestão — a classificação
+				definida por você é a que aparece no Recebimento.
 			</p>
 
 			<form class="dnr_toolbar" @submit.prevent="fetchReport">
-				<label>Donated from <input type="date" v-model="from" class="ri_forminput" /></label>
-				<label>to <input type="date" v-model="to" class="ri_forminput" /></label>
-				<button type="submit" class="ri_defaultbutton">Apply</button>
-				<button v-if="from || to" type="button" class="ri_defaultbutton" @click="clearDates">All dates</button>
-				<label class="dnr_check"><input type="checkbox" v-model="flaggedOnly" /> Suggestion differs from standing</label>
-				<input type="text" v-model="search" class="ri_forminput dnr_search" placeholder="Search donor..." />
+				<label>Doações a partir de <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>até <input type="date" v-model="to" class="ri_forminput" /></label>
+				<button type="submit" class="ri_defaultbutton">Aplicar</button>
+				<button v-if="from || to" type="button" class="ri_defaultbutton" @click="clearDates">Todas as datas</button>
+				<label class="dnr_check"><input type="checkbox" v-model="flaggedOnly" /> Sugestão diferente da classificação</label>
+				<input type="text" v-model="search" class="ri_forminput dnr_search" placeholder="Buscar doador..." />
 			</form>
 
 			<p v-if="error" class="dnr_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">Carregando...</p>
 
 			<template v-if="report && !loading">
 				<div class="dnr_cards">
-					<div class="dnr_card"><span>Donors</span><strong>{{ n(totals.donors) }}</strong></div>
-					<div class="dnr_card"><span>Sorted donations</span><strong>{{ n(totals.donations) }}</strong></div>
-					<div class="dnr_card"><span>Units sorted</span><strong>{{ n(totals.units) }}</strong></div>
-					<div class="dnr_card"><span>Overall loss</span><strong>{{ pct(totals.loss_percent) }}</strong></div>
-					<div class="dnr_card"><span>On watch / decline</span><strong>{{ n(totals.watch) }} / {{ n(totals.decline) }}</strong></div>
+					<div class="dnr_card"><span>Doadores</span><strong>{{ n(totals.donors) }}</strong></div>
+					<div class="dnr_card"><span>Doações triadas</span><strong>{{ n(totals.donations) }}</strong></div>
+					<div class="dnr_card"><span>Unidades triadas</span><strong>{{ n(totals.units) }}</strong></div>
+					<div class="dnr_card"><span>Perda geral</span><strong>{{ pct(totals.loss_percent) }}</strong></div>
+					<div class="dnr_card"><span>Em observação / recusa</span><strong>{{ n(totals.watch) }} / {{ n(totals.decline) }}</strong></div>
 					<div class="dnr_card dnr_card_review">
-						<span>Suggestion differs</span><strong>{{ n(totals.needs_review) }}</strong>
-						<small>donors worth a look</small>
+						<span>Sugestão diferente</span><strong>{{ n(totals.needs_review) }}</strong>
+						<small>doadores para revisar</small>
 					</div>
 				</div>
 
 				<p v-if="!report.donors.length" class="dnr_empty">
-					No donations{{ report.filters.from || report.filters.to ? ' in this date range' : '' }}.
+					Nenhuma doação{{ report.filters.from || report.filters.to ? ' neste período' : '' }}.
 				</p>
 
 				<template v-else>
 					<div v-if="lossChart.count" class="dnr_chartbox">
-						<h3>Loss % by donor</h3>
-						<ChartCanvas :config="lossChart" :height="chartHeight" label="Percent of sorted goods lost, per donor" />
+						<h3>Perda % por doador</h3>
+						<ChartCanvas :config="lossChart" :height="chartHeight" label="Percentual de itens triados perdidos por doador" />
 					</div>
 
-					<h3>Donors</h3>
+					<h3>Doadores</h3>
 					<div class="dnr_tablewrap"><table class="ri_datatable" border="1">
 						<thead>
 							<tr>
-								<th></th><th>Donor</th><th>Standing</th><th>Suggested</th><th>Donations</th><th>Units</th>
-								<th>Usable</th><th>Outdated</th><th>Trashed</th><th>Diverted</th>
-								<th>Loss %</th><th title="Loss % of the donor's last three sorted donations">Recent Loss %</th><th>Last Donation</th>
+								<th></th><th>Doador</th><th>Classificação</th><th>Sugerida</th><th>Doações</th><th>Unidades</th>
+								<th>Aproveitáveis</th><th>Vencidos</th><th>Descartados</th><th>Desviados</th>
+								<th>Perda %</th><th title="Percentual de perda nas três últimas doações triadas do doador">Perda recente %</th><th>Última doação</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -243,10 +244,10 @@ export default {
 									<td><span v-if="!d.is_system" :class="['dnr_badge', 'dnr_badge_' + d.standing]">{{ label(d.standing) }}</span></td>
 									<td>
 										<span v-if="d.is_system">—</span>
-										<span v-else-if="d.suggested === null" class="dnr_muted">not enough data</span>
+										<span v-else-if="d.suggested === null" class="dnr_muted">dados insuficientes</span>
 										<span v-else :class="['dnr_badge', 'dnr_badge_' + d.suggested, needsReview(d) ? 'dnr_differs' : '']">{{ label(d.suggested) }}</span>
 									</td>
-									<td class="dnr_num">{{ n(d.donations) }}<span v-if="d.unsorted_donations" class="dnr_muted"> +{{ d.unsorted_donations }} unsorted</span></td>
+									<td class="dnr_num">{{ n(d.donations) }}<span v-if="d.unsorted_donations" class="dnr_muted"> +{{ d.unsorted_donations }} não triadas</span></td>
 									<td class="dnr_num">{{ n(d.units) }}</td>
 									<td class="dnr_num">{{ n(d.usable) }}</td>
 									<td class="dnr_num">{{ n(d.outdated) }}</td>
@@ -262,25 +263,25 @@ export default {
 										<p v-if="!d.is_system" class="dnr_reason">{{ d.suggestion_reason }}</p>
 
 										<div v-if="canSetStanding && !d.is_system && edit[d.person_id]" class="dnr_standing" @click.stop>
-											<label>Standing
+											<label>Classificação
 												<select v-model="edit[d.person_id].standing" class="ri_forminput">
 													<option v-for="s in standings" :key="s.value" :value="s.value">{{ s.label }}</option>
 												</select>
 											</label>
-											<label class="dnr_notefield">Note
+											<label class="dnr_notefield">Observação
 												<input type="text" v-model="edit[d.person_id].note" class="ri_forminput" maxlength="500"
-													:placeholder="edit[d.person_id].standing === 'decline' ? 'Required: why decline?' : 'Optional'" />
+													:placeholder="edit[d.person_id].standing === 'decline' ? 'Obrigatório: por que recusar?' : 'Opcional'" />
 											</label>
 											<button type="button" class="ri_defaultbutton" :disabled="edit[d.person_id].saving" @click="saveStanding(d)">
-												{{ edit[d.person_id].saving ? 'Saving...' : 'Save standing' }}
+												{{ edit[d.person_id].saving ? 'Salvando...' : 'Salvar classificação' }}
 											</button>
 											<span v-if="edit[d.person_id].error" class="dnr_error">{{ edit[d.person_id].error }}</span>
 										</div>
-										<p v-else-if="d.standing_note" class="dnr_reason">Note: {{ d.standing_note }}</p>
+										<p v-else-if="d.standing_note" class="dnr_reason">Observação: {{ d.standing_note }}</p>
 
 										<table class="dnr_subtable">
 											<thead>
-												<tr><th>Donation #</th><th>Date</th><th>Status</th><th>Usable</th><th>Outdated</th><th>Trashed</th><th>Diverted</th><th>Loss %</th></tr>
+												<tr><th>Doação nº</th><th>Data</th><th>Status</th><th>Aproveitáveis</th><th>Vencidos</th><th>Descartados</th><th>Desviados</th><th>Perda %</th></tr>
 											</thead>
 											<tbody>
 												<tr v-for="n2 in d.donation_list" :key="n2.id">
@@ -298,14 +299,14 @@ export default {
 									</td>
 								</tr>
 							</template>
-							<tr v-if="!donors.length"><td colspan="13" class="dnr_empty">No donors match.</td></tr>
+							<tr v-if="!donors.length"><td colspan="13" class="dnr_empty">Nenhum doador corresponde à busca.</td></tr>
 						</tbody>
 					</table></div>
 					<p class="dnr_note">
-						Suggestions: watch at {{ thresholds.watch_loss_percent }}%+ loss; decline at
-						{{ thresholds.decline_loss_percent }}%+ over {{ thresholds.decline_min_donations }}+ donations;
-						preferred at {{ thresholds.preferred_loss_percent }}% or less over {{ thresholds.preferred_min_donations }}+
-						donations and {{ thresholds.preferred_min_units }}+ units. Quantities are in each item's own unit.
+						Sugestões: observar a partir de {{ thresholds.watch_loss_percent }}% de perda; recusar a partir
+						de {{ thresholds.decline_loss_percent }}% em {{ thresholds.decline_min_donations }} ou mais doações;
+						preferir até {{ thresholds.preferred_loss_percent }}% em {{ thresholds.preferred_min_donations }} ou
+						mais doações e {{ thresholds.preferred_min_units }} ou mais unidades. As quantidades usam a unidade de cada item.
 					</p>
 				</template>
 			</template>

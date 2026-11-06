@@ -54,10 +54,10 @@ const dockerBusy = computed(() => ['requested', 'checking', 'pulling', 'restarti
 const requestingDocker = ref(false);
 const confirmingDockerUpdate = ref(false);
 const dockerStateText = {
-	requested: 'Waiting for the updater service…',
-	checking: 'Looking for a new version…',
-	pulling: 'Downloading the new version…',
-	restarting: 'Installing. The site is offline for a few minutes and this page will recover on its own.',
+	requested: 'Aguardando o serviço de atualização…',
+	checking: 'Procurando uma nova versão…',
+	pulling: 'Baixando a nova versão…',
+	restarting: 'Instalando. O site ficará indisponível por alguns minutos e esta página voltará automaticamente.',
 };
 let dockerTimer = null;
 
@@ -71,7 +71,7 @@ async function fetchStatus() {
 		updating.value = true;
 		startPolling();
 	} else if (response.data.update_status?.state === 'stalled') {
-		error.value = `Update stalled: ${response.data.update_status.message}`;
+		error.value = `Atualização interrompida: ${response.data.update_status.message}`;
 	}
 	if (response.data.docker_update) {
 		if (dockerBusy.value) startDockerPolling();
@@ -222,8 +222,8 @@ const dialogError = ref('');
 const dialogBusy = ref(false);
 const result = ref(null); // a setup code to show once
 const statusNames = {
-	provisioning: 'Being created', awaiting_setup: 'Waiting for setup', active: 'Active', maintenance: 'Maintenance', restoring: 'Restoring',
-	upgrading: 'Upgrading', held: 'Held', suspended: 'Suspended', archived: 'Archived',
+	provisioning: 'Em criação', awaiting_setup: 'Aguardando configuração', active: 'Ativo', maintenance: 'Em manutenção', restoring: 'Em restauração',
+	upgrading: 'Em atualização', held: 'Retido', suspended: 'Suspenso', archived: 'Arquivado',
 };
 const statusClass = (st) => ({
 	active: 'bg-green-100 text-green-800',
@@ -240,7 +240,7 @@ async function loadWarehouses() {
 		warehouses.value = data.warehouses;
 		removalWaitDays.value = data.removal_wait_days;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load the warehouses.';
+		error.value = e.response?.data?.message || 'Não foi possível carregar os armazéns.';
 	}
 }
 
@@ -264,7 +264,7 @@ async function submitDialog() {
 	dialogError.value = '';
 	try {
 		const { data } = await dialog.value.run(dialog.value.values, dialogPassword.value);
-		notice.value = data.message || 'Done.';
+		notice.value = data.message || 'Concluído.';
 		if (data.private_key) recoveryShown.value = data;   // the one time it exists outside the person's hands: shown in the dialog below
 		else if (data.code && data.address) pairCode.value = data;
 		else if (data.setup_code) result.value = { code: data.setup_code, url: data.setup_url, note: data.message };
@@ -276,7 +276,7 @@ async function submitDialog() {
 	} catch (e) {
 		dialogError.value = e.response?.data?.errors
 			? Object.values(e.response.data.errors).flat().join(' ')
-			: e.response?.data?.message || 'That did not work.';
+			: e.response?.data?.message || 'Não foi possível concluir a operação.';
 	} finally {
 		dialogBusy.value = false;
 		dialogPassword.value = '';
@@ -287,12 +287,12 @@ const post = (id, action, body) => (password) => axios.post(`/json/instance/ware
 
 function newWarehouse() {
 	openDialog({
-		title: 'New warehouse', button: 'Create warehouse',
-		text: 'Creates an empty warehouse with its own database and files, and a one-time setup code. Whoever holds the code makes themselves its Administrator. This can take a minute.',
+		title: 'Novo armazém', button: 'Criar armazém',
+		text: 'Cria um armazém vazio, com banco de dados e arquivos próprios, e um código de configuração de uso único. Quem tiver o código poderá se tornar administrador do armazém. Isso pode levar um minuto.',
 		fields: [
-			{ key: 'name', label: 'Name', type: 'text' },
-			{ key: 'email', label: 'Contact email (optional)', type: 'email' },
-			{ key: 'training', label: 'A training warehouse (class tools; disposable)', type: 'checkbox' },
+			{ key: 'name', label: 'Nome', type: 'text' },
+			{ key: 'email', label: 'E-mail de contato (opcional)', type: 'email' },
+			{ key: 'training', label: 'Armazém de treinamento (ferramentas de aula; descartável)', type: 'checkbox' },
 		],
 		run: (v, password) => axios.post('/json/instance/warehouses', { name: v.name, email: v.email || null, training: v.training, password }),
 	});
@@ -300,12 +300,12 @@ function newWarehouse() {
 
 function editWarehouse(w) {
 	openDialog({
-		title: `Edit ${w.name}`, button: 'Save',
+		title: `Editar ${w.name}`, button: 'Salvar',
 		fields: [
-			{ key: 'name', label: 'Name (the login page and the chooser show it)', type: 'text', value: w.name },
-			{ key: 'email', label: 'Contact email', type: 'email', value: w.admin_email || '' },
-			{ key: 'listed', label: 'Listed in the chooser on the shared address', type: 'checkbox', value: w.listed },
-			{ key: 'notes', label: 'Notes (only instance admins see these)', type: 'textarea', value: w.notes || '' },
+			{ key: 'name', label: 'Nome (exibido na página de login e na seleção de armazéns)', type: 'text', value: w.name },
+			{ key: 'email', label: 'E-mail de contato', type: 'email', value: w.admin_email || '' },
+			{ key: 'listed', label: 'Exibir na seleção de armazéns do endereço compartilhado', type: 'checkbox', value: w.listed },
+			{ key: 'notes', label: 'Observações (visíveis apenas para administradores da instância)', type: 'textarea', value: w.notes || '' },
 		],
 		run: (v, password) => axios.put(`/json/instance/warehouses/${w.id}`, { name: v.name, email: v.email || null, listed: v.listed, notes: v.notes || null, password }),
 	});
@@ -313,53 +313,53 @@ function editWarehouse(w) {
 
 function suspendWarehouse(w, maintenance) {
 	openDialog({
-		title: `${maintenance ? 'Put into maintenance' : 'Suspend'} ${w.name}`, button: maintenance ? 'Start maintenance' : 'Suspend',
-		text: `${w.name} stops answering everyone (logins, machine URLs, print clients) until it is activated again. Nothing is deleted.`
-			+ (w.is_default ? ' This is the default warehouse: the unprefixed machine URLs stop working too.' : ''),
+		title: `${maintenance ? 'Colocar em manutenção' : 'Suspender'} ${w.name}`, button: maintenance ? 'Iniciar manutenção' : 'Suspender',
+		text: `${w.name} deixará de responder a todos (logins, URLs de máquina e clientes de impressão) até ser ativado novamente. Nada será excluído.`
+			+ (w.is_default ? ' Este é o armazém padrão: as URLs de máquina sem prefixo também deixarão de funcionar.' : ''),
 		danger: true,
-		fields: [{ key: 'reason', label: 'Reason (kept in the audit log)', type: 'text' }],
+		fields: [{ key: 'reason', label: 'Motivo (registrado no log de auditoria)', type: 'text' }],
 		run: (v, password) => post(w.id, 'suspend', { maintenance, reason: v.reason || null })(password),
 	});
 }
 
 const simple = (w, action, title, text, button = title, danger = false) => openDialog({ title: `${title}: ${w.name}`, text, button, danger, run: (v, password) => post(w.id, action, {})(password) });
-const activateWarehouse = (w) => simple(w, 'activate', 'Activate', `${w.name} goes back into service.`);
-const resumeWarehouse = (w) => simple(w, 'resume', 'Resume', `Ends a restore that left ${w.name} out of service. Check the restore log first.`);
+const activateWarehouse = (w) => simple(w, 'activate', 'Ativar', `${w.name} voltará a funcionar.`);
+const resumeWarehouse = (w) => simple(w, 'resume', 'Retomar', `Encerra uma restauração que deixou ${w.name} fora de serviço. Confira primeiro o log da restauração.`);
 
 function archiveWarehouse(w, undo = false) {
 	openDialog({
-		title: `${undo ? 'Bring back' : 'Archive'} ${w.name}`, button: undo ? 'Bring back' : 'Archive', danger: !undo,
+		title: `${undo ? 'Restaurar' : 'Arquivar'} ${w.name}`, button: undo ? 'Restaurar' : 'Arquivar', danger: !undo,
 		text: undo
-			? `${w.name} returns to the state it was in before it was archived.`
-			: `${w.name} stops serving anyone, but nothing is deleted. After ${removalWaitDays.value} days it can be removed for good from here. You can bring it back at any time before that.`,
+			? `${w.name} voltará ao estado em que estava antes de ser arquivado.`
+			: `${w.name} deixará de atender a todos, mas nada será excluído. Depois de ${removalWaitDays.value} dias, poderá ser removido definitivamente por aqui. Você pode restaurá-lo a qualquer momento antes disso.`,
 		run: (v, password) => post(w.id, 'archive', { undo })(password),
 	});
 }
 
 function removeWarehouse(w) {
 	openDialog({
-		title: `Remove ${w.name} for good`, button: 'Remove for good', danger: true,
-		text: 'A final backup is taken first and kept in the removed-warehouses folder of the backup directory. Then the warehouse\'s database, files and the logins that belonged only to it are deleted. This cannot be undone. It can take several minutes.',
-		fields: [{ key: 'confirm', label: `Type the warehouse's name (${w.name}) to confirm`, type: 'text' }],
+		title: `Remover ${w.name} definitivamente`, button: 'Remover definitivamente', danger: true,
+		text: 'Primeiro, será feito um backup final, armazenado na pasta de armazéns removidos do diretório de backups. Em seguida, o banco de dados, os arquivos e os logins exclusivos desse armazém serão excluídos. Esta ação não pode ser desfeita e pode levar alguns minutos.',
+		fields: [{ key: 'confirm', label: `Digite o nome do armazém (${w.name}) para confirmar`, type: 'text' }],
 		run: (v, password) => axios.delete(`/json/instance/warehouses/${w.id}`, { data: { confirm: v.confirm, password } }),
 	});
 }
 
 function newSetupCode(w) {
-	simple(w, 'setup-code', 'New setup code', 'Issues a new one-time code for whoever will set this warehouse up. Any earlier code stops working. The code is shown once.', 'Issue code');
+	simple(w, 'setup-code', 'Novo código de configuração', 'Gera um novo código de uso único para quem vai configurar este armazém. Os códigos anteriores deixam de funcionar. O código será exibido uma única vez.', 'Gerar código');
 }
 
 function revokeSetupCode(w) {
-	openDialog({ title: `Revoke the setup code: ${w.name}`, button: 'Revoke', danger: true, text: 'The waiting code stops working.', run: (v, password) => post(w.id, 'setup-code', { revoke: true })(password) });
+	openDialog({ title: `Revogar código de configuração: ${w.name}`, button: 'Revogar', danger: true, text: 'O código pendente deixará de funcionar.', run: (v, password) => post(w.id, 'setup-code', { revoke: true })(password) });
 }
 
 function addHostname(w) {
 	openDialog({
-		title: `Add a hostname to ${w.name}`, button: 'Add hostname',
-		text: 'A hostname mapped to a warehouse reaches only that warehouse and never shows the chooser. You must point DNS and TLS for it at this server yourself.',
+		title: `Adicionar nome de host a ${w.name}`, button: 'Adicionar nome de host',
+		text: 'Um nome de host associado a um armazém acessa somente esse armazém e nunca exibe a seleção. Você precisa configurar o DNS e o TLS para apontar para este servidor.',
 		fields: [
-			{ key: 'hostname', label: 'Hostname (for example warehouse2.example.org)', type: 'text' },
-			{ key: 'primary', label: 'Make it the primary address (used in emails and links)', type: 'checkbox' },
+			{ key: 'hostname', label: 'Nome de host (por exemplo, armazem2.example.org)', type: 'text' },
+			{ key: 'primary', label: 'Definir como endereço principal (usado em e-mails e links)', type: 'checkbox' },
 		],
 		run: (v, password) => post(w.id, 'domains', { hostname: v.hostname, primary: v.primary })(password),
 	});
@@ -367,8 +367,8 @@ function addHostname(w) {
 
 function removeHostname(w, hostname) {
 	openDialog({
-		title: `Remove ${hostname}`, button: 'Remove hostname', danger: true,
-		text: `${hostname} will no longer reach ${w.name}.`,
+		title: `Remover ${hostname}`, button: 'Remover nome de host', danger: true,
+		text: `${hostname} não dará mais acesso a ${w.name}.`,
 		run: (v, password) => axios.delete(`/json/instance/warehouses/${w.id}/domains`, { data: { hostname, password } }),
 	});
 }
@@ -386,7 +386,7 @@ async function copyCode() {
 // ---- Full Instance Backups (Docker) ----
 const instBackups = ref(null);   // the server's payload: { available, schedule, backups, activity, working }
 const instForm = ref(null);
-const weekdays = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const weekdays = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
 let instTimer = null;
 
 const instFormOf = (sc) => ({
@@ -402,7 +402,7 @@ async function loadInstanceBackups() {
 		if (data.available && !instForm.value) instForm.value = instFormOf(data.schedule);
 	} catch (e) {
 		/* a poll that fails (an update is restarting the site) is not worth showing */
-		if (!instBackups.value) error.value = e.response?.data?.message || 'Could not load the instance backups.';
+		if (!instBackups.value) error.value = e.response?.data?.message || 'Não foi possível carregar os backups da instância.';
 	}
 }
 
@@ -416,10 +416,10 @@ watch(tab, (t) => {
 
 function saveInstanceSchedule() {
 	openDialog({
-		title: 'Save the full instance backup schedule', button: 'Save schedule',
+		title: 'Salvar o agendamento de backup da instância', button: 'Salvar agendamento',
 		text: instForm.value.enabled
-			? 'The provisioner will make a full instance backup on this schedule and keep the newest few.'
-			: 'Automatic full instance backups will be off. Nothing already made is deleted.',
+			? 'O provisionador fará backups completos da instância conforme este agendamento e manterá os mais recentes.'
+			: 'Os backups completos automáticos da instância serão desativados. Os backups já feitos não serão excluídos.',
 		run: (v, password) => axios.put('/json/instance/backups/schedule', { ...instForm.value, password }).then((r) => {
 			instForm.value = instFormOf(r.data.schedule);
 			return r;
@@ -429,14 +429,14 @@ function saveInstanceSchedule() {
 
 function backUpInstanceNow(files) {
 	openDialog({
-		title: files ? 'Back up the whole instance, with every warehouse\'s files' : 'Back up the whole instance (databases only)', button: 'Back up now',
-		text: 'The provisioner makes one consistent backup of every warehouse and the shared databases. It can take a while, and warehouse creation waits until it is done. It will not contain the warehouse keys.',
+		title: files ? 'Fazer backup de toda a instância, incluindo os arquivos de todos os armazéns' : 'Fazer backup de toda a instância (somente bancos de dados)', button: 'Fazer backup agora',
+		text: 'O provisionador fará um backup consistente de todos os armazéns e dos bancos de dados compartilhados. Isso pode levar algum tempo, e a criação de armazéns aguardará até a conclusão. O backup não incluirá as chaves dos armazéns.',
 		run: (v, password) => axios.post('/json/instance/backups', { files, password }),
 	});
 }
 
 const sizeOf = (bytes) => (bytes > 1073741824 ? `${(bytes / 1073741824).toFixed(2)} GB` : bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.ceil(bytes / 1024)} KB`);
-const labelNames = { 'scheduled-daily': 'Scheduled (daily)', 'scheduled-weekly': 'Scheduled (weekly)', manual: 'Made by hand', premigrate: 'Before an upgrade' };
+const labelNames = { 'scheduled-daily': 'Agendado (diário)', 'scheduled-weekly': 'Agendado (semanal)', manual: 'Manual', premigrate: 'Antes de uma atualização' };
 const instWhen = (iso) => (iso ? new Date(iso).toLocaleString() : '');
 
 // ---- Recovery key ----
@@ -451,10 +451,10 @@ const recoveryState = computed(() => instBackups.value?.recovery_key ?? { state:
 function makeRecoveryKey(replace = false) {
 	recoveryShown.value = null;
 	openDialog({
-		title: replace ? 'Make a NEW recovery key' : 'Make the recovery key', button: replace ? 'Replace the key' : 'Make the key', danger: replace,
+		title: replace ? 'Criar uma NOVA chave de recuperação' : 'Criar chave de recuperação', button: replace ? 'Substituir chave' : 'Criar chave', danger: replace,
 		text: replace
-			? 'Backups made from now on are sealed to the new key and need it to be restored. Backups made before still need the OLD printout, so keep it until they are gone. The new key is shown once.'
-			: 'Makes the key that seals every warehouse\'s encryption key into your instance backups. It is shown once, on the next screen: have a printer or somewhere safe ready.',
+			? 'Os próximos backups serão protegidos com a nova chave e precisarão dela para serem restaurados. Os backups anteriores ainda exigem a chave ANTIGA, então guarde a impressão até que eles não sejam mais necessários. A nova chave será exibida uma única vez.'
+			: 'Cria a chave que protege as chaves de criptografia de todos os armazéns nos backups da instância. Ela será exibida uma única vez na próxima tela: tenha uma impressora ou um local seguro preparado.',
 		run: (v, password) => axios.post('/json/instance/backups/recovery-key', { replace, password }),
 	});
 }
@@ -462,24 +462,24 @@ function makeRecoveryKey(replace = false) {
 function recoveryText() {
 	const k = recoveryShown.value;
 	return [
-		`RELIEF INVENTORY — RECOVERY KEY (${k.instance})`,
+		`RELIEF INVENTORY — CHAVE DE RECUPERAÇÃO (${k.instance})`,
 		'',
-		`Instance:     ${k.address}`,
-		`Made:         ${new Date(k.made_at).toLocaleString()}`,
-		`Fingerprint:  ${k.fingerprint}`,
+		`Instância:     ${k.address}`,
+		`Criada:        ${new Date(k.made_at).toLocaleString()}`,
+		`Impressão digital: ${k.fingerprint}`,
 		'',
-		'Recovery key:',
+		'Chave de recuperação:',
 		`  ${k.private_key}`,
 		'',
-		'WHAT THIS IS',
-		'Every whole-instance backup of this server (including the automatic ones) holds each warehouse\'s encryption key, sealed so that only this key',
-		'can open it. After a disaster, restore with:  restore:instance <backup.zip> --recovery-key-file <a file containing the line above>',
-		'and every warehouse\'s encrypted settings (mail passwords, the federation key) come back.',
+		'O QUE É',
+		'Cada backup completo deste servidor (inclusive os automáticos) contém a chave de criptografia de cada armazém, protegida para que somente esta chave',
+		'possa desbloqueá-la. Após um desastre, restaure com:  restore:instance <backup.zip> --recovery-key-file <a file containing the line above>',
+		'e todas as configurações criptografadas dos armazéns (senhas de e-mail e chave de federação) serão recuperadas.',
 		'',
-		'KEEP IT SAFE',
-		'Store this away from this server and away from your backups (a safe, a sealed envelope, a password manager). Anyone who holds both this',
-		'key and a backup can read those settings. The server does NOT keep this key and cannot show it again: if it is lost, make a new one on',
-		'Instance Admin > Full Instance Backups (backups made before then still need this one).',
+		'MANTENHA-A EM SEGURANÇA',
+		'Guarde-a longe deste servidor e dos seus backups (em um cofre, envelope lacrado ou gerenciador de senhas). Qualquer pessoa com esta chave',
+		'e um backup poderá ler essas configurações. O servidor NÃO guarda esta chave e não poderá exibi-la novamente: se ela for perdida, crie outra em',
+		'Administração da instância > Backups completos da instância (os backups anteriores ainda precisam desta chave).',
 		'',
 	].join('\n');
 }
@@ -487,15 +487,15 @@ function recoveryText() {
 function printRecoveryKey() {
 	const k = recoveryShown.value;
 	const w = window.open('', '_blank', 'width=720,height=900');
-	if (!w) { error.value = 'Your browser blocked the print window. Use Download instead.'; return; }
+	if (!w) { error.value = 'Seu navegador bloqueou a janela de impressão. Use a opção Baixar.'; return; }
 	const esc = (t) => String(t).replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
-	w.document.write(`<!doctype html><title>Recovery key</title><style>body{font-family:sans-serif;margin:2rem;color:#000}h1{font-size:1.3rem}
+	w.document.write(`<!doctype html><title>Chave de recuperação</title><style>body{font-family:sans-serif;margin:2rem;color:#000}h1{font-size:1.3rem}
 		.key{font:700 1.25rem/1.6 monospace;letter-spacing:.05em;border:2px solid #000;padding:1rem;margin:1rem 0;word-break:break-all}
 		pre{white-space:pre-wrap;font:0.85rem/1.5 sans-serif}</style>
-		<h1>Relief Inventory &mdash; recovery key (${esc(k.instance)})</h1>
-		<div>Instance: ${esc(k.address)}<br>Made: ${esc(new Date(k.made_at).toLocaleString())}<br>Fingerprint: <b>${esc(k.fingerprint)}</b></div>
+		<h1>Relief Inventory &mdash; chave de recuperação (${esc(k.instance)})</h1>
+		<div>Instância: ${esc(k.address)}<br>Criada: ${esc(new Date(k.made_at).toLocaleString())}<br>Impressão digital: <b>${esc(k.fingerprint)}</b></div>
 		<div class="key">${esc(k.private_key)}</div>
-		<pre>${esc(recoveryText().split('WHAT THIS IS')[1] ? 'WHAT THIS IS' + recoveryText().split('WHAT THIS IS')[1] : '')}</pre>`);
+		<pre>${esc(recoveryText().split('O QUE É')[1] ? 'O QUE É' + recoveryText().split('O QUE É')[1] : '')}</pre>`);
 	w.document.close();
 	w.focus();
 	w.print();
@@ -527,10 +527,10 @@ async function finishRecoveryKey() {
 		recoveryShown.value = null;
 		recoveryStored.value = false;
 		recoveryCopied.value = false;
-		notice.value = 'Recovery key confirmed. Every instance backup from now on contains the warehouse keys, sealed to it.';
+		notice.value = 'Chave de recuperação confirmada. A partir de agora, todos os backups da instância incluirão as chaves dos armazéns protegidas por ela.';
 		await loadInstanceBackups();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not confirm the recovery key.';
+		error.value = e.response?.data?.message || 'Não foi possível confirmar a chave de recuperação.';
 	} finally {
 		recoveryBusy.value = false;
 	}
@@ -542,24 +542,24 @@ const pairCode = ref(null);   // { code, expires_at, address }
 function newBackupClient() {
 	pairCode.value = null;
 	openDialog({
-		title: 'Pair a computer for instance backups', button: 'Make a code',
-		text: 'Makes a one-time code, good for 15 minutes. In the RI Launcher, choose Remote backups, then pair with this address and the code, as an instance backup. That computer can then make and download backups of the WHOLE instance (every warehouse and every person\'s information) until you revoke it here.',
-		fields: [{ key: 'name', label: 'What it is (optional)', type: 'text' }],
+		title: 'Vincular computador para backups da instância', button: 'Gerar código',
+		text: 'Gera um código de uso único, válido por 15 minutos. No RI Launcher, escolha Backups remotos e vincule como backup de instância usando este endereço e o código. Esse computador poderá criar e baixar backups da instância INTEIRA (todos os armazéns e as informações de todas as pessoas) até que você revogue o acesso por aqui.',
+		fields: [{ key: 'name', label: 'Identificação (opcional)', type: 'text' }],
 		run: (v, password) => axios.post('/json/instance/backups/clients/code', { name_hint: v.name || null, password }),
 	});
 }
 
 function revokeBackupClient(c) {
 	openDialog({
-		title: `Stop ${c.name}`, button: 'Revoke', danger: true,
-		text: `${c.name} can no longer make or download instance backups. Copies it already holds stay on that computer. It can be paired again with a new code.`,
+		title: `Desconectar ${c.name}`, button: 'Revogar', danger: true,
+		text: `${c.name} não poderá mais criar nem baixar backups da instância. As cópias que já possui permanecerão nesse computador. Ele poderá ser vinculado novamente com um novo código.`,
 		run: (v, password) => axios.delete(`/json/instance/backups/clients/${c.id}`, { data: { password } }),
 	});
 }
 
 onMounted(() => {
 	loadWarehouses();
-	fetchStatus().catch(() => { error.value = 'Could not load system status.'; });
+	fetchStatus().catch(() => { error.value = 'Não foi possível carregar o status do sistema.'; });
 });
 onUnmounted(() => {
 	stopPolling();
@@ -569,36 +569,36 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<Head title="Instance Admin" />
+	<Head title="Administração da instância" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Instance Admin</h1>
+			<h1 class="text-2xl font-bold">Administração da instância</h1>
 			<p class="text-sm text-gray-600">
-				These settings apply to the whole installation, not to a single warehouse. Backups of one warehouse are under
-				<a href="/setup/system" class="underline">Warehouse Backups</a>.
+				Estas configurações se aplicam a toda a instalação, não a um único armazém. Os backups de um armazém ficam em
+				<a href="/setup/system" class="underline">Backups do armazém</a>.
 			</p>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
 
 			<div class="flex gap-1 border-b border-gray-300">
-				<button v-for="t in [['updates', 'Updates & Mode'], ['warehouses', 'Warehouses'], ['backups', 'Full Instance Backups']]" :key="t[0]"
+				<button v-for="t in [['updates', 'Atualizações e modo'], ['warehouses', 'Armazéns'], ['backups', 'Backups completos da instância']]" :key="t[0]"
 					class="px-4 py-2 text-sm font-medium -mb-px border-b-2"
 					:class="tab === t[0] ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-gray-600 hover:text-gray-900'"
 					@click="tab = t[0]">{{ t[1] }}</button>
 			</div>
 
 			<div v-if="tab === 'updates'" class="space-y-6">
-				<div v-if="!status" class="text-gray-500">Loading system status…</div>
+				<div v-if="!status" class="text-gray-500">Carregando o status do sistema…</div>
 					<!-- Software update -->
 					<section v-if="status" class="bg-white shadow rounded-lg p-6 space-y-4">
-						<h2 class="text-lg font-semibold">Software {{ docker ? 'Version' : 'Update' }}</h2>
+						<h2 class="text-lg font-semibold">{{ docker ? 'Versão do software' : 'Atualização do software' }}</h2>
 						<div class="text-sm text-gray-700">
 							<p>
-								Current version:
+								Versão atual:
 								<span v-if="status.version.release" class="font-semibold">{{ status.version.release }}</span>
-								<span v-else class="text-gray-500">unversioned</span>
-								(commit <span class="font-mono">{{ status.version.current || 'unknown' }}</span>)
+								<span v-else class="text-gray-500">sem versão</span>
+								(commit <span class="font-mono">{{ status.version.current || 'desconhecido' }}</span>)
 								<span v-if="status.version.current_date"> — {{ new Date(status.version.current_date).toLocaleString() }}</span>
 							</p>
 							<p v-if="status.version.current_subject" class="text-gray-500">“{{ status.version.current_subject }}”</p>
@@ -607,16 +607,16 @@ onUnmounted(() => {
 						<!-- Docker / R Station: the host-side updater does the work; this page only asks it -->
 						<template v-if="docker">
 							<p v-if="!dockerUpdate?.enabled" class="text-sm text-gray-600">
-								Updating from this page is not set up. To turn it on, set <span class="font-mono">RI_UPDATE_SECRET</span> in
-								compose.yaml and install the updater on the server (“Automatic updates” in the Docker guide). Until then, upgrade by
-								pulling the new image and restarting it; the database is backed up automatically first when the upgrade has changes to apply.
+								A atualização por esta página não está configurada. Para ativá-la, defina <span class="font-mono">RI_UPDATE_SECRET</span> em
+								compose.yaml e instale o atualizador no servidor (“Atualizações automáticas” no guia do Docker). Até lá, atualize baixando
+								a nova imagem e reiniciando-a; o banco de dados será copiado automaticamente antes, caso a atualização tenha alterações a aplicar.
 							</p>
 							<template v-else>
 								<p v-if="dockerUpdate.available_version" class="text-sm font-medium text-amber-700">
-									Version {{ dockerUpdate.available_version }} is available (checked {{ new Date(dockerUpdate.last_checked_at).toLocaleString() }}).
+									A versão {{ dockerUpdate.available_version }} está disponível (verificada em {{ new Date(dockerUpdate.last_checked_at).toLocaleString() }}).
 								</p>
 								<p v-else-if="dockerUpdate.last_checked_at" class="text-sm text-gray-600">
-									Last checked {{ new Date(dockerUpdate.last_checked_at).toLocaleString() }}: nothing newer.
+									Última verificação em {{ new Date(dockerUpdate.last_checked_at).toLocaleString() }}: nenhuma versão mais recente.
 								</p>
 
 								<div v-if="dockerBusy" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 text-sm">
@@ -628,7 +628,7 @@ onUnmounted(() => {
 								</div>
 
 								<div v-if="dockerUpdate.can_request && !dockerBusy" class="flex gap-3 items-center">
-									<PrimaryButton :disabled="requestingDocker" @click="requestDockerUpdate('check')">Check for Updates</PrimaryButton>
+									<PrimaryButton :disabled="requestingDocker" @click="requestDockerUpdate('check')">Verificar atualizações</PrimaryButton>
 									<button
 										v-if="dockerUpdate.available_version || confirmingDockerUpdate"
 										class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white"
@@ -636,44 +636,44 @@ onUnmounted(() => {
 										:disabled="requestingDocker"
 										@click="requestDockerUpdate('update')"
 									>
-										{{ confirmingDockerUpdate ? 'Confirm — every warehouse goes offline briefly' : 'Install Update' }}
+										{{ confirmingDockerUpdate ? 'Confirmar — todos os armazéns ficarão indisponíveis por alguns instantes' : 'Instalar atualização' }}
 									</button>
-									<button v-if="confirmingDockerUpdate" class="text-sm text-gray-500 underline" @click="confirmingDockerUpdate = false">Cancel</button>
+									<button v-if="confirmingDockerUpdate" class="text-sm text-gray-500 underline" @click="confirmingDockerUpdate = false">Cancelar</button>
 								</div>
 								<p v-else-if="!dockerUpdate.can_request" class="text-xs text-gray-500">
-									Only an instance administrator can check for or install updates: it restarts every warehouse on this system.
+									Somente um administrador da instância pode verificar ou instalar atualizações: isso reinicia todos os armazéns deste sistema.
 								</p>
 								<p class="text-xs text-gray-500">
-									The updater on the server downloads the new release and restarts the system. The database is backed up first when the release has changes to apply.
+									O atualizador do servidor baixa a nova versão e reinicia o sistema. O banco de dados é copiado antes se a versão tiver alterações a aplicar.
 								</p>
 							</template>
 						</template>
 
 						<template v-else>
 							<div v-if="status.updater_deprecated" class="rounded bg-amber-50 border border-amber-300 text-amber-900 px-4 py-3 text-sm">
-								<p class="font-medium">Deprecated: updating from this page will be removed.</p>
+								<p class="font-medium">Obsoleto: a atualização por esta página será removida.</p>
 								<p>
-									It pulls the code from GitHub, then runs the database migration and rebuilds the web assets from inside a web request,
-									which can leave the system half-updated if anything goes wrong. It still works for now. Prefer a Docker install, or
-									run <span class="font-mono">scripts/update.sh</span> from a shell on the server where you can watch it.
+									O código é baixado do GitHub, depois a migração do banco de dados é executada e os recursos da web são recompilados dentro de uma solicitação web,
+									o que pode deixar o sistema parcialmente atualizado se algo der errado. Ainda funciona por enquanto. Prefira uma instalação Docker ou
+									execute <span class="font-mono">scripts/update.sh</span> em um terminal no servidor, onde você poderá acompanhar o processo.
 								</p>
 							</div>
 							<div v-if="status.version.behind > 0" class="text-sm">
-								<p class="font-medium text-amber-700">{{ status.version.behind }} update(s) available:</p>
+								<p class="font-medium text-amber-700">{{ status.version.behind }} atualização(ões) disponível(is):</p>
 								<ul class="font-mono text-xs text-gray-600 mt-1 space-y-0.5">
 									<li v-for="commit in status.version.pending_commits" :key="commit">{{ commit }}</li>
 								</ul>
 							</div>
 
 							<div v-if="updating" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 text-sm">
-								<p class="font-medium">Update in progress…</p>
-								<p v-if="inMaintenance">The site is in maintenance mode while the update runs. This page will recover automatically.</p>
+								<p class="font-medium">Atualização em andamento…</p>
+								<p v-if="inMaintenance">O site está em modo de manutenção durante a atualização. Esta página voltará automaticamente.</p>
 								<p v-else-if="status.update_status?.message">{{ status.update_status.message }}</p>
 							</div>
 
 							<div class="flex gap-3 items-center" v-if="!updating">
 								<PrimaryButton :disabled="checking" @click="checkForUpdates">
-									{{ checking ? 'Checking…' : 'Check for Updates' }}
+									{{ checking ? 'Verificando…' : 'Verificar atualizações' }}
 								</PrimaryButton>
 								<button
 									v-if="status.version.behind > 0 || confirmingUpdate"
@@ -681,32 +681,32 @@ onUnmounted(() => {
 									:class="confirmingUpdate ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500'"
 									@click="startUpdate"
 								>
-									{{ confirmingUpdate ? 'Confirm — site will briefly go offline' : 'Install Update' }}
+									{{ confirmingUpdate ? 'Confirmar — o site ficará indisponível por alguns instantes' : 'Instalar atualização' }}
 								</button>
-								<button v-if="confirmingUpdate" class="text-sm text-gray-500 underline" @click="confirmingUpdate = false">Cancel</button>
+								<button v-if="confirmingUpdate" class="text-sm text-gray-500 underline" @click="confirmingUpdate = false">Cancelar</button>
 							</div>
 							<p class="text-xs text-gray-500">
-								Installing an update backs up first, puts the site into maintenance mode, applies the update,
-								and verifies health before coming back online.
+								A instalação de uma atualização faz um backup primeiro, coloca o site em modo de manutenção, aplica a atualização
+								e verifica se está tudo funcionando antes de voltar ao ar.
 							</p>
 						</template>
 					</section>
 
 					<!-- Offline Mode -->
 					<section v-if="status" class="bg-white shadow rounded-lg p-6 space-y-4">
-						<h2 class="text-lg font-semibold">Offline Mode</h2>
+						<h2 class="text-lg font-semibold">Modo offline</h2>
 						<p class="text-sm text-gray-600">
-							Turn this on when this warehouse has no reliable internet connection. It automatically
-							disables Cloudflare Turnstile (bot protection on login/registration/password reset) and
-							geocod.io address lookups (county/city/state auto-fill on Order Entry and People) — neither
-							is required for normal operation, they just fail slowly without a real network otherwise.
-							Nothing else changes — address, order, and inventory entry all work exactly the same either way.
+							Ative esta opção quando este armazém não tiver uma conexão confiável com a internet. Ela
+							desativa automaticamente o Cloudflare Turnstile (proteção contra bots no login, cadastro e redefinição de senha) e
+							as consultas de endereço do geocod.io (preenchimento automático de condado, cidade e estado em Pedidos e Pessoas) — nenhum dos dois
+							é necessário para o funcionamento normal; sem uma conexão real, apenas demoram a falhar.
+							Nada mais muda: o cadastro de endereços, pedidos e estoque funciona exatamente da mesma forma.
 						</p>
 						<label class="flex items-center gap-3">
 							<input type="checkbox" v-model="status.offline_mode" :disabled="savingOfflineMode"
 								@change="toggleOfflineMode" class="h-5 w-5 rounded border-gray-300" />
 							<span class="text-sm font-medium text-gray-700">
-								{{ status.offline_mode ? 'Offline mode is ON' : 'Offline mode is off' }}
+								{{ status.offline_mode ? 'Modo offline ativado' : 'Modo offline desativado' }}
 							</span>
 						</label>
 					</section>
@@ -716,77 +716,77 @@ onUnmounted(() => {
 			<div v-if="tab === 'warehouses'" class="space-y-6">
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
 					<div class="flex items-center justify-between gap-3 flex-wrap">
-						<h2 class="text-lg font-semibold">Warehouses</h2>
-						<PrimaryButton @click="newWarehouse">New warehouse</PrimaryButton>
+						<h2 class="text-lg font-semibold">Armazéns</h2>
+						<PrimaryButton @click="newWarehouse">Novo armazém</PrimaryButton>
 					</div>
 					<p class="text-sm text-gray-600">
-						Each warehouse has its own database, files and people. Every change here asks for your password again.
-						Archiving takes a warehouse out of service without deleting anything; an archived warehouse can be removed for good from here
-						after {{ removalWaitDays }} days. <span class="text-gray-500">(The command
-						<span class="font-mono">php artisan warehouse:remove &lt;id&gt;</span> removes an archived warehouse immediately, with no waiting period.)</span>
+						Cada armazém tem seu próprio banco de dados, arquivos e pessoas. Cada alteração aqui solicita sua senha novamente.
+						Arquivar tira um armazém de serviço sem excluir nada; um armazém arquivado pode ser removido definitivamente por aqui
+						após {{ removalWaitDays }} dias. <span class="text-gray-500">(O comando
+						<span class="font-mono">php artisan warehouse:remove &lt;id&gt;</span> remove um armazém arquivado imediatamente, sem período de espera.)</span>
 					</p>
 
 					<div v-if="result?.code" class="rounded border-2 border-amber-400 bg-amber-50 p-4 text-sm space-y-2">
 						<p class="font-semibold">{{ result.note }}</p>
-						<p>Setup code: <span class="font-mono text-lg font-bold">{{ result.code }}</span>
-							<button class="ml-3 text-xs underline" @click="copyCode">{{ copied ? 'Copied' : 'Copy' }}</button></p>
-						<p>Address: <span class="font-mono break-all">{{ result.url }}</span></p>
+						<p>Código de configuração: <span class="font-mono text-lg font-bold">{{ result.code }}</span>
+							<button class="ml-3 text-xs underline" @click="copyCode">{{ copied ? 'Copiado' : 'Copiar' }}</button></p>
+						<p>Endereço: <span class="font-mono break-all">{{ result.url }}</span></p>
 					</div>
 					<div v-if="result?.removed" class="rounded border border-gray-300 bg-gray-50 p-4 text-sm space-y-1">
-						<p>Final backup: <span class="font-mono break-all">{{ result.removed.backup || 'none' }}</span></p>
-						<p>Logins removed with it: {{ result.removed.accounts_removed.length ? result.removed.accounts_removed.join(', ') : 'none' }}; kept (they belong elsewhere): {{ result.removed.accounts_kept }}</p>
+						<p>Backup final: <span class="font-mono break-all">{{ result.removed.backup || 'nenhum' }}</span></p>
+						<p>Logins removidos com ele: {{ result.removed.accounts_removed.length ? result.removed.accounts_removed.join(', ') : 'nenhum' }}; mantidos (pertencem a outros armazéns): {{ result.removed.accounts_kept }}</p>
 						<p v-for="n in result.removed.notes" :key="n" class="text-amber-800">{{ n }}</p>
 					</div>
 
-					<div v-if="!warehouses" class="text-gray-500">Loading…</div>
+					<div v-if="!warehouses" class="text-gray-500">Carregando…</div>
 					<div v-for="w in warehouses" :key="w.id" class="border rounded-lg p-4 space-y-2" :class="w.status === 'archived' ? 'bg-gray-50' : ''">
 						<div class="flex items-center gap-2 flex-wrap">
 							<h3 class="font-semibold">{{ w.name }}</h3>
 							<span class="text-xs rounded px-2 py-0.5" :class="statusClass(w.status)">{{ statusNames[w.status] || w.status }}</span>
-							<span v-if="w.is_default" class="text-xs rounded px-2 py-0.5 bg-indigo-100 text-indigo-800">Default</span>
-							<span v-if="w.is_training" class="text-xs rounded px-2 py-0.5 bg-yellow-100 text-yellow-800">Training</span>
-							<span v-if="!w.listed" class="text-xs text-gray-500">not listed in the chooser</span>
+							<span v-if="w.is_default" class="text-xs rounded px-2 py-0.5 bg-indigo-100 text-indigo-800">Padrão</span>
+							<span v-if="w.is_training" class="text-xs rounded px-2 py-0.5 bg-yellow-100 text-yellow-800">Treinamento</span>
+							<span v-if="!w.listed" class="text-xs text-gray-500">não aparece na seleção</span>
 							<span class="ml-auto font-mono text-xs text-gray-500">{{ w.id }}</span>
 						</div>
-						<p v-if="w.admin_email" class="text-xs text-gray-600">Contact: {{ w.admin_email }}</p>
+						<p v-if="w.admin_email" class="text-xs text-gray-600">Contato: {{ w.admin_email }}</p>
 						<p v-if="w.notes" class="text-xs text-gray-600 whitespace-pre-line">{{ w.notes }}</p>
 						<p v-if="w.status === 'archived'" class="text-xs text-gray-600">
-							Archived {{ shortDate(w.archived_at) }}.
-							<template v-if="w.is_default">The default warehouse cannot be removed.</template>
-							<template v-else-if="w.can_remove_now">It can be removed for good now.</template>
-							<template v-else>It can be removed here from {{ shortDate(w.removable_on) }}.</template>
+							Arquivado em {{ shortDate(w.archived_at) }}.
+							<template v-if="w.is_default">O armazém padrão não pode ser removido.</template>
+							<template v-else-if="w.can_remove_now">Já pode ser removido definitivamente.</template>
+							<template v-else>Poderá ser removido por aqui a partir de {{ shortDate(w.removable_on) }}.</template>
 						</p>
 						<p v-if="w.status === 'awaiting_setup'" class="text-xs text-gray-600">
-							Setup address <span class="font-mono break-all">{{ w.setup_url }}</span> —
-							{{ w.setup_code_until ? `a code is waiting, valid until ${shortDate(w.setup_code_until)}` : 'no setup code is waiting' }}.
+							Endereço de configuração <span class="font-mono break-all">{{ w.setup_url }}</span> —
+							{{ w.setup_code_until ? `há um código pendente, válido até ${shortDate(w.setup_code_until)}` : 'não há código de configuração pendente' }}.
 						</p>
 
 						<div class="flex gap-2 flex-wrap items-center text-xs">
-							<span class="text-gray-500">Hostnames:</span>
-							<span v-if="!w.domains.length" class="text-gray-400">none (reached by the shared address)</span>
+							<span class="text-gray-500">Nomes de host:</span>
+							<span v-if="!w.domains.length" class="text-gray-400">nenhum (acessado pelo endereço compartilhado)</span>
 							<span v-for="d in w.domains" :key="d.hostname" class="inline-flex items-center gap-1 rounded bg-gray-100 px-2 py-0.5 font-mono">
-								{{ d.hostname }}<span v-if="d.primary" class="text-gray-500 font-sans">(primary)</span>
-								<button class="text-red-600 font-sans" :title="`Remove ${d.hostname}`" @click="removeHostname(w, d.hostname)">×</button>
+								{{ d.hostname }}<span v-if="d.primary" class="text-gray-500 font-sans">(principal)</span>
+								<button class="text-red-600 font-sans" :title="`Remover ${d.hostname}`" @click="removeHostname(w, d.hostname)">×</button>
 							</span>
-							<button class="underline text-indigo-700" @click="addHostname(w)">Add hostname</button>
+							<button class="underline text-indigo-700" @click="addHostname(w)">Adicionar nome de host</button>
 						</div>
 
 						<div class="flex gap-3 flex-wrap text-sm pt-1">
-							<button class="underline text-indigo-700" @click="editWarehouse(w)">Edit</button>
+							<button class="underline text-indigo-700" @click="editWarehouse(w)">Editar</button>
 							<template v-if="w.status === 'active'">
-								<button class="underline text-amber-700" @click="suspendWarehouse(w, false)">Suspend</button>
-								<button class="underline text-amber-700" @click="suspendWarehouse(w, true)">Maintenance</button>
+								<button class="underline text-amber-700" @click="suspendWarehouse(w, false)">Suspender</button>
+								<button class="underline text-amber-700" @click="suspendWarehouse(w, true)">Manutenção</button>
 							</template>
-							<button v-if="w.status === 'suspended' || w.status === 'maintenance'" class="underline text-green-700" @click="activateWarehouse(w)">Activate</button>
-							<button v-if="w.status === 'restoring'" class="underline text-green-700" @click="resumeWarehouse(w)">Resume</button>
+							<button v-if="w.status === 'suspended' || w.status === 'maintenance'" class="underline text-green-700" @click="activateWarehouse(w)">Ativar</button>
+							<button v-if="w.status === 'restoring'" class="underline text-green-700" @click="resumeWarehouse(w)">Retomar</button>
 							<template v-if="w.status === 'awaiting_setup'">
-								<button class="underline text-indigo-700" @click="newSetupCode(w)">New setup code</button>
-								<button class="underline text-amber-700" @click="revokeSetupCode(w)">Revoke code</button>
+								<button class="underline text-indigo-700" @click="newSetupCode(w)">Novo código de configuração</button>
+								<button class="underline text-amber-700" @click="revokeSetupCode(w)">Revogar código</button>
 							</template>
-							<button v-if="w.status === 'archived'" class="underline text-indigo-700" @click="archiveWarehouse(w, true)">Bring back</button>
-							<button v-else-if="!w.is_default && ['active', 'suspended', 'maintenance', 'awaiting_setup'].includes(w.status)" class="underline text-red-700" @click="archiveWarehouse(w)">Archive</button>
+							<button v-if="w.status === 'archived'" class="underline text-indigo-700" @click="archiveWarehouse(w, true)">Restaurar</button>
+							<button v-else-if="!w.is_default && ['active', 'suspended', 'maintenance', 'awaiting_setup'].includes(w.status)" class="underline text-red-700" @click="archiveWarehouse(w)">Arquivar</button>
 							<button v-if="w.status === 'archived' && !w.is_default" class="underline" :class="w.can_remove_now ? 'text-red-700 font-semibold' : 'text-gray-400 cursor-not-allowed'"
-								:disabled="!w.can_remove_now" :title="w.can_remove_now ? '' : `Available from ${shortDate(w.removable_on)}`" @click="removeWarehouse(w)">Remove for good</button>
+								:disabled="!w.can_remove_now" :title="w.can_remove_now ? '' : `Disponível a partir de ${shortDate(w.removable_on)}`" @click="removeWarehouse(w)">Remover definitivamente</button>
 						</div>
 					</div>
 				</section>
@@ -808,14 +808,14 @@ onUnmounted(() => {
 						</label>
 					</div>
 					<label class="block text-sm">
-						<span class="text-gray-700 font-medium">Your password, to confirm</span>
+						<span class="text-gray-700 font-medium">Sua senha, para confirmar</span>
 						<input type="password" v-model="dialogPassword" required autocomplete="current-password" class="mt-1 block w-full rounded border-gray-300 text-sm" />
 					</label>
 					<p v-if="dialogError" class="rounded bg-red-100 border border-red-400 text-red-800 px-3 py-2 text-sm">{{ dialogError }}</p>
 					<div class="flex gap-3 justify-end items-center">
-						<button type="button" class="text-sm text-gray-600 underline" :disabled="dialogBusy" @click="closeDialog">Cancel</button>
+						<button type="button" class="text-sm text-gray-600 underline" :disabled="dialogBusy" @click="closeDialog">Cancelar</button>
 						<PrimaryButton :disabled="dialogBusy || !dialogPassword" :class="dialog.danger ? 'bg-red-600 hover:bg-red-500' : ''">
-							{{ dialogBusy ? 'Working…' : dialog.button }}
+							{{ dialogBusy ? 'Processando…' : dialog.button }}
 						</PrimaryButton>
 					</div>
 				</form>
@@ -823,146 +823,146 @@ onUnmounted(() => {
 
 			<div v-if="tab === 'backups'" class="space-y-6">
 				<section class="bg-white shadow rounded-lg p-6 space-y-3">
-					<h2 class="text-lg font-semibold">Full Instance Backups</h2>
+					<h2 class="text-lg font-semibold">Backups completos da instância</h2>
 					<p class="text-sm text-gray-700">
-						A full instance backup is one zip holding the control and accounts databases and <strong>every</strong> warehouse's database,
-						optionally with every warehouse's files. It is also what the automatic backup before an upgrade is. It is for the person who runs the
-						server, to move or recover the whole installation: to back up or restore a single warehouse, use
-						<a href="/setup/system" class="underline">Warehouse Backups</a>. Each zip holds every warehouse's encryption key <strong>sealed to your recovery key</strong> (below),
-						so an automatic backup can be restored, keys and all.
+						Um backup completo da instância é um único arquivo zip com os bancos de dados de controle e de contas e o banco de dados de <strong>todos</strong> os armazéns,
+						opcionalmente incluindo os arquivos de cada armazém. É também o backup automático feito antes de uma atualização. Destina-se a quem administra o
+						servidor, para mover ou recuperar toda a instalação. Para fazer backup ou restaurar um único armazém, use
+						<a href="/setup/system" class="underline">Backups do armazém</a>. Cada zip contém a chave de criptografia de todos os armazéns <strong>protegida pela sua chave de recuperação</strong> (abaixo),
+						para que seja possível restaurar até mesmo os backups automáticos, incluindo as chaves.
 					</p>
 					<p v-if="instBackups && !instBackups.available" class="rounded bg-amber-100 border border-amber-400 text-amber-900 px-3 py-2 text-sm">
-						This needs the Docker install: the backup is made by its <span class="font-mono">provisioner</span> container. On a standard server install, use
-						Warehouse Backups.
+						É necessária uma instalação Docker: o backup é feito pelo contêiner <span class="font-mono">provisioner</span>. Em uma instalação padrão no servidor, use
+						Backups do armazém.
 					</p>
-					<p v-else-if="!instBackups" class="text-gray-500 text-sm">Loading…</p>
+					<p v-else-if="!instBackups" class="text-gray-500 text-sm">Carregando…</p>
 				</section>
 
 				<template v-if="instBackups?.available && instForm">
 					<!-- The recovery key: public half on the server, private half on paper -->
 					<section class="rounded-lg border-2 p-6 space-y-3"
 						:class="recoveryState.state === 'ok' ? 'bg-white border-green-400' : 'bg-red-50 border-red-400'">
-						<h2 class="text-lg font-semibold">Recovery key</h2>
+						<h2 class="text-lg font-semibold">Chave de recuperação</h2>
 						<template v-if="recoveryState.state === 'none'">
 							<p class="text-sm text-red-900">
-								<strong>This instance has no recovery key.</strong> Its backups hold everything except the warehouses' encryption keys, so after a disaster
-								the mail passwords and the federation key could not be read and would have to be entered again, and every paired instance and client would have to approve this one again.
+								<strong>Esta instância não tem uma chave de recuperação.</strong> Os backups contêm tudo, exceto as chaves de criptografia dos armazéns. Assim, após um desastre,
+								não será possível ler as senhas de e-mail nem a chave de federação, que precisarão ser inseridas novamente; todas as instâncias e clientes vinculados também terão de aprovar esta instância outra vez.
 							</p>
 						</template>
 						<template v-else-if="recoveryState.state === 'unconfirmed'">
 							<p class="text-sm text-red-900">
-								<strong>Nobody confirmed that the recovery key {{ recoveryState.fingerprint }} was stored.</strong> The private half was shown once and the server does not
-								keep it. If you did not print or save it, make a new key.
+								<strong>Ninguém confirmou que a chave de recuperação {{ recoveryState.fingerprint }} foi guardada.</strong> A parte privada foi exibida uma única vez e o servidor não
+								a guarda. Se você não a imprimiu nem salvou, crie uma nova chave.
 							</p>
 						</template>
 						<template v-else>
 							<p class="text-sm text-gray-700">
-								Every instance backup contains encrypted copies of the warehouse keys. Those keys are sealed to recovery key <span class="font-mono font-semibold">{{ recoveryState.fingerprint }}</span>
-								<span class="text-gray-500">(made by {{ recoveryState.created_by }}{{ recoveryState.source === 'generated' ? '' : `, ${recoveryState.source}` }})</span>.
-								Keep the printout away from this server and away from your backups.
+								Todos os backups da instância contêm cópias criptografadas das chaves dos armazéns. Essas chaves são protegidas pela chave de recuperação <span class="font-mono font-semibold">{{ recoveryState.fingerprint }}</span>
+								<span class="text-gray-500">(criada por {{ recoveryState.created_by }}{{ recoveryState.source === 'generated' ? '' : `, ${recoveryState.source}` }})</span>.
+								Guarde a impressão longe deste servidor e dos seus backups.
 							</p>
 						</template>
 						<p class="text-xs text-gray-600">
-							How it works: each backup locks the warehouses' keys with a <em>public</em> key kept here, so the unattended backup can do it but nothing on this server can unlock them.
-							Only the <em>private</em> key, which you print once, can. To restore after a disaster:
+							Como funciona: cada backup protege as chaves dos armazéns com uma chave <em>pública</em> mantida aqui. Assim, o backup automático pode fazer isso, mas nada neste servidor pode desbloqueá-las.
+							Somente a chave <em>privada</em>, que você imprime uma vez, pode fazê-lo. Para restaurar após um desastre:
 							<span class="font-mono">restore:instance &lt;zip&gt; --recovery-key-file &lt;file&gt;</span>. Check a printout at any time with
 							<span class="font-mono">instance:recovery-key verify</span>.
 						</p>
 						<div class="flex flex-wrap gap-3">
-							<PrimaryButton v-if="recoveryState.state === 'none'" type="button" @click="makeRecoveryKey(false)">Make the recovery key…</PrimaryButton>
+							<PrimaryButton v-if="recoveryState.state === 'none'" type="button" @click="makeRecoveryKey(false)">Criar chave de recuperação…</PrimaryButton>
 							<PrimaryButton v-else type="button" @click="makeRecoveryKey(true)" :class="recoveryState.state === 'ok' ? 'bg-gray-600 hover:bg-gray-500' : ''">
-								Make a new recovery key…
+								Criar nova chave de recuperação…
 							</PrimaryButton>
 						</div>
 					</section>
 
 					<section class="bg-white shadow rounded-lg p-6 space-y-4">
-						<h2 class="text-lg font-semibold">Backup now</h2>
+						<h2 class="text-lg font-semibold">Fazer backup agora</h2>
 						<div class="flex flex-wrap items-center gap-3">
-							<PrimaryButton :disabled="instBackups.working" @click="backUpInstanceNow(false)">{{ instBackups.working ? 'A backup is being made…' : 'Back up (databases)' }}</PrimaryButton>
-							<PrimaryButton :disabled="instBackups.working" @click="backUpInstanceNow(true)">Back up (databases + every warehouse's files)</PrimaryButton>
+							<PrimaryButton :disabled="instBackups.working" @click="backUpInstanceNow(false)">{{ instBackups.working ? 'Backup em andamento…' : 'Fazer backup (bancos de dados)' }}</PrimaryButton>
+							<PrimaryButton :disabled="instBackups.working" @click="backUpInstanceNow(true)">Fazer backup (bancos de dados + arquivos de todos os armazéns)</PrimaryButton>
 						</div>
-						<p v-if="instBackups.working" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-3 py-2 text-sm">Working… this page updates by itself.</p>
+						<p v-if="instBackups.working" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-3 py-2 text-sm">Processando… esta página é atualizada automaticamente.</p>
 						<p v-else-if="instBackups.activity" class="text-sm" :class="instBackups.activity.status === 'failed' ? 'text-red-700' : 'text-gray-600'">
-							Last request: {{ instBackups.activity.status === 'failed' ? 'FAILED — ' : 'done — ' }}{{ instBackups.activity.message }}
+							Última solicitação: {{ instBackups.activity.status === 'failed' ? 'FALHOU — ' : 'concluída — ' }}{{ instBackups.activity.message }}
 							<span v-if="instBackups.activity.finished_at" class="text-xs text-gray-500">({{ instWhen(instBackups.activity.finished_at) }})</span>
 						</p>
 					</section>
 
 					<section class="bg-white shadow rounded-lg p-6 space-y-4">
-						<h2 class="text-lg font-semibold">Schedule</h2>
+						<h2 class="text-lg font-semibold">Agendamento</h2>
 						<form @submit.prevent="saveInstanceSchedule" class="space-y-3 text-sm">
-							<label class="flex items-center gap-2 font-medium"><input type="checkbox" v-model="instForm.enabled" class="rounded border-gray-300" /> Make a full instance backup automatically</label>
+							<label class="flex items-center gap-2 font-medium"><input type="checkbox" v-model="instForm.enabled" class="rounded border-gray-300" /> Fazer backup completo da instância automaticamente</label>
 							<div class="border rounded p-3 flex flex-wrap items-center gap-x-6 gap-y-2" :class="instForm.enabled ? '' : 'opacity-60'">
-								<span class="w-28 font-medium">Daily</span>
-								<label class="flex items-center gap-2">After <select v-model.number="instForm.daily_hour" class="rounded-md border-gray-300 text-sm"><option v-for="h in 24" :key="h" :value="h - 1">{{ String(h - 1).padStart(2, '0') }}:00</option></select> server time</label>
-								<label class="flex items-center gap-2">Keep the newest <input type="number" min="1" max="90" v-model.number="instForm.daily_keep" class="w-20 rounded-md border-gray-300 text-sm" /></label>
-								<label class="flex items-center gap-2"><input type="checkbox" v-model="instForm.daily_with_files" class="rounded border-gray-300" /> include every warehouse's files</label>
+								<span class="w-28 font-medium">Diário</span>
+								<label class="flex items-center gap-2">Após <select v-model.number="instForm.daily_hour" class="rounded-md border-gray-300 text-sm"><option v-for="h in 24" :key="h" :value="h - 1">{{ String(h - 1).padStart(2, '0') }}:00</option></select> (horário do servidor)</label>
+								<label class="flex items-center gap-2">Manter os <input type="number" min="1" max="90" v-model.number="instForm.daily_keep" class="w-20 rounded-md border-gray-300 text-sm" /> mais recentes</label>
+								<label class="flex items-center gap-2"><input type="checkbox" v-model="instForm.daily_with_files" class="rounded border-gray-300" /> incluir os arquivos de todos os armazéns</label>
 							</div>
 							<div class="border rounded p-3 flex flex-wrap items-center gap-x-6 gap-y-2" :class="instForm.enabled ? '' : 'opacity-60'">
-								<label class="flex items-center gap-2 w-28 font-medium"><input type="checkbox" v-model="instForm.weekly_enabled" class="rounded border-gray-300" /> Weekly</label>
-								<label class="flex items-center gap-2">On <select v-model.number="instForm.weekly_dow" class="rounded-md border-gray-300 text-sm"><option v-for="(d, i) in weekdays" :key="d" :value="i">{{ d }}</option></select></label>
-								<label class="flex items-center gap-2">Keep the newest <input type="number" min="1" max="52" v-model.number="instForm.weekly_keep" class="w-20 rounded-md border-gray-300 text-sm" /></label>
-								<label class="flex items-center gap-2"><input type="checkbox" v-model="instForm.weekly_with_files" class="rounded border-gray-300" /> include every warehouse's files</label>
+								<label class="flex items-center gap-2 w-28 font-medium"><input type="checkbox" v-model="instForm.weekly_enabled" class="rounded border-gray-300" /> Semanal</label>
+								<label class="flex items-center gap-2">Às <select v-model.number="instForm.weekly_dow" class="rounded-md border-gray-300 text-sm"><option v-for="(d, i) in weekdays" :key="d" :value="i">{{ d }}</option></select></label>
+								<label class="flex items-center gap-2">Manter os <input type="number" min="1" max="52" v-model.number="instForm.weekly_keep" class="w-20 rounded-md border-gray-300 text-sm" /> mais recentes</label>
+								<label class="flex items-center gap-2"><input type="checkbox" v-model="instForm.weekly_with_files" class="rounded border-gray-300" /> incluir os arquivos de todos os armazéns</label>
 							</div>
 							<div class="flex flex-wrap items-center gap-4">
-								<PrimaryButton type="submit">Save Schedule…</PrimaryButton>
+								<PrimaryButton type="submit">Salvar agendamento…</PrimaryButton>
 								<span v-if="instBackups.schedule.last_run_at" class="text-xs" :class="instBackups.schedule.last_status === 'failed' ? 'text-red-700' : 'text-gray-500'">
-									Last scheduled backup: {{ instWhen(instBackups.schedule.last_run_at) }} — {{ instBackups.schedule.last_status === 'failed' ? `FAILED: ${instBackups.schedule.last_message}` : 'made' }}
+									Último backup agendado: {{ instWhen(instBackups.schedule.last_run_at) }} — {{ instBackups.schedule.last_status === 'failed' ? `FALHOU: ${instBackups.schedule.last_message}` : 'feito' }}
 								</span>
 							</div>
 						</form>
 						<p class="text-xs text-gray-500">
-							A weekly backup also counts as that day's daily one. Backups made by hand and the ones taken before an upgrade are not deleted by this schedule
-							(the upgrade ones go after the usual number of days). These sit on this machine: copy them elsewhere too (the RI Launcher can).
-							The provisioner works on one request at a time, so creating a warehouse waits while a big backup runs.
+							Um backup semanal também conta como o backup diário daquele dia. Os backups manuais e os feitos antes de uma atualização não são excluídos por este agendamento
+							(os de atualização são removidos após o número habitual de dias). Eles ficam nesta máquina: copie-os também para outro local (o RI Launcher pode fazer isso).
+							O provisionador processa uma solicitação por vez, então a criação de um armazém aguarda enquanto um backup grande é feito.
 						</p>
 					</section>
 
 					<section class="bg-white shadow rounded-lg p-6 space-y-3">
-						<h2 class="text-lg font-semibold">Computers that may take instance backups</h2>
+						<h2 class="text-lg font-semibold">Computadores autorizados a fazer backups da instância</h2>
 						<p class="text-sm text-gray-700">
-							The RI Launcher on a computer you pair here can make and download these backups by itself, on a schedule, to keep copies somewhere else. This is
-							separate from the per-warehouse Trust Console: it covers the <strong>whole instance</strong>, so pair only computers you trust with everyone's information.
+							O RI Launcher em um computador vinculado aqui pode criar e baixar estes backups automaticamente, conforme um agendamento, para manter cópias em outro local. Isto é
+							separado do Console de confiança de cada armazém: cobre a <strong>instância inteira</strong>, então vincule somente computadores confiáveis com as informações de todos.
 						</p>
 						<div v-if="pairCode" class="rounded border-2 border-green-500 bg-green-50 p-4 text-sm space-y-1">
-							<div>Server address: <span class="font-mono font-semibold">{{ pairCode.address }}</span></div>
-							<div>Code: <span class="font-mono text-xl font-bold tracking-widest">{{ pairCode.code }}</span></div>
-							<div class="text-xs text-gray-600">Shown once. Expires {{ instWhen(pairCode.expires_at) }}. In the Launcher: Remote backups → Pair → “Instance backup”.</div>
+							<div>Endereço do servidor: <span class="font-mono font-semibold">{{ pairCode.address }}</span></div>
+							<div>Código: <span class="font-mono text-xl font-bold tracking-widest">{{ pairCode.code }}</span></div>
+							<div class="text-xs text-gray-600">Exibido uma única vez. Expira em {{ instWhen(pairCode.expires_at) }}. No Launcher: Backups remotos → Vincular → “Backup da instância”.</div>
 						</div>
 						<div v-for="c in instBackups.clients" :key="c.id" class="border rounded p-3 text-sm flex flex-wrap items-center justify-between gap-3">
 							<div>
 								<span class="font-medium">{{ c.name }}</span>
-								<span class="ml-2 rounded px-2 py-0.5 text-xs" :class="c.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'">{{ c.status === 'approved' ? 'Paired' : 'Revoked' }}</span>
+								<span class="ml-2 rounded px-2 py-0.5 text-xs" :class="c.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'">{{ c.status === 'approved' ? 'Vinculado' : 'Revogado' }}</span>
 								<div class="text-xs text-gray-500">
-									Paired {{ instWhen(c.approved_at) }}<span v-if="c.last_seen_at"> · last seen {{ instWhen(c.last_seen_at) }}<span v-if="c.last_seen_ip"> from {{ c.last_seen_ip }}</span></span><span v-else> · never connected</span>
+									Vinculado em {{ instWhen(c.approved_at) }}<span v-if="c.last_seen_at"> · visto por último em {{ instWhen(c.last_seen_at) }}<span v-if="c.last_seen_ip"> de {{ c.last_seen_ip }}</span></span><span v-else> · nunca conectado</span>
 								</div>
 							</div>
 							<button v-if="c.status === 'approved'" @click="revokeBackupClient(c)"
-								class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-red-600 hover:bg-red-500">Revoke…</button>
+								class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-red-600 hover:bg-red-500">Revogar…</button>
 						</div>
-						<p v-if="!instBackups.clients.length" class="text-gray-400 text-sm">No computer is paired yet.</p>
-						<PrimaryButton type="button" @click="newBackupClient">Pair a computer…</PrimaryButton>
+						<p v-if="!instBackups.clients.length" class="text-gray-400 text-sm">Nenhum computador vinculado ainda.</p>
+						<PrimaryButton type="button" @click="newBackupClient">Vincular computador…</PrimaryButton>
 					</section>
 
 					<section class="bg-white shadow rounded-lg p-6 space-y-3">
-						<h2 class="text-lg font-semibold">Instance backups</h2>
-						<p v-if="!instBackups.backups.length" class="text-gray-400 text-sm">none yet</p>
+						<h2 class="text-lg font-semibold">Backups da instância</h2>
+						<p v-if="!instBackups.backups.length" class="text-gray-400 text-sm">nenhum ainda</p>
 						<div v-for="z in instBackups.backups" :key="z.name" class="border rounded p-3 text-sm flex flex-wrap items-center justify-between gap-3">
 							<div class="space-y-1">
 								<div class="font-mono text-xs text-gray-600">{{ z.name }}</div>
 								<div>
-									{{ instWhen(z.made_at) }} — {{ sizeOf(z.size) }}, {{ z.scope === 'full' ? 'databases + files' : 'databases only' }}
+									{{ instWhen(z.made_at) }} — {{ sizeOf(z.size) }}, {{ z.scope === 'full' ? 'bancos de dados + arquivos' : 'somente bancos de dados' }}
 									<span v-if="z.label" class="ml-1 rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700">{{ labelNames[z.label] || z.label }}</span>
 								</div>
 							</div>
 							<a v-if="z.downloadable" :href="$withWarehouse(`/json/instance/backups/${z.name}/download`)"
-								class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-gray-800 hover:bg-gray-700">Download</a>
-							<span v-else class="text-xs text-gray-500">Not readable here: copy it from the server's backup folder (<span class="font-mono">instance/</span>)</span>
+								class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-gray-800 hover:bg-gray-700">Baixar</a>
+							<span v-else class="text-xs text-gray-500">Não pode ser lido aqui: copie-o da pasta de backups do servidor (<span class="font-mono">instance/</span>)</span>
 						</div>
 						<p class="text-xs text-gray-500">
-							To restore one onto a new machine (other containers stopped):
-							<span class="font-mono">docker compose exec provisioner php artisan restore:instance &lt;zip&gt;</span>. Deleting one is done at the server.
+							Para restaurá-lo em uma nova máquina (com os outros contêineres parados):
+							<span class="font-mono">docker compose exec provisioner php artisan restore:instance &lt;zip&gt;</span>. A exclusão deve ser feita no servidor.
 						</p>
 					</section>
 				</template>
@@ -972,31 +972,31 @@ onUnmounted(() => {
 		<!-- The recovery key, shown once. No way to dismiss it until the person says it is stored. -->
 		<div v-if="recoveryShown" class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" role="dialog" aria-modal="true" aria-labelledby="recovery-title">
 			<div class="max-h-full w-full max-w-2xl overflow-y-auto rounded-lg bg-white p-6 shadow-xl space-y-4">
-				<h2 id="recovery-title" class="text-xl font-bold text-red-800">Print this key and store it somewhere safe</h2>
+				<h2 id="recovery-title" class="text-xl font-bold text-red-800">Imprima esta chave e guarde-a em um local seguro</h2>
 				<p class="text-sm text-gray-800">
-					This is your instance's <strong>recovery key</strong>. It is shown <strong>only now</strong>: the server does not keep it and cannot show it again.
-					It is what lets an automatic backup restore every warehouse's encrypted settings after a disaster.
+					Esta é a <strong>chave de recuperação</strong> da sua instância. Ela é exibida <strong>somente agora</strong>: o servidor não a guarda e não poderá exibi-la novamente.
+					É ela que permite restaurar as configurações criptografadas de todos os armazéns a partir de um backup automático após um desastre.
 				</p>
 				<div class="rounded border-2 border-gray-800 bg-gray-50 p-4">
-					<div class="text-xs text-gray-500">Fingerprint {{ recoveryShown.fingerprint }}</div>
+					<div class="text-xs text-gray-500">Impressão digital {{ recoveryShown.fingerprint }}</div>
 					<div class="mt-1 break-all font-mono text-lg font-bold leading-relaxed tracking-wide" data-testid="recovery-key">{{ recoveryShown.private_key }}</div>
 				</div>
 				<div class="flex flex-wrap gap-3">
-					<button type="button" class="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700" @click="printRecoveryKey">Print</button>
-					<button type="button" class="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700" @click="downloadRecoveryKey">Download as a file</button>
-					<button type="button" class="rounded-md bg-gray-200 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-800 hover:bg-gray-300" @click="copyRecoveryKey">{{ recoveryCopied ? 'Copied' : 'Copy' }}</button>
+					<button type="button" class="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700" @click="printRecoveryKey">Imprimir</button>
+					<button type="button" class="rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700" @click="downloadRecoveryKey">Baixar como arquivo</button>
+					<button type="button" class="rounded-md bg-gray-200 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-gray-800 hover:bg-gray-300" @click="copyRecoveryKey">{{ recoveryCopied ? 'Copiado' : 'Copiar' }}</button>
 				</div>
 				<ul class="list-disc space-y-1 pl-5 text-sm text-gray-700">
-					<li>Keep it <strong>away from this server and away from your backups</strong>: a safe, a sealed envelope, a password manager. Anyone with both this key and a backup can read the warehouses' encrypted settings.</li>
-					<li>Check a printout later with <span class="font-mono">instance:recovery-key verify</span>. The key has check characters, so a typing mistake is caught.</li>
-					<li>If it is lost, make a new one here. Backups made before then still need this one.</li>
+					<li>Mantenha-a <strong>longe deste servidor e dos seus backups</strong>: em um cofre, envelope lacrado ou gerenciador de senhas. Qualquer pessoa com esta chave e um backup pode ler as configurações criptografadas dos armazéns.</li>
+					<li>Confira uma impressão depois com <span class="font-mono">instance:recovery-key verify</span>. A chave tem caracteres de verificação para detectar erros de digitação.</li>
+					<li>Se ela for perdida, crie outra por aqui. Os backups anteriores ainda precisarão desta chave.</li>
 				</ul>
 				<label class="flex items-start gap-2 text-sm font-medium text-gray-900">
 					<input type="checkbox" v-model="recoveryStored" class="mt-1 rounded border-gray-400" />
-					<span>I have printed or saved this key somewhere safe, away from this server and my backups.</span>
+					<span>Imprimi ou salvei esta chave em um local seguro, longe deste servidor e dos meus backups.</span>
 				</label>
 				<div class="flex justify-end">
-					<PrimaryButton type="button" :disabled="!recoveryStored || recoveryBusy" @click="finishRecoveryKey">{{ recoveryBusy ? 'Saving…' : 'Done' }}</PrimaryButton>
+					<PrimaryButton type="button" :disabled="!recoveryStored || recoveryBusy" @click="finishRecoveryKey">{{ recoveryBusy ? 'Salvando…' : 'Concluir' }}</PrimaryButton>
 				</div>
 			</div>
 		</div>

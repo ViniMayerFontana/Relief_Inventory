@@ -80,32 +80,32 @@ function again() {
 </script>
 
 <template>
-	<Head title="Sign Up for Training" />
+	<Head title="Inscrição para treinamento" />
 	<div class="min-h-screen bg-gray-100 py-6 px-4">
 		<div class="max-w-md mx-auto bg-white shadow rounded-lg p-5 space-y-5">
 			<div class="text-center">
-				<h1 class="text-2xl font-bold text-gray-800">Sign up for training</h1>
+				<h1 class="text-2xl font-bold text-gray-800">Inscreva-se para o treinamento</h1>
 			</div>
 
-			<p v-if="!open" class="text-center text-gray-600">Sign-up is closed right now.</p>
+			<p v-if="!open" class="text-center text-gray-600">As inscrições estão fechadas no momento.</p>
 
 			<!-- ======================= THANK YOU ======================= -->
 			<div v-else-if="done" class="text-center space-y-4">
-				<p class="text-lg text-gray-800">Thank you, {{ done }}! You're signed up.</p>
-				<button type="button" class="text-sm text-gray-500 underline" @click="again">Sign up someone else on this phone</button>
+				<p class="text-lg text-gray-800">Obrigado, {{ done }}! Sua inscrição foi realizada.</p>
+				<button type="button" class="text-sm text-gray-500 underline" @click="again">Inscrever outra pessoa neste celular</button>
 			</div>
 
 			<!-- ======================= FORM ======================= -->
 			<form v-else class="space-y-5" @submit.prevent="submit">
 				<div class="grid grid-cols-2 gap-3">
 					<label class="block">
-						<span class="text-sm text-gray-700">First name</span>
+						<span class="text-sm text-gray-700">Nome</span>
 						<input v-model="form.first_name" required autocomplete="given-name" autocapitalize="words"
 							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 						<span v-if="errors.first_name" class="text-xs text-red-600">{{ errors.first_name[0] }}</span>
 					</label>
 					<label class="block">
-						<span class="text-sm text-gray-700">Last name</span>
+						<span class="text-sm text-gray-700">Sobrenome</span>
 						<input v-model="form.last_name" required autocomplete="family-name" autocapitalize="words"
 							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 						<span v-if="errors.last_name" class="text-xs text-red-600">{{ errors.last_name[0] }}</span>
@@ -113,26 +113,26 @@ function again() {
 				</div>
 
 				<div class="space-y-3">
-					<p class="text-xs text-gray-500 uppercase font-semibold">Optional</p>
+					<p class="text-xs text-gray-500 uppercase font-semibold">Opcional</p>
 					<label class="block">
-						<span class="text-sm text-gray-700">Email</span>
+						<span class="text-sm text-gray-700">E-mail</span>
 						<input v-model="form.email" type="email" autocomplete="email" inputmode="email"
 							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 						<span v-if="errors.email" class="text-xs text-red-600">{{ errors.email[0] }}</span>
 					</label>
 					<label class="block">
-						<span class="text-sm text-gray-700">Phone</span>
+						<span class="text-sm text-gray-700">Telefone</span>
 						<input v-model="form.phone" type="tel" autocomplete="tel" inputmode="tel"
 							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 					</label>
 					<label class="flex items-start gap-3 py-1">
 						<input v-model="form.wants_updates" type="checkbox" class="mt-1 h-5 w-5 rounded border-gray-300" />
-						<span class="text-sm text-gray-800">Email me updates about the project</span>
+						<span class="text-sm text-gray-800">Quero receber novidades sobre o projeto por e-mail</span>
 					</label>
 				</div>
 
 				<div class="space-y-2">
-					<p class="text-sm font-medium text-gray-800">Would you like to get involved?</p>
+					<p class="text-sm font-medium text-gray-800">Você gostaria de se envolver?</p>
 					<label v-for="[key, label] in helpOptions" :key="key" class="flex items-start gap-3 py-1">
 						<input v-model="form[key]" type="checkbox" class="mt-1 h-5 w-5 rounded border-gray-300" />
 						<span class="text-sm text-gray-800">{{ label }}</span>
@@ -140,27 +140,27 @@ function again() {
 				</div>
 
 				<label class="block">
-					<span class="text-sm font-medium text-gray-800">Know someone who could help?</span>
-					<span class="block text-xs text-gray-500">Their name, and how to reach them if you know.</span>
+					<span class="text-sm font-medium text-gray-800">Conhece alguém que poderia ajudar?</span>
+					<span class="block text-xs text-gray-500">Nome e contato, se souber.</span>
 					<input v-model="form.recommend" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 				</label>
 
 				<label class="block">
-					<span class="text-sm text-gray-700">Anything else?</span>
+					<span class="text-sm text-gray-700">Mais alguma coisa?</span>
 					<textarea v-model="form.comments" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base"></textarea>
 				</label>
 
 				<div v-if="turnstile_enabled" class="cf-turnstile" :data-sitekey="turnstile_site_key"></div>
 				<p v-if="turnstile_unavailable" class="text-sm text-amber-900 bg-amber-50 border border-amber-300 rounded p-3">
-					Sign-up can't accept entries right now because its spam protection isn't set up on this server.
+					Não é possível receber inscrições no momento porque a proteção contra spam não está configurada neste servidor.
 				</p>
 				<p v-if="message" class="text-sm text-red-600">{{ message }}</p>
 
 				<button type="submit" :disabled="submitting || turnstile_unavailable"
 					class="w-full py-3 bg-blue-600 text-white rounded-md font-semibold text-lg hover:bg-blue-700 disabled:opacity-50">
-					{{ submitting ? 'Signing up…' : 'Sign Up' }}
+					{{ submitting ? 'Inscrevendo…' : 'Inscrever-se' }}
 				</button>
-				<p class="text-xs text-gray-500 text-center">We'll only use your details to contact you about the training and the project.</p>
+				<p class="text-xs text-gray-500 text-center">Usaremos seus dados somente para falar com você sobre o treinamento e o projeto.</p>
 			</form>
 		</div>
 	</div>

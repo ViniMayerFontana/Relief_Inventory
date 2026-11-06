@@ -80,20 +80,20 @@ class BackupController extends Controller
     {
         $user = Auth::user();
         $warehouse = app(WarehouseContext::class)->current();
-        abort_unless($user->hasPermission('admin-system'), 403, 'Missing required permission: admin-system');
-        abort_unless($warehouse->isActive() && ! $warehouse->is_training, 403, 'This warehouse cannot be rolled back from here.');
+        abort_unless($user->hasPermission('admin-system'), 403, 'Permissão obrigatória ausente: admin-system');
+        abort_unless($warehouse->isActive() && ! $warehouse->is_training, 403, 'Não é possível reverter este armazém por aqui.');
         $data = $request->validate(['password' => 'required|string']);
 
         if (! $user->password || ! Hash::check($data['password'], $user->password) || ! $user->account) {
-            return response()->json(['message' => 'That password is not correct.', 'errors' => ['password' => ['That password is not correct.']]], 422);
+            return response()->json(['message' => 'A senha está incorreta.', 'errors' => ['password' => ['A senha está incorreta.']]], 422);
         }
         $backup = Backup::findOrFail($id);
         abort_unless($backup->status === 'complete' && $backup->filename && RestoreService::isSnapshotName($backup->filename) && is_file($backup->path()), 404);
         if (! BackupService::hasDatabase($backup->scope)) {
-            return response()->json(['message' => 'That backup holds only files, so there is nothing to roll the data back to.'], 422);
+            return response()->json(['message' => 'Esse backup contém apenas arquivos; não há dados para restaurar.'], 422);
         }
         if ($this->restore->isRunning() || Backup::whereIn('status', Backup::ACTIVE)->exists()) {
-            return response()->json(['message' => 'A backup or restore is running. Wait for it to finish.'], 409);
+            return response()->json(['message' => 'Há um backup ou uma restauração em andamento. Aguarde a conclusão.'], 409);
         }
 
         $this->restore->stageOwnRestore([
@@ -104,7 +104,7 @@ class BackupController extends Controller
         Log::warning('Rollback to a snapshot started', ['person' => $user->id, 'backup' => $backup->filename]);
         $this->restore->launchSnapshot($backup->filename);
 
-        return response()->json(['message' => 'Rollback started.'], 202);
+        return response()->json(['message' => 'A reversão foi iniciada.'], 202);
     }
 
     public function store(Request $request)
@@ -120,7 +120,7 @@ class BackupController extends Controller
         }
         Log::notice('Backup requested', ['backup' => $backup->id, 'person' => Auth::id(), 'scope' => $backup->scope]);
 
-        return response()->json(['message' => 'Backup started.', 'record' => $backup], 202);
+        return response()->json(['message' => 'O backup foi iniciado.', 'record' => $backup], 202);
     }
 
     public function download(int $id)
@@ -137,12 +137,12 @@ class BackupController extends Controller
     {
         $backup = Backup::findOrFail($id);
         if ($backup->isActive()) {
-            return response()->json(['message' => 'That backup is still running.'], 409);
+            return response()->json(['message' => 'Esse backup ainda está em andamento.'], 409);
         }
         $this->backups->delete($backup);
         Log::notice('Backup deleted', ['backup' => $id, 'person' => Auth::id()]);
 
-        return response()->json(['message' => 'Backup deleted.']);
+        return response()->json(['message' => 'Backup excluído.']);
     }
 
     /**
@@ -158,8 +158,8 @@ class BackupController extends Controller
             Log::warning('Warehouse key reveal refused: wrong or missing password', ['person' => $user->id]);
 
             return response()->json([
-                'message' => 'That password is not correct.',
-                'errors' => ['password' => [$user->password ? 'That password is not correct.' : 'Your account has no password set, so the key cannot be shown.']],
+                'message' => 'A senha está incorreta.',
+                'errors' => ['password' => [$user->password ? 'A senha está incorreta.' : 'Sua conta não tem uma senha definida, portanto a chave não pode ser exibida.']],
             ], 422);
         }
         Log::warning('Warehouse key revealed', ['person' => $user->id]);

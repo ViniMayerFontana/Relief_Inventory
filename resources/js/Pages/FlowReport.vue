@@ -77,8 +77,8 @@ export default {
 				data: {
 					labels: this.labels,
 					datasets: [
-						{ label: 'Received', data: b.map((x) => x.received), backgroundColor: BLUE, borderRadius: 4 },
-						{ label: 'Picked', data: b.map((x) => x.picked), backgroundColor: ORANGE, borderRadius: 4 },
+						{ label: 'Recebidos', data: b.map((x) => x.received), backgroundColor: BLUE, borderRadius: 4 },
+						{ label: 'Separados', data: b.map((x) => x.picked), backgroundColor: ORANGE, borderRadius: 4 },
 					],
 				},
 				options: {
@@ -94,7 +94,7 @@ export default {
 				data: {
 					labels: this.labels,
 					datasets: [{
-						label: 'On hand (end of period)', data: b.map((x) => x.on_hand),
+						label: 'Saldo disponível (fim do período)', data: b.map((x) => x.on_hand),
 						borderColor: BLUE, backgroundColor: BLUE, borderWidth: 2, pointRadius: b.length > 60 ? 0 : 4,
 						pointBorderColor: '#fff', pointBorderWidth: 2, tension: 0,
 					}],
@@ -124,8 +124,8 @@ export default {
 				this.to = this.report.filters.to;
 			} catch (error) {
 				this.error = error.response?.status === 422
-					? (error.response.data?.message || 'Check the dates: the "to" date can\'t be before the "from" date.')
-					: 'Could not load the inventory flow report.';
+					? (error.response.data?.message || 'Confira as datas: a data final não pode ser anterior à data inicial.')
+					: 'Não foi possível carregar o relatório de movimentação do estoque.';
 			} finally {
 				this.loading = false;
 			}
@@ -138,6 +138,9 @@ export default {
 			const d = new Date(start + 'T00:00:00');
 			if (this.bucket === 'month') return d.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
 			return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+		},
+		bucketLabelText(bucket) {
+			return ({ day: 'dia', week: 'semana', month: 'mês' })[bucket] || bucket;
 		},
 		n(value) {
 			return Number(value || 0).toLocaleString();
@@ -153,84 +156,84 @@ export default {
 </script>
 
 <template>
-	<Head title="Inventory Flow Report" />
+	<Head title="Relatório de movimentação do estoque" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="flr_container">
 			<h2 class="ri_datatable_head flr_head">
-				Inventory Flow Report
+				Relatório de movimentação do estoque
 				<span class="flr_exports">
-					<a :href="$withWarehouse('/report/flow.csv' + query)" class="ri_defaultbutton">Download CSV</a>
-					<PrintMenu document-key="inventory-flow" media="report" label="Print / PDF"
+					<a :href="$withWarehouse('/report/flow.csv' + query)" class="ri_defaultbutton">Baixar CSV</a>
+					<PrintMenu document-key="inventory-flow" media="report" label="Imprimir / PDF"
 						:params="appliedParams" :download-href="'/report/flow.pdf' + query" />
 				</span>
 			</h2>
 
 			<p class="flr_intro">
-				Usable goods in, out and lost over time. Outdated, trashed and diverted goods aren't stock, so
-				they're shown separately and never change what's on hand.
+				Entrada, saída e perdas de itens aproveitáveis ao longo do tempo. Itens vencidos, descartados
+				e desviados não fazem parte do estoque, por isso aparecem separados e não alteram o saldo disponível.
 			</p>
 
 			<form class="flr_toolbar" @submit.prevent="fetchReport">
-				<label>From <input type="date" v-model="from" class="ri_forminput" /></label>
-				<label>to <input type="date" v-model="to" class="ri_forminput" /></label>
-				<label>By
+				<label>De <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>até <input type="date" v-model="to" class="ri_forminput" /></label>
+				<label>Por
 					<select v-model="bucket" class="ri_forminput" @change="fetchReport">
-						<option value="day">Day</option>
-						<option value="week">Week</option>
-						<option value="month">Month</option>
+						<option value="day">Dia</option>
+						<option value="week">Semana</option>
+						<option value="month">Mês</option>
 					</select>
 				</label>
-				<label>Category
+				<label>Categoria
 					<select v-model="categoryId" class="ri_forminput" @change="onCategoryChange">
 						<option value="">All</option>
 						<option v-for="c in report?.options?.categories || []" :key="c.id" :value="c.id">{{ c.name }}</option>
 					</select>
 				</label>
-				<label>Item type
+				<label>Tipo de item
 					<select v-model="itemtypeId" class="ri_forminput" @change="fetchReport">
 						<option value="">All</option>
 						<option v-for="t in itemtypeOptions" :key="t.id" :value="t.id">{{ t.name }}</option>
 					</select>
 				</label>
-				<button type="submit" class="ri_defaultbutton">Apply</button>
+				<button type="submit" class="ri_defaultbutton">Aplicar</button>
 			</form>
 
 			<p v-if="error" class="flr_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">Carregando...</p>
 
 			<template v-if="report && !loading">
 				<div class="flr_cards">
-					<div class="flr_card"><span>Opening on hand</span><strong>{{ n(totals.opening) }}</strong></div>
-					<div class="flr_card"><span>Received</span><strong>{{ n(totals.received) }}</strong></div>
-					<div class="flr_card"><span>Picked</span><strong>{{ n(totals.picked) }}</strong></div>
-					<div class="flr_card"><span>Adjustments</span><strong>{{ signed(totals.adjustments) }}</strong></div>
-					<div class="flr_card"><span>Closing on hand</span><strong>{{ n(totals.closing) }}</strong></div>
+					<div class="flr_card"><span>Saldo inicial</span><strong>{{ n(totals.opening) }}</strong></div>
+					<div class="flr_card"><span>Recebidos</span><strong>{{ n(totals.received) }}</strong></div>
+					<div class="flr_card"><span>Separados</span><strong>{{ n(totals.picked) }}</strong></div>
+					<div class="flr_card"><span>Ajustes</span><strong>{{ signed(totals.adjustments) }}</strong></div>
+					<div class="flr_card"><span>Saldo final</span><strong>{{ n(totals.closing) }}</strong></div>
 					<div class="flr_card flr_card_lost">
-						<span>Lost at sorting</span>
+						<span>Perdas na triagem</span>
 						<strong>{{ n(totals.outdated + totals.trashed + totals.diverted) }}</strong>
-						<small>{{ n(totals.outdated) }} outdated · {{ n(totals.trashed) }} trashed · {{ n(totals.diverted) }} diverted</small>
+						<small>{{ n(totals.outdated) }} vencidos · {{ n(totals.trashed) }} descartados · {{ n(totals.diverted) }} desviados</small>
 					</div>
 				</div>
 
 				<div class="flr_charts">
 					<div class="flr_chartbox">
-						<h3>Received vs. picked</h3>
-						<ChartCanvas :config="flowChart" label="Units received and picked per period" />
+						<h3>Recebidos x separados</h3>
+						<ChartCanvas :config="flowChart" label="Unidades recebidas e separadas por período" />
 					</div>
 					<div class="flr_chartbox">
-						<h3>On hand</h3>
-						<ChartCanvas :config="onHandChart" label="Units on hand at the end of each period" />
+						<h3>Saldo disponível</h3>
+						<ChartCanvas :config="onHandChart" label="Unidades disponíveis ao final de cada período" />
 					</div>
 				</div>
 
-				<h3>By {{ report.filters.bucket }}</h3>
+				<h3>Por {{ bucketLabelText(report.filters.bucket) }}</h3>
 				<div class="flr_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
 						<tr>
-							<th>Period starting</th><th>Received</th><th>Picked</th><th>Adjustments</th>
-							<th>On hand (end)</th><th>Outdated</th><th>Trashed</th><th>Diverted</th>
+							<th>Início do período</th><th>Recebidos</th><th>Separados</th><th>Ajustes</th>
+							<th>Saldo final</th><th>Vencidos</th><th>Descartados</th><th>Desviados</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -248,9 +251,9 @@ export default {
 				</table></div>
 
 				<template v-if="report.adjustment_reasons.length">
-					<h3>Adjustments by reason</h3>
+					<h3>Ajustes por motivo</h3>
 					<div class="flr_tablewrap flr_narrow"><table class="ri_datatable" border="1">
-						<thead><tr><th>Reason</th><th>Added</th><th>Removed</th></tr></thead>
+						<thead><tr><th>Motivo</th><th>Adicionados</th><th>Removidos</th></tr></thead>
 						<tbody>
 							<tr v-for="r in report.adjustment_reasons" :key="r.reason">
 								<td>{{ r.label }}</td>
@@ -261,14 +264,14 @@ export default {
 					</table></div>
 				</template>
 
-				<h3>By item</h3>
+				<h3>Por item</h3>
 				<input type="text" v-model="search" class="ri_forminput flr_search"
-					placeholder="Search item, item # or category..." />
+					placeholder="Buscar item, nº do item ou categoria..." />
 				<div class="flr_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
 						<tr>
-							<th>Item #</th><th>Item</th><th>Unit</th><th>Opening</th><th>Received</th><th>Picked</th>
-							<th>Adjustments</th><th>Closing</th><th>Outdated</th><th>Trashed</th><th>Diverted</th>
+							<th>Nº do item</th><th>Item</th><th>Unidade</th><th>Saldo inicial</th><th>Recebidos</th><th>Separados</th>
+							<th>Ajustes</th><th>Saldo final</th><th>Vencidos</th><th>Descartados</th><th>Desviados</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -285,12 +288,12 @@ export default {
 							<td class="flr_num">{{ n(i.trashed) }}</td>
 							<td class="flr_num">{{ n(i.diverted) }}</td>
 						</tr>
-						<tr v-if="!items.length"><td colspan="11" class="flr_empty">No item movement in this range.</td></tr>
+						<tr v-if="!items.length"><td colspan="11" class="flr_empty">Nenhuma movimentação de itens neste período.</td></tr>
 					</tbody>
 				</table></div>
 				<p class="flr_note">
-					Quantities are in each item's own unit, so totals across items mix units. Moving a pallet
-					changes where stock is, not how much, so it isn't shown here.
+					As quantidades usam a unidade de cada item, portanto os totais somam unidades diferentes.
+					Mover um palete altera a localização do estoque, não sua quantidade, por isso essa movimentação não aparece aqui.
 				</p>
 			</template>
 		</div>

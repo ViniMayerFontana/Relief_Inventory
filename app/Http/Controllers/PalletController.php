@@ -127,7 +127,7 @@ class PalletController extends Controller
             && $data['status'] !== PalletKind::MISSING
             && ! PalletKind::isValidStatus($pallet->kind, $data['status'])) {
             return response()->json([
-                'errors' => ['status' => ["\"{$data['status']}\" is not a valid status for a ".(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).' pallet.']],
+                'errors' => ['status' => ["\"{$data['status']}\" não é um status válido para um palete de ".(PalletKind::LABELS[$pallet->kind] ?? $pallet->kind).'.']],
             ], 422);
         }
 
@@ -148,7 +148,7 @@ class PalletController extends Controller
         }
 
         return response()->json([
-            'message' => 'Pallet updated successfully.',
+            'message' => 'Palete atualizado com sucesso.',
             'record' => $pallet->fresh(['location', 'donor', 'destination', 'truck', 'statuses.location']),
         ], 200);
     }
@@ -162,7 +162,7 @@ class PalletController extends Controller
         $pallet->delete();
 
         return response()->json([
-            'message' => 'Pallet deleted successfully.',
+            'message' => 'Palete excluído com sucesso.',
         ], 200);
     }
 }

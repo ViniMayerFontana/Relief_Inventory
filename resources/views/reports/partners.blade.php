@@ -3,27 +3,27 @@
     $t = $report['totals'];
     $rate = fn ($v) => $v === null ? '—' : $v.'%';
     $range = match (true) {
-        ! empty($f->from) && ! empty($f->to) => 'orders dated '.$f->from.' to '.$f->to,
-        ! empty($f->from) => 'orders dated '.$f->from.' or later',
-        ! empty($f->to) => 'orders dated '.$f->to.' or earlier',
-        default => 'all orders',
+        ! empty($f->from) && ! empty($f->to) => 'pedidos de '.$f->from.' a '.$f->to,
+        ! empty($f->from) => 'pedidos a partir de '.$f->from,
+        ! empty($f->to) => 'pedidos até '.$f->to,
+        default => 'todos os pedidos',
     };
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Partner Report</title>
+    <title>Relatório de Entidades Parceiras</title>
     <style>
         @page {
             size: letter;
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Partner Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Relatório de Entidades Parceiras — gerado em {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "Página " counter(page) " de " counter(pages);
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
         }
@@ -51,27 +51,27 @@
     </style>
 </head>
 <body>
-    <h1>Partner Report</h1>
+    <h1>Relatório de Entidades Parceiras</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; what each partner requested and received, {{ $range }}, generated
+        {{ config('app.name') }} &mdash; o que cada entidade parceira solicitou e recebeu, {{ $range }}, gerado em
         {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
     </div>
 
     <div class="summary">
-        <strong>{{ $t['partners'] }}</strong> partner{{ $t['partners'] === 1 ? '' : 's' }},
-        <strong>{{ $t['requests'] }}</strong> request{{ $t['requests'] === 1 ? '' : 's' }}:
-        <strong>{{ number_format($t['requested']) }}</strong> requested,
-        <strong>{{ number_format($t['filled']) }}</strong> filled
-        (fill rate on finished requests {{ $rate($t['fill_rate']) }});
-        {{ $t['shipped'] }} shipped, {{ $t['delivered'] }} delivered.
+        <strong>{{ $t['partners'] }}</strong> {{ $t['partners'] === 1 ? 'entidade parceira' : 'entidades parceiras' }},
+        <strong>{{ $t['requests'] }}</strong> {{ $t['requests'] === 1 ? 'solicitação' : 'solicitações' }}:
+        <strong>{{ number_format($t['requested']) }}</strong> solicitadas,
+        <strong>{{ number_format($t['filled']) }}</strong> atendidas
+        (taxa de atendimento dos pedidos concluídos: {{ $rate($t['fill_rate']) }});
+        {{ $t['shipped'] }} enviadas, {{ $t['delivered'] }} entregues.
     </div>
 
     @if($report['partners']->isEmpty())
-        <p>No requests{{ $range === 'all orders' && empty($f->county_id) ? '' : ' for these filters' }}.</p>
+        <p>Nenhuma solicitação{{ $range === 'todos os pedidos' && empty($f->county_id) ? '' : ' com esses filtros' }}.</p>
     @else
-        <h2>By County</h2>
+        <h2>Por município</h2>
         <table>
-            <thead><tr><th>County</th><th class="num">Partners</th><th class="num">Requests</th><th class="num">Requested</th><th class="num">Filled</th></tr></thead>
+            <thead><tr><th>Município</th><th class="num">Entidades parceiras</th><th class="num">Solicitações</th><th class="num">Solicitado</th><th class="num">Atendido</th></tr></thead>
             <tbody>
                 @foreach($report['by_county'] as $row)
                     <tr>
@@ -85,13 +85,13 @@
             </tbody>
         </table>
 
-        <h2>Partners</h2>
+        <h2>Entidades parceiras</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Partner / Request</th><th>County &middot; Zip</th><th class="num">Requests</th>
-                    <th class="num">Requested</th><th class="num">Filled</th><th class="num">Fill Rate</th>
-                    <th class="num">Shipped</th><th class="num">Delivered</th><th>Last Request</th>
+                    <th>Entidade parceira / Solicitação</th><th>Município &middot; CEP</th><th class="num">Solicitações</th>
+                    <th class="num">Solicitado</th><th class="num">Atendido</th><th class="num">Taxa de atendimento</th>
+                    <th class="num">Enviado</th><th class="num">Entregue</th><th>Última solicitação</th>
                 </tr>
             </thead>
             <tbody>
@@ -123,9 +123,10 @@
     @endif
 
     <div class="disclaimer">
-        Every request counts toward requests and requested, whatever its status. Fill rate = filled &divide;
-        requested over requests whose filling is finished. County and zip are the partner's. Quantities are in each
-        item's own unit, so totals mix units. See the Unfulfilled Requests Report for what was short and why.
+        Todas as solicitações são contabilizadas, independentemente do status. Taxa de atendimento = quantidade atendida &divide;
+        solicitada, considerando os pedidos cuja separação foi concluída. Município e CEP são os da entidade parceira.
+        As quantidades usam a unidade própria de cada item, portanto os totais somam unidades distintas.
+        Consulte o Relatório de Solicitações Não Atendidas para ver o que faltou e por quê.
     </div>
 </body>
 </html>

@@ -40,7 +40,7 @@ class RequiredPasswordChangeController extends Controller
         $user = $request->user();
         if ($user->password && Hash::check($validated['password'], $user->password)) {
             throw ValidationException::withMessages([
-                'password' => 'Choose a password different from the temporary one you were given.',
+                'password' => 'Escolha uma senha diferente da senha temporária que você recebeu.',
             ]);
         }
 

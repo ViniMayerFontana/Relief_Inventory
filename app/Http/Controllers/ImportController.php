@@ -61,7 +61,7 @@ class ImportController extends Controller
 
         $importer = ImporterRegistry::forFileType($data['file_type']);
         if (! $importer) {
-            return response()->json(['message' => 'Unrecognized file type.'], 422);
+            return response()->json(['message' => 'Tipo de arquivo não reconhecido.'], 422);
         }
 
         $storedPath = $request->file('file')->store('imports', 'local');
@@ -97,7 +97,7 @@ class ImportController extends Controller
         $importer = ImporterRegistry::forFileType($batch->file_type, Auth::id());
 
         if (! $importer) {
-            return response()->json(['message' => 'Unrecognized file type.'], 422);
+            return response()->json(['message' => 'Tipo de arquivo não reconhecido.'], 422);
         }
 
         $batch->update(['status' => 'committing']);
@@ -123,7 +123,7 @@ class ImportController extends Controller
         } catch (\Throwable $e) {
             $batch->update(['status' => 'failed']);
 
-            return response()->json(['message' => 'Import failed: '.$e->getMessage()], 500);
+            return response()->json(['message' => 'Falha na importação: '.$e->getMessage()], 500);
         }
     }
 
@@ -135,7 +135,7 @@ class ImportController extends Controller
         }
         $batch->delete();
 
-        return response()->json(['message' => 'Deleted.']);
+        return response()->json(['message' => 'Excluído.']);
     }
 
     private function writeRows(ImportBatch $batch, ImportRunResult $result): void

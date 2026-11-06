@@ -1,94 +1,65 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 
-Keep track of donations that are offered by phone (or email, or in person) before anything ships, decide whether to
-accept them, and tie each accepted one to the load when it arrives at [Receiving](/help/receiving).
+Mantenha o registro de doações oferecidas por telefone (ou email, ou pessoalmente) antes de qualquer envio, decida se as aceita e relacione cada uma com a carga quando ela chega em [Recebimento](/help/receiving).
 
-## What offers are for
+## Para que servem as ofertas
 
-Not every donation is phoned in first — a walk-in or a surprise truck is logged straight at Receiving and never needs an
-offer. But when someone calls ahead, an offer gives everyone one place to see what's coming, who agreed to take it, and
-when it's expected. Each offer keeps a full history of every call and decision.
+Nem toda doação é combinada por telefone antes — uma entrada espontânea ou um caminhão surpresa é registrada direto em Recebimento e nunca precisa de oferta. Mas quando alguém liga antes, uma oferta oferece um único lugar para ver o que está vindo, quem concordou em aceitá-la e quando ela deve chegar. Cada oferta mantém um histórico completo de todas as ligações e decisões.
 
-Open it from the **Donation Offers** button on [Receiving](/receiving). Anyone who can use Receiving can open the page,
-log a call and edit an open offer. **Deciding** an offer (Approve, Refuse, Divert, Cancel Offer, Match to Arrival) needs
-the separate **Donation Offers** permission. Without it you can still log and update offers, and the decision buttons
-are replaced by a note saying the permission is required.
+Abra-a no botão **Donation Offers** em [Recebimento](/receiving). Qualquer pessoa que possa usar Recebimento pode abrir a página, registrar uma ligação e editar uma oferta aberta. **Decidir** uma oferta (Approve, Refuse, Divert, Cancel Offer, Match to Arrival) exige a permissão separada **Donation Offers**. Sem ela, você ainda pode registrar e atualizar ofertas, e os botões de decisão são substituídos por uma nota dizendo que a permissão é necessária.
 
-## The life of an offer
+## A vida de uma oferta
 
-- **Offered** — someone called; nobody has decided yet.
-- **Pending Arrival** — accepted (Approve). We're expecting it by the ETA window.
-- **Received** — it arrived and was matched to a Receiving record. Finished.
-- **Refused** or **Diverted** — we said no, or sent the donor to another organization. Finished.
-- **Cancelled** — an accepted offer that fell through. Finished.
+- **Offered** — alguém ligou; ninguém decidiu ainda.
+- **Pending Arrival** — aceita (Approve). Estamos esperando pela janela de ETA.
+- **Received** — chegou e foi relacionada a um registro de Recebimento. Concluída.
+- **Refused** ou **Diverted** — dissemos não ou encaminhamos o doador para outra organização. Concluída.
+- **Cancelled** — uma oferta aceita que não se concretizou. Concluída.
 
-Only Offered and Pending Arrival offers can be edited. Once an offer is Refused, Diverted, Cancelled or Received it is
-kept as history and locked. A pending offer whose ETA window (or single ETA day) has fully passed shows an **overdue**
-tag in the list.
+Só ofertas **Offered** e **Pending Arrival** podem ser editadas. Depois que uma oferta é Refused, Diverted, Cancelled ou Received, ela é mantida como histórico e bloqueada. Uma oferta pendente cuja janela ETA (ou um único dia de ETA) já passou mostra uma tag **overdue** na lista.
 
-## Logging a new offer
+## Registrando uma nova oferta
 
-1. Click **Log a Donation Offer**.
-2. Pick the **Donor / Source**. If they aren't in the system, use the create option (a first name, last name, or
-   organization is enough).
-3. If the donor is an organization, a **Contact Person** box appears. Pick or add the person who made the call.
-4. Describe **What's being offered**, and, if the donor knows it, fill in the **Rough ETA Window (if known)** dates. You
-   can also record **How did the offer come in?** and any **Notes from the conversation**; they go in the offer's first
-   history entry.
-5. Save. The offer starts as **Offered** and its history shows **Logged as Offered**.
+1. Clique em **Log a Donation Offer**.
+2. Escolha o **Donor / Source**. Se não estiver no sistema, use a opção de criação (nome, sobrenome ou organização basta).
+3. Se o doador for uma organização, aparece um campo **Contact Person**. Escolha ou adicione a pessoa que ligou.
+4. Descreva **What's being offered** e, se o doador souber, preencha as datas da **Rough ETA Window (if known)**. Você também pode registrar **How did the offer come in?** e qualquer **Notes from the conversation**; eles entram na primeira entrada do histórico da oferta.
+5. Salve. A oferta começa como **Offered** e seu histórico mostra **Logged as Offered**.
 
-## Working the list
+## Trabalhando com a lista
 
-The list shows each offer's donor, status, ETA (date range) and description. Offers with the soonest ETA are at the top;
-offers with no ETA are at the bottom. Tick **Pending (ETA-sorted) only** to see just the accepted offers we're waiting
-on — a handy "what's coming?" view. The list shows every open offer plus the 150 most recent finished ones. **← Back to
-Receiving** returns to the intake page.
+A lista mostra o doador da oferta, status, ETA (intervalo de datas) e descrição. Ofertas com a ETA mais próxima ficam no topo; ofertas sem ETA no fim. Marque **Pending (ETA-sorted) only** para ver apenas as ofertas aceitas que estamos esperando — uma visão útil de “o que está chegando?”. A lista mostra todas as ofertas abertas mais as 150 mais recentes concluídas. **← Back to Receiving** retorna à página de recebimento.
 
-## Deciding an offer
+## Decidindo uma oferta
 
-Open an offer and look at **Donor History** first — it lists that donor's earlier donations, requests and offers, so the
-decision isn't made blind. Then, under **Decision** (these buttons need the Donation Offers permission), choose one.
-Each opens a short form; fill it in and press **Confirm**. You can also pick a **Contact Method** (Phone, Email, In
-Person, Other) and add **Notes**, which are recorded in the history.
+Abra uma oferta e veja primeiro **Donor History** — ela lista doações, pedidos e ofertas anteriores do doador, para a decisão não ser feita às cegas. Em seguida, em **Decision** (estes botões precisam da permissão Donation Offers), escolha uma. Cada um abre um formulário curto; preencha e pressione **Confirm**. Você também pode escolher um **Contact Method** (Phone, Email, In Person, Other) e adicionar **Notes**, que são registradas no histórico.
 
-### On an Offered offer
+### Em uma oferta Offered
 
-- **Approve** — accepts it. Enter the **ETA Window** (the start date is required, the end is optional) and any **Transit
-  Notes**. The offer becomes Pending Arrival.
-- **Refuse** — enter the **Reason (required)**.
-- **Divert** — enter **Diverted to (required)**, the organization the donor was sent to.
+- **Approve** — aceita. Digite a **ETA Window** (a data de início é obrigatória, a final é opcional) e quaisquer **Transit Notes**. A oferta vira Pending Arrival.
+- **Refuse** — digite o **Reason (required)**.
+- **Divert** — digite **Diverted to (required)**, a organização para a qual o doador foi encaminhado.
 
-### On a Pending Arrival offer
+### Em uma oferta Pending Arrival
 
-- **Cancel Offer** — the donation isn't coming after all. Enter the **Reason (required)**.
-- **Match to Arrival** — see the next section.
+- **Cancel Offer** — a doação não virá, afinal. Digite o **Reason (required)**.
+- **Match to Arrival** — veja a próxima seção.
 
-### On either
+### Em qualquer uma
 
-- **Log a Call / Update ETA** — the donor called back to move the date or add detail, and nothing is decided. Change the
-  ETA Window or the description if needed and write a note (required). The status stays the same and the call is added
-  to the history.
+- **Log a Call / Update ETA** — o doador ligou de volta para mudar a data ou adicionar detalhes, sem que uma decisão fosse tomada. Altere a **ETA Window** ou a descrição se necessário e escreva uma nota (obrigatória). O status continua o mesmo e a ligação é adicionada ao histórico.
 
-## When the donation arrives: matching
+## Quando a doação chega: vinculação
 
-Matching links the accepted offer to the actual Receiving record and marks the offer **Received**. There are three ways,
-all with the same result:
+A vinculação liga a oferta aceita ao registro real de Recebimento e marca a oferta **Received**. Há três formas, todas com o mesmo resultado:
 
-1. **At the dock (easiest).** On [Receiving](/receiving), click **Record an Intake**. At the top, under **Does this
-   match a phoned-in offer?**, click the card for this donor. The donor, contact person and description are filled in
-   for you, and the offer is marked Received when you save the intake.
-2. **From the offer.** Open the Pending Arrival offer and click the link **start a new Receiving intake for this
-   offer**. Receiving opens a new intake with the offer already selected.
-3. **After the fact.** If the load was already entered at Receiving without picking the offer, open the offer, click
-   **Match to Arrival**, choose the intake under **Match to arrived donation** (search the list of intakes that aren't
-   linked to an offer yet — the 50 most recent are offered), and press **Confirm**.
+1. **No dock (mais fácil).** Em [Recebimento](/receiving), clique em **Record an Intake**. No topo, em **Does this match a phoned-in offer?**, clique no cartão deste doador. O doador, a pessoa de contato e a descrição são preenchidos para você, e a oferta é marcada como Received quando você salva a entrada.
+2. **Pela oferta.** Abra a oferta Pending Arrival e clique no link **start a new Receiving intake for this offer**. O Recebimento abre uma nova entrada com a oferta já selecionada.
+3. **Depois do fato.** Se a carga já foi registrada em Recebimento sem escolher a oferta, abra a oferta, clique em **Match to Arrival**, escolha a entrada em **Match to arrived donation** (procure na lista de entradas ainda não vinculadas a uma oferta — as 50 mais recentes são oferecidas) e pressione **Confirm**.
 
-A Receiving record can be linked to only one offer, and only a Pending Arrival offer can be matched.
+Um registro de Recebimento pode ser vinculado a apenas uma oferta, e apenas uma oferta Pending Arrival pode ser correspondida.
 
-## History
+## Histórico
 
-At the bottom of every offer, **History** lists every step: who did it, when, how the donor was contacted, and the
-notes. Entries read like **Offered → Pending Arrival** for a decision, **Update — Pending Arrival** for a call that
-changed nothing but the details, and **Logged as Offered** for the first entry. Nothing in the history can be edited or
-removed.
+No rodapé de cada oferta, **History** lista cada etapa: quem fez, quando, como o doador foi contatado e as observações. As entradas aparecem como **Offered → Pending Arrival** para uma decisão, **Update — Pending Arrival** para uma ligação que mudou apenas os detalhes, e **Logged as Offered** para a primeira entrada. Nada do histórico pode ser editado ou removido.

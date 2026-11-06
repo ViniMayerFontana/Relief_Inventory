@@ -396,7 +396,7 @@ function cancelEdit() {
 function describeSaveError(err) {
     const errors = err.response?.data?.errors;
     if (errors) return Object.values(errors).flat().join(' ');
-    return err.response?.data?.message || 'Could not save. Please try again.';
+    return err.response?.data?.message || 'Não foi possível salvar. Tente novamente.';
 }
 
 function saveUser() {
@@ -487,10 +487,10 @@ function setPasswordChangeRequired(required) {
 </script>
 
 <template>
-  <Head title="User Administration" />
+  <Head title="Administração de usuários" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <div class="max-w-4xl mx-auto p-4 space-y-6">
-      <h1 class="text-2xl font-bold">User Administration</h1>
+      <h1 class="text-2xl font-bold">Administração de usuários</h1>
 
       <div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
       <div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">
@@ -505,47 +505,47 @@ function setPasswordChangeRequired(required) {
       <!-- List view -->
       <section v-if="!selected" class="bg-white shadow rounded-lg p-6 space-y-4">
         <div class="flex items-center justify-between gap-2">
-          <h2 class="text-lg font-semibold">Users</h2>
+          <h2 class="text-lg font-semibold">Usuários</h2>
           <div class="flex gap-2">
-            <SecondaryButton :disabled="!filteredUsers.length" @click="exportCsv">Export CSV</SecondaryButton>
-            <PrimaryButton @click="newUser">New User</PrimaryButton>
+            <SecondaryButton :disabled="!filteredUsers.length" @click="exportCsv">Exportar CSV</SecondaryButton>
+            <PrimaryButton @click="newUser">Novo usuário</PrimaryButton>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-sm items-end">
           <label class="block sm:col-span-4">
-            <span class="text-gray-700">Search</span>
+            <span class="text-gray-700">Buscar</span>
             <input
               v-model="search"
               type="search"
-              placeholder="Name or email"
+              placeholder="Nome ou e-mail"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
             />
           </label>
           <label class="block">
             <span class="text-gray-700">Status</span>
             <select v-model="statusFilter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-              <option value="">All statuses</option>
+              <option value="">Todos os status</option>
               <option v-for="(label, key) in statusLabels" :key="key" :value="key">
                 {{ label }} ({{ statusCounts[key] || 0 }})
               </option>
             </select>
           </label>
           <label class="block">
-            <span class="text-gray-700">Role</span>
+            <span class="text-gray-700">Função</span>
             <select v-model="roleFilter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-              <option value="">All roles</option>
+              <option value="">Todas as funções</option>
               <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
-              <option value="none">No role</option>
+              <option value="none">Sem função</option>
             </select>
           </label>
           <label class="block">
-            <span class="text-gray-700">Last login</span>
+            <span class="text-gray-700">Último acesso</span>
             <select v-model="loginFilter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-              <option value="">Any time</option>
-              <option value="never">Never logged in</option>
-              <option value="30">Not in 30 days</option>
-              <option value="90">Not in 90 days</option>
+              <option value="">Qualquer período</option>
+              <option value="never">Nunca acessou</option>
+              <option value="30">Há mais de 30 dias</option>
+              <option value="90">Há mais de 90 dias</option>
             </select>
           </label>
           <div class="pb-2">
@@ -554,7 +554,7 @@ function setPasswordChangeRequired(required) {
               type="button"
               class="text-sm text-gray-500 underline"
               @click="clearFilters"
-            >Clear filters</button>
+            >Limpar filtros</button>
           </div>
         </div>
 
@@ -564,41 +564,41 @@ function setPasswordChangeRequired(required) {
             class="px-3 py-1 rounded-md border"
             :class="tab === 'warehouse' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
             @click="tab = 'warehouse'"
-          >Warehouse Users</button>
+          >Usuários do armazém</button>
           <button
             type="button"
             class="px-3 py-1 rounded-md border"
             :class="tab === 'partners' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
             @click="tab = 'partners'"
-          >Partners</button>
+          >Entidades parceiras</button>
         </div>
 
         <div
           v-if="visibleCheckedIds.length"
           class="flex flex-wrap items-center gap-2 rounded bg-indigo-50 border border-indigo-200 px-3 py-2 text-sm"
         >
-          <span class="font-semibold">{{ visibleCheckedIds.length }} selected:</span>
-          <SecondaryButton :disabled="bulkBusy" @click="runBulk('approve')">Approve</SecondaryButton>
-          <SecondaryButton :disabled="bulkBusy" @click="runBulk('resend_invite')">Send Invite / Reset Email</SecondaryButton>
-          <SecondaryButton :disabled="bulkBusy" @click="runBulk('require_password_change')">Require Password Change</SecondaryButton>
-          <SecondaryButton :disabled="bulkBusy" @click="runBulk('reactivate')">Reactivate</SecondaryButton>
+          <span class="font-semibold">{{ visibleCheckedIds.length }} selecionados:</span>
+          <SecondaryButton :disabled="bulkBusy" @click="runBulk('approve')">Aprovar</SecondaryButton>
+          <SecondaryButton :disabled="bulkBusy" @click="runBulk('resend_invite')">Enviar convite / redefinir e-mail</SecondaryButton>
+          <SecondaryButton :disabled="bulkBusy" @click="runBulk('require_password_change')">Exigir troca de senha</SecondaryButton>
+          <SecondaryButton :disabled="bulkBusy" @click="runBulk('reactivate')">Reativar</SecondaryButton>
           <button
             type="button"
             class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white"
             :class="confirmingBulkDeactivate ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500'"
             :disabled="bulkBusy"
             @click="runBulk('deactivate')"
-          >{{ confirmingBulkDeactivate ? `Confirm — block ${visibleCheckedIds.length} from logging in` : 'Deactivate' }}</button>
+          >{{ confirmingBulkDeactivate ? `Confirmar — bloquear o acesso de ${visibleCheckedIds.length} usuário(s)` : 'Desativar' }}</button>
           <button
             v-if="confirmingBulkDeactivate"
             type="button"
             class="text-sm text-gray-500 underline"
             @click="confirmingBulkDeactivate = false"
-          >Cancel</button>
-          <button type="button" class="ml-auto text-sm text-gray-500 underline" @click="checkedIds = []">Clear selection</button>
+          >Cancelar</button>
+          <button type="button" class="ml-auto text-sm text-gray-500 underline" @click="checkedIds = []">Limpar seleção</button>
         </div>
 
-        <p v-if="loading" class="text-gray-500 text-sm">Loading users…</p>
+        <p v-if="loading" class="text-gray-500 text-sm">Carregando usuários…</p>
 
         <div v-else class="overflow-x-auto">
           <table class="w-full text-sm">
@@ -609,15 +609,15 @@ function setPasswordChangeRequired(required) {
                     type="checkbox"
                     :checked="allVisibleChecked"
                     :disabled="!filteredUsers.length"
-                    title="Select all shown"
+                    title="Selecionar todos os exibidos"
                     @change="toggleAllVisible"
                   />
                 </th>
-                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('name')">Name {{ sortArrow('name') }}</button></th>
-                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('email')">Email {{ sortArrow('email') }}</button></th>
-                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('roles')">Roles {{ sortArrow('roles') }}</button></th>
+                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('name')">Nome {{ sortArrow('name') }}</button></th>
+                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('email')">E-mail {{ sortArrow('email') }}</button></th>
+                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('roles')">Funções {{ sortArrow('roles') }}</button></th>
                 <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('status')">Status {{ sortArrow('status') }}</button></th>
-                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('last_login')">Last Login {{ sortArrow('last_login') }}</button></th>
+                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('last_login')">Último acesso {{ sortArrow('last_login') }}</button></th>
               </tr>
             </thead>
             <tbody>
@@ -635,55 +635,55 @@ function setPasswordChangeRequired(required) {
                 <td class="py-1 pr-2">{{ (record.roles || []).map((r) => r.name).join(', ') }}</td>
                 <td class="py-1 pr-2">{{ statusLabel(record) }}</td>
                 <td class="py-1 pr-2 whitespace-nowrap" :class="{ 'text-gray-400': !record.last_login_at }">
-                  {{ record.last_login_at ? formatDateTime(record.last_login_at) : 'Never' }}
+                  {{ record.last_login_at ? formatDateTime(record.last_login_at) : 'Nunca' }}
                 </td>
               </tr>
               <tr v-if="!filteredUsers.length">
                 <td colspan="6" class="py-3 text-gray-400">
-                  {{ anyFilter ? 'No users match these filters.' : 'No users in this view.' }}
+                  {{ anyFilter ? 'Nenhum usuário corresponde a esses filtros.' : 'Nenhum usuário nesta visualização.' }}
                 </td>
               </tr>
             </tbody>
           </table>
           <p v-if="filteredUsers.length" class="text-xs text-gray-500 mt-2">
-            Showing {{ filteredUsers.length }} {{ filteredUsers.length === 1 ? 'user' : 'users' }}.
+            Exibindo {{ filteredUsers.length }} {{ filteredUsers.length === 1 ? 'usuário' : 'usuários' }}.
           </p>
         </div>
       </section>
 
       <!-- Detail view -->
       <section v-else class="bg-white shadow rounded-lg p-6 space-y-4">
-        <h2 class="text-lg font-semibold">{{ selected.id ? 'Edit User' : 'New User' }}</h2>
+        <h2 class="text-lg font-semibold">{{ selected.id ? 'Editar usuário' : 'Novo usuário' }}</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <label class="block">
-            <span class="text-gray-700">First Name</span>
+            <span class="text-gray-700">Nome</span>
             <input v-model="selected.first_name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
           </label>
           <label class="block">
-            <span class="text-gray-700">Last Name</span>
+            <span class="text-gray-700">Sobrenome</span>
             <input v-model="selected.last_name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
           </label>
           <label class="block sm:col-span-2">
-            <span class="text-gray-700">Email</span>
+            <span class="text-gray-700">E-mail</span>
             <input v-model="selected.email" type="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
           </label>
         </div>
         <div v-if="!selected.id" class="space-y-3 text-sm">
-          <span class="text-gray-700">Password</span>
+          <span class="text-gray-700">Senha</span>
           <label class="flex items-start gap-2">
             <input v-model="selected.password_mode" type="radio" value="invite" class="mt-1" />
-            <span>Email them a link to set their own password</span>
+            <span>Enviar um link para que a pessoa defina a própria senha</span>
           </label>
           <label class="flex items-start gap-2">
             <input v-model="selected.password_mode" type="radio" value="set" class="mt-1" />
-            <span>Set a password now — the account is active and verified right away</span>
+            <span>Definir uma senha agora — a conta será ativada e verificada imediatamente</span>
           </label>
 
           <div v-if="selected.password_mode === 'set'" class="ml-6 space-y-3">
             <div class="flex flex-wrap items-end gap-2">
               <label class="block flex-1 min-w-[12rem]">
-                <span class="text-gray-700">Password</span>
+                <span class="text-gray-700">Senha</span>
                 <input
                   v-model="selected.password"
                   :type="showPassword ? 'text' : 'password'"
@@ -691,37 +691,36 @@ function setPasswordChangeRequired(required) {
                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm font-mono"
                 />
               </label>
-              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</SecondaryButton>
-              <SecondaryButton type="button" @click="generatePassword(selected)">Generate</SecondaryButton>
+              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? 'Ocultar' : 'Mostrar' }}</SecondaryButton>
+              <SecondaryButton type="button" @click="generatePassword(selected)">Gerar</SecondaryButton>
             </div>
             <label class="flex items-center gap-2">
               <input v-model="selected.require_password_change" type="checkbox" />
-              <span>Ask them to choose a new password the first time they log in</span>
+              <span>Solicitar que a pessoa escolha uma nova senha no primeiro acesso</span>
             </label>
             <label class="flex items-center gap-2">
               <input v-model="selected.send_login_email" type="checkbox" />
-              <span>Email them their login details (the login address and their email — not the password)</span>
+              <span>Enviar os dados de acesso por e-mail (endereço de acesso e e-mail da pessoa — não a senha)</span>
             </label>
             <p class="text-xs text-gray-500">
-              You'll need to give them the password yourself. It isn't shown again after you save.
+              Você precisará informar a senha à pessoa. Ela não será exibida novamente após salvar.
             </p>
           </div>
         </div>
         <div v-if="selected.id && !selected.approved_at" class="rounded bg-amber-100 border border-amber-400 text-amber-900 px-4 py-3 text-sm">
-          This is a self-registered account nobody has approved yet — it cannot access anything
-          but the pending-review screen until you approve it below, regardless of what role or
-          permissions you set here.
-          <span v-if="selected.requested_track"> They said they're here as a <strong>{{ selected.requested_track }}</strong>.</span>
+          Esta conta foi criada pela própria pessoa e ainda não foi aprovada — ela só poderá acessar a tela
+          de análise pendente até que você a aprove abaixo, independentemente da função ou das permissões definidas aqui.
+          <span v-if="selected.requested_track"> A pessoa informou que está aqui como <strong>{{ selected.requested_track }}</strong>.</span>
         </div>
 
         <div class="ri_fieldset" style="display:flex; align-items:center; gap:0.5rem;">
           <Checkbox v-model="selected.is_volunteer" :enabled="true" />
-          <span class="text-sm text-gray-700">Volunteer (unpaid) — independent of their role below</span>
+          <span class="text-sm text-gray-700">Voluntário (não remunerado) — independente da função abaixo</span>
         </div>
 
         <div>
           <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-700">Role — pick one; it fully replaces the permission set below</span>
+            <span class="text-sm text-gray-700">Função — escolha uma; ela substituirá todas as permissões abaixo</span>
           </div>
           <div class="flex flex-wrap gap-2 mt-1">
             <button
@@ -735,22 +734,22 @@ function setPasswordChangeRequired(required) {
             >{{ role.name }} <span class="role-chip-count">({{ (role.permissions || []).length }})</span></button>
           </div>
           <p class="text-xs text-gray-500 mt-1">
-            Partner accounts can log in, but ordering isn't available to them yet.
+            As entidades parceiras podem acessar o sistema, mas ainda não podem fazer pedidos.
           </p>
         </div>
 
         <div>
           <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-700">Permissions</span>
+            <span class="text-sm text-gray-700">Permissões</span>
             <div class="flex gap-2">
-              <SecondaryButton type="button" @click="grantAll(selected)">Grant All</SecondaryButton>
-              <SecondaryButton type="button" @click="revokeAll(selected)">Revoke All</SecondaryButton>
+              <SecondaryButton type="button" @click="grantAll(selected)">Conceder todas</SecondaryButton>
+              <SecondaryButton type="button" @click="revokeAll(selected)">Revogar todas</SecondaryButton>
             </div>
           </div>
           <p class="text-xs text-gray-500 mb-2">
-            Checked = this person can do it. Tapping a role above sets these to exactly that
-            role's bundle — check/uncheck individual ones afterward to make an exception without
-            changing their role.
+            Marcada = a pessoa pode realizar a ação. Ao selecionar uma função acima, as permissões serão
+            substituídas pelo conjunto correspondente — marque ou desmarque permissões individuais depois
+            para criar exceções sem alterar a função.
           </p>
           <div class="overflow-x-auto">
             <table class="w-full text-sm border">
@@ -773,31 +772,31 @@ function setPasswordChangeRequired(required) {
         </div>
 
         <div v-if="selected.id" class="border-t pt-4 space-y-3">
-          <h3 class="text-sm font-semibold text-gray-700">Account — {{ statusLabel(selected) }}</h3>
+          <h3 class="text-sm font-semibold text-gray-700">Conta — {{ statusLabel(selected) }}</h3>
 
           <dl class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
             <div>
-              <dt class="text-gray-500">Created</dt>
+              <dt class="text-gray-500">Criada em</dt>
               <dd>
-                {{ formatDateTime(selected.created_at) || 'Unknown' }}
-                <span v-if="selected.created_by_name" class="text-gray-500">by {{ selected.created_by_name }}</span>
-                <span v-else-if="selected.created_at" class="text-gray-500">(self-registered or before this was recorded)</span>
+                {{ formatDateTime(selected.created_at) || 'Desconhecido' }}
+                <span v-if="selected.created_by_name" class="text-gray-500">por {{ selected.created_by_name }}</span>
+                <span v-else-if="selected.created_at" class="text-gray-500">(autocadastrada ou criada antes deste registro)</span>
               </dd>
             </div>
             <div>
-              <dt class="text-gray-500">Approved</dt>
+              <dt class="text-gray-500">Aprovada</dt>
               <dd>
                 <template v-if="selected.approved_at">
                   {{ formatDateTime(selected.approved_at) }}
-                  <span v-if="selected.approved_by_name" class="text-gray-500">by {{ selected.approved_by_name }}</span>
+                  <span v-if="selected.approved_by_name" class="text-gray-500">por {{ selected.approved_by_name }}</span>
                 </template>
-                <span v-else class="text-gray-400">Not yet</span>
+                <span v-else class="text-gray-400">Ainda não</span>
               </dd>
             </div>
             <div>
-              <dt class="text-gray-500">Last login</dt>
+              <dt class="text-gray-500">Último acesso</dt>
               <dd :class="{ 'text-gray-400': !selected.last_login_at }">
-                {{ selected.last_login_at ? formatDateTime(selected.last_login_at) : 'Never' }}
+                {{ selected.last_login_at ? formatDateTime(selected.last_login_at) : 'Nunca' }}
               </dd>
             </div>
           </dl>
@@ -807,30 +806,30 @@ function setPasswordChangeRequired(required) {
               v-if="!selected.approved_at"
               :disabled="accountActionBusy"
               @click="approve"
-            >Approve</PrimaryButton>
+            >Aprovar</PrimaryButton>
 
             <SecondaryButton
               v-if="!selected.disabled_at"
               :disabled="accountActionBusy"
               @click="resendInvite"
-            >{{ selected.has_password ? 'Send Password Reset' : 'Resend Invite Email' }}</SecondaryButton>
+            >{{ selected.has_password ? 'Enviar redefinição de senha' : 'Reenviar convite por e-mail' }}</SecondaryButton>
 
             <SecondaryButton
               v-if="!passwordForm"
               :disabled="accountActionBusy"
               @click="openPasswordForm"
-            >Set Password</SecondaryButton>
+            >Definir senha</SecondaryButton>
 
             <SecondaryButton
               v-if="selected.has_password && !selected.password_change_required"
               :disabled="accountActionBusy"
               @click="setPasswordChangeRequired(true)"
-            >Require Password Change</SecondaryButton>
+            >Exigir troca de senha</SecondaryButton>
             <SecondaryButton
               v-if="selected.password_change_required"
               :disabled="accountActionBusy"
               @click="setPasswordChangeRequired(false)"
-            >Don't Require Password Change</SecondaryButton>
+            >Não exigir troca de senha</SecondaryButton>
 
             <button
               v-if="!selected.disabled_at"
@@ -839,30 +838,30 @@ function setPasswordChangeRequired(required) {
               :class="confirmingDeactivate ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500'"
               :disabled="accountActionBusy"
               @click="deactivate"
-            >{{ confirmingDeactivate ? 'Confirm — this account will be blocked from logging in' : 'Deactivate' }}</button>
+            >{{ confirmingDeactivate ? 'Confirmar — esta conta será impedida de acessar o sistema' : 'Desativar' }}</button>
             <button
               v-if="confirmingDeactivate"
               type="button"
               class="text-sm text-gray-500 underline"
               @click="confirmingDeactivate = false"
-            >Cancel</button>
+            >Cancelar</button>
 
             <PrimaryButton
               v-if="selected.disabled_at"
               :disabled="accountActionBusy"
               @click="reactivate"
-            >Reactivate</PrimaryButton>
+            >Reativar</PrimaryButton>
           </div>
 
           <div v-if="passwordForm" class="rounded border border-gray-300 p-4 space-y-3 text-sm">
-            <h4 class="font-semibold text-gray-700">Set Password</h4>
+            <h4 class="font-semibold text-gray-700">Definir senha</h4>
             <p class="text-xs text-gray-500">
-              Replaces their current password straight away — for someone whose email isn't arriving.
-              You'll need to give it to them yourself.
+              Substitui a senha atual imediatamente — para pessoas que não estão recebendo os e-mails.
+              Você precisará informar a nova senha à pessoa.
             </p>
             <div class="flex flex-wrap items-end gap-2">
               <label class="block flex-1 min-w-[12rem]">
-                <span class="text-gray-700">New Password</span>
+                <span class="text-gray-700">Nova senha</span>
                 <input
                   v-model="passwordForm.password"
                   :type="showPassword ? 'text' : 'password'"
@@ -870,29 +869,29 @@ function setPasswordChangeRequired(required) {
                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm font-mono"
                 />
               </label>
-              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</SecondaryButton>
-              <SecondaryButton type="button" @click="generatePassword(passwordForm)">Generate</SecondaryButton>
+              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? 'Ocultar' : 'Mostrar' }}</SecondaryButton>
+              <SecondaryButton type="button" @click="generatePassword(passwordForm)">Gerar</SecondaryButton>
             </div>
             <label class="flex items-center gap-2">
               <input v-model="passwordForm.require_password_change" type="checkbox" />
-              <span>Ask them to choose a new password the next time they log in</span>
+              <span>Solicitar que a pessoa escolha uma nova senha no próximo acesso</span>
             </label>
             <label class="flex items-center gap-2">
               <input v-model="passwordForm.send_login_email" type="checkbox" />
-              <span>Email them their login details (not the password)</span>
+              <span>Enviar os dados de acesso por e-mail (sem a senha)</span>
             </label>
             <div class="flex gap-2">
               <PrimaryButton :disabled="passwordSaving || !passwordForm.password" @click="savePassword">
-                {{ passwordSaving ? 'Saving…' : 'Save Password' }}
+                {{ passwordSaving ? 'Salvando…' : 'Salvar senha' }}
               </PrimaryButton>
-              <button type="button" class="text-sm text-gray-500 underline" @click="passwordForm = null">Cancel</button>
+              <button type="button" class="text-sm text-gray-500 underline" @click="passwordForm = null">Cancelar</button>
             </div>
           </div>
         </div>
 
         <div class="flex gap-2 pt-2">
-          <PrimaryButton :disabled="saving" @click="saveUser">{{ saving ? 'Saving…' : 'Save' }}</PrimaryButton>
-          <button type="button" class="text-sm text-gray-500 underline" @click="cancelEdit">Cancel</button>
+          <PrimaryButton :disabled="saving" @click="saveUser">{{ saving ? 'Salvando…' : 'Salvar' }}</PrimaryButton>
+          <button type="button" class="text-sm text-gray-500 underline" @click="cancelEdit">Cancelar</button>
         </div>
       </section>
     </div>

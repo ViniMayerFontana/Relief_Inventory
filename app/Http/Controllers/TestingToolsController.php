@@ -62,7 +62,7 @@ class TestingToolsController extends Controller
             return response()->json(['message' => $reason], 409);
         }
         if (! $run->start($data['days'], $data['orders'], $data['seed'] ?? null, $data['errors'])) {
-            return response()->json(['message' => 'A simulation is already running.'], 409);
+            return response()->json(['message' => 'Já há uma simulação em andamento.'], 409);
         }
 
         return response()->json(['simulation' => $run->status()], 202);

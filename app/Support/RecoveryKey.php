@@ -75,20 +75,20 @@ final class RecoveryKey
         if (str_starts_with($clean, self::TAG)) {
             $clean = substr($clean, strlen(self::TAG));
         } else {
-            throw new RuntimeException('That does not look like a recovery key: it starts with "RK1-".');
+            throw new RuntimeException('Isso não parece ser uma chave de recuperação: ela começa com "RK1-".');
         }
         $clean = strtr($clean, ['O' => '0', 'I' => '1', 'L' => '1']);
         if (strlen($clean) !== 55 || strspn($clean, self::ALPHABET) !== 55) {
-            throw new RuntimeException('That recovery key is the wrong length or has a character that cannot be in one. Check it against the printout.');
+            throw new RuntimeException('Esta chave de recuperação tem comprimento incorreto ou contém um caractere inválido. Confira-a na cópia impressa.');
         }
         $bytes = self::decode($clean);
         // Canonical only: the last character has 3 spare bits, and a key that differs there is a typing mistake, not another spelling of the same key.
         if (self::encode($bytes) !== $clean) {
-            throw new RuntimeException('That recovery key has a typing mistake (its last character is wrong). Check it against the printout.');
+            throw new RuntimeException('Há um erro de digitação na chave de recuperação (o último caractere está incorreto). Confira-a na cópia impressa.');
         }
         $secret = substr($bytes, 0, 32);
         if (! hash_equals(self::checksum($secret), substr($bytes, 32, 2))) {
-            throw new RuntimeException('That recovery key has a typing mistake (its check characters do not match). Check it against the printout.');
+            throw new RuntimeException('Há um erro de digitação na chave de recuperação (os caracteres de verificação não correspondem). Confira-a na cópia impressa.');
         }
 
         return $secret;
@@ -104,7 +104,7 @@ final class RecoveryKey
     public static function seal(string $message, string $public): string
     {
         if (! self::isPublicKey($public)) {
-            throw new RuntimeException('The recovery public key is not valid.');
+            throw new RuntimeException('A chave pública de recuperação é inválida.');
         }
 
         return sodium_crypto_box_seal($message, RequestSigner::unb64($public));
@@ -117,7 +117,7 @@ final class RecoveryKey
         $message = sodium_crypto_box_seal_open($sealed, $pair);
         sodium_memzero($pair);
         if ($message === false) {
-            throw new RuntimeException('That recovery key is not the one this backup was sealed to.');
+            throw new RuntimeException('Esta não é a chave de recuperação usada para lacrar este backup.');
         }
 
         return $message;

@@ -64,7 +64,7 @@ class OrderFillingController extends Controller
     {
         if ($order->status?->name !== Transaction::STATUS_FILLING) {
             abort(response()->json([
-                'message' => 'This order is not currently being filled.',
+                'message' => 'Este pedido não está em separação no momento.',
             ], 409));
         }
     }
@@ -103,7 +103,7 @@ class OrderFillingController extends Controller
         $order = Transaction::where('type', 'order')->findOrFail($id);
         if ($order->status?->name !== Transaction::STATUS_READY_TO_FILL) {
             abort(response()->json([
-                'message' => 'Only orders Ready to Fill can be started.',
+                'message' => 'Só é possível iniciar pedidos com status Ready to Fill.',
             ], 409));
         }
 
@@ -245,7 +245,7 @@ class OrderFillingController extends Controller
                     $sealed = $holding->filter(fn ($r) => ($pallets[$r['pallet_id']] ?? null)?->status === 'sealed');
                     if ($overflow > 0 && $sealed->isNotEmpty()) {
                         abort(response()->json([
-                            'message' => 'Only '.($qty - $overflow)." of {$qty} can come from the sorting area and open pallets. Open a sealed pallet to pick the other {$overflow}.",
+                            'message' => 'Somente '.($qty - $overflow)." de {$qty} podem vir da área de triagem e de paletes abertos. Abra um palete lacrado para separar as outras {$overflow}.",
                             'sealed_pallets' => $sealed->map(fn ($r) => [
                                 'id' => $r['pallet_id'], 'tag' => $pallets[$r['pallet_id']]->tag,
                                 'location' => $pallets[$r['pallet_id']]->location?->code, 'qty' => $r['qty'],
@@ -333,12 +333,12 @@ class OrderFillingController extends Controller
     {
         $pallet = Pallet::findOrFail($id);
         if ($pallet->kind !== PalletKind::WAREHOUSE) {
-            return response()->json(['message' => 'Only Warehouse pallets are opened for picking.'], 422);
+            return response()->json(['message' => 'Somente paletes do armazém podem ser abertos para separação.'], 422);
         }
         if ($pallet->status === 'sealed') {
             $pallet->transitionTo('open', null, 'Opened for picking');
         } elseif ($pallet->status !== 'open') {
-            return response()->json(['message' => "{$pallet->tag} is {$pallet->status} and can't be opened."], 422);
+            return response()->json(['message' => "{$pallet->tag} está com status {$pallet->status} e não pode ser aberto."], 422);
         }
 
         return response()->json(['record' => ['id' => $pallet->id, 'tag' => $pallet->tag, 'status' => $pallet->fresh()->status]]);
@@ -456,7 +456,7 @@ class OrderFillingController extends Controller
                 }
             }
             if ($errors) {
-                return response()->json(['message' => 'Some approved quantities could not be saved.', 'errors' => $errors], 422);
+                return response()->json(['message' => 'Não foi possível salvar algumas das quantidades aprovadas.', 'errors' => $errors], 422);
             }
 
             foreach ($data['lines'] as $entry) {
@@ -488,7 +488,7 @@ class OrderFillingController extends Controller
         $order = Transaction::where('type', 'order')->findOrFail($id);
         if ($order->status?->name !== Transaction::STATUS_FILLING) {
             abort(response()->json([
-                'message' => 'Only orders currently Filling can be completed.',
+                'message' => 'Só é possível concluir pedidos que estejam em separação.',
             ], 409));
         }
 
@@ -496,7 +496,7 @@ class OrderFillingController extends Controller
             ->filter(fn (OrderLine $line) => $line->qty_to_pick > 0 && $line->item_ledgers_count === 0);
         if ($unaccounted->isNotEmpty()) {
             return response()->json([
-                'message' => 'Every line needs at least one fill record (even a zero-quantity one) before completing.',
+                'message' => 'Cada item precisa ter ao menos um registro de separação (mesmo com quantidade zero) antes de concluir.',
             ], 422);
         }
 

@@ -83,7 +83,7 @@ class PalletReportController extends Controller
         $donation = Transaction::where('type', 'donation')->with(['pallets.contentItem', 'pallets.location'])->findOrFail($id);
 
         if ($donation->pallets->isEmpty()) {
-            abort(404, 'No pallets have been created for this donation.');
+            abort(404, 'Nenhum palete foi criado para esta doação.');
         }
 
         return $this->labelPaper(Pdf::view('reports.pallet-batch', [
@@ -113,7 +113,7 @@ class PalletReportController extends Controller
         $pallets = Pallet::whereIn('id', $ids)->where('kind', 'R')->whereNull('orderdonation_id')->get();
 
         if ($pallets->isEmpty()) {
-            abort(404, 'No matching pre-printed labels found.');
+            abort(404, 'Nenhuma etiqueta pré-impressa correspondente foi encontrada.');
         }
 
         return $this->labelPaper(Pdf::view('reports.pallet-batch', [
@@ -132,7 +132,7 @@ class PalletReportController extends Controller
         $pallets = Pallet::with(['contentItem', 'location'])->whereIn('id', $ids)->orderBy('kind')->orderBy('id')->get();
 
         if ($pallets->isEmpty()) {
-            abort(404, 'Prepare Training has not made any pallets yet.');
+            abort(404, 'Ainda não foram criados paletes em Preparar treinamento.');
         }
 
         return $this->labelPaper(Pdf::view('reports.pallet-batch', [

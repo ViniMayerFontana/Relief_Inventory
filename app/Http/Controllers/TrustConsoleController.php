@@ -58,7 +58,7 @@ class TrustConsoleController extends Controller
             'kiosk_location_id' => 'nullable|exists:kiosk_locations,id',
         ]);
         if (in_array($data['kind'], Trust::CLIENT_KINDS, true) && empty($data['kiosk_location_id'])) {
-            return response()->json(['message' => 'Choose the location this device belongs to.'], 422);
+            return response()->json(['message' => 'Escolha o local ao qual este dispositivo pertence.'], 422);
         }
 
         [$code, $row] = TrustService::createPairingCode(
@@ -78,10 +78,10 @@ class TrustConsoleController extends Controller
         ]);
         $identity = InstanceIdentity::current();
         if (InstanceIdentity::isLost($identity)) {
-            return response()->json(['message' => 'Generate a new key first.'], 422);
+            return response()->json(['message' => 'Gere uma nova chave primeiro.'], 422);
         }
         if (! $identity->base_url) {
-            return response()->json(['message' => 'Set this instance\'s public address first, so the other side knows where to reach it.'], 422);
+            return response()->json(['message' => 'Configure primeiro o endereço público desta instalação para que a outra parte saiba como acessá-la.'], 422);
         }
 
         [$code, $row] = TrustService::createPairingCode('instance', $data['grants'] ?? [], $data['name'] ?? null, null, Auth::id());
@@ -102,10 +102,10 @@ class TrustConsoleController extends Controller
         ]);
         $identity = InstanceIdentity::current();
         if (InstanceIdentity::isLost($identity)) {
-            return response()->json(['message' => 'Generate a new key first.'], 422);
+            return response()->json(['message' => 'Gere uma nova chave primeiro.'], 422);
         }
         if (! $identity->base_url) {
-            return response()->json(['message' => 'Set this instance\'s public address first; the other side records it.'], 422);
+            return response()->json(['message' => 'Configure primeiro o endereço público desta instalação; a outra parte irá registrá-lo.'], 422);
         }
 
         try {
@@ -114,7 +114,7 @@ class TrustConsoleController extends Controller
             $doc = DomainVerifier::fetchIdentity($origin);
             // The fingerprint came from the other admin, not from the network: this is the check that we reached them.
             if (! hash_equals($invite['fingerprint'], RequestSigner::fingerprint($doc['public_key']))) {
-                return response()->json(['message' => 'The instance at that address does not match the connection code. Nothing was paired.'], 422);
+                return response()->json(['message' => 'A instalação nesse endereço não corresponde ao código de conexão. Nenhum pareamento foi feito.'], 422);
             }
 
             $message = Federation::pairingMessage($invite['code'], $identity->public_key, $identity->uuid);
@@ -126,13 +126,13 @@ class TrustConsoleController extends Controller
         } catch (InvalidArgumentException $e) {
             return response()->json(['message' => $e->getMessage()], 422);
         } catch (Throwable) {
-            return response()->json(['message' => 'Could not reach that instance.'], 422);
+            return response()->json(['message' => 'Não foi possível acessar essa instalação.'], 422);
         }
         if (! $response->successful()) {
-            return response()->json(['message' => $response->status() === 422 ? 'The connection code was refused: it is wrong, already used or expired.' : 'The other instance refused the pairing.'], 422);
+            return response()->json(['message' => $response->status() === 422 ? 'O código de conexão foi recusado: está incorreto, já foi usado ou expirou.' : 'A outra instalação recusou o pareamento.'], 422);
         }
         if (($response->json('server.public_key') ?? null) !== $doc['public_key'] || ($response->json('server.uuid') ?? null) !== $doc['uuid']) {
-            return response()->json(['message' => 'The other instance answered with a different identity than it publishes. Nothing was recorded.'], 422);
+            return response()->json(['message' => 'A outra instalação respondeu com uma identidade diferente da publicada. Nada foi registrado.'], 422);
         }
 
         $trust = TrustService::enrollInvited($doc, $origin, $data['grants'] ?? [], $response->json('permissions') ?? [], Auth::id());
@@ -140,7 +140,7 @@ class TrustConsoleController extends Controller
 
         return response()->json([
             'record' => $this->present($trust->fresh(['grants', 'approvedBy', 'managedDevice'])),
-            'warning' => $check === null ? 'Paired, but a test call to the other instance failed. Check its address and clock.' : null,
+            'warning' => $check === null ? 'Pareado, mas não foi possível fazer uma chamada de teste à outra instalação. Confira o endereço e o relógio dela.' : null,
         ], 201);
     }
 
@@ -154,10 +154,10 @@ class TrustConsoleController extends Controller
     public function refreshGrants(Trust $trust)
     {
         if ($trust->kind !== 'instance' || ! $trust->isApproved()) {
-            return response()->json(['message' => 'Only an approved instance trust can be refreshed.'], 422);
+            return response()->json(['message' => 'Somente uma relação de confiança aprovada entre instalações pode ser atualizada.'], 422);
         }
         if (TrustService::refreshOutbound($trust, Auth::id()) === null) {
-            return response()->json(['message' => 'The other instance did not accept the request. It may not have recorded this trust yet.'], 422);
+            return response()->json(['message' => 'A outra instalação não aceitou a solicitação. Talvez ainda não tenha registrado esta relação de confiança.'], 422);
         }
 
         return response()->json(['record' => $this->present($trust->fresh(['grants', 'approvedBy', 'managedDevice']))]);

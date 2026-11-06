@@ -101,19 +101,19 @@ class MailSettingsController extends Controller
 
         try {
             Mail::raw(
-                'This is a test message from Relief Inventory at '.config('app.url').".\n\n"
-                .'If you can read this, outgoing email is working.',
-                fn ($message) => $message->to($data['to'])->subject('Relief Inventory test email')
+                'Esta é uma mensagem de teste do Relief Inventory em '.config('app.url').".\n\n"
+                .'Se você consegue ler esta mensagem, o envio de e-mails está funcionando.',
+                fn ($message) => $message->to($data['to'])->subject('E-mail de teste do Relief Inventory')
             );
         } catch (\Throwable $e) {
             Log::warning('Test email failed: '.$e->getMessage());
 
-            return response()->json(['message' => 'The test email was not sent: '.$e->getMessage()], 422);
+            return response()->json(['message' => 'O e-mail de teste não foi enviado: '.$e->getMessage()], 422);
         }
 
         $note = $effective['mailer'] === 'log'
-            ? 'The mailer is set to "log", so the message was written to the application log, not delivered.'
-            : "Sent to {$data['to']} via {$effective['mailer']}. Check that inbox (and its spam folder).";
+            ? 'O mailer está definido como "log", então a mensagem foi gravada no log do aplicativo, não foi entregue.'
+            : "Enviado para {$data['to']} via {$effective['mailer']}. Confira a caixa de entrada (e a pasta de spam).";
 
         return response()->json(['message' => $note]);
     }

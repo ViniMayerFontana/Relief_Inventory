@@ -171,35 +171,35 @@ function changeVote() {
 	<div class="min-h-screen bg-gray-100 py-6 px-4">
 		<div class="max-w-2xl mx-auto space-y-5">
 			<div class="bg-white shadow rounded-lg p-5 space-y-3">
-				<p class="text-xs text-gray-500 uppercase font-semibold">Design vote</p>
+				<p class="text-xs text-gray-500 uppercase font-semibold">Votação de design</p>
 				<h1 class="text-2xl font-bold text-gray-800">{{ poll.question }}</h1>
 				<p class="text-gray-700">{{ poll.intro }}</p>
 
 				<p v-if="open && changing" class="text-sm text-gray-800 bg-blue-50 border border-blue-200 rounded px-4 py-3">
-					Try each design, then tap <strong>👍 I like this</strong> or <strong>👎 Not for me</strong> on any of them
-					and tell us why if you like. Skip the ones you have no opinion on — you only need to rate one, and it's
-					fine if you don't like any.
+					Experimente cada design e toque em <strong>👍 Gostei</strong> ou <strong>👎 Não gostei</strong>
+					em qualquer um deles. Se quiser, conte o motivo. Você pode pular os que não tiver opinião —
+					basta avaliar um, e tudo bem se não gostar de nenhum.
 				</p>
 				<p v-if="!open" class="rounded bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 text-sm">
-					Voting has closed. Here is how people voted ({{ results?.voters || 0 }} {{ results?.voters === 1 ? 'person' : 'people' }}).
+					A votação foi encerrada. Veja como as pessoas votaram ({{ results?.voters || 0 }} {{ results?.voters === 1 ? 'pessoa' : 'pessoas' }}).
 				</p>
 				<div v-else-if="voted && !changing" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3 text-sm space-y-1">
-					<p>Thank you! Your vote is in. Results are shown once voting closes.</p>
-					<p v-if="liked.length">You like: <strong>{{ liked.join(', ') }}</strong></p>
-					<p v-if="disliked.length">Not for you: <strong>{{ disliked.join(', ') }}</strong></p>
-					<button type="button" class="underline" @click="changeVote">Change my vote</button>
+					<p>Obrigado! Seu voto foi registrado. Os resultados serão exibidos quando a votação terminar.</p>
+					<p v-if="liked.length">Você gostou de: <strong>{{ liked.join(', ') }}</strong></p>
+					<p v-if="disliked.length">Você não gostou de: <strong>{{ disliked.join(', ') }}</strong></p>
+					<button type="button" class="underline" @click="changeVote">Alterar meu voto</button>
 				</div>
 			</div>
 
 			<!-- ======================= RESULTS (closed) ======================= -->
 			<div v-if="!open && ranked.length" class="bg-white shadow rounded-lg p-5 space-y-3">
-				<h2 class="text-lg font-semibold">Results</h2>
+				<h2 class="text-lg font-semibold">Resultados</h2>
 				<div v-for="row in ranked" :key="row.key" class="space-y-1">
 					<div class="flex justify-between text-sm gap-3">
 						<span class="font-medium">{{ labelFor(row.key) }}</span>
 						<span class="text-gray-600 whitespace-nowrap">👍 {{ row.likes }} · 👎 {{ row.dislikes }}</span>
 					</div>
-					<div class="h-3 rounded bg-gray-200 overflow-hidden" :title="`${row.percent}% liked it`">
+					<div class="h-3 rounded bg-gray-200 overflow-hidden" :title="`${row.percent}% gostaram`">
 						<div class="h-full bg-green-600" :style="{ width: row.percent + '%' }"></div>
 					</div>
 				</div>
@@ -221,26 +221,26 @@ function changeVote() {
 					</span>
 					<span v-else-if="voted && !changing && reactions[option.key].reaction" class="text-sm whitespace-nowrap"
 						:class="reactions[option.key].reaction === 'like' ? 'text-green-700' : 'text-red-700'">
-						{{ reactions[option.key].reaction === 'like' ? '👍 You like this' : '👎 Not for you' }}
+						{{ reactions[option.key].reaction === 'like' ? '👍 Você gostou' : '👎 Você não gostou' }}
 					</span>
 				</div>
-				<p class="text-xs text-gray-500">Try it:</p>
+				<p class="text-xs text-gray-500">Experimente:</p>
 				<component :is="demoFor(option.key)" v-if="demoFor(option.key)" />
 				<div v-if="open && changing" class="space-y-2">
 					<div class="grid grid-cols-2 gap-2">
 						<button type="button" :aria-pressed="reactions[option.key].reaction === 'like'"
 							class="py-2 px-3 rounded-md border font-medium"
 							:class="reactions[option.key].reaction === 'like' ? 'bg-green-600 border-green-600 text-white' : 'bg-white border-gray-300 text-gray-800 hover:bg-green-50'"
-							@click="react(option.key, 'like')">👍 I like this</button>
+							@click="react(option.key, 'like')">👍 Gostei</button>
 						<button type="button" :aria-pressed="reactions[option.key].reaction === 'dislike'"
 							class="py-2 px-3 rounded-md border font-medium"
 							:class="reactions[option.key].reaction === 'dislike' ? 'bg-red-600 border-red-600 text-white' : 'bg-white border-gray-300 text-gray-800 hover:bg-red-50'"
-							@click="react(option.key, 'dislike')">👎 Not for me</button>
+							@click="react(option.key, 'dislike')">👎 Não gostei</button>
 					</div>
 					<label v-if="reactions[option.key].reaction" class="block">
 						<span class="text-sm text-gray-700">
-							{{ reactions[option.key].reaction === 'like' ? 'What do you like about it? Any ideas to make it better?' : 'What don\'t you like? How would you change it?' }}
-							<span class="text-gray-400">(optional)</span>
+							{{ reactions[option.key].reaction === 'like' ? 'O que você gostou? Tem alguma ideia para melhorar?' : 'O que você não gostou? O que mudaria?' }}
+							<span class="text-gray-400">(opcional)</span>
 						</span>
 						<textarea v-model="reactions[option.key].comment" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base"></textarea>
 					</label>
@@ -251,56 +251,56 @@ function changeVote() {
 			<!-- v-show, not v-if: Turnstile only draws into elements present when its script loads -->
 			<form v-if="open" v-show="changing" class="bg-white shadow rounded-lg p-5 space-y-4" @submit.prevent="submit">
 				<div class="text-sm text-gray-800 space-y-1">
-					<p v-if="!chosen.length" class="text-gray-500">Nothing rated yet — tap 👍 or 👎 on at least one design above.</p>
-					<p v-if="liked.length">👍 You like: <strong>{{ liked.join(', ') }}</strong></p>
-					<p v-if="disliked.length">👎 Not for you: <strong>{{ disliked.join(', ') }}</strong></p>
+					<p v-if="!chosen.length" class="text-gray-500">Nada avaliado ainda — toque em 👍 ou 👎 em pelo menos um dos designs acima.</p>
+					<p v-if="liked.length">👍 Você gostou de: <strong>{{ liked.join(', ') }}</strong></p>
+					<p v-if="disliked.length">👎 Você não gostou de: <strong>{{ disliked.join(', ') }}</strong></p>
 				</div>
 
 				<label class="block">
-					<span class="text-sm text-gray-700">Your name <span class="text-gray-400">(optional)</span></span>
+					<span class="text-sm text-gray-700">Seu nome <span class="text-gray-400">(opcional)</span></span>
 					<input v-model="form.voter_name" autocomplete="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 				</label>
 
 				<div v-if="turnstile_enabled" ref="voteWidget" class="cf-turnstile" :data-sitekey="turnstile_site_key"></div>
 				<p v-if="turnstile_unavailable" class="text-sm text-amber-900 bg-amber-50 border border-amber-300 rounded p-3">
-					Voting can't accept entries right now because its spam protection isn't set up on this server.
+					Não é possível receber votos no momento porque a proteção contra spam não está configurada neste servidor.
 				</p>
 				<p v-if="message" class="text-sm text-red-600">{{ message }}</p>
 
 				<button type="submit" :disabled="submitting || turnstile_unavailable"
 					class="w-full py-3 bg-blue-600 text-white rounded-md font-semibold text-lg hover:bg-blue-700 disabled:opacity-50">
-					{{ submitting ? 'Sending…' : (voted ? 'Save My Changes' : 'Send My Vote') }}
+					{{ submitting ? 'Enviando…' : (voted ? 'Salvar alterações' : 'Enviar meu voto') }}
 				</button>
 			</form>
 
 			<!-- ======================= ANOTHER IDEA ======================= -->
 			<form class="bg-white shadow rounded-lg p-5 space-y-3" @submit.prevent="sendIdea">
-				<h2 class="text-lg font-semibold text-gray-800">Have another idea?</h2>
+				<h2 class="text-lg font-semibold text-gray-800">Tem outra ideia?</h2>
 				<p class="text-sm text-gray-600">
-					A different way to do this, or something else entirely — anything that would make the system better.
-					You don't have to vote to send one, and you can send as many as you like.
+					Uma maneira diferente de fazer isso ou qualquer outra sugestão que possa melhorar o sistema.
+					Você não precisa votar para enviar uma ideia e pode mandar quantas quiser.
 				</p>
 				<textarea v-model="idea.text" rows="3" class="block w-full border-gray-300 rounded-md shadow-sm text-base"></textarea>
 				<label v-if="!open || !changing" class="block">
-					<span class="text-sm text-gray-700">Your name (optional)</span>
+					<span class="text-sm text-gray-700">Seu nome (opcional)</span>
 					<input v-model="idea.voter_name" autocomplete="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 				</label>
 				<label class="block">
-					<span class="text-sm text-gray-700">Your email ({{ idea.ok_to_contact ? 'needed so we can contact you' : 'optional' }})</span>
+					<span class="text-sm text-gray-700">Seu e-mail ({{ idea.ok_to_contact ? 'necessário para entrarmos em contato' : 'opcional' }})</span>
 					<input v-model="idea.email" type="email" autocomplete="email"
 						class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 					<span v-if="ideaErrors.email" class="text-sm text-red-600">{{ ideaErrors.email[0] }}</span>
 				</label>
 				<label class="flex items-center gap-2">
 					<input v-model="idea.ok_to_contact" type="checkbox" class="rounded border-gray-300" />
-					<span class="text-sm text-gray-700">OK to contact me about this idea</span>
+					<span class="text-sm text-gray-700">Autorizo contato sobre esta ideia</span>
 				</label>
 				<div v-if="turnstile_enabled" ref="ideaWidget" class="cf-turnstile" :data-sitekey="turnstile_site_key"></div>
 				<p v-if="ideasSent" class="text-sm text-green-700">Thank you — got it.{{ ideasSent > 1 ? ` (${ideasSent} sent)` : '' }} Send another any time.</p>
 				<p v-if="ideaMessage" class="text-sm text-red-600">{{ ideaMessage }}</p>
 				<button type="submit" :disabled="ideaSending || turnstile_unavailable"
 					class="px-4 py-2 bg-gray-700 text-white rounded-md font-semibold hover:bg-gray-800 disabled:opacity-50">
-					{{ ideaSending ? 'Sending…' : 'Send Idea' }}
+					{{ ideaSending ? 'Enviando…' : 'Enviar ideia' }}
 				</button>
 			</form>
 		</div>

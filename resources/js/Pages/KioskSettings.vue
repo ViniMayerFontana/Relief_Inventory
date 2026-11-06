@@ -53,7 +53,7 @@ async function addLocation() {
 		newLocation.name = '';
 		newLocation.welcome_message = '';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not add that location.';
+		error.value = e.response?.data?.message || 'Não foi possível adicionar esse local.';
 	} finally {
 		addingLocation.value = false;
 	}
@@ -67,7 +67,7 @@ async function saveLocation(location) {
 		Object.assign(location, response.data.record);
 		locationSavedAt[location.id] = new Date();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not save that location.';
+		error.value = e.response?.data?.message || 'Não foi possível salvar esse local.';
 	} finally {
 		savingLocationId.value = null;
 	}
@@ -100,7 +100,7 @@ async function addGuestType() {
 		guestTypes.value.push(response.data.record);
 		newGuestType.value = '';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not add that guest type.';
+		error.value = e.response?.data?.message || 'Não foi possível adicionar esse tipo de visitante.';
 	} finally {
 		addingGuestType.value = false;
 	}
@@ -139,7 +139,7 @@ async function addSuggestion(kind) {
 			newTaskSuggestion.value = '';
 		}
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not add that suggestion.';
+		error.value = e.response?.data?.message || 'Não foi possível adicionar essa sugestão.';
 	} finally {
 		addingFlag.value = false;
 	}
@@ -163,7 +163,7 @@ async function saveKioskSettings() {
 		Object.assign(kioskSettings, response.data.settings);
 		behaviorSavedAt.value = new Date();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not save kiosk behavior settings.';
+		error.value = e.response?.data?.message || 'Não foi possível salvar as configurações de comportamento do quiosque.';
 	} finally {
 		savingBehavior.value = false;
 	}
@@ -176,141 +176,141 @@ onMounted(async () => {
 		await fetchSuggestions();
 		await fetchKioskSettings();
 	} catch (e) {
-		error.value = 'Could not load kiosk settings.';
+		error.value = 'Não foi possível carregar as configurações do quiosque.';
 	}
 });
 </script>
 
 <template>
-	<Head title="Kiosk Settings" />
+	<Head title="Configurações do quiosque" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Kiosk Settings</h1>
+			<h1 class="text-2xl font-bold">Configurações do quiosque</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
 
 			<!-- Locations -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Locations</h2>
+				<h2 class="text-lg font-semibold">Locais</h2>
 				<div v-for="location in locations" :key="location.id" class="border rounded p-3 space-y-2">
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<label class="block">
-							<span class="text-gray-700">Location name</span>
+							<span class="text-gray-700">Nome do local</span>
 							<input type="text" maxlength="255" v-model="location.name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Welcome message (optional)</span>
-							<input type="text" maxlength="255" v-model="location.welcome_message" placeholder="Shown only if filled in" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+							<span class="text-gray-700">Mensagem de boas-vindas (opcional)</span>
+							<input type="text" maxlength="255" v-model="location.welcome_message" placeholder="Exibida somente se preenchida" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 					</div>
 					<label class="flex items-center gap-2 text-sm">
 						<input type="checkbox" v-model="location.active" />
-						<span class="text-gray-700">Active</span>
+						<span class="text-gray-700">Ativo</span>
 					</label>
 					<div class="flex gap-3 items-center">
 						<PrimaryButton :disabled="savingLocationId === location.id" @click="saveLocation(location)">
-							{{ savingLocationId === location.id ? 'Saving…' : 'Save' }}
+							{{ savingLocationId === location.id ? 'Salvando…' : 'Salvar' }}
 						</PrimaryButton>
-						<span v-if="locationSavedAt[location.id]" class="text-sm text-green-700">Saved {{ locationSavedAt[location.id].toLocaleTimeString() }}</span>
+						<span v-if="locationSavedAt[location.id]" class="text-sm text-green-700">Salvo {{ locationSavedAt[location.id].toLocaleTimeString() }}</span>
 					</div>
 				</div>
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 					<label class="block">
-						<span class="text-gray-700">New location name</span>
+						<span class="text-gray-700">Nome do novo local</span>
 						<input type="text" maxlength="255" v-model="newLocation.name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Welcome message (optional)</span>
+						<span class="text-gray-700">Mensagem de boas-vindas (opcional)</span>
 						<input type="text" maxlength="255" v-model="newLocation.welcome_message" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 				</div>
 				<PrimaryButton :disabled="addingLocation" @click="addLocation">
-					{{ addingLocation ? 'Adding…' : 'Add Location' }}
+					{{ addingLocation ? 'Adicionando…' : 'Adicionar local' }}
 				</PrimaryButton>
 				<p class="text-xs text-gray-500">
-					Each kiosk device is assigned one location when kiosk mode is enabled on it, and shows
-					that location's name (and welcome message, if set) on its sign-in screen.
+					Cada dispositivo de quiosque recebe um local quando o modo quiosque é ativado e exibe
+					o nome desse local (e a mensagem de boas-vindas, se houver) na tela de entrada.
 				</p>
 			</section>
 
 			<!-- Guest Types -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Guest Types</h2>
+				<h2 class="text-lg font-semibold">Tipos de visitante</h2>
 				<label v-if="locations.length > 1" class="block text-sm">
-					<span class="text-gray-700">Location</span>
+					<span class="text-gray-700">Local</span>
 					<select v-model.number="selectedLocationId" @change="fetchGuestTypes" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
 						<option v-for="location in locations" :key="location.id" :value="location.id">{{ location.name }}</option>
 					</select>
 				</label>
 				<ul class="text-sm space-y-1">
 					<li v-for="type in guestTypes" :key="type.id" class="text-gray-700">{{ type.name }}</li>
-					<li v-if="!guestTypes.length" class="text-gray-400">none yet</li>
+					<li v-if="!guestTypes.length" class="text-gray-400">Nenhum ainda</li>
 				</ul>
 				<div class="flex gap-3 items-center">
-					<input type="text" maxlength="255" v-model="newGuestType" placeholder="e.g. Maintenance/Repair" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
+					<input type="text" maxlength="255" v-model="newGuestType" placeholder="ex.: Manutenção/reparo" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
 					<PrimaryButton :disabled="addingGuestType" @click="addGuestType">
-						{{ addingGuestType ? 'Adding…' : 'Add' }}
+						{{ addingGuestType ? 'Adicionando…' : 'Adicionar' }}
 					</PrimaryButton>
 				</div>
 				<p class="text-xs text-gray-500">
-					Always offered alongside a free-text "Other" on the kiosk's Guest sign-in screen — this
-					list is what's suggested first, per location.
+					Sempre oferecidos junto com a opção de texto livre "Outro" na tela de entrada de visitantes do quiosque —
+					esta lista contém as sugestões exibidas primeiro em cada local.
 				</p>
 			</section>
 
 			<!-- Suggestions -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Suggestions</h2>
+				<h2 class="text-lg font-semibold">Sugestões</h2>
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 					<div class="space-y-2">
-						<h3 class="font-medium text-sm">Agency</h3>
+						<h3 class="font-medium text-sm">Entidade</h3>
 						<ul class="text-sm space-y-1">
 							<li v-for="s in agencySuggestions" :key="s.id" class="text-gray-700">{{ s.value }}</li>
-							<li v-if="!agencySuggestions.length" class="text-gray-400">none yet</li>
+							<li v-if="!agencySuggestions.length" class="text-gray-400">Nenhuma ainda</li>
 						</ul>
 						<div class="flex gap-2 items-center">
-							<input type="text" maxlength="255" v-model="newAgencySuggestion" placeholder="e.g. American Red Cross" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
-							<PrimaryButton :disabled="addingAgencySuggestion" @click="addSuggestion('agency')">Add</PrimaryButton>
+							<input type="text" maxlength="255" v-model="newAgencySuggestion" placeholder="ex.: Cruz Vermelha Brasileira" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
+							<PrimaryButton :disabled="addingAgencySuggestion" @click="addSuggestion('agency')">Adicionar</PrimaryButton>
 						</div>
 					</div>
 					<div class="space-y-2">
-						<h3 class="font-medium text-sm">Task</h3>
+						<h3 class="font-medium text-sm">Tarefa</h3>
 						<ul class="text-sm space-y-1">
 							<li v-for="s in taskSuggestions" :key="s.id" class="text-gray-700">{{ s.value }}</li>
-							<li v-if="!taskSuggestions.length" class="text-gray-400">none yet</li>
+							<li v-if="!taskSuggestions.length" class="text-gray-400">Nenhuma ainda</li>
 						</ul>
 						<div class="flex gap-2 items-center">
-							<input type="text" maxlength="255" v-model="newTaskSuggestion" placeholder="e.g. Forklift Operator" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
-							<PrimaryButton :disabled="addingTaskSuggestion" @click="addSuggestion('task')">Add</PrimaryButton>
+							<input type="text" maxlength="255" v-model="newTaskSuggestion" placeholder="ex.: Operador de empilhadeira" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
+							<PrimaryButton :disabled="addingTaskSuggestion" @click="addSuggestion('task')">Adicionar</PrimaryButton>
 						</div>
 					</div>
 				</div>
 				<p class="text-xs text-gray-500">
-					Shown as type-ahead suggestions on the kiosk's Agency and Title/Function fields — both
-					stay free text underneath, this just speeds up common entries.
+					Exibidas como sugestões nos campos Entidade e Cargo/Função do quiosque — ambos
+					continuam aceitando texto livre; as sugestões apenas agilizam os registros frequentes.
 				</p>
 			</section>
 
 			<!-- Kiosk Behavior -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Kiosk Behavior</h2>
+				<h2 class="text-lg font-semibold">Comportamento do quiosque</h2>
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 					<label class="block">
-						<span class="text-gray-700">Idle reset (minutes)</span>
-						<input type="number" min="1" max="1440" v-model.number="kioskSettings.idle_reset_minutes" placeholder="Never" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+						<span class="text-gray-700">Reiniciar após inatividade (minutos)</span>
+						<input type="number" min="1" max="1440" v-model.number="kioskSettings.idle_reset_minutes" placeholder="Nunca" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 				</div>
 				<div class="flex gap-3 items-center">
 					<PrimaryButton :disabled="savingBehavior" @click="saveKioskSettings">
-						{{ savingBehavior ? 'Saving…' : 'Save' }}
+						{{ savingBehavior ? 'Salvando…' : 'Salvar' }}
 					</PrimaryButton>
-					<span v-if="behaviorSavedAt" class="text-sm text-green-700">Saved {{ behaviorSavedAt.toLocaleTimeString() }}</span>
+					<span v-if="behaviorSavedAt" class="text-sm text-green-700">Salvo {{ behaviorSavedAt.toLocaleTimeString() }}</span>
 				</div>
 				<p class="text-xs text-gray-500">
-					How long the kiosk screen sits idle before it resets to the welcome/search view. Leave
-					blank to never auto-reset.
+					Por quanto tempo a tela do quiosque pode ficar inativa antes de voltar à tela de boas-vindas e busca. Deixe
+					em branco para nunca reiniciar automaticamente.
 				</p>
 			</section>
 		</div>

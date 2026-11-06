@@ -52,7 +52,7 @@ class WarehouseController extends Controller
 
         $warehouse = Warehouse::create($request->all());
 
-        return response()->json(['message' => 'Warehouse created successfully.'], 201);
+        return response()->json(['message' => 'Armazém criado com sucesso.'], 201);
     }
 
     /**
@@ -78,7 +78,7 @@ class WarehouseController extends Controller
 
         $warehouse->update($request->all());
 
-        return response()->json(['message' => 'Warehouse updated successfully.'], 200);
+        return response()->json(['message' => 'Armazém atualizado com sucesso.'], 200);
     }
 
     /**
@@ -94,7 +94,7 @@ class WarehouseController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error deleting warehouse: '.$e->getMessage(),
+                'message' => 'Erro ao excluir o armazém: '.$e->getMessage(),
             ], 500);
         }
     }

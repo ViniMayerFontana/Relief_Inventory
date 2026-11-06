@@ -145,7 +145,7 @@ class VolunteerSignInController extends Controller
             ->whereIn('status', [VolunteerSignIn::STATUS_OPEN, VolunteerSignIn::STATUS_PENDING_CONFIRMATION])
             ->exists();
         if ($alreadyIn) {
-            return response()->json(['message' => 'This person already has an open sign-in — sign them out instead.'], 422);
+            return response()->json(['message' => 'Esta pessoa já tem um registro de entrada em aberto — registre a saída dela.'], 422);
         }
 
         $signIn = VolunteerSignIn::create([
@@ -192,7 +192,7 @@ class VolunteerSignInController extends Controller
     public function signOut(Request $request, VolunteerSignIn $volunteerSignIn)
     {
         if ($volunteerSignIn->status === VolunteerSignIn::STATUS_CLOSED) {
-            return response()->json(['message' => 'This sign-in is already closed.'], 422);
+            return response()->json(['message' => 'Este registro de entrada já foi encerrado.'], 422);
         }
 
         $data = $request->validate([

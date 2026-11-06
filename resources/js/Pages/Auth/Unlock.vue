@@ -85,7 +85,7 @@ async function submitPin() {
 		});
 		window.location.href = response.data.redirect || '/dashboard';
 	} catch (error) {
-		pinError.value = error.response?.data?.message || 'Could not unlock. Please try again.';
+		pinError.value = error.response?.data?.message || 'Não foi possível desbloquear. Tente novamente.';
 		pinDigits.value = ['', '', '', '', ''];
 		nextTick(() => pinInputs.value[0]?.focus());
 	} finally {
@@ -102,7 +102,7 @@ async function submitBadge() {
 		const response = await axios.post('/unlock/badge', { badge_code: code });
 		selectPerson(response.data.person);
 	} catch (error) {
-		badgeError.value = error.response?.data?.message || 'Badge not recognized.';
+		badgeError.value = error.response?.data?.message || 'Crachá não reconhecido.';
 	} finally {
 		badgeInput.value = '';
 		badgeScanning.value = false;
@@ -112,29 +112,29 @@ async function submitBadge() {
 </script>
 
 <template>
-	<Head title="Unlock" />
+	<Head title="Desbloquear" />
 	<GuestLayout>
 		<div class="text-center mb-4">
-			<h1 class="text-xl font-bold text-gray-800">Unlock</h1>
+			<h1 class="text-xl font-bold text-gray-800">Desbloquear</h1>
 		</div>
 
 		<!-- ======================= DEVICE NOT APPROVED ======================= -->
 		<div v-if="!deviceApproved" class="text-center space-y-4">
 			<p class="text-sm text-gray-600">
-				This device isn't set up for quick login yet. Log in with your email and password, then
-				choose <strong>PIN Login on This Device</strong> from your profile menu to approve it
-				(or ask an administrator to).
+				Este dispositivo ainda não está configurado para acesso rápido. Entre com seu e-mail e senha e
+				selecione <strong>Acesso por PIN neste dispositivo</strong> no menu do perfil para aprová-lo
+				(ou peça a uma pessoa administradora).
 			</p>
 			<Link :href="route('login', { email: 1 })"
 				class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
-				Log in with email
+				Entrar com e-mail
 			</Link>
 		</div>
 
 		<!-- ======================= APPROVED: PICK A PERSON ======================= -->
 		<div v-else-if="!selectedPerson" class="space-y-5">
 			<div v-if="(!requireBadgeAndPin || !badgeLoginEnabled) && people.length" class="space-y-2">
-				<p class="text-sm text-gray-600 text-center">Select user</p>
+				<p class="text-sm text-gray-600 text-center">Selecione uma pessoa</p>
 				<div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
 					<button v-for="person in people" :key="person.id" @click="selectPerson(person)"
 						class="border rounded-lg py-3 px-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400">
@@ -145,7 +145,7 @@ async function submitBadge() {
 
 			<div v-if="badgeLoginEnabled" class="space-y-2">
 				<p class="text-sm text-gray-600 text-center">
-					{{ requireBadgeAndPin ? 'Scan your badge to continue' : 'Or scan your badge' }}
+					{{ requireBadgeAndPin ? 'Leia seu crachá para continuar' : 'Ou leia seu crachá' }}
 				</p>
 				<p v-if="badgeError" class="text-sm text-red-600 text-center">{{ badgeError }}</p>
 				<div class="flex gap-2">
@@ -154,7 +154,7 @@ async function submitBadge() {
 						type="text"
 						v-model="badgeInput"
 						:disabled="badgeScanning"
-						placeholder="Scan badge or type code..."
+						placeholder="Leia o crachá ou digite o código..."
 						class="flex-1 border-gray-300 rounded-md shadow-sm"
 						@keydown.enter.prevent="submitBadge"
 					/>
@@ -164,16 +164,16 @@ async function submitBadge() {
 
 			<div v-if="!requireBadgeAndPin || !badgeLoginEnabled" class="text-center pt-2 border-t">
 				<Link :href="route('login', { email: 1 })" class="text-sm text-gray-500 underline">
-					Log in with email
+					Entrar com e-mail
 				</Link>
 			</div>
 		</div>
 
 		<!-- ======================= PIN ENTRY ======================= -->
 		<div v-else class="space-y-4 text-center">
-			<button @click="cancelSelection" class="text-sm text-gray-500">&larr; Back</button>
+			<button @click="cancelSelection" class="text-sm text-gray-500">&larr; Voltar</button>
 			<p class="text-sm text-gray-600">{{ selectedPerson.full_name }}</p>
-			<p class="text-xs text-gray-500">Enter your PIN</p>
+			<p class="text-xs text-gray-500">Digite seu PIN</p>
 
 			<div class="flex justify-center gap-2">
 				<input
@@ -192,7 +192,7 @@ async function submitBadge() {
 			</div>
 
 			<p v-if="pinError" class="text-sm text-red-600">{{ pinError }}</p>
-			<p v-if="pinSubmitting" class="text-sm text-gray-500">Checking…</p>
+			<p v-if="pinSubmitting" class="text-sm text-gray-500">Verificando…</p>
 		</div>
 	</GuestLayout>
 </template>

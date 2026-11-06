@@ -76,7 +76,7 @@ function close() {
 
 async function submit() {
 	if (!message.value.trim()) {
-		error.value = 'Please describe the issue or idea.';
+		error.value = 'Descreva o problema ou a ideia.';
 		return;
 	}
 
@@ -98,7 +98,7 @@ async function submit() {
 		await axios.post('/json/feedback-reports', formData);
 		submitted.value = true;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not submit your report — please try again.';
+		error.value = e.response?.data?.message || 'Não foi possível enviar o relato. Tente novamente.';
 	} finally {
 		submitting.value = false;
 	}
@@ -130,15 +130,15 @@ async function captureScreenshot() {
 <template>
 	<Modal :show="dialogVisible" @close="close" max-width="lg">
 		<div class="p-6 space-y-4">
-			<h2 class="text-lg font-semibold">Report an Issue</h2>
+			<h2 class="text-lg font-semibold">Relatar um problema</h2>
 
 			<template v-if="submitted">
 				<div class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3 text-sm">
-					Thanks — your report was submitted. We'll email you at
+					Obrigado! Seu relato foi enviado. Enviaremos uma atualização para
 					{{ page.props.auth.user.email }} when there's an update.
 				</div>
 				<div class="flex justify-end">
-					<SecondaryButton @click="close">Close</SecondaryButton>
+					<SecondaryButton @click="close">Fechar</SecondaryButton>
 				</div>
 			</template>
 
@@ -146,11 +146,11 @@ async function captureScreenshot() {
 				<div class="flex gap-4 text-sm">
 					<label class="flex items-center gap-2">
 						<input type="radio" value="bug" v-model="type" />
-						Bug report
+						Relatar um erro
 					</label>
 					<label class="flex items-center gap-2">
 						<input type="radio" value="feature" v-model="type" />
-						Feature idea
+						Sugerir uma melhoria
 					</label>
 				</div>
 
@@ -158,24 +158,24 @@ async function captureScreenshot() {
 					v-model="message"
 					rows="5"
 					class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-					placeholder="What happened, or what would you like to see?"
+					placeholder="O que aconteceu ou o que você gostaria que fosse feito?"
 				></textarea>
 
 				<label class="flex items-center gap-2 text-sm text-gray-700">
 					<input type="checkbox" v-model="urgent" />
-					Urgent — this is blocking work right now
+					Urgente — isso está impedindo o trabalho neste momento
 				</label>
 
 				<label class="flex items-center gap-2 text-sm text-gray-700">
 					<input type="checkbox" v-model="includeScreenshot" :disabled="capturingScreenshot || !screenshotBlob" />
-					<span v-if="capturingScreenshot">Capturing screenshot…</span>
-					<span v-else-if="screenshotBlob">Attach a screenshot of this page</span>
-					<span v-else>Screenshot unavailable</span>
+					<span v-if="capturingScreenshot">Capturando a tela…</span>
+					<span v-else-if="screenshotBlob">Anexar uma captura desta página</span>
+					<span v-else>Captura de tela indisponível</span>
 				</label>
 
 				<p class="text-xs text-gray-500">
-					We automatically include the page you're on ({{ pageTitle }})
-					and your browser info to help us track this down.
+					Incluímos automaticamente a página em que você está ({{ pageTitle }})
+					e as informações do navegador para ajudar a investigar.
 				</p>
 
 				<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3 text-sm">
@@ -183,9 +183,9 @@ async function captureScreenshot() {
 				</div>
 
 				<div class="flex justify-end gap-3">
-					<SecondaryButton :disabled="submitting" @click="close">Cancel</SecondaryButton>
+					<SecondaryButton :disabled="submitting" @click="close">Cancelar</SecondaryButton>
 					<PrimaryButton :disabled="submitting" @click="submit">
-						{{ submitting ? 'Submitting…' : 'Submit Report' }}
+						{{ submitting ? 'Enviando…' : 'Enviar relato' }}
 					</PrimaryButton>
 				</div>
 			</template>

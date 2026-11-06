@@ -87,7 +87,7 @@ class PrintJobController extends Controller
     {
         $job = PrintJob::findOrFail($id);
         if (! PrintJob::canTransition($job->status, PrintJob::STATUS_CANCELLED)) {
-            return response()->json(['message' => "A {$job->status} job can't be cancelled."], 409);
+            return response()->json(['message' => "Um trabalho com status {$job->status} não pode ser cancelado."], 409);
         }
         $job->transitionTo(PrintJob::STATUS_CANCELLED, Auth::id(), null, [], 'Cancelled');
 
@@ -98,10 +98,10 @@ class PrintJobController extends Controller
     {
         $job = PrintJob::findOrFail($id);
         if ($job->status !== PrintJob::STATUS_FAILED) {
-            return response()->json(['message' => 'Only a failed job can be retried.'], 409);
+            return response()->json(['message' => 'Só é possível tentar novamente um trabalho que falhou.'], 409);
         }
         if (! $job->pdf_path) {
-            return response()->json(['message' => 'This job\'s file has been cleaned up; print the document again.'], 409);
+            return response()->json(['message' => 'O arquivo deste trabalho foi removido; imprima o documento novamente.'], 409);
         }
         $job->transitionTo(PrintJob::STATUS_QUEUED, Auth::id(), null, [
             'error_message' => null,
@@ -120,10 +120,10 @@ class PrintJobController extends Controller
         $job = PrintJob::findOrFail($id);
         $printer = Printer::usable()->find($data['printer_id']);
         if (! $printer) {
-            return response()->json(['message' => 'That printer is not available for printing.'], 422);
+            return response()->json(['message' => 'Essa impressora não está disponível.'], 422);
         }
         if ($job->status === PrintJob::STATUS_FAILED && ! $job->pdf_path) {
-            return response()->json(['message' => 'This job\'s file has been cleaned up; print the document again.'], 409);
+            return response()->json(['message' => 'O arquivo deste trabalho foi removido; imprima o documento novamente.'], 409);
         }
 
         try {

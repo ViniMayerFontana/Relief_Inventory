@@ -12,11 +12,11 @@
     a dead end. Self-contained like 503.blade.php — no Vite/app layout
     dependency.
 -->
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Relief Inventory') }} — Link Expired</title>
+    <title>{{ config('app.name', 'Relief Inventory') }} — Link expirado</title>
     <style>
         * { box-sizing: border-box; }
         html, body {
@@ -80,10 +80,10 @@
                 <circle cx="12" cy="12" r="9"></circle>
                 <path d="M12 7v5l3 2"></path>
             </svg>
-            <h1>This link has expired</h1>
-            <p>Email verification links only stay valid for a short time after they're sent.</p>
-            <p>If you've already set your password, your email is most likely verified already — just log in below.</p>
-            <a class="button" href="{{ route('login') }}">Go to login</a>
+            <h1>Este link expirou</h1>
+            <p>Os links de confirmação de e-mail só ficam válidos por um curto período após o envio.</p>
+            <p>Se você já definiu sua senha, provavelmente seu e-mail já foi confirmado — basta acessar sua conta abaixo.</p>
+            <a class="button" href="{{ route('login') }}">Acessar</a>
         </div>
     </div>
 </body>

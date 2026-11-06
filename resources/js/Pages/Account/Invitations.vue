@@ -46,35 +46,35 @@ function decline(id) {
 </script>
 
 <template>
-	<Head title="Invitations" />
+	<Head title="Convites" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="mx-auto max-w-2xl space-y-4 p-4">
-			<h1 class="text-2xl font-bold">Invitations</h1>
+			<h1 class="text-2xl font-bold">Convites</h1>
 			<p v-if="joined" class="rounded border border-green-300 bg-green-50 p-3 text-sm text-green-900">
-				You joined {{ joined.name }}. <a :href="joined.url" class="underline">Open it</a> (you sign in there with the same login).
+				Você entrou em {{ joined.name }}. <a :href="joined.url" class="underline">Acessar</a> (entre lá com o mesmo usuário e senha).
 			</p>
 
-			<p v-if="!invitations.length" class="text-sm text-gray-600">No warehouse has invited you right now.</p>
+			<p v-if="!invitations.length" class="text-sm text-gray-600">Nenhum armazém enviou um convite no momento.</p>
 
 			<div v-for="inv in invitations" :key="inv.id" class="rounded border border-gray-200 bg-white p-4">
 				<div class="font-medium text-gray-900">{{ inv.warehouse }}</div>
 				<p class="mt-1 text-sm text-gray-600">
-					You would join as <strong>{{ inv.person }}</strong><template v-if="inv.invited_by"> (invited by {{ inv.invited_by }})</template>.
-					That warehouse's administrators will be able to manage your access to it. Your password and your other warehouses stay yours.
-					<template v-if="inv.source === 'restore'">This invitation came from a backup restored there, not from a person: only accept it if you expect to be part of that warehouse.</template>
+					Você entrará como <strong>{{ inv.person }}</strong><template v-if="inv.invited_by"> (convidado por {{ inv.invited_by }})</template>.
+					A administração desse armazém poderá gerenciar seu acesso. Sua senha e o acesso aos outros armazéns continuam sob seu controle.
+					<template v-if="inv.source === 'restore'">Este convite veio de um backup restaurado, não de uma pessoa: aceite-o somente se espera fazer parte desse armazém.</template>
 				</p>
 
 				<div v-if="open === inv.id" class="mt-3 flex items-start gap-2">
 					<div class="flex-1">
-						<TextInput type="password" class="block w-full" v-model="form.password" placeholder="Your password" autofocus autocomplete="current-password" @keyup.enter="accept(inv.id)" />
+						<TextInput type="password" class="block w-full" v-model="form.password" placeholder="Sua senha" autofocus autocomplete="current-password" @keyup.enter="accept(inv.id)" />
 						<InputError class="mt-1" :message="form.errors.password" />
 					</div>
-					<PrimaryButton :disabled="form.processing" @click="accept(inv.id)">Confirm</PrimaryButton>
-					<SecondaryButton @click="open = null">Cancel</SecondaryButton>
+					<PrimaryButton :disabled="form.processing" @click="accept(inv.id)">Confirmar</PrimaryButton>
+					<SecondaryButton @click="open = null">Cancelar</SecondaryButton>
 				</div>
 				<div v-else class="mt-3 flex gap-2">
-					<PrimaryButton @click="start(inv.id)">Accept</PrimaryButton>
-					<SecondaryButton @click="decline(inv.id)">Decline</SecondaryButton>
+					<PrimaryButton @click="start(inv.id)">Aceitar</PrimaryButton>
+					<SecondaryButton @click="decline(inv.id)">Recusar</SecondaryButton>
 				</div>
 			</div>
 		</div>

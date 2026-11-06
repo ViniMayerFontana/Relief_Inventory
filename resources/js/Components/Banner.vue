@@ -50,17 +50,17 @@ function dismiss() {
 		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-4">
 			<div class="flex-1 text-center">
 				<template v-if="banner.type === 'feedback'">
-					Found a bug or have a feature idea?
+					Encontrou um erro ou tem uma ideia de melhoria?
 					<button type="button" class="underline font-medium" @click="emit('open-feedback')">
-						Report it here
+						Conte para a equipe
 					</button>
-					— or anytime from your profile menu, even without this banner.
+					— ou a qualquer momento pelo menu do seu perfil, mesmo sem este aviso.
 				</template>
 				<template v-else>
 					{{ banner.message }}
 				</template>
 			</div>
-			<button type="button" class="shrink-0 text-lg leading-none opacity-60 hover:opacity-100" title="Dismiss" @click="dismiss">
+			<button type="button" class="shrink-0 text-lg leading-none opacity-60 hover:opacity-100" title="Dispensar aviso" @click="dismiss">
 				&times;
 			</button>
 		</div>

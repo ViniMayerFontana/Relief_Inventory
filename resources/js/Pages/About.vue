@@ -14,71 +14,73 @@ import { Head } from '@inertiajs/vue3';
 </script>
 
 <template>
-	<Head title="About This Project" />
+	<Head title="Sobre este projeto" />
 	<div class="min-h-screen bg-gray-50 flex flex-col">
 		<header class="bg-white shadow-md">
 			<div class="container mx-auto px-4 py-4 flex justify-between items-center">
 				<a href="/" class="text-2xl font-bold text-blue-600">Relief Inventory</a>
 				<nav class="space-x-4">
-					<a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
-					<a href="/login" class="text-gray-700 hover:text-blue-600">Login</a>
+					<a href="/" class="text-gray-700 hover:text-blue-600">Início</a>
+					<a href="/login" class="text-gray-700 hover:text-blue-600">Entrar</a>
 				</nav>
 			</div>
 		</header>
 
 		<section class="flex-1">
 			<div class="container mx-auto px-4 py-16 max-w-3xl">
-				<h1 class="text-4xl font-bold text-gray-800 mb-6">About This Project</h1>
+				<h1 class="text-4xl font-bold text-gray-800 mb-6">Sobre este projeto</h1>
 
 				<div class="prose prose-lg text-gray-700 space-y-6">
 					<p>
-						Relief Inventory began during the response to Hurricane Helene in Western North
-						Carolina. A disaster relief warehouse needed a way to track incoming donations
-						accurately and quickly, route approval decisions, and manage outgoing shipments — and
-						nothing on the market fit the unique needs of a donations warehouse. A Google Sheets
-						system was cobbled together to keep pace, then reworked again and again as the
-						situation evolved. Its limitations soon became clear, and work began on something
-						better — starting not with a spec, but with a meeting of the minds among the people
-						actually running the warehouse. Out of that collaboration, a framework began to take
-						shape: one meant to guide a donation all the way from the initial offer through
-						delivery to a distribution point, while tracking volunteer hours along the way.
+						O Relief Inventory surgiu durante a resposta ao furacão Helene, no oeste da Carolina
+						do Norte. Um armazém de ajuda humanitária precisava de uma forma precisa e ágil de
+						acompanhar as doações recebidas, encaminhar decisões de aprovação e gerenciar os
+						envios — mas nenhuma solução disponível atendia às necessidades específicas de um
+						armazém de doações. Para dar conta do trabalho, improvisaram um sistema no Google
+						Planilhas, que foi sendo reformulado conforme a situação evoluía. Logo suas limitações
+						ficaram evidentes, e começou o trabalho em algo melhor — não a partir de uma
+						especificação, mas de uma conversa entre as pessoas que realmente operavam o armazém.
+						Dessa colaboração começou a surgir uma estrutura para acompanhar uma doação desde a
+						oferta inicial até a entrega a um ponto de distribuição, registrando também as horas
+						de voluntariado.
 					</p>
 					<p>
-						That collaboration has continued ever since, alongside Adventist Community Services
-						and the volunteers and staff who use the system day to day. The software has been
-						shaped less by a spec written in advance and more by real operations — it went into
-						use while it was still being built, and most of what exists today — from how sorting
-						sessions autosave line-by-line so a dropped connection never loses a scan, to how an
-						order moves through filling, shipping, and delivery — traces back to a specific gap
-						someone hit while the work was happening, not a feature that sounded good on paper.
+						Essa colaboração continua desde então, junto com a Adventist Community Services e as
+						pessoas voluntárias e funcionárias que usam o sistema no dia a dia. O software foi
+						moldado menos por uma especificação prévia e mais pelas operações reais — começou a
+						ser usado enquanto ainda estava em desenvolvimento, e a maioria dos recursos atuais —
+						desde o salvamento automático de cada linha durante a triagem, para que uma queda de
+						conexão não faça perder uma leitura, até o fluxo de separação, envio e entrega de um
+						pedido — surgiu de uma necessidade concreta durante o trabalho, não de uma ideia que
+						parecia boa no papel.
 					</p>
 
-					<h2 class="text-2xl font-semibold text-gray-800 pt-4">Where this is headed</h2>
+					<h2 class="text-2xl font-semibold text-gray-800 pt-4">Próximos passos</h2>
 					<p>
-						The starting point for this project was inventory: what came in, what's on hand, what
-						went out. That's necessary, but on its own it's just a database — and a database
-						doesn't help a new volunteer figure out what to do next, doesn't remember why a
-						donation needs a second look, and doesn't adapt when two warehouses run their
-						operations differently for good reasons.
+						O ponto de partida deste projeto foi o estoque: o que entrou, o que está disponível e
+						o que saiu. Isso é necessário, mas, por si só, é apenas um banco de dados — e um banco
+						de dados não ajuda uma pessoa voluntária nova a saber o que fazer em seguida, não
+						registra por que uma doação precisa ser revisada e não se adapta quando dois armazéns
+						organizam suas operações de maneiras diferentes por bons motivos.
 					</p>
 					<p>
-						The direction this project is growing toward is software that <strong>guides the
-						work</strong>, not just records it — a system that walks someone through the next
-						step instead of handing them an empty form and a set of dropdowns, and that treats
-						training as something built into the everyday screens people already use, not a
-						separate manual nobody has time to read during an actual response.
+						O projeto está caminhando para um software que <strong>orienta o trabalho</strong>,
+						em vez de apenas registrá-lo — um sistema que conduz as pessoas pela próxima etapa,
+						em vez de apresentar um formulário vazio e várias listas de opções, e que integra o
+						treinamento às telas usadas no dia a dia, em vez de depender de um manual separado que
+						ninguém tem tempo de ler durante uma operação de resposta.
 					</p>
 					<p>
-						Just as important: every warehouse and every incident is not the same. A small
-						volunteer-run site and a large multi-agency distribution point don't operate
-						identically, and a tool that forces both into one rigid workflow ends up fighting
-						the people using it. The goal here is flexibility by design — configurable enough
-						that a warehouse manager's real process shapes how the software behaves, rather than
-						the other way around.
+						Tão importante quanto isso: cada armazém e cada incidente são diferentes. Um local
+						pequeno, operado por pessoas voluntárias, não funciona da mesma forma que um grande
+						ponto de distribuição com várias organizações. Uma ferramenta que força ambos a seguir
+						um único fluxo rígido acaba atrapalhando quem a utiliza. O objetivo é oferecer
+						flexibilidade desde o início — com configurações que permitam ao processo real do
+						armazém orientar o funcionamento do software, e não o contrário.
 					</p>
 					<p>
-						This is a work in progress, built in the open, adjusted continuously based on what
-						actually happens on the ground.
+						Este projeto continua em desenvolvimento, é construído de forma aberta e é aprimorado
+						continuamente com base no que acontece na prática.
 					</p>
 				</div>
 			</div>
@@ -87,7 +89,7 @@ import { Head } from '@inertiajs/vue3';
 		<footer class="bg-white border-t">
 			<div class="container mx-auto px-4 py-6 text-center text-gray-600">
 				&copy; {{ new Date().getFullYear() }} Relief Inventory Project,
-				<a href="https://www.gnu.org/licenses/gpl-3.0.en.html">Licensed under the GNU General Public License v. 3</a>
+				<a href="https://www.gnu.org/licenses/gpl-3.0.en.html">Licenciado sob a GNU General Public License v. 3</a>
 			</div>
 		</footer>
 	</div>

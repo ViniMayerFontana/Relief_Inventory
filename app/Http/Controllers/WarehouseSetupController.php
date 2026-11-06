@@ -52,7 +52,7 @@ class WarehouseSetupController extends Controller
         $row = $this->codes->find($warehouse, $data['code']);
         if (! $row) {
             $this->codes->fail($warehouse);
-            throw ValidationException::withMessages(['code' => 'That code is not correct, or it has expired. Ask whoever set up this warehouse for a new one.']);
+            throw ValidationException::withMessages(['code' => 'O código está incorreto ou expirou. Peça um novo código a quem configurou este armazém.']);
         }
 
         $request->session()->regenerate();
@@ -66,7 +66,7 @@ class WarehouseSetupController extends Controller
         $warehouse = $this->awaiting() ?? abort(404);
         $claim = $this->codes->claimed($request, $warehouse);
         if (! $claim) {
-            return redirect()->route('activate.show')->withErrors(['code' => 'Enter the setup code first.']);
+            return redirect()->route('activate.show')->withErrors(['code' => 'Informe primeiro o código de configuração.']);
         }
 
         $existing = $request->input('login') === 'existing';
@@ -78,12 +78,12 @@ class WarehouseSetupController extends Controller
                 $account = Account::verified($data['email'], $data['password']);
                 if (! $account) {
                     $this->codes->fail($warehouse);
-                    throw ValidationException::withMessages(['password' => 'That email and password do not match a login.']);
+                    throw ValidationException::withMessages(['password' => 'Este e-mail e esta senha não correspondem a uma conta.']);
                 }
                 $user = $setup->withExistingAccount($warehouse, $claim, $account, $data);
             } else {
                 if (Account::findByEmail($data['email'])) {
-                    throw ValidationException::withMessages(['email' => 'That email already has a login. Choose "I already have a login" instead.']);
+                    throw ValidationException::withMessages(['email' => 'Este e-mail já tem uma conta. Escolha "Já tenho uma conta".']);
                 }
                 $user = $setup->withNewAccount($warehouse, $claim, $data);
             }
@@ -103,8 +103,8 @@ class WarehouseSetupController extends Controller
         return redirect()->route('dashboard')->with(
             'status',
             $exampleFailed
-                ? 'This warehouse is ready, but the example data could not be loaded (see the server log).'
-                : 'This warehouse is ready. Welcome to Relief Inventory!'
+                ? 'Este armazém está pronto, mas não foi possível carregar os dados de exemplo (consulte o log do servidor).'
+                : 'Este armazém está pronto. Boas-vindas ao Relief Inventory!'
         );
     }
 

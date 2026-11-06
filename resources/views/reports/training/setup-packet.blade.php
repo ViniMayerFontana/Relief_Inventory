@@ -4,10 +4,10 @@
      a plain sign per station. $summary =
      training_settings.prepared_summary; $stations = TrainingMode::STATIONS. --}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Training Setup Packet</title>
+    <title>Pacote de Preparação do Treinamento</title>
     <style>
         @page { size: letter; margin: 0.5in 0.55in; }
         @page sign { size: letter landscape; margin: 0.5in; }
@@ -39,49 +39,49 @@
             return collect($items)->map(fn ($i) => ['what' => $i['name'], 'acs' => trim($i['number'].' '.$i['type']), 'qty' => $i['qty']]);
         };
         $slips = [];
-        $slips[] = ['station' => 3, 'title' => 'Sorting area table', 'sub' => 'Already sorted — build new pallets from these', 'items' => $summary['sorting_area']];
+        $slips[] = ['station' => 3, 'title' => 'Mesa da área de triagem', 'sub' => 'Itens já triados — monte novos paletes com eles', 'items' => $summary['sorting_area']];
         foreach ($summary['warehouse_pallets'] as $p) {
-            $slips[] = ['station' => 4, 'title' => 'Spot '.$p['location'].' — pallet '.$p['tag'], 'sub' => 'Put pallet label '.$p['tag'].' on this tray', 'items' => $p['items']];
+            $slips[] = ['station' => 4, 'title' => 'Posição '.$p['location'].' — palete '.$p['tag'], 'sub' => 'Coloque a etiqueta do palete '.$p['tag'].' nesta bandeja', 'items' => $p['items']];
         }
         foreach ($summary['orders_to_ship'] as $o) {
-            $slips[] = ['station' => 5, 'title' => 'Order #'.$o['id'].' — ready to ship', 'sub' => $o['partner'], 'items' => $o['items']];
+            $slips[] = ['station' => 5, 'title' => 'Pedido nº '.$o['id'].' — pronto para envio', 'sub' => $o['partner'], 'items' => $o['items']];
         }
     @endphp
 
-    <h1>Training Setup Packet</h1>
-    <div class="subtitle">{{ config('app.name') }} — prepared {{ \Carbon\Carbon::parse($summary['prepared_at'])->format('F j, Y g:i A') }}
-        — {{ $summary['products']['units'] }} scanned items, {{ $summary['products']['distinct'] }} different products</div>
+    <h1>Pacote de Preparação do Treinamento</h1>
+    <div class="subtitle">{{ config('app.name') }} — preparado em {{ \Carbon\Carbon::parse($summary['prepared_at'])->format('F j, Y g:i A') }}
+        — {{ $summary['products']['units'] }} itens escaneados, {{ $summary['products']['distinct'] }} produtos diferentes</div>
 
     @foreach ($summary['warnings'] ?? [] as $warning)
         <p class="warning">{{ $warning }}</p>
     @endforeach
 
     <div class="section">
-        <h2>How it works</h2>
-        <p>Only the first team at each station needs staged goods: teams move from station N to N+1, so after its first stop
-            every team works on what it handled itself one station earlier. Receiving uses your own goods (not scanned): put out
-            boxes to receive, and the teams sort what they bring in. Stations 3–5 hold the scanned goods, placed
-            as listed below. When a team marks a load delivered (Station 6, Round 2), carry that box back to Receiving as a new delivery.</p>
+        <h2>Como funciona</h2>
+        <p>Somente a primeira equipe em cada estação precisa de mercadorias preparadas: as equipes avançam da estação N para N+1; assim, após a primeira parada,
+            cada equipe trabalha com o que ela mesma movimentou na estação anterior. No recebimento, use suas próprias mercadorias (não escaneadas): deixe
+            caixas disponíveis para receber, e as equipes farão a triagem do que trouxerem. As estações 3–5 contêm as mercadorias escaneadas, organizadas
+            conforme a lista abaixo. Quando uma equipe marcar uma carga como entregue (Estação 6, Rodada 2), leve a caixa de volta ao Recebimento como uma nova entrega.</p>
         <table>
-            <thead><tr><th>Station</th><th>Put out</th><th class="num">Items</th></tr></thead>
+            <thead><tr><th>Estação</th><th>Preparação</th><th class="num">Itens</th></tr></thead>
             <tbody>
-                <tr><td>1 {{ $stations[1] }}</td><td>Boxes of your own goods to receive ({{ count($summary['offers']) }} offers waiting for them)</td><td class="num">yours</td></tr>
-                <tr><td>2 {{ $stations[2] }}</td><td>Nothing — the teams sort what they received</td><td class="num">0</td></tr>
-                <tr><td>3 {{ $stations[3] }}</td><td>Sorted goods on the sorting area table</td><td class="num">{{ collect($summary['sorting_area'])->sum('qty') }}</td></tr>
-                <tr><td>4 {{ $stations[4] }}</td><td>{{ count($summary['warehouse_pallets']) }} sealed trays at table spots, {{ count($summary['orders_to_fill']) }} orders to pick</td><td class="num">{{ collect($summary['warehouse_pallets'])->flatMap(fn ($p) => $p['items'])->sum('qty') }}</td></tr>
-                <tr><td>5 {{ $stations[5] }}</td><td>{{ count($summary['orders_to_ship']) }} picked orders at the door</td><td class="num">{{ collect($summary['orders_to_ship'])->flatMap(fn ($o) => $o['items'])->sum('qty') }}</td></tr>
-                <tr><td>6 {{ $stations[6] }}</td><td>Nothing — each team delivers the load it shipped</td><td class="num">0</td></tr>
+                <tr><td>1 {{ $stations[1] }}</td><td>Caixas com suas mercadorias para recebimento ({{ count($summary['offers']) }} ofertas aguardando)</td><td class="num">suas</td></tr>
+                <tr><td>2 {{ $stations[2] }}</td><td>Nada — as equipes fazem a triagem do que receberam</td><td class="num">0</td></tr>
+                <tr><td>3 {{ $stations[3] }}</td><td>Mercadorias triadas na mesa da área de triagem</td><td class="num">{{ collect($summary['sorting_area'])->sum('qty') }}</td></tr>
+                <tr><td>4 {{ $stations[4] }}</td><td>{{ count($summary['warehouse_pallets']) }} bandejas lacradas nas posições das mesas, {{ count($summary['orders_to_fill']) }} pedidos para separar</td><td class="num">{{ collect($summary['warehouse_pallets'])->flatMap(fn ($p) => $p['items'])->sum('qty') }}</td></tr>
+                <tr><td>5 {{ $stations[5] }}</td><td>{{ count($summary['orders_to_ship']) }} pedidos separados junto à saída</td><td class="num">{{ collect($summary['orders_to_ship'])->flatMap(fn ($o) => $o['items'])->sum('qty') }}</td></tr>
+                <tr><td>6 {{ $stations[6] }}</td><td>Nada — cada equipe entrega a carga que enviou</td><td class="num">0</td></tr>
             </tbody>
         </table>
-        <p class="note">Tape the table spot labels (Setup &gt; Training Warehouse &gt; Table Spot Labels) on the tables: {{ implode(', ', $summary['locations']) }}.
-            Print the pallet labels too, for the Station 4 trays. The contents slips (Stations 3–5) and station signs are at the back of this packet.</p>
+        <p class="note">Cole as etiquetas de posição das mesas (Configuração &gt; Armazém de Treinamento &gt; Etiquetas de Posições das Mesas) nas mesas: {{ implode(', ', $summary['locations']) }}.
+            Imprima também as etiquetas de palete para as bandejas da Estação 4. As listas de conteúdo (Estações 3–5) e as placas das estações ficam no final deste pacote.</p>
     </div>
 
     <div class="section">
-        <h2>Station 1 — {{ $stations[1] }}: offers waiting for arrival</h2>
-        <p class="note">Put out boxes of your own goods to receive; the receiving team matches each delivery to one of these phoned-in offers.</p>
+        <h2>Estação 1 — {{ $stations[1] }}: ofertas aguardando recebimento</h2>
+        <p class="note">Disponha caixas com suas próprias mercadorias para recebimento; a equipe de recebimento associará cada entrega a uma destas ofertas registradas por telefone.</p>
         <table>
-            <thead><tr><th>Offer #</th><th>Donor</th><th>What's coming</th></tr></thead>
+            <thead><tr><th>Oferta nº</th><th>Doador</th><th>Itens previstos</th></tr></thead>
             <tbody>
                 @foreach ($summary['offers'] as $o)
                     <tr><td>{{ $o['id'] }}</td><td>{{ $o['donor'] }}</td><td>{{ $o['description'] }}</td></tr>
@@ -91,24 +91,24 @@
     </div>
 
     <div class="section">
-        <h2>Station 3 — {{ $stations[3] }}: sorting area table</h2>
-        <p class="note">Already sorted, not on a pallet yet — the first team builds a pallet from these and puts it on a table spot.</p>
+        <h2>Estação 3 — {{ $stations[3] }}: mesa da área de triagem</h2>
+        <p class="note">Itens já triados, ainda sem palete — a primeira equipe monta um palete com eles e o coloca em uma posição da mesa.</p>
         <table>
             <tbody>@foreach ($itemRows($summary['sorting_area']) as $r)<tr><td>{{ $r['what'] }}</td><td>{{ $r['acs'] }}</td><td class="num">{{ $r['qty'] }}</td></tr>@endforeach</tbody>
         </table>
     </div>
 
     <div class="section">
-        <h2>Station 4 — {{ $stations[4] }}: sealed trays on the tables</h2>
+        <h2>Estação 4 — {{ $stations[4] }}: bandejas lacradas nas mesas</h2>
         @foreach ($summary['warehouse_pallets'] as $p)
-            <h3>Spot {{ $p['location'] }} — pallet {{ $p['tag'] }}</h3>
+            <h3>Posição {{ $p['location'] }} — palete {{ $p['tag'] }}</h3>
             <table>
                 <tbody>@foreach ($itemRows($p['items']) as $r)<tr><td>{{ $r['what'] }}</td><td>{{ $r['acs'] }}</td><td class="num">{{ $r['qty'] }}</td></tr>@endforeach</tbody>
             </table>
         @endforeach
-        <h3>Orders waiting to be picked (Ready to Fill)</h3>
+        <h3>Pedidos aguardando separação (Pronto para separação)</h3>
         <table>
-            <thead><tr><th>Order #</th><th>Partner</th><th>Lines</th></tr></thead>
+            <thead><tr><th>Pedido nº</th><th>Entidade parceira</th><th>Itens</th></tr></thead>
             <tbody>
                 @foreach ($summary['orders_to_fill'] as $o)
                     <tr><td>{{ $o['id'] }}</td><td>{{ $o['partner'] }}</td>
@@ -119,9 +119,9 @@
     </div>
 
     <div class="section">
-        <h2>Station 5 — {{ $stations[5] }}: picked orders at the door</h2>
+        <h2>Estação 5 — {{ $stations[5] }}: pedidos separados junto à saída</h2>
         @foreach ($summary['orders_to_ship'] as $o)
-            <h3>Order #{{ $o['id'] }} — {{ $o['partner'] }}</h3>
+            <h3>Pedido nº {{ $o['id'] }} — {{ $o['partner'] }}</h3>
             <table>
                 <tbody>@foreach ($itemRows($o['items']) as $r)<tr><td>{{ $r['what'] }}</td><td>{{ $r['acs'] }}</td><td class="num">{{ $r['qty'] }}</td></tr>@endforeach</tbody>
             </table>
@@ -129,25 +129,25 @@
     </div>
 
     <div class="section">
-        <h2>Station 6 — {{ $stations[6] }}: team drivers (Driver Portal logins)</h2>
-        <p class="note">In Round 2 each team delivers the load it shipped to its own driver at Station 5.</p>
+        <h2>Estação 6 — {{ $stations[6] }}: motoristas das equipes (acesso ao Portal do Motorista)</h2>
+        <p class="note">Na Rodada 2, cada equipe entrega ao próprio motorista a carga que enviou na Estação 5.</p>
         <table>
-            <thead><tr><th>Team</th><th>Driver</th><th>Phone</th><th>PIN</th></tr></thead>
+            <thead><tr><th>Equipe</th><th>Motorista</th><th>Telefone</th><th>PIN</th></tr></thead>
             <tbody>
                 @foreach ($summary['team_drivers'] as $d)
                     <tr><td>{{ $d['team'] }}</td><td>{{ $d['name'] }}</td><td>{{ $d['phone'] }}</td><td>{{ $d['pin'] }}</td></tr>
                 @endforeach
             </tbody>
         </table>
-        <p class="note">Order Entry (Round 1) uses the training partners: {{ implode(', ', $summary['partners']) }}.</p>
+        <p class="note">O cadastro de pedidos (Rodada 1) usa estas entidades parceiras de treinamento: {{ implode(', ', $summary['partners']) }}.</p>
     </div>
 
     {{-- Contents slips: cut apart; one goes in each box / on each tray. --}}
     <div class="new-page">
-        <h2>Contents slips — cut apart, one with each spot and load</h2>
+        <h2>Listas de conteúdo — recorte e coloque uma em cada posição e carga</h2>
         @foreach ($slips as $slip)
             <div class="slip">
-                <div class="slip-station">Station {{ $slip['station'] }} — {{ $stations[$slip['station']] }}</div>
+                <div class="slip-station">Estação {{ $slip['station'] }} — {{ $stations[$slip['station']] }}</div>
                 <div class="slip-title">{{ $slip['title'] }}</div>
                 <div class="note">{{ $slip['sub'] }}</div>
                 <table>
@@ -159,7 +159,7 @@
 
     @foreach ($stations as $number => $name)
         <div class="sign">
-            <div class="sign-number">Station {{ $number }}</div>
+            <div class="sign-number">Estação {{ $number }}</div>
             <div class="sign-name">{{ $name }}</div>
         </div>
     @endforeach

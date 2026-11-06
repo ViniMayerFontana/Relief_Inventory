@@ -41,7 +41,7 @@ class KioskSuggestionController extends Controller
         $suggestion = KioskSuggestion::create($data);
 
         return response()->json([
-            'message' => 'Suggestion created successfully.',
+            'message' => 'Sugestão criada com sucesso.',
             'record' => $suggestion,
         ], 201);
     }

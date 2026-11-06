@@ -1,8 +1,8 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 <p>
-    <strong>New submission for {{ $submission->form->name }}</strong>
-    from {{ $submission->submitterDisplayName() }}
+    <strong>Novo envio para {{ $submission->form->name }}</strong>
+    de {{ $submission->submitterDisplayName() }}
     @if ($submission->submitter_email)
         ({{ $submission->submitter_email }})
     @endif
@@ -17,4 +17,4 @@
     @endforeach
 </table>
 
-<p><a href="{{ \App\Models\Control\Warehouse::current()->publicUrl('/setup/forms/'.$submission->form_id.'/submissions') }}">View in Relief Inventory</a></p>
+<p><a href="{{ \App\Models\Control\Warehouse::current()->publicUrl('/setup/forms/'.$submission->form_id.'/submissions') }}">Ver no Relief Inventory</a></p>

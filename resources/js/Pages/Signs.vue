@@ -109,28 +109,40 @@ export default {
 				? this.arrows.filter((a) => a !== direction)
 				: [...this.arrows, direction];
 		},
+		arrowLabel(direction) {
+			return ({
+				'up-left': 'para cima e à esquerda',
+				up: 'para cima',
+				'up-right': 'para cima e à direita',
+				left: 'para a esquerda',
+				right: 'para a direita',
+				'down-left': 'para baixo e à esquerda',
+				down: 'para baixo',
+				'down-right': 'para baixo e à direita',
+			})[direction] || direction;
+		},
 	},
 };
 </script>
 
 <template>
-	<Head title="Signs" />
+	<Head title="Placas" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 		<div class="sg_container">
 			<h2 class="ri_datatable_head sg_head">
-				Signs
-				<PrintMenu document-key="sign" media="report" label="Print Sign" :disabled="!ready"
+				Placas
+				<PrintMenu document-key="sign" media="report" label="Imprimir placa" :disabled="!ready"
 					:params="params" :download-href="'/report/sign.pdf?' + query" />
 			</h2>
 			<p class="sg_intro">
-				Pick a ready-made sign or start a blank one, change anything you like, then print it on plain
-				8.5 x 11 paper. The text is sized to fill the sign.
+				Escolha uma placa pronta ou comece com uma em branco, faça as alterações desejadas e imprima em uma folha comum
+				de 21,6 × 27,9 cm. O texto será dimensionado para preencher a placa.
 			</p>
 
 			<div class="sg_layout">
-				<section class="sg_templates" aria-label="Ready-made signs">
-					<button type="button" :class="['sg_chip', 'sg_blank', { sg_active: templateKey === null && !title }]" @click="startBlank">+ Blank sign</button>
+				<section class="sg_templates" aria-label="Placas prontas">
+					<button type="button" :class="['sg_chip', 'sg_blank', { sg_active: templateKey === null && !title }]" @click="startBlank">+ Placa em branco</button>
 					<div v-for="(signs, group) in groups" :key="group" class="sg_group">
 						<h3>{{ group }}</h3>
 						<div class="sg_chips">
@@ -143,37 +155,37 @@ export default {
 				</section>
 
 				<section class="sg_editor" aria-label="Sign">
-					<label class="sg_field">Title
-						<textarea ref="title" v-model="title" rows="2" maxlength="120" class="ri_forminput" placeholder="e.g. SORTING"></textarea>
+					<label class="sg_field">Título
+						<textarea ref="title" v-model="title" rows="2" maxlength="120" class="ri_forminput" placeholder="ex.: TRIAGEM"></textarea>
 					</label>
-					<label class="sg_field">Smaller text <span class="sg_optional">(optional)</span>
+					<label class="sg_field">Texto menor <span class="sg_optional">(opcional)</span>
 						<textarea v-model="subtitle" rows="2" maxlength="400" class="ri_forminput"></textarea>
 					</label>
-					<p class="sg_note">Press Enter to start a new line where you want one; otherwise lines break on their own.</p>
+					<p class="sg_note">Pressione Enter para iniciar uma nova linha onde quiser; caso contrário, as linhas serão quebradas automaticamente.</p>
 
 					<div class="sg_row">
-						<label class="sg_field">Header
+						<label class="sg_field">Cabeçalho
 							<select v-model="header" class="ri_forminput">
-								<option value="">None</option>
+								<option value="">Nenhum</option>
 								<option v-for="(label, key) in headers" :key="key" :value="key">{{ label }}</option>
 							</select>
 						</label>
 						<div class="sg_field">
-							<span>Paper</span>
-							<div class="sg_toggle" role="radiogroup" aria-label="Paper orientation">
+							<span>Papel</span>
+							<div class="sg_toggle" role="radiogroup" aria-label="Orientação do papel">
 								<button v-for="o in ['landscape', 'portrait']" :key="o" type="button" role="radio"
 									:aria-checked="orientation === o" :class="{ sg_active: orientation === o }"
-									@click="orientation = o">{{ o === 'landscape' ? 'Wide' : 'Tall' }}</button>
+									@click="orientation = o">{{ o === 'landscape' ? 'Paisagem' : 'Retrato' }}</button>
 							</div>
 						</div>
 					</div>
 
 					<div class="sg_field">
-						<span>Arrows</span>
+						<span>Setas</span>
 						<div :class="['sg_arrows', 'sg_arrows_' + orientation]">
 							<template v-for="(cell, i) in arrowGrid" :key="i">
-								<label v-if="cell" :class="['sg_arrow', { sg_active: arrows.includes(cell[0]) }]" :title="cell[0].replace('-', ' ')">
-									<input type="checkbox" :checked="arrows.includes(cell[0])" @change="toggleArrow(cell[0])" :aria-label="'Arrow ' + cell[0].replace('-', ' ')" />
+								<label v-if="cell" :class="['sg_arrow', { sg_active: arrows.includes(cell[0]) }]" :title="arrowLabel(cell[0])">
+									<input type="checkbox" :checked="arrows.includes(cell[0])" @change="toggleArrow(cell[0])" :aria-label="'Seta ' + arrowLabel(cell[0])" />
 									<span aria-hidden="true">{{ cell[1] }}</span>
 								</label>
 								<span v-else class="sg_arrow_text" aria-hidden="true">Aa</span>
@@ -182,13 +194,13 @@ export default {
 					</div>
 				</section>
 
-				<section class="sg_preview_col" aria-label="Preview">
+				<section class="sg_preview_col" aria-label="Pré-visualização">
 					<div class="sg_preview" :style="previewBox.outer">
 						<iframe v-if="previewQuery" :src="'/setup/signs/preview?' + previewQuery" :style="previewBox.frame"
-							title="Sign preview" tabindex="-1"></iframe>
-						<p v-else class="sg_empty">Type a title to see the sign.</p>
+							title="Pré-visualização da placa" tabindex="-1"></iframe>
+						<p v-else class="sg_empty">Digite um título para ver a placa.</p>
 					</div>
-					<p class="sg_note">Print at <strong>Actual size</strong> (100%). Color headers print gray on a black-and-white printer.</p>
+					<p class="sg_note">Imprima em <strong>Tamanho real</strong> (100%). Os cabeçalhos coloridos saem em cinza em impressoras preto e branco.</p>
 				</section>
 			</div>
 		</div>

@@ -42,25 +42,25 @@ defineEmits(['accept', 'keep']);
 </script>
 
 <template>
-	<p v-if="status === 'checking'" class="acc_checking">Looking up address…</p>
+	<p v-if="status === 'checking'" class="acc_checking">Consultando o endereço…</p>
 	<Modal :show="status === 'ready'" @close="$emit('keep')">
 		<div class="acc_body">
-			<h2 class="acc_title">Confirm Address</h2>
+			<h2 class="acc_title">Confirme o endereço</h2>
 			<template v-if="casingOnly">
-				<p class="acc_line">Corrected: <strong>{{ suggested.address }}</strong></p>
+				<p class="acc_line">Corrigido: <strong>{{ suggested.address }}</strong></p>
 				<div class="acc_actions">
-					<button type="button" class="ri_defaultbutton" @click="$emit('accept')">Accept Address</button>
-					<button type="button" class="ri_formbutton" @click="$emit('keep')">Keep As Typed</button>
+					<button type="button" class="ri_defaultbutton" @click="$emit('accept')">Usar endereço corrigido</button>
+					<button type="button" class="ri_formbutton" @click="$emit('keep')">Manter como digitado</button>
 				</div>
 			</template>
 			<template v-else>
-				<p class="acc_line">Geocodio found a different address — which is right?</p>
+				<p class="acc_line">O Geocodio encontrou um endereço diferente. Qual está correto?</p>
 				<div class="acc_actions acc_actions_stacked">
 					<button type="button" class="ri_defaultbutton" @click="$emit('accept')">
-						Use: {{ suggested.address }}, {{ suggested.city }}, {{ suggested.state }} {{ suggested.zip }}
+						Usar: {{ suggested.address }}, {{ suggested.city }}, {{ suggested.state }} {{ suggested.zip }}
 					</button>
 					<button type="button" class="ri_formbutton" @click="$emit('keep')">
-						Keep: {{ entered.address }}
+						Manter: {{ entered.address }}
 					</button>
 				</div>
 			</template>

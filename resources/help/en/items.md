@@ -1,86 +1,64 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 
-The catalog of everything the warehouse counts. Sorting, ordering and filling all pick from this list, so keeping it
-tidy keeps everything else tidy.
+O catálogo de tudo que o armazém conta. Triagem, pedidos e preenchimento usam esta lista, então mantê-la organizada mantém tudo o mais organizado.
 
-## Item types and SKU rows
+## Tipos de item e linhas SKU
 
-The list has two levels. An **item type** is the thing the warehouse counts and orders (for example “Newborn diapers”);
-stock is pooled by item type. Under each item type are one or more **SKU rows** (shown in the **Items** table on the
-form) — the specific products and package sizes that count as that item type, such as a particular brand's barcode.
-Everyone who sorts a SKU row ends up adding to the same item type's total.
+A lista tem dois níveis. Um **item type** é a coisa que o armazém conta e pede (por exemplo, “Newborn diapers”);
+o estoque é agrupado por item type. Abaixo de cada item type há uma ou mais **SKU rows** (mostradas na tabela **Items** do
+formulário) — os produtos específicos e tamanhos de embalagem que contam como esse item type, como a marca específica do código de barras. Qualquer pessoa que triage uma SKU row acaba adicionando ao mesmo total do item type.
 
-You need both the Manage Items and Manage Item Types permissions to open [Setup → Master Item List](/setup/items).
-Without both, the page won't open — ask an administrator.
+Você precisa das permissões Manage Items e Manage Item Types para abrir [Configuração → Master Item List](/setup/items).
+Sem as duas, a página não abre — peça a um administrador.
 
-## Finding an item
+## Encontrando um item
 
-Type in the **Search by ACS Item# or Item Type...** box to narrow the list. Click a column heading (**Category**, **ACS
-Item#**, **Item Type**, **Unit**, **Active**) to sort by it; click again to reverse. A check mark in **Active** means
-the item type is in use. Click a row to open it.
+Digite na caixa **Search by ACS Item# or Item Type...** para estreitar a lista. Clique em um cabeçalho de coluna (**Category**, **ACS Item#**, **Item Type**, **Unit**, **Active**) para ordenar por ele; clique de novo para inverter. Uma marca em **Active** significa que o tipo do item está em uso. Clique em uma linha para abri-la.
 
-## Adding or editing an item type
+## Adicionando ou editando um tipo de item
 
-Click **Add New Item**, or open an existing row. The form has these fields:
+Clique em **Add New Item**, ou abra uma linha existente. O formulário tem estes campos:
 
-- **Category** — which group the item belongs to (pick from the list).
-- **Family** and **Variant (optional)** — the item number (see below).
-- **Item Type Desc** — the name people will see everywhere (required).
-- **Default Ordering Unit** — the unit quantities are counted in (for example each, case, lb). The totals in the Items
-  table use this unit.
-- **Active** — uncheck to take an item type out of use without deleting it.
+- **Category** — a qual grupo o item pertence (escolha na lista).
+- **Family** e **Variant (optional)** — o número do item (veja abaixo).
+- **Item Type Desc** — o nome que as pessoas verão em todo lugar (obrigatório).
+- **Default Ordering Unit** — a unidade em que as quantidades são contadas (por exemplo, each, case, lb). Os totais na tabela Items usam essa unidade.
+- **Active** — desmarque para tirar um tipo de item de uso sem excluí-lo.
 
-Click **Save** when you're done. A new item type automatically gets a “GENERIC ITEM” SKU row so it can be sorted right
-away.
+Clique em **Save** quando terminar. Um novo item type recebe automaticamente uma linha SKU “GENERIC ITEM” para poder ser triado imediatamente.
 
-## Item numbers: family and variant
+## Números de item: family e variant
 
-The **ACS Item#** is made of two parts that are stored separately. The **Family** is one to four digits (`42` is saved
-as `0042`). The **Variant** is one or two digits and tells apart versions within the family, such as sizes.
+O **ACS Item#** é feito de duas partes que são armazenadas separadamente. A **Family** é de um a quatro dígitos (`42` é salvo como `0042`).
+A **Variant** é de um a dois dígitos e distingue versões dentro da família, como tamanhos.
 
-- Each family + variant pair can be used only once. If it is taken, you'll see “That family/variant number is already in
-  use.”
-- Leave Variant blank and it's saved as `00`, the standard item of that family. The number is then shown without the
-  variant (for example `318`); other variants show as `318-90`.
-- Most families are shown without their leading zero (`042`, not `0042`); families of 1000 and up show all four digits.
+- Cada par family + variant pode ser usado apenas uma vez. Se estiver ocupado, você verá “That family/variant number is already in use.”
+- Deixe Variant em branco e ele é salvo como `00`, o item padrão da família. O número é então exibido sem a variante (por exemplo, `318`); outras variantes aparecem como `318-90`.
+- A maioria das famílias é mostrada sem zero à esquerda (`042`, não `0042`); famílias de 1000 e acima mostram os quatro dígitos.
 
-## Items that have no number yet
+## Itens que ainda não têm número
 
-When a sorter meets something not in the catalog, they can add it right from the [Sorting](/help/sorting) page. An item
-type added that way has no family or variant and is put on **sort hold**, so it can be sorted but is held out of order
-forms until it gets a real number. Give it a Family here to number it. Note that this form has no field for sort hold
-itself, so saving doesn't lift the hold on its own — if a numbered item still doesn't appear on order forms, tell an
-administrator.
+Quando um triador encontra algo que não está no catálogo, ele pode adicioná-lo direto da página [Triagem](/help/sorting). Um item type adicionado dessa forma não tem family nem variant e é colocado em **sort hold**, para poder ser triado, mas fica fora dos formulários de pedido até receber um número real. Informe uma Family aqui para numerá-lo. Note que este formulário não tem um campo para sort hold em si, então salvar não remove a retenção por conta própria — se um item numerado ainda não aparecer nos formulários de pedido, avise um administrador.
 
-## SKU rows and UPC barcodes
+## Linhas SKU e códigos de barras UPC
 
-The **Items** table inside the form lists the SKU rows. Click **New Line** to add a row. To change a row, click its
-pencil icon; while a row is open, its trash icon removes it. Each row has:
+A tabela **Items** dentro do formulário lista as linhas SKU. Clique em **New Line** para adicionar uma linha. Para alterar uma linha, clique no ícone de lápis; enquanto a linha estiver aberta, o ícone de lixeira a remove. Cada linha tem:
 
-- **Plus Code** — a short code (up to 4 characters) that tells rows apart.
-- **Item Description** — what this specific product is.
-- **Pk Unit**, **Size** and **Case Qty** — the package (box, bag, case...), how many of the unit it holds, and, if it is
-  a case, how many packages are in it. **Total** shows the result (case quantity times size).
-- **UPC** — the manufacturer's barcode on that product. A UPC belongs to one row and can't be reused on another.
+- **Plus Code** — um código curto (até 4 caracteres) que distingue as linhas.
+- **Item Description** — o que este produto específico é.
+- **Pk Unit**, **Size** e **Case Qty** — o pacote (caixa, saco, caso...), quantas unidades ele contém e, se for um caso, quantos pacotes estão dentro. **Total** mostra o resultado (quantidade do caso vezes tamanho).
+- **UPC** — o código de barras do fabricante naquele produto. Um UPC pertence a uma linha e não pode ser reutilizado em outra.
 
-A UPC on a SKU row is what lets a sorter scan the product on the Sorting page and have the right item type and
-description fill in. UPC-A, EAN-13 and GTIN-14 spellings of the same number are recognised as one. If a product has two
-different barcodes, make two SKU rows.
+Um UPC em uma linha SKU é o que permite a um triador escanear o produto na página de Triagem e ter o tipo e a descrição corretos preenchidos. UPC-A, EAN-13 e GTIN-14 com a mesma numeração são reconhecidos como um. Se um produto tiver dois códigos de barras diferentes, faça duas linhas SKU.
 
-Deleting a row removes it from the item type. It doesn't change stock already counted for the item type.
+Excluir uma linha remove-a do item type. Isso não altera o estoque já contado para o item type.
 
-## Carton Barcodes
+## Códigos de barras de caixa
 
-A carton (case of several packs) often has its own barcode, different from the single items inside. When a sorter scans
-a carton the system doesn't know, the Sorting page opens **New Carton Barcode** and asks which item is inside and how
-many (packs × items per pack). Once saved, scanning that carton again fills in the contained item and the quantity, so
-carton and single scans end up on the same line.
+Uma caixa (caso de vários pacotes) costuma ter seu próprio código de barras, diferente dos itens individuais dentro. Quando um triador escaneia uma caixa que o sistema não conhece, a página de Triagem abre **New Carton Barcode** e pergunta qual item está dentro e quantos (packs × items per pack). Depois de salvar, escanear essa caixa novamente preenche o item contido e a quantidade, para que as leituras de caixa e de item individual acabem na mesma linha.
 
-[Setup → Carton Barcodes](/setup/carton-codes) lists every confirmed carton (also needs Manage Items). Use the
-**Search** box to find one by barcode, item or who added it. The table shows **Carton barcode**, **Contains**, **Items
-per carton** and **Added**.
+[Configuração → Carton Barcodes](/setup/carton-codes) lista todas as caixas confirmadas (também precisa de Manage Items). Use a caixa **Search** para encontrar uma por código de barras, item ou quem a adicionou. A tabela mostra **Carton barcode**, **Contains**, **Items per carton** e **Added**.
 
-- Cartons can't be added or edited here. To remove one, click **Remove**, then **Confirm remove**.
-- Removing doesn't change any item or anything already sorted. The next scan of that carton asks again what's inside. To
-  fix a wrong entry, remove it and scan the carton again.
+- Caixas não podem ser adicionadas ou editadas aqui. Para remover uma, clique em **Remove** e depois em **Confirm remove**.
+- Remover não altera nenhum item nem nada já triado. O próximo scan dessa caixa pergunta de novo o que está dentro. Para corrigir uma entrada errada, remova e escaneie a caixa de novo.

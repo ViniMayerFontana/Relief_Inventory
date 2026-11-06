@@ -23,14 +23,14 @@ defineProps({
 </script>
 
 <template>
-  <Head title="People Entry" />
+  <Head title="Cadastro de pessoas" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <template #header>
     </template>
 
     <RIForm
       ref="riform"
-      title="People Entry Form"
+      title="Formulário de cadastro de pessoas"
       datasource="/json/people"
       :filter="peopleFilter">
 
@@ -39,13 +39,13 @@ defineProps({
           type="text"
           v-model="peopleSearch"
           class="ri_forminput people_search"
-          placeholder="Search by name or organization..."
+          placeholder="Buscar por nome ou organização..."
         />
-        <HelpLink guide="people">Partner &amp; Donor Info Guide</HelpLink>
+        <HelpLink guide="people">Guia de entidades parceiras e doadores</HelpLink>
       </template>
 
       <template #thead>
-        <th>People</th>
+        <th>Pessoas</th>
       </template>
 
       <template #tbody="{ record }">
@@ -53,15 +53,15 @@ defineProps({
           <div class="people_line1">
             <strong>{{ [record.first_name, record.last_name].filter(Boolean).join(' ') || 'N/A' }}</strong>
             <span v-if="record.organization">{{ record.organization }}</span>
-            <span v-if="record.is_organization" class="people_badge">org</span>
+            <span v-if="record.is_organization" class="people_badge">organização</span>
             <span v-if="record.category" class="people_dim">{{ record.category.name }}</span>
-            <span v-if="record.parent" class="people_dim">Parent: {{ record.parent.full_name }}</span>
+            <span v-if="record.parent" class="people_dim">Organização principal: {{ record.parent.full_name }}</span>
           </div>
           <div class="people_line2">
-            <span>Phone: {{ record.phone || 'N/A' }}</span>
-            <span :title="record.email || ''">Email: {{ shortenEmail(record.email) }}</span>
-            <span>Roles: {{ (record.roles || []).map((r) => r.name).join(', ') || 'None' }}</span>
-            <span>Volunteer: {{ record.is_volunteer ? 'Yes' : 'No' }}</span>
+            <span>Telefone: {{ record.phone || 'N/A' }}</span>
+            <span :title="record.email || ''">E-mail: {{ shortenEmail(record.email) }}</span>
+            <span>Funções: {{ (record.roles || []).map((r) => r.name).join(', ') || 'Nenhuma' }}</span>
+            <span>Voluntário: {{ record.is_volunteer ? 'Sim' : 'Não' }}</span>
           </div>
         </td>
       </template>
@@ -69,10 +69,10 @@ defineProps({
       <template #default="{ record, editing, templates }">
         <div class="ri_formtable">
           <p v-if="record.id && record.can_edit === false" class="ri_error">
-            You don't have permission to edit this record — they hold a permission you don't have. Showing read-only.
+            Você não tem permissão para editar este registro — a pessoa tem uma permissão que você não possui. Exibindo somente para leitura.
           </p>
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">First Name:</div>
+            <div class="ri_fieldlabel">Nome:</div>
             <TextInput
               v-model="record.first_name"
               :enabled="canEditRecord(record, editing)"
@@ -80,7 +80,7 @@ defineProps({
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Last Name:</div>
+            <div class="ri_fieldlabel">Sobrenome:</div>
             <TextInput
               v-model="record.last_name"
               :enabled="canEditRecord(record, editing)"
@@ -88,59 +88,58 @@ defineProps({
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Organization:</div>
+            <div class="ri_fieldlabel">Organização:</div>
             <TextInput
               v-model="record.organization"
               :enabled="canEditRecord(record, editing)"
             />
           </div>
-          <p class="ri_fieldhint">Provide a name (first + last) and/or an organization &mdash; at least one is required.</p>
+          <p class="ri_fieldhint">Informe um nome (nome e sobrenome) e/ou uma organização — pelo menos um é obrigatório.</p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">This record is the organization itself:</div>
+            <div class="ri_fieldlabel">Este registro representa a própria organização:</div>
             <Checkbox
               v-model="record.is_organization"
               :enabled="canEditRecord(record, editing)"
             />
           </div>
           <p class="ri_fieldhint">
-            Check this for the org's own record (e.g. "Macedonia SDA Church") so individual contacts at
-            that org can be linked to it below, instead of inferring org-vs-individual from which name
-            fields happen to be filled in.
+            Marque esta opção para o registro da própria organização (ex.: "Igreja Adventista do Sétimo Dia de Macedonia"),
+            para vincular abaixo os contatos individuais dessa organização, sem depender de quais campos de nome foram preenchidos.
           </p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Parent Organization:</div>
+            <div class="ri_fieldlabel">Organização principal:</div>
             <SearchSelect
               v-model="record.parent_person_id"
               optionsource="/json/people?is_organization=1"
               display="full_name"
-              placeholder="Search organizations..."
+              placeholder="Buscar organizações..."
               :enabled="canEditRecord(record, editing)"
             />
           </div>
           <p class="ri_fieldhint">
-            Set this when this person is a contact at an organization already recorded above (checked
-            "This record is the organization itself"), rather than a standalone donor/recipient/contact.
+            Defina este campo quando a pessoa for contato de uma organização já cadastrada acima (marcada como
+            "Este registro representa a própria organização"), e não um doador, destinatário ou contato independente.
           </p>
 
           <div class="ri_fieldset" v-if="record.parent_person_id">
-            <div class="ri_fieldlabel">Contact Role:</div>
+            <div class="ri_fieldlabel">Função do contato:</div>
             <TextInput
               v-model="record.contact_role"
-              placeholder="e.g. Primary, Delivery, Billing"
+              placeholder="ex.: Principal, Entrega, Cobrança"
               :enabled="canEditRecord(record, editing)"
             />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Category:</div>
+            <div class="ri_fieldlabel">Categoria:</div>
             <SearchSelect
               ref="categorySelect"
               v-model="record.category_id"
               optionsource="/json/person-categories"
               display="name"
-              placeholder="e.g. Donor, Supplier, Warehouse Contact..."
+              placeholder="ex.: Doador, Fornecedor, Contato do armazém..."
               :allowcreate="true"
               :enabled="canEditRecord(record, editing)"
               @create="createCategory"
@@ -148,21 +147,21 @@ defineProps({
           </div>
           <p v-if="categoryError" class="ri_error">{{ categoryError }}</p>
           <p class="ri_fieldhint">
-            An open-ended tag for filtering the People list (Donor, Supplier, Warehouse Contact, etc.) —
-            type a new one to add it. Not tied to permissions and not required.
+            Uma etiqueta livre para filtrar a lista de pessoas (doador, fornecedor, contato do armazém etc.) —
+            digite uma nova para adicioná-la. Não está vinculada a permissões e não é obrigatória.
           </p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Badge Code:</div>
+            <div class="ri_fieldlabel">Código do crachá:</div>
             <TextInput
               v-model="record.badge_code"
               :enabled="canEditRecord(record, editing)"
             />
           </div>
-          <p class="ri_fieldhint">Scan or type the code from this person's physical badge, if issued &mdash; used for PIN-unlock badge scanning.</p>
+          <p class="ri_fieldhint">Leia ou digite o código do crachá físico desta pessoa, se houver — usado para desbloqueio por PIN com crachá.</p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Phone:</div>
+            <div class="ri_fieldlabel">Telefone:</div>
             <TextInput
               v-model="record.phone"
               type="tel"
@@ -171,7 +170,7 @@ defineProps({
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Email:</div>
+            <div class="ri_fieldlabel">E-mail:</div>
             <TextInput
               v-model="record.email"
               type="email"
@@ -192,7 +191,7 @@ defineProps({
 		       listeners on an ancestor still see it on the way down. -->
 		  <div class="people_address_fields" @blur.capture="maybeAutoLookupCounty(record)">
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">ZIP Code:</div>
+				<div class="ri_fieldlabel">CEP:</div>
 				<TextInput
 				  v-model="record.zip"
 				  maxlength="10"
@@ -201,7 +200,7 @@ defineProps({
 			  </div>
 
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">Address:</div>
+				<div class="ri_fieldlabel">Endereço:</div>
 				<TextArea
 				  v-model="record.address"
 				  :enabled="canEditRecord(record, editing)"
@@ -217,12 +216,12 @@ defineProps({
 				&& addressCheck.status === 'idle'" class="people_county_hint">
 				<button type="button" class="ri_formbutton" :disabled="$page.props.offlineMode"
 					@click="verifyAddress(record)">
-					{{ $page.props.offlineMode ? "Can't verify address — offline" : 'Verify Address' }}
+					{{ $page.props.offlineMode ? "Não é possível verificar o endereço sem conexão" : 'Verificar endereço' }}
 				</button>
 			  </p>
 
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">City:</div>
+				<div class="ri_fieldlabel">Cidade:</div>
 				<TextInput
 				  v-model="record.city"
 				  :enabled="editing && addressCheck.status !== 'checking'"
@@ -230,7 +229,7 @@ defineProps({
 			  </div>
 
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">State:</div>
+				<div class="ri_fieldlabel">Estado:</div>
 				<TextInput
 				  v-model="record.state"
 				  maxlength="2"
@@ -239,7 +238,7 @@ defineProps({
 			  </div>
 
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">County:</div>
+				<div class="ri_fieldlabel">Município:</div>
 				<ComboBox
 					v-model:keyValue="record.county_id"
 					v-model:updates="record.county_id"
@@ -255,7 +254,7 @@ defineProps({
 		  </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Roles:</div>
+            <div class="ri_fieldlabel">Funções:</div>
             <MultiSelect
 				v-model:records="record.people_roles"
 				:template="templates.people_roles"
@@ -266,15 +265,15 @@ defineProps({
             />
           </div>
           <p class="ri_fieldhint">
-            Staff/login access (Administrator, Office, etc.) and permission overrides are
-            managed from Setup &rarr; User Administration, not here.
+            O acesso da equipe (administrador, escritório etc.) e as substituições de permissões são
+            gerenciados em Configuração &rarr; Administração de usuários, não aqui.
           </p>
 
           <div v-if="record.id && record.roles?.some((r) => r.name === 'Partner')" class="ri_fieldset">
-            <div class="ri_fieldlabel">Partner Status:</div>
+            <div class="ri_fieldlabel">Status da entidade parceira:</div>
             <div>
               <span v-if="record.partner_status" class="people_badge">{{ record.partner_status }}</span>
-              <span v-else class="text-gray-400 text-sm">Not tracked</span>
+              <span v-else class="text-gray-400 text-sm">Não rastreado</span>
             </div>
           </div>
           <div v-if="record.id && record.roles?.some((r) => r.name === 'Partner')" class="ri_fieldset">
@@ -291,36 +290,36 @@ defineProps({
               </button>
             </div>
             <div v-if="composingPartnerStatus?.recordId === record.id" class="mt-2 space-y-2">
-              <TextArea v-model="composingPartnerStatus.notes" placeholder="Optional note" />
+              <TextArea v-model="composingPartnerStatus.notes" placeholder="Observação opcional" />
               <div v-if="partnerStatusError" class="ri_error">{{ partnerStatusError }}</div>
               <div class="flex gap-2">
-                <button type="button" class="ri_defaultbutton" @click="confirmPartnerStatusChange(record)">Confirm</button>
-                <button type="button" class="ri_formbutton" @click="composingPartnerStatus = null">Cancel</button>
+                <button type="button" class="ri_defaultbutton" @click="confirmPartnerStatusChange(record)">Confirmar</button>
+                <button type="button" class="ri_formbutton" @click="composingPartnerStatus = null">Cancelar</button>
               </div>
             </div>
             <div v-if="record.partner_status_logs?.length" class="mt-2 text-xs text-gray-500 space-y-1">
               <div v-for="log in record.partner_status_logs" :key="log.id">
                 {{ log.from_status || '(not tracked)' }} &rarr; {{ log.to_status }}
-                by {{ log.changed_by?.full_name }} &mdash; {{ new Date(log.created_at).toLocaleString() }}
+                por {{ log.changed_by?.full_name }} &mdash; {{ new Date(log.created_at).toLocaleString() }}
                 <span v-if="log.notes">&mdash; {{ log.notes }}</span>
               </div>
             </div>
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Volunteer:</div>
+            <div class="ri_fieldlabel">Voluntário:</div>
             <Checkbox
               v-model="record.is_volunteer"
               :enabled="canEditRecord(record, editing)"
             />
           </div>
           <p class="ri_fieldhint">
-            Whether this person is a volunteer is separate from their role &mdash; a volunteer
-            can be an office manager or an administrator too. Feeds volunteer hours tracking.
+            O fato de esta pessoa ser voluntária é independente de sua função — uma pessoa voluntária
+            também pode ser gerente do escritório ou administradora. Essa informação alimenta o controle de horas voluntárias.
           </p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Comments:</div>
+            <div class="ri_fieldlabel">Observações:</div>
             <TextArea
               v-model="record.comments"
               :enabled="canEditRecord(record, editing)"
@@ -331,15 +330,15 @@ defineProps({
 
       <template #actions="{ editing, record, confirmingDelete, save, cancel, delete: doDelete, keepRecord }">
         <div class="ri_formactions" v-if="!editing || (record.id && record.can_edit === false)">
-          <button @click="cancel()" class="ri_defaultbutton">Back to List</button>
+          <button @click="cancel()" class="ri_defaultbutton">Voltar à lista</button>
         </div>
         <div class="ri_formactions" v-else>
-          <button @click="save()" class="ri_defaultbutton">Save</button>
-          <button @click="cancel()" class="ri_formbutton">Cancel Changes</button>
+          <button @click="save()" class="ri_defaultbutton">Salvar</button>
+          <button @click="cancel()" class="ri_formbutton">Cancelar alterações</button>
           <button v-if="canDelete" @click="doDelete()" class="ri_deletebutton" :class="{ ri_confirming: confirmingDelete }">
-            {{ confirmingDelete ? 'Confirm Delete — cannot be undone' : 'Delete' }}
+            {{ confirmingDelete ? 'Confirmar exclusão — não será possível desfazer' : 'Excluir' }}
           </button>
-          <button v-if="canDelete && confirmingDelete" @click="keepRecord()" class="ri_linkbutton">Keep Record</button>
+          <button v-if="canDelete && confirmingDelete" @click="keepRecord()" class="ri_linkbutton">Manter registro</button>
         </div>
       </template>
     </RIForm>
@@ -384,7 +383,7 @@ export default {
   methods: {
     // Long addresses are cut in the middle of the local part so the domain stays readable.
     shortenEmail(email, max = 28) {
-      if (!email) return 'N/A';
+      if (!email) return 'Não disponível';
       if (email.length <= max) return email;
       const at = email.lastIndexOf('@');
       const domain = at >= 0 ? email.slice(at) : '';
@@ -415,7 +414,7 @@ export default {
         invalidateOptions('/json/person-categories');
         await this.$refs.categorySelect?.refresh(response.data.record.id);
       } catch (error) {
-        this.categoryError = error.response?.data?.message || 'Could not save category.';
+        this.categoryError = error.response?.data?.message || 'Não foi possível salvar a categoria.';
       }
     },
     // Looks up county/city/state/zip once there's enough to geocode —
@@ -476,8 +475,8 @@ export default {
         if (!record.county_id && response.data.county_id) {
           record.county_id = response.data.county_id;
         } else if (!record.county_id && response.data.county) {
-          this.countyLookupHint = `Geocodio suggests "${response.data.county}, ${response.data.state}" `
-            + `— that's not in the county list above yet.`;
+          this.countyLookupHint = `O Geocodio sugere "${response.data.county}, ${response.data.state}" `
+            + '— esse município ainda não está na lista acima.';
         }
       } catch (error) {
         this.addressCheck = { ...IDLE_ADDRESS_CHECK };
@@ -486,7 +485,7 @@ export default {
         // API key configured) — also expected, not a fault; address entry
         // works fine without it either way.
         if (![422, 503].includes(error.response?.status)) {
-          this.countyLookupError = error.response?.data?.message || 'Could not look up that address.';
+          this.countyLookupError = error.response?.data?.message || 'Não foi possível consultar esse endereço.';
         }
       }
     },
@@ -534,24 +533,24 @@ export default {
     partnerStatusActions(record) {
       const options = {
         '': [
-          { to: 'approved', label: 'Approve' },
-          { to: 'denied', label: 'Deny' },
+          { to: 'approved', label: 'Aprovar' },
+          { to: 'denied', label: 'Negar' },
         ],
         pending: [
-          { to: 'approved', label: 'Approve' },
-          { to: 'denied', label: 'Deny' },
+          { to: 'approved', label: 'Aprovar' },
+          { to: 'denied', label: 'Negar' },
         ],
         approved: [
-          { to: 'blocked', label: 'Block' },
-          { to: 'denied', label: 'Deny' },
+          { to: 'blocked', label: 'Bloquear' },
+          { to: 'denied', label: 'Negar' },
         ],
         denied: [
-          { to: 'pending', label: 'Reconsider' },
-          { to: 'approved', label: 'Approve' },
+          { to: 'pending', label: 'Reconsiderar' },
+          { to: 'approved', label: 'Aprovar' },
         ],
         blocked: [
-          { to: 'approved', label: 'Unblock (Approve)' },
-          { to: 'denied', label: 'Deny' },
+          { to: 'approved', label: 'Desbloquear (aprovar)' },
+          { to: 'denied', label: 'Negar' },
         ],
       };
       return options[record.partner_status || ''] || [];
@@ -571,7 +570,7 @@ export default {
         record.partner_status_logs = response.data.record.partner_status_logs;
         this.composingPartnerStatus = null;
       } catch (error) {
-        this.partnerStatusError = error.response?.data?.message || 'Could not update partner status.';
+        this.partnerStatusError = error.response?.data?.message || 'Não foi possível atualizar o status da entidade parceira.';
       }
     },
   },

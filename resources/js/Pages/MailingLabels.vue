@@ -22,7 +22,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 
-const AUDIENCES = { partner: 'Partners', donor: 'Donors', volunteer: 'Volunteers', other: 'Other (no tag)' };
+const AUDIENCES = { partner: 'Entidades parceiras', donor: 'Doadores', volunteer: 'Voluntários', other: 'Outros (sem tag)' };
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu },
@@ -114,7 +114,7 @@ export default {
 				this.unchecked = {};
 				this.loaded = params;
 			} catch (error) {
-				this.error = 'Could not load the mailing list.';
+				this.error = 'Não foi possível carregar a lista de correspondência.';
 			} finally {
 				this.loading = false;
 			}
@@ -142,73 +142,73 @@ export default {
 </script>
 
 <template>
-	<Head title="Mailing Labels" />
+	<Head title="Etiquetas para correspondência" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 		<div class="ml_container">
 			<h2 class="ri_datatable_head ml_head">
-				Mailing Labels
+				Etiquetas para correspondência
 				<span class="ml_actions">
-					<PrintMenu document-key="mailing-labels" media="report" label="Print Labels"
+					<PrintMenu document-key="mailing-labels" media="report" label="Imprimir etiquetas"
 						:disabled="!selected.length || loading" :params="printParams" :download-href="downloadHref" />
 				</span>
 			</h2>
 			<p class="ml_intro">
-				Address labels on Avery 8160 / 5160 sheets (30 per page) for an office printer. To add a list of
-				names and addresses, import a CSV on <a href="/setup/import">Data Import</a> ("Names &amp; addresses")
-				and tag each row donor, partner, volunteer or other.
+				Etiquetas de endereço em folhas Avery 8160 / 5160 (30 por página) para impressora comum. Para adicionar uma lista de
+				nomes e endereços, importe um CSV em <a href="/setup/import">Importação de dados</a> ("Nomes e endereços")
+				e identifique cada linha com a tag donor, partner, volunteer ou other.
 			</p>
 
-			<div class="ml_audiences" role="radiogroup" aria-label="Mailing list">
+			<div class="ml_audiences" role="radiogroup" aria-label="Lista de correspondência">
 				<button v-for="(label, key) in audiences" :key="key" type="button" role="radio"
 					:aria-checked="audience === key" :class="['ml_audience', { ml_active: audience === key }]"
 					@click="audience = key">{{ label }}</button>
 			</div>
 
 			<div class="ml_toolbar">
-				<label>County
+				<label>Condado
 					<select v-model="countyId" class="ri_forminput">
-						<option value="">All</option>
+						<option value="">Todos</option>
 						<option v-for="c in counties" :key="c.id" :value="c.id">{{ c.county }}, {{ c.state }}</option>
 					</select>
 				</label>
-				<label>Order
+				<label>Ordenar
 					<select v-model="sort" class="ri_forminput">
-						<option value="name">By name</option>
-						<option value="zip">By zip code</option>
+						<option value="name">Por nome</option>
+						<option value="zip">Por CEP</option>
 					</select>
 				</label>
-				<input type="text" v-model="search" class="ri_forminput ml_search" placeholder="Search name, organization, city or zip..." />
+				<input type="text" v-model="search" class="ri_forminput ml_search" placeholder="Buscar nome, organização, cidade ou CEP..." />
 			</div>
 
 			<p v-if="error" class="ml_error">{{ error }}</p>
 
 			<div class="ml_layout">
 				<div class="ml_list">
-					<p v-if="loading">Loading...</p>
+					<p v-if="loading">Carregando...</p>
 					<template v-else>
 						<p class="ml_summary">
-							<strong>{{ selected.length }}</strong> label{{ selected.length === 1 ? '' : 's' }} selected
-							<template v-if="selected.length"> &middot; {{ sheets }} sheet{{ sheets === 1 ? '' : 's' }}</template>
+							<strong>{{ selected.length }}</strong> {{ selected.length === 1 ? 'etiqueta selecionada' : 'etiquetas selecionadas' }}
+							<template v-if="selected.length"> &middot; {{ sheets }} {{ sheets === 1 ? 'folha' : 'folhas' }}</template>
 							<template v-if="mailable.length">
 								&middot;
-								<button type="button" class="ml_link" @click="setAll(true)" :disabled="allChecked">Select all</button>
+								<button type="button" class="ml_link" @click="setAll(true)" :disabled="allChecked">Selecionar todas</button>
 								/
-								<button type="button" class="ml_link" @click="setAll(false)" :disabled="!selected.length">none</button>
+								<button type="button" class="ml_link" @click="setAll(false)" :disabled="!selected.length">nenhuma</button>
 							</template>
 						</p>
-						<p v-if="!records.length" class="ml_empty">Nobody in this list{{ countyId || search ? ' for these filters' : '' }}.</p>
+						<p v-if="!records.length" class="ml_empty">Ninguém nesta lista{{ countyId || search ? ' com estes filtros' : '' }}.</p>
 						<div v-else-if="mailable.length" class="ml_tablewrap">
 							<table class="ri_datatable" border="1">
 								<thead>
 									<tr>
-										<th class="ml_check"><input type="checkbox" :checked="allChecked" @change="setAll($event.target.checked)" aria-label="Select all" /></th>
-										<th>Name</th><th>Address</th><th>County</th><th>Tags</th>
+										<th class="ml_check"><input type="checkbox" :checked="allChecked" @change="setAll($event.target.checked)" aria-label="Selecionar todas" /></th>
+										<th>Nome</th><th>Endereço</th><th>Condado</th><th>Tags</th>
 									</tr>
 								</thead>
 								<tbody>
 									<tr v-for="r in mailable" :key="r.id" :class="{ ml_off: unchecked[r.id] }" @click="toggle(r)">
-										<td class="ml_check"><input type="checkbox" :checked="!unchecked[r.id]" @click.stop="toggle(r)" :aria-label="'Print a label for ' + r.name" /></td>
+										<td class="ml_check"><input type="checkbox" :checked="!unchecked[r.id]" @click.stop="toggle(r)" :aria-label="'Imprimir etiqueta para ' + r.name" /></td>
 										<td>{{ r.name }}<div v-if="r.organization && r.organization !== r.name" class="ml_org">{{ r.organization }}</div></td>
 										<td>{{ addressLine(r) }}</td>
 										<td>{{ r.county || '' }}</td>
@@ -220,40 +220,40 @@ export default {
 
 						<div v-if="missing.length" class="ml_missing">
 							<button type="button" class="ml_link" @click="showMissing = !showMissing">
-								{{ showMissing ? '−' : '+' }} {{ missing.length }} without a complete address (no label)
+								{{ showMissing ? '−' : '+' }} {{ missing.length }} sem endereço completo (sem etiqueta)
 							</button>
 							<ul v-if="showMissing">
 								<li v-for="r in missing" :key="r.id">
 									{{ r.name }}<span v-if="r.organization && r.organization !== r.name"> ({{ r.organization }})</span>
-									— {{ addressLine(r) || 'no address' }}
+									— {{ addressLine(r) || 'sem endereço' }}
 								</li>
 							</ul>
-							<p v-if="showMissing" class="ml_note">Add the missing street, city, state or zip on the <a href="/setup/people">People</a> page.</p>
+							<p v-if="showMissing" class="ml_note">Adicione a rua, cidade, estado ou CEP que falta na página <a href="/setup/people">Pessoas</a>.</p>
 						</div>
 					</template>
 				</div>
 
 				<aside class="ml_side">
-					<h3>Start at label</h3>
-					<p class="ml_note">Using a partly-used sheet? Click the first empty label (1 is top left, across then down).</p>
-					<div class="ml_sheet" aria-label="Avery 8160 sheet">
+					<h3>Começar na etiqueta</h3>
+					<p class="ml_note">Vai usar uma folha parcialmente preenchida? Clique na primeira etiqueta vazia (a 1 fica no canto superior esquerdo; siga da esquerda para a direita e de cima para baixo).</p>
+					<div class="ml_sheet" aria-label="Folha Avery 8160">
 						<button v-for="n in sheetCells" :key="n" type="button"
 							:class="['ml_cell', { ml_used: n < start, ml_start: n === start }]"
-							:aria-pressed="n === start" :title="'Start at label ' + n" @click="setStart(n)">{{ n === start ? n : '' }}</button>
+							:aria-pressed="n === start" :title="'Começar na etiqueta ' + n" @click="setStart(n)">{{ n === start ? n : '' }}</button>
 					</div>
-					<label class="ml_startinput">Label #
+					<label class="ml_startinput">Etiqueta nº
 						<input type="number" min="1" :max="perSheet" :value="start" class="ri_forminput" @change="setStart($event.target.value)" />
 					</label>
 
 					<template v-if="selected.length">
-						<h3>First label</h3>
+						<h3>Primeira etiqueta</h3>
 						<div class="ml_preview">
 							<div v-for="(line, i) in selected[0].lines" :key="i">{{ line }}</div>
 						</div>
 					</template>
 					<p class="ml_note">
-						Print at <strong>Actual size</strong> (100%, not "Fit to page"). Try a plain sheet first and hold it
-						against a label sheet to check the alignment.
+						Imprima em <strong>Tamanho real</strong> (100%, não "Ajustar à página"). Faça um teste em uma folha comum e compare
+						com a folha de etiquetas para conferir o alinhamento.
 					</p>
 				</aside>
 			</div>

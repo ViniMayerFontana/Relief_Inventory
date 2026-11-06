@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Inventory Labels</title>
+    <title>Etiquetas de Estoque</title>
     <style>
         {{-- $paper: label media in inches; $compact: the narrow-label layout (barcode rotated along the long edge).
              Page size/margins as in the pallet labels (WeasyPrint stacks its own margin on a body padding). --}}

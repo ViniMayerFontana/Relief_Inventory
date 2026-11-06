@@ -7,11 +7,11 @@
     Self-contained, like 503.blade.php. The visitor may be a stranger, so it
     only names the setting names, never any values.
 -->
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Relief Inventory') }} — Setup needed</title>
+    <title>{{ config('app.name', 'Relief Inventory') }} — Configuração necessária</title>
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f9f9f9; color: #1f2933; }
@@ -24,11 +24,11 @@
 </head>
 <body>
 <div class="wrap"><div class="card">
-    <h1>This page isn't set up yet</h1>
-    <p>This page uses Cloudflare Turnstile (a bot check), which is switched on but has no keys. The server's administrator needs to do one of the following, then restart the application:</p>
-    <p><strong>Turn it off</strong> (fine for a private or offline site) — set <code>CLOUDFLARE_TURNSTILE_ENABLED</code> to <code>false</code>.</p>
-    <p><strong>Or give it keys</strong> — set <code>CLOUDFLARE_TURNSTILE_ENABLED</code> to <code>true</code>, and set both <code>CLOUDFLARE_TURNSTILE_SITE_KEY</code> and <code>CLOUDFLARE_TURNSTILE_SECRET_KEY</code> (free from the Cloudflare dashboard; the server needs Internet access).</p>
-    <p>In Docker, these go in the settings block at the top of <code>compose.yaml</code>; then run:</p>
+    <h1>Esta página ainda não foi configurada</h1>
+    <p>Esta página usa o Cloudflare Turnstile (verificação contra bots), que está ativado, mas não tem chaves configuradas. O administrador do servidor precisa escolher uma das opções abaixo e, em seguida, reiniciar o aplicativo:</p>
+    <p><strong>Desativá-lo</strong> (adequado para um site privado ou sem conexão) — defina <code>CLOUDFLARE_TURNSTILE_ENABLED</code> como <code>false</code>.</p>
+    <p><strong>Ou configurar as chaves</strong> — defina <code>CLOUDFLARE_TURNSTILE_ENABLED</code> como <code>true</code> e configure <code>CLOUDFLARE_TURNSTILE_SITE_KEY</code> e <code>CLOUDFLARE_TURNSTILE_SECRET_KEY</code> (gratuitas no painel do Cloudflare; o servidor precisa de acesso à Internet).</p>
+    <p>No Docker, essas opções ficam no bloco de configurações no início de <code>compose.yaml</code>; depois, execute:</p>
     <pre>docker compose up -d</pre>
 </div></div>
 </body>

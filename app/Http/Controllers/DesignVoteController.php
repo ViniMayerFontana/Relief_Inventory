@@ -73,7 +73,7 @@ class DesignVoteController extends Controller
     {
         $poll = DesignPolls::find($slug) ?? abort(404);
         if (! DesignPoll::forSlug($slug)->is_open) {
-            return response()->json(['message' => 'Voting on this has closed.'], 403);
+            return response()->json(['message' => 'A votação foi encerrada.'], 403);
         }
         if ($refused = $this->turnstileUnavailable()) {
             return $refused;
@@ -201,11 +201,11 @@ class DesignVoteController extends Controller
             fputcsv($out, ['Type', 'Voter', 'Sent', 'Design', 'Reaction', 'Name', 'Comment or idea', 'Email', 'OK to contact']);
             foreach ($reactions as $row) {
                 fputcsv($out, [
-                    'Vote',
+                    'Voto',
                     $row->vote_id,
                     $row->updated_at,
                     $poll['options'][$row->option_key]['label'] ?? $row->option_key,
-                    $row->reaction === 'like' ? 'Likes it' : 'Not for them',
+                    $row->reaction === 'like' ? 'Gostou' : 'Não gostou',
                     $row->voter_name,
                     $row->comment,
                 ]);
@@ -280,7 +280,7 @@ class DesignVoteController extends Controller
     private function turnstileUnavailable(): ?JsonResponse
     {
         return $this->turnstile->enabled() && $this->turnstile->misconfigured()
-            ? response()->json(['message' => 'This page can\'t accept entries right now (spam protection isn\'t set up on this server).'], 503)
+            ? response()->json(['message' => 'Esta página não pode receber respostas no momento (a proteção contra spam não está configurada neste servidor).'], 503)
             : null;
     }
 

@@ -2,10 +2,10 @@
      rotation order, Round 1 (segment 1) and Round 2 (segment 2) for each station. Content: App\Support\TrainingGuide.
      $sheets = [TrainingGuide::sheetFor(n), ...]; $drivers = team => [phone, pin] from the last Prepare Training. --}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Training Team Sheets</title>
+    <title>Folhas das Equipes de Treinamento</title>
     <style>
         @page { size: letter; margin: 0.5in 0.55in; }
         body { font-family: Arial, sans-serif; color: #222; margin: 0; font-size: 11.5px; line-height: 1.4; }
@@ -29,21 +29,21 @@
 <body>
 @foreach ($sheets as $sheet)
     <div class="sheet">
-        <h1>Team {{ $sheet['team'] }} — Activity Sheet</h1>
-        <div class="subtitle">{{ config('app.name') }} hands-on training · two segments of {{ \App\Support\TrainingGuide::SEGMENT_MINUTES }} minutes · about 8 minutes per station</div>
+        <h1>Equipe {{ $sheet['team'] }} — Folha de atividades</h1>
+        <div class="subtitle">{{ config('app.name') }} · treinamento prático · dois segmentos de {{ \App\Support\TrainingGuide::SEGMENT_MINUTES }} minutos · cerca de 8 minutos por estação</div>
 
         <div class="box">
-            <strong>Logging in:</strong> on a station's tablet, tap your name, choose Team {{ $sheet['team'] }}, and tap Start.
-            Not on the list? Tap Add New. Tap "Staff login" in the yellow strip when you're done, or just hand the tablet to the next team.
-            <strong>Move on</strong> when the trainer calls time: go to the next station on the list below (Station 6 goes back to Station 1).
-            <br><strong>Segment 1</strong> = Round 1 at every station. <strong>Segment 2</strong> = Round 2 at every station, in the same order.
+            <strong>Como entrar:</strong> no tablet da estação, toque no seu nome, escolha a Equipe {{ $sheet['team'] }} e toque em Iniciar.
+            Seu nome não está na lista? Toque em Adicionar novo. Ao terminar, toque em "Acesso da equipe" na faixa amarela ou passe o tablet para a próxima equipe.
+            <strong>Avance</strong> quando o instrutor avisar: vá para a próxima estação da lista abaixo (da Estação 6, volte à Estação 1).
+            <br><strong>Segmento 1</strong> = Rodada 1 em todas as estações. <strong>Segmento 2</strong> = Rodada 2 em todas as estações, na mesma ordem.
             @if (! empty($drivers[$sheet['team']]))
-                <br><strong>Your team driver (Station 6, Driver Portal):</strong> phone {{ $drivers[$sheet['team']]['phone'] }}, PIN {{ $drivers[$sheet['team']]['pin'] }}
+                <br><strong>Motorista da equipe (Estação 6, Portal do Motorista):</strong> telefone {{ $drivers[$sheet['team']]['phone'] }}, PIN {{ $drivers[$sheet['team']]['pin'] }}
             @endif
         </div>
 
         <table class="rotation">
-            <thead><tr><th>Slot</th><th>Minutes</th><th>Station</th><th>Round 1 (segment 1)</th><th>Round 2 (segment 2)</th></tr></thead>
+            <thead><tr><th>Horário</th><th>Minutos</th><th>Estação</th><th>Rodada 1 (segmento 1)</th><th>Rodada 2 (segmento 2)</th></tr></thead>
             <tbody>
                 @foreach ($sheet['slots'] as $slot)
                     <tr>
@@ -59,10 +59,10 @@
 
         @foreach ($sheet['slots'] as $slot)
             <div class="station">
-                <h2>Slot {{ $slot['slot'] }} · Station {{ $slot['station'] }}: {{ $slot['name'] }} <span style="font-weight:normal; color:#555;">({{ $slot['activity']['page'] }})</span></h2>
-                @foreach (['round1' => 'Round 1', 'round2' => 'Round 2'] as $key => $label)
+                <h2>Horário {{ $slot['slot'] }} · Estação {{ $slot['station'] }}: {{ $slot['name'] }} <span style="font-weight:normal; color:#555;">({{ $slot['activity']['page'] }})</span></h2>
+                        @foreach (['round1' => 'Rodada 1', 'round2' => 'Rodada 2'] as $key => $label)
                     <div class="round">
-                        <span class="check">&#9744; done</span>
+                        <span class="check">&#9744; concluído</span>
                         <strong>{{ $label }}: {{ $slot['activity'][$key]['title'] }}</strong>
                         <ol>
                             @foreach ($slot['activity'][$key]['steps'] as $step)

@@ -33,7 +33,7 @@ const submit = async () => {
         const turnstileResponse = document.querySelector("[name='cf-turnstile-response']")?.value;
 
         if (!turnstileResponse) {
-            alert("Please complete the CAPTCHA verification.");
+            alert("Conclua a verificação CAPTCHA.");
             return;
         }
 
@@ -59,12 +59,11 @@ onMounted(() => {
 
 <template>
     <GuestLayout>
-        <Head title="Forgot Password" />
+        <Head title="Esqueci minha senha" />
 
         <div class="mb-4 text-sm text-gray-600">
-            Forgot your password? No problem. Just let us know your email
-            address and we will email you a password reset link that will allow
-            you to choose a new one.
+            Esqueceu sua senha? Não tem problema. Informe seu endereço de e-mail
+            e enviaremos um link para redefini-la.
         </div>
 
         <div
@@ -76,7 +75,7 @@ onMounted(() => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="E-mail" />
 
                 <TextInput
                     id="email"
@@ -101,7 +100,7 @@ onMounted(() => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Email Password Reset Link
+                    Enviar link para redefinir a senha
                 </PrimaryButton>
             </div>
 

@@ -45,7 +45,7 @@ async function load() {
 }
 onMounted(load);
 
-const statusLabels = { pending: 'Pending', approved: 'Approved', denied: 'Denied' };
+const statusLabels = { pending: 'Pendente', approved: 'Aprovada', denied: 'Recusada' };
 const statusClasses = {
 	pending: 'bg-amber-100 text-amber-800',
 	approved: 'bg-green-100 text-green-800',
@@ -80,34 +80,34 @@ async function confirmCompose() {
 		composing.value = null;
 		await load();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not update this submission.';
+		error.value = e.response?.data?.message || 'Não foi possível atualizar esta resposta.';
 	}
 }
 </script>
 
 <template>
-	<Head title="Form Submissions" />
+	<Head title="Respostas do formulário" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
 			<div class="flex items-center justify-between">
-				<h1 class="text-2xl font-bold">{{ form?.name || 'Submissions' }}</h1>
-				<Link href="/setup/forms" class="text-sm text-blue-600 underline">&larr; Back to Forms</Link>
+				<h1 class="text-2xl font-bold">{{ form?.name || 'Respostas' }}</h1>
+				<Link href="/setup/forms" class="text-sm text-blue-600 underline">&larr; Voltar aos formulários</Link>
 			</div>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<p v-if="loading" class="text-gray-500">Loading submissions…</p>
-				<div v-else-if="!submissions.length" class="text-gray-400">No submissions yet.</div>
+				<p v-if="loading" class="text-gray-500">Carregando respostas…</p>
+				<div v-else-if="!submissions.length" class="text-gray-400">Nenhuma resposta ainda.</div>
 
 				<div v-else class="space-y-4">
 					<div v-for="submission in submissions" :key="submission.id" class="border rounded-lg p-4">
 						<div class="flex items-center gap-2 text-sm flex-wrap">
-							<span class="font-semibold">{{ submission.submitter_name || submission.submitted_by?.full_name || 'Unknown' }}</span>
+							<span class="font-semibold">{{ submission.submitter_name || submission.submitted_by?.full_name || 'Desconhecido' }}</span>
 							<span v-if="submission.submitter_email" class="text-gray-500">{{ submission.submitter_email }}</span>
 							<span v-if="submission.approval_status" class="px-2 py-0.5 rounded text-xs font-medium" :class="statusClasses[submission.approval_status]">
 								{{ statusLabels[submission.approval_status] }}
 							</span>
 							<span v-else-if="submission.reviewed_at" class="px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700">
-								Reviewed
+								Revisada
 							</span>
 							<span class="text-gray-400 text-xs ml-auto">{{ formatDateTime(submission.created_at) }}</span>
 						</div>
@@ -120,14 +120,14 @@ async function confirmCompose() {
 						</div>
 
 						<div v-if="submission.linked_person" class="mt-2 text-xs text-green-700">
-							Linked to person #{{ submission.linked_person.id }} ({{ submission.linked_person.full_name || submission.linked_person.organization }})
+							Vinculada à pessoa nº {{ submission.linked_person.id }} ({{ submission.linked_person.full_name || submission.linked_person.organization }})
 						</div>
 
 						<!-- History -->
 						<div v-if="submission.status_logs?.length" class="mt-3 pl-4 border-l-2 border-gray-200 space-y-2">
 							<div v-for="log in submission.status_logs" :key="log.id" class="rounded border bg-white shadow-sm px-3 py-2 text-xs">
 								<span class="font-semibold">
-									{{ log.from_status !== log.to_status ? `Moved to ${statusLabels[log.to_status] || log.to_status}` : 'Note' }}
+									{{ log.from_status !== log.to_status ? `Alterada para ${statusLabels[log.to_status] || log.to_status}` : 'Observação' }}
 								</span>
 								by {{ log.changed_by?.full_name }}
 								<span class="text-gray-400">— {{ formatDateTime(log.created_at) }}</span>
@@ -138,25 +138,25 @@ async function confirmCompose() {
 						<!-- Compose -->
 						<div v-if="composing?.submissionId === submission.id" class="mt-3 pl-4 space-y-2">
 							<div v-if="composing.action === 'approve' && form?.on_approval_action === 'create_or_link_partner'" class="text-xs">
-								<div class="text-gray-600 mb-1">Link to an existing person instead of creating a new one? (optional)</div>
-								<SearchSelect v-model="linkPersonId" optionsource="/json/people" display="full_name" placeholder="Search people..." />
+								<div class="text-gray-600 mb-1">Vincular a uma pessoa existente em vez de criar um novo cadastro? (opcional)</div>
+								<SearchSelect v-model="linkPersonId" optionsource="/json/people" display="full_name" placeholder="Buscar pessoas..." />
 							</div>
-							<textarea v-model="notes" rows="2" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Optional note"></textarea>
+							<textarea v-model="notes" rows="2" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" placeholder="Observação opcional"></textarea>
 							<div v-if="error" class="text-red-700 text-xs">{{ error }}</div>
 							<div class="flex gap-2">
 								<PrimaryButton @click="confirmCompose">
-									{{ { approve: 'Approve', deny: 'Deny', note: 'Save Note' }[composing.action] }}
+									{{ { approve: 'Aprovar', deny: 'Recusar', note: 'Salvar observação' }[composing.action] }}
 								</PrimaryButton>
-								<SecondaryButton @click="cancelCompose">Cancel</SecondaryButton>
+								<SecondaryButton @click="cancelCompose">Cancelar</SecondaryButton>
 							</div>
 						</div>
 
 						<div v-else class="mt-3 pl-4 flex gap-4 text-xs">
 							<template v-if="submission.approval_status === 'pending'">
-								<button class="text-green-700 underline font-medium" @click="startAction(submission, 'approve')">Approve</button>
-								<button class="text-red-700 underline font-medium" @click="startAction(submission, 'deny')">Deny</button>
+								<button class="text-green-700 underline font-medium" @click="startAction(submission, 'approve')">Aprovar</button>
+								<button class="text-red-700 underline font-medium" @click="startAction(submission, 'deny')">Recusar</button>
 							</template>
-							<button v-else class="text-blue-600 underline" @click="startAction(submission, 'note')">+ Add note</button>
+							<button v-else class="text-blue-600 underline" @click="startAction(submission, 'note')">+ Adicionar observação</button>
 						</div>
 					</div>
 				</div>

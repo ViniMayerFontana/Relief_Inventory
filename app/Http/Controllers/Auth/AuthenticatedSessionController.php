@@ -76,7 +76,7 @@ class AuthenticatedSessionController extends Controller
         if ($user instanceof MustVerifyEmail && ! $user->hasVerifiedEmail()) {
             Auth::logout();
 
-            $message = 'You need to verify your email address before logging in.';
+            $message = 'Você precisa verificar seu endereço de e-mail antes de entrar.';
             $throttleKey = 'verification-resend:'.$user->getKey();
 
             if (! RateLimiter::tooManyAttempts($throttleKey, 1)) {
@@ -106,7 +106,7 @@ class AuthenticatedSessionController extends Controller
             Auth::logout();
 
             return redirect()->route('login')
-                ->withErrors(['email' => 'This account has been deactivated.']);
+                ->withErrors(['email' => 'Esta conta foi desativada.']);
         }
 
         $request->session()->regenerate();

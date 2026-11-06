@@ -149,7 +149,7 @@ class PeopleController extends Controller
         $this->applyAddressVerification($request, $person, addressChanged: false);
 
         return response()->json([
-            'message' => 'Person added successfully.',
+            'message' => 'Pessoa adicionada com sucesso.',
             'record' => $person,
         ], 201);
     }
@@ -173,7 +173,7 @@ class PeopleController extends Controller
         $permissionData = $data['person_permissions'] ?? [];
 
         if (isset($data['parent_person_id']) && (int) $data['parent_person_id'] === (int) $id) {
-            return response()->json(['message' => 'A person cannot be their own parent organization.'], 422);
+            return response()->json(['message' => 'Uma pessoa não pode ser sua própria organização responsável.'], 422);
         }
 
         if ($error = $this->permissionAssignment->assertNoEscalation(Auth::user(), $person, array_column($roleData, 'role_id'), $permissionData)) {
@@ -188,7 +188,7 @@ class PeopleController extends Controller
         $this->applyAddressVerification($request, $person, $addressChanged);
 
         return response()->json([
-            'message' => 'Person updated successfully.',
+            'message' => 'Pessoa atualizada com sucesso.',
             'record' => $person->fresh(),
         ], 200);
     }
@@ -228,14 +228,14 @@ class PeopleController extends Controller
 
         if ($person->isSystem()) {
             return response()->json([
-                'message' => 'This is a system-provided record and cannot be deleted.',
+                'message' => 'Este registro é fornecido pelo sistema e não pode ser excluído.',
             ], 422);
         }
 
         $person->delete();
 
         return response()->json([
-            'message' => 'Person deleted successfully.',
+            'message' => 'Pessoa excluída com sucesso.',
         ], 200);
     }
 

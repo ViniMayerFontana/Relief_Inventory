@@ -56,12 +56,12 @@ class UpcController extends Controller
 
         $code = Gtin::normalize($data['code']);
         if ($code === null || ! Gtin::isValid($code)) {
-            throw ValidationException::withMessages(['code' => 'That barcode is not valid — please scan it again.']);
+            throw ValidationException::withMessages(['code' => 'Este código de barras é inválido — leia-o novamente.']);
         }
 
         $qty = $data['qty_per_carton'] ?? (($data['inner_packs'] ?? 1) * ($data['items_per_pack'] ?? 1));
         if (empty($data['qty_per_carton']) && empty($data['inner_packs']) && empty($data['items_per_pack'])) {
-            throw ValidationException::withMessages(['qty_per_carton' => 'Enter how many items are in one carton.']);
+            throw ValidationException::withMessages(['qty_per_carton' => 'Informe quantos itens há em uma caixa.']);
         }
 
         CartonCode::updateOrCreate(['code' => $code], [
@@ -95,6 +95,6 @@ class UpcController extends Controller
     {
         CartonCode::findOrFail($id)->delete();
 
-        return response()->json(['message' => 'Carton code removed.']);
+        return response()->json(['message' => 'Código da caixa removido.']);
     }
 }

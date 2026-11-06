@@ -8,7 +8,7 @@
     $pt = fn (float $v) => round($v, 2).'pt';
 @endphp
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>{{ $title }}</title>

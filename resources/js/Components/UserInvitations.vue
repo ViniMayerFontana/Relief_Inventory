@@ -48,7 +48,7 @@ onMounted(load);
 
 <template>
 	<section v-if="invitations.length" class="bg-white shadow rounded-lg p-6 space-y-3">
-		<h2 class="text-lg font-semibold">Waiting for an answer</h2>
+		<h2 class="text-lg font-semibold">Aguardando resposta</h2>
 		<p class="text-sm text-gray-600">
 			These people's emails already have a login in another warehouse, so they were invited instead of added.
 			They cannot sign in here until the owner of that login accepts.
@@ -60,13 +60,13 @@ onMounted(load);
 					<span class="font-medium">{{ i.person }}</span>
 					<span class="text-gray-600"> &lt;{{ i.email }}&gt;</span>
 					<span class="block text-xs text-gray-500">
-						{{ i.source === 'restore' ? 'From a restored backup (never emailed)' : `Invited by ${i.invited_by || 'an administrator'}` }}
+						{{ i.source === 'restore' ? 'De um backup restaurado (o convite não foi enviado por e-mail)' : `Convidado por ${i.invited_by || 'um administrador'}` }}
 						· open until {{ when(i.expires_at) }}
 					</span>
 				</span>
 				<span class="flex gap-2">
-					<SecondaryButton :disabled="busy" @click="resend(i)">{{ i.source === 'restore' ? 'Email invitation' : 'Resend' }}</SecondaryButton>
-					<SecondaryButton :disabled="busy" @click="withdraw(i)">Withdraw</SecondaryButton>
+					<SecondaryButton :disabled="busy" @click="resend(i)">{{ i.source === 'restore' ? 'Enviar convite por e-mail' : 'Reenviar' }}</SecondaryButton>
+					<SecondaryButton :disabled="busy" @click="withdraw(i)">Cancelar convite</SecondaryButton>
 				</span>
 			</li>
 		</ul>

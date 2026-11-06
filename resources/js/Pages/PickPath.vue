@@ -27,7 +27,7 @@ onMounted(async () => {
 		const all = (await axios.get('/json/locations')).data.records;
 		locations.value = all.filter((l) => l.status === 'active'); // server already sends them in path order
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load locations.';
+		error.value = e.response?.data?.message || 'Não foi possível carregar os locais.';
 	} finally {
 		loading.value = false;
 	}
@@ -65,7 +65,7 @@ function autoSnake() {
 	});
 	locations.value = [...ordered, ...without];
 	dirty.value = true;
-	message.value = 'Ordered by aisle, snaking. Drag rows to adjust, then Save.';
+	message.value = 'Ordenado por corredor, em zigue-zague. Arraste as linhas para ajustar e salve.';
 }
 
 const unplaced = computed(() => locations.value.filter((l) => l.PullSequence === null || l.PullSequence === undefined).length);
@@ -76,9 +76,9 @@ async function save() {
 	try {
 		await axios.put('/json/locations/order', { ids: locations.value.map((l) => l.id) });
 		dirty.value = false;
-		message.value = 'Pick path saved. Pick sheets and the fill screen use it from now on.';
+		message.value = 'Rota de separação salva. As listas de separação e a tela de montagem passarão a usá-la.';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not save the pick path.';
+		error.value = e.response?.data?.message || 'Não foi possível salvar a rota de separação.';
 	} finally {
 		saving.value = false;
 	}
@@ -86,25 +86,25 @@ async function save() {
 </script>
 
 <template>
-	<Head title="Pick Path" />
+	<Head title="Rota de separação" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="pp_page">
-			<h2>Pick Path</h2>
+			<h2>Rota de separação</h2>
 			<p class="ri_hint">
-				The order pickers walk the warehouse. Pick sheets and the fill screen list each item by where it is, in this order.
-				Drag a row to move it, or use the arrows.
+				A rota orienta a separação dos pedidos no armazém. As listas de separação e a tela de montagem mostram os itens
+				na ordem dos locais. Arraste uma linha para movê-la ou use as setas.
 			</p>
 
 			<div class="pp_actions">
-				<button type="button" class="ri_formbutton" :disabled="!locations.length" @click="autoSnake">Auto-order by aisle (snaking)</button>
-				<button type="button" class="ri_defaultbutton" :disabled="!dirty || saving" @click="save">Save Pick Path</button>
-				<Link href="/setup/locations" class="ri_linkbutton">Back to Locations</Link>
+				<button type="button" class="ri_formbutton" :disabled="!locations.length" @click="autoSnake">Ordenar automaticamente por corredor (em zigue-zague)</button>
+				<button type="button" class="ri_defaultbutton" :disabled="!dirty || saving" @click="save">Salvar rota de separação</button>
+				<Link href="/setup/locations" class="ri_linkbutton">Voltar aos locais</Link>
 			</div>
 			<p v-if="error" class="ri_error">{{ error }}</p>
 			<p v-if="message" class="ri_hint">{{ message }}</p>
-			<p v-if="unplaced && !dirty" class="ri_hint">{{ unplaced }} location(s) aren't on the path yet; they're listed last. Save to place them.</p>
+			<p v-if="unplaced && !dirty" class="ri_hint">{{ unplaced }} local(is) ainda não está(ão) na rota e aparece(m) por último. Salve para incluí-lo(s).</p>
 
-			<p v-if="loading">Loading…</p>
+			<p v-if="loading">Carregando…</p>
 			<ol v-else class="pp_list">
 				<li
 					v-for="(l, i) in locations"
@@ -121,16 +121,16 @@ async function save() {
 					<span class="pp_num">{{ i + 1 }}</span>
 					<strong class="pp_code">{{ l.code }}</strong>
 					<span class="pp_detail">
-						<span v-if="l.Aisle">Aisle {{ l.Aisle }}</span>
-						<span v-if="l.Lane">Lane {{ l.Lane }}</span>
-						<span v-if="l.Stack">Stack {{ l.Stack }}</span>
+						<span v-if="l.Aisle">Corredor {{ l.Aisle }}</span>
+						<span v-if="l.Lane">Faixa {{ l.Lane }}</span>
+						<span v-if="l.Stack">Pilha {{ l.Stack }}</span>
 					</span>
 					<span class="pp_arrows">
 						<button type="button" class="ri_linkbutton" :disabled="i === 0" title="Move up" @click="move(i, i - 1)">▲</button>
 						<button type="button" class="ri_linkbutton" :disabled="i === locations.length - 1" title="Move down" @click="move(i, i + 1)">▼</button>
 					</span>
 				</li>
-				<li v-if="!locations.length" class="pp_empty">No active locations yet.</li>
+				<li v-if="!locations.length" class="pp_empty">Nenhum local ativo ainda.</li>
 			</ol>
 		</div>
 	</AuthenticatedLayout>

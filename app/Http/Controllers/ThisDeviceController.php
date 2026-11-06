@@ -59,7 +59,7 @@ class ThisDeviceController extends Controller
         ]);
         $existing = $pinLogin->deviceFromCookie($request);
         if ($existing?->isApproved()) {
-            return response()->json(['message' => 'This device is already approved for PIN login.'], 409);
+            return response()->json(['message' => 'Este dispositivo já foi aprovado para acesso por PIN.'], 409);
         }
 
         $user = Auth::user();

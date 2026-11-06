@@ -34,11 +34,11 @@ const form = useForm({
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                Profile Information
+                Informações do perfil
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information and email address.
+                Atualize as informações do seu perfil e seu endereço de e-mail.
             </p>
         </header>
 
@@ -47,7 +47,7 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
 		<div>
-		    <InputLabel for="first_name" value="First Name" />
+		    <InputLabel for="first_name" value="Nome" />
 
 		    <TextInput
 		        id="first_name"
@@ -62,7 +62,7 @@ const form = useForm({
 		    <InputError class="mt-2" :message="form.errors.first_name" />
 		</div>
 		<div>
-		    <InputLabel for="last_name" value="Last Name" />
+		    <InputLabel for="last_name" value="Sobrenome" />
 
 		    <TextInput
 		        id="last_name"
@@ -77,7 +77,7 @@ const form = useForm({
 		</div>
 
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" value="E-mail" />
 
                 <TextInput
                     id="email"
@@ -93,14 +93,14 @@ const form = useForm({
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
                 <p class="mt-2 text-sm text-gray-800">
-                    Your email address is unverified.
+                    Seu endereço de e-mail não foi verificado.
                     <Link
                         :href="route('verification.send')"
                         method="post"
                         as="button"
                         class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     >
-                        Click here to re-send the verification email.
+                        Clique aqui para reenviar o e-mail de verificação.
                     </Link>
                 </p>
 
@@ -108,13 +108,13 @@ const form = useForm({
                     v-show="status === 'verification-link-sent'"
                     class="mt-2 text-sm font-medium text-green-600"
                 >
-                    A new verification link has been sent to your email address.
+                    Um novo link de verificação foi enviado para seu endereço de e-mail.
                 </div>
             </div>
 
 			<!-- Organization -->
 			<div>
-			    <InputLabel for="organization" value="Organization" />
+			    <InputLabel for="organization" value="Organização" />
 			    <TextInput
 			        id="organization"
 			        type="text"
@@ -128,7 +128,7 @@ const form = useForm({
 			
 			    <!-- Address -->
 			    <div>
-			        <InputLabel for="address" value="Address" />
+			        <InputLabel for="address" value="Endereço" />
 			        <TextInput
 			            id="address"
 			            type="text"
@@ -142,7 +142,7 @@ const form = useForm({
 
 			    <!-- City -->
 			    <div>
-			        <InputLabel for="city" value="City" />
+			        <InputLabel for="city" value="Cidade" />
 			        <TextInput
 			            id="city"
 			            type="text"
@@ -156,7 +156,7 @@ const form = useForm({
 
 			    <!-- State -->
 			    <div>
-			        <InputLabel for="state" value="State" />
+			        <InputLabel for="state" value="Estado" />
 			        <TextInput
 			            id="state"
 			            type="text"
@@ -170,7 +170,7 @@ const form = useForm({
 
 			    <!-- Zip Code -->
 			    <div>
-			        <InputLabel for="zip" value="Zip Code" />
+			        <InputLabel for="zip" value="CEP" />
 			        <TextInput
 			            id="zip"
 			            type="text"
@@ -184,20 +184,20 @@ const form = useForm({
 
 			    <!-- County -->
 			    <div>
-			        <InputLabel for="county_id" value="County" />
+			        <InputLabel for="county_id" value="Condado" />
 			        <!-- <TextInput
 			            id="county_id"
 			            type="text"
 			            class="mt-1 block w-full"
 			            v-model="form.county_id"
 			            required
-			        />--> <i>Coming Soon...</i>
+			        />--> <i>Em breve...</i>
 			        <InputError class="mt-2" :message="form.errors.county_id" />
 			    </div> 
 
 			    <!-- Phone -->
 			    <div>
-			        <InputLabel for="phone" value="Phone" />
+			        <InputLabel for="phone" value="Telefone" />
 			        <TextInput
 			            id="phone"
 			            type="tel"
@@ -211,7 +211,7 @@ const form = useForm({
 			
 			
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">Salvar</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -223,7 +223,7 @@ const form = useForm({
                         v-if="form.recentlySuccessful"
                         class="text-sm text-gray-600"
                     >
-                        Saved.
+                        Salvo.
                     </p>
                 </Transition>
             </div>

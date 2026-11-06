@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>{{ $order->bol_number }}</title>
@@ -8,13 +8,13 @@
             size: letter;
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "{{ $order->bol_number }} — generated {{ $generatedAt->format('F j, Y g:ia') }}";
+                content: "{{ $order->bol_number }} — gerado em {{ $generatedAt->format('F j, Y g:ia') }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "Página " counter(page) " de " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -139,18 +139,18 @@
     </style>
 </head>
 <body>
-    <h1>Bill of Lading</h1>
-    <div class="subtitle">{{ $order->bol_number }} &mdash; Order #{{ $order->id }}</div>
+    <h1>Conhecimento de embarque</h1>
+    <div class="subtitle">{{ $order->bol_number }} &mdash; Pedido nº {{ $order->id }}</div>
 
     <div class="section">
-        <h2>Shipment</h2>
+        <h2>Remessa</h2>
         <div class="grid">
             <div class="field">
-                <div class="label">Ship To</div>
-                <div class="value">{{ $order->person?->full_name ?? 'Unknown' }}</div>
+                <div class="label">Destinatário</div>
+                <div class="value">{{ $order->person?->full_name ?? 'Não informado' }}</div>
             </div>
             <div class="field">
-                <div class="label">Delivery Address</div>
+                <div class="label">Endereço de entrega</div>
                 <div class="value">
                     @if($order->person?->address || $order->person?->city)
                         {{ $order->person->address }}, {{ $order->person->city }}, {{ $order->person->state }} {{ $order->person->zip }}
@@ -160,50 +160,50 @@
                 </div>
             </div>
             <div class="field">
-                <div class="label">Fulfillment Method</div>
+                <div class="label">Forma de atendimento</div>
                 <div class="value">{{ ucfirst($order->fulfillment_method ?? '') }}</div>
             </div>
             <div class="field">
-                <div class="label">Contact</div>
+                <div class="label">Contato</div>
                 <div class="value">{{ $order->contact_name }} @if($order->contact_phone) &mdash; {{ $order->contact_phone }} @endif</div>
             </div>
             <div class="field">
-                <div class="label">Requested Date</div>
+                <div class="label">Data solicitada</div>
                 <div class="value">{{ $order->needed_by_date ? \Illuminate\Support\Carbon::parse($order->needed_by_date)->format('F j, Y') : '' }}</div>
             </div>
             <div class="field">
-                <div class="label">Delivery Window</div>
+                <div class="label">Horário de entrega</div>
                 <div class="value">{{ $order->preferred_time }}</div>
             </div>
             <div class="field">
-                <div class="label">Delivery Date</div>
+                <div class="label">Data de entrega</div>
                 <div class="value blank">&nbsp;</div>
             </div>
             <div class="field">
-                <div class="label">Pallet Count (as packed)</div>
+                <div class="label">Quantidade de paletes (conforme embalados)</div>
                 <div class="value">{{ $order->pallet_count ?? '' }}</div>
             </div>
             <div class="field">
-                <div class="label">Pallet Count (confirmed by driver)</div>
+                <div class="label">Quantidade de paletes (confirmada pelo motorista)</div>
                 <div class="value blank">&nbsp;</div>
             </div>
         </div>
     </div>
 
     <div class="section">
-        <h2>Special Instructions</h2>
+        <h2>Instruções especiais</h2>
         <div class="instructions">{{ $order->special_instructions ?: '—' }}</div>
     </div>
 
     <div class="section">
-        <h2>Items</h2>
+        <h2>Itens</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Item #</th>
-                    <th>Name</th>
-                    <th>Unit</th>
-                    <th class="qty">Qty Filled</th>
+                    <th>Item nº</th>
+                    <th>Nome</th>
+                    <th>Unidade</th>
+                    <th class="qty">Qtd. atendida</th>
                 </tr>
             </thead>
             <tbody>
@@ -215,40 +215,40 @@
                         <td class="qty">{{ $line->itemLedgers->sum('qty_subtracted') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="4">No lines on this order.</td></tr>
+                    <tr><td colspan="4">Este pedido não contém itens.</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
     <div class="signoff">
-        <h2>Shipper Release</h2>
+        <h2>Liberação pelo remetente</h2>
         <div class="row">
-            Staff Name: <span class="line"></span>
-            Signature: <span class="line"></span>
-            Date: <span class="line" style="min-width:100px;"></span>
+            Nome do funcionário: <span class="line"></span>
+            Assinatura: <span class="line"></span>
+            Data: <span class="line" style="min-width:100px;"></span>
         </div>
     </div>
 
     <div class="signoff">
-        <h2>Carrier / Driver Receipt</h2>
+        <h2>Recebimento pela transportadora / motorista</h2>
         <div class="row">
-            Carrier: <span class="line">{{ $order->driver?->carrier }}</span>
-            Driver Name: <span class="line">{{ $order->driver?->name }}</span>
-            Driver Cell: <span class="line">{{ $order->driver?->phone }}</span>
+            Transportadora: <span class="line">{{ $order->driver?->carrier }}</span>
+            Nome do motorista: <span class="line">{{ $order->driver?->name }}</span>
+            Celular do motorista: <span class="line">{{ $order->driver?->phone }}</span>
         </div>
         <div class="row">
-            Driver Signature: <span class="line"></span>
-            Pickup Date: <span class="line" style="min-width:100px;"></span>
+            Assinatura do motorista: <span class="line"></span>
+            Data da retirada: <span class="line" style="min-width:100px;"></span>
         </div>
     </div>
 
     <div class="signoff">
-        <h2>Delivery Confirmation</h2>
+        <h2>Confirmação de entrega</h2>
         <div class="row">
-            Received By (print): <span class="line"></span>
-            Signature: <span class="line"></span>
-            Date: <span class="line" style="min-width:100px;"></span>
+            Recebido por (em letra de forma): <span class="line"></span>
+            Assinatura: <span class="line"></span>
+            Data: <span class="line" style="min-width:100px;"></span>
         </div>
     </div>
 </body>

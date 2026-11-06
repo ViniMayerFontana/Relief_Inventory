@@ -70,7 +70,7 @@ class InstanceWarehouseController extends Controller
             set_time_limit(0); // creating a schema and migrating it takes a while
             [$warehouse, $code] = app(WarehouseCreator::class)->create($data['name'], $data['email'] ?? null, Auth::user()->email, (bool) ($data['training'] ?? false));
 
-            return ['warehouse_id' => $warehouse->id, 'setup_code' => $code, 'setup_url' => $warehouse->setupUrl(), 'message' => "{$warehouse->display_name} is waiting to be set up. Copy the setup code now: it is not shown again."];
+            return ['warehouse_id' => $warehouse->id, 'setup_code' => $code, 'setup_url' => $warehouse->setupUrl(), 'message' => "{$warehouse->display_name} aguarda configuração. Copie o código de configuração agora; ele não será exibido novamente."];
         });
     }
 
@@ -95,7 +95,7 @@ class InstanceWarehouseController extends Controller
             }
             $this->manager->update($w, $changes, Auth::user()->email);
 
-            return ['message' => 'Saved.'];
+            return ['message' => 'Salvo.'];
         });
     }
 
@@ -106,7 +106,7 @@ class InstanceWarehouseController extends Controller
         return $this->guarded($request, 'suspend', $id, function (Warehouse $w) use ($data) {
             $this->manager->suspend($w, (bool) ($data['maintenance'] ?? false), $data['reason'] ?? null, Auth::user()->email);
 
-            return ['message' => "{$w->display_name} is now {$w->status}: it answers nobody until it is activated."];
+            return ['message' => "{$w->display_name} agora está {$w->status}: não atenderá solicitações até ser ativado."];
         });
     }
 
@@ -115,7 +115,7 @@ class InstanceWarehouseController extends Controller
         return $this->guarded($request, 'activate', $id, function (Warehouse $w) {
             $this->manager->activate($w, Auth::user()->email);
 
-            return ['message' => "{$w->display_name} is active again."];
+            return ['message' => "{$w->display_name} está ativo novamente."];
         });
     }
 
@@ -124,7 +124,7 @@ class InstanceWarehouseController extends Controller
         return $this->guarded($request, 'resume', $id, function (Warehouse $w) {
             $this->manager->resume($w, Auth::user()->email);
 
-            return ['message' => "{$w->display_name} is back in service."];
+            return ['message' => "{$w->display_name} voltou a funcionar."];
         });
     }
 
@@ -138,11 +138,11 @@ class InstanceWarehouseController extends Controller
                 $removal->archive($w, Auth::user()->email);
                 $days = WarehouseManager::REMOVAL_WAIT_DAYS;
 
-                return ['message' => "{$w->display_name} is archived: it no longer serves anyone and nothing was deleted. It can be removed for good from {$days} days from now."];
+                return ['message' => "{$w->display_name} foi arquivado: não atende mais ninguém e nada foi excluído. Ele poderá ser removido definitivamente daqui a {$days} dias."];
             }
             $removal->unarchive($w, Auth::user()->email);
 
-            return ['message' => "{$w->display_name} is {$w->status} again."];
+            return ['message' => "{$w->display_name} voltou ao status {$w->status}."];
         });
     }
 
@@ -157,7 +157,7 @@ class InstanceWarehouseController extends Controller
             $result = app(WarehouseRemoval::class)->remove($w, $data['confirm'], Auth::user()->email, true);
 
             return [
-                'message' => "{$w->display_name} was removed.",
+                'message' => "{$w->display_name} foi removido.",
                 'backup' => $result['backup'],
                 'accounts_removed' => $result['accounts_removed'],
                 'accounts_kept' => $result['accounts_kept'],
@@ -174,13 +174,13 @@ class InstanceWarehouseController extends Controller
             if (! empty($data['revoke'])) {
                 $count = $this->manager->revokeSetupCode($w, Auth::user()->email);
 
-                return ['message' => $count ? 'The setup code was revoked.' : 'No setup code was waiting.'];
+                return ['message' => $count ? 'O código de configuração foi revogado.' : 'Não havia código de configuração aguardando uso.'];
             }
 
             return [
                 'setup_code' => $this->manager->issueSetupCode($w, Auth::user()->email),
                 'setup_url' => $w->setupUrl(),
-                'message' => 'A new setup code (any earlier one no longer works). Copy it now: it is not shown again.',
+                'message' => 'Um novo código de configuração (os anteriores não funcionam mais). Copie-o agora; ele não será exibido novamente.',
             ];
         });
     }
@@ -192,7 +192,7 @@ class InstanceWarehouseController extends Controller
         return $this->guarded($request, 'domain_add', $id, function (Warehouse $w) use ($data) {
             $domain = $this->domains->add($w, $data['hostname'], (bool) ($data['primary'] ?? false));
 
-            return ['message' => "{$domain->hostname} now reaches {$w->display_name}. Point DNS and TLS for it at this instance; the app can't do that for you.", 'note' => $this->domains->turnstileNote($domain)];
+            return ['message' => "{$domain->hostname} agora aponta para {$w->display_name}. Configure o DNS e o TLS para este endereço nesta instalação; o aplicativo não pode fazer isso por você.", 'note' => $this->domains->turnstileNote($domain)];
         });
     }
 
@@ -203,7 +203,7 @@ class InstanceWarehouseController extends Controller
         return $this->guarded($request, 'domain_remove', $id, function (Warehouse $w) use ($data) {
             $this->domains->remove($w, $data['hostname']);
 
-            return ['message' => "{$data['hostname']} no longer reaches {$w->display_name}."];
+            return ['message' => "{$data['hostname']} não aponta mais para {$w->display_name}."];
         });
     }
 
@@ -221,7 +221,7 @@ class InstanceWarehouseController extends Controller
         if (! $user->password || ! Hash::check($request->input('password'), $user->password)) {
             Log::warning('Warehouse management refused: wrong or missing password', ['person' => $user->id, 'action' => $what]);
             InstanceAuditLog::record('warehouse.password_refused', null, ['action' => $what, 'warehouse' => $warehouseId], $user->email);
-            $message = $user->password ? 'That password is not correct.' : 'Your account has no password set, so this cannot be done.';
+            $message = $user->password ? 'A senha está incorreta.' : 'Sua conta não tem uma senha definida, portanto não é possível concluir esta operação.';
 
             return response()->json(['message' => $message, 'errors' => ['password' => [$message]]], 422);
         }
@@ -230,7 +230,7 @@ class InstanceWarehouseController extends Controller
         if ($warehouseId !== null) {
             $warehouse = Warehouse::find(strtoupper($warehouseId));
             if (! $warehouse) {
-                return response()->json(['message' => "There is no warehouse {$warehouseId}."], 404);
+                return response()->json(['message' => "Não existe armazém com o identificador {$warehouseId}."], 404);
             }
         }
 
@@ -241,7 +241,7 @@ class InstanceWarehouseController extends Controller
         } catch (Throwable $e) {
             report($e);
 
-            return response()->json(['message' => 'That did not work: '.$e->getMessage()], 500);
+            return response()->json(['message' => 'Não foi possível concluir a operação: '.$e->getMessage()], 500);
         }
     }
 }

@@ -60,10 +60,10 @@ async function saveSource() {
 		const { data } = await axios.put('/json/firmware-source', { source_url: sourceUrl.value.trim() || null });
 		savedSource.value = sourceUrl.value = data.source_url || '';
 		notice.value = data.source_url
-			? 'Saved. Devices paired here will look for software at that server from their next check-in.'
-			: 'Saved. This server offers its own releases again.';
+			? 'Salvo. A partir da próxima comunicação, os dispositivos pareados aqui buscarão o software nesse servidor.'
+			: 'Salvo. Este servidor voltou a disponibilizar suas próprias versões.';
 	} catch (e) {
-		fail(e, 'Could not save the firmware source.');
+		fail(e, 'Não foi possível salvar a origem do firmware.');
 	} finally {
 		savingSource.value = false;
 	}
@@ -76,29 +76,29 @@ async function toggleTag(release, channel) {
 		await axios.post(`/json/device-releases/${release.id}/${action}`, { channel });
 		await fetchAll();
 	} catch (e) {
-		fail(e, 'Could not change that release\'s channels.');
+		fail(e, 'Não foi possível alterar os canais desta versão.');
 	}
 }
 
 async function deleteRelease(release) {
-	if (!window.confirm(`Delete ${release.filename}?`)) return;
+	if (!window.confirm(`Excluir ${release.filename}?`)) return;
 	try {
 		await axios.delete(`/json/device-releases/${release.id}`);
 		await fetchAll();
 	} catch (e) {
-		fail(e, 'Could not delete that release.');
+		fail(e, 'Não foi possível excluir esta versão.');
 	}
 }
 
-const IMAGE_LABELS = { disk_image: 'Raspberry Pi SD Card Image', vm_image: 'Virtual Machine Image' };
+const IMAGE_LABELS = { disk_image: 'Imagem de cartão SD do Raspberry Pi', vm_image: 'Imagem de máquina virtual' };
 
 // Images and the print client are downloaded by people (anyone who can pair a device), never
 // offered to devices — so they have no update channels.
 const isDownloadOnly = (release) => release.kind === 'print_client' || release.release_type in IMAGE_LABELS;
 
 function releaseLabel(release) {
-	if (release.kind === 'print_client') return 'RI Print Client';
-	return IMAGE_LABELS[release.release_type] || release.kind;
+	if (release.kind === 'print_client') return 'Cliente RI Print';
+	return IMAGE_LABELS[release.release_type] || ({ app: 'Aplicativo', os: 'Sistema operacional' })[release.kind] || release.kind;
 }
 
 function releaseDetail(release) {
@@ -143,7 +143,7 @@ async function startUpload() {
 		await finished(await start(uploadFile.value, metadata), name);
 	} catch (e) {
 		// No upload id yet means the server refused to start it (validation); otherwise it was interrupted.
-		fail(e, task.id ? 'The upload was interrupted. Choose Resume to carry on from where it stopped.' : 'Could not start that upload.');
+		fail(e, task.id ? 'O envio foi interrompido. Escolha Retomar para continuar de onde parou.' : 'Não foi possível iniciar o envio.');
 	}
 }
 
@@ -153,13 +153,13 @@ async function resumeUpload() {
 	try {
 		await finished(await resume(), name);
 	} catch (e) {
-		fail(e, 'The upload was interrupted. Choose Resume to carry on from where it stopped.');
+		fail(e, 'O envio foi interrompido. Escolha Retomar para continuar de onde parou.');
 	}
 }
 
 async function finished(completed, name) {
 	if (!completed) return;
-	notice.value = `Uploaded ${name}. It is offered to no one until you tick a channel for it.`;
+	notice.value = `${name} enviado. Ele não será disponibilizado até que você selecione um canal.`;
 	reset(); // the server already holds the file; nothing to delete
 	uploadFile.value = null;
 	if (fileInput.value) fileInput.value.value = '';
@@ -169,53 +169,53 @@ async function finished(completed, name) {
 
 async function cancelUpload() {
 	await cancel();
-	notice.value = 'Upload cancelled.';
+	notice.value = 'Envio cancelado.';
 }
 
 onMounted(fetchAll);
 </script>
 
 <template>
-	<Head title="R Station Firmware" />
+	<Head title="Firmware do R Station" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">R Station Firmware</h1>
+			<h1 class="text-2xl font-bold">Firmware do R Station</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
 
 			<!-- Where devices look -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-3">
-				<h2 class="text-lg font-semibold">Where devices look for software</h2>
+				<h2 class="text-lg font-semibold">Origem do software dos dispositivos</h2>
 				<p class="text-sm text-gray-600">
-					Devices always check in with the server they are paired to. By default that server offers
-					the releases listed below. To use another Relief Inventory server's releases instead (for example a
-					central one that maintains firmware for many sites), enter its address: devices paired here are then
-					sent to it for updates, using the update channel set for each device on this server.
+					Os dispositivos sempre se comunicam com o servidor ao qual estão pareados. Por padrão, esse servidor
+					disponibiliza as versões listadas abaixo. Para usar as versões de outro servidor Relief Inventory
+					(por exemplo, um servidor central que mantém o firmware de vários locais), informe o endereço:
+					os dispositivos pareados aqui buscarão atualizações nele, usando o canal definido para cada dispositivo neste servidor.
 				</p>
 				<div class="flex gap-3 items-end text-sm">
 					<label class="block grow">
-						<span class="text-gray-700">Firmware source server (leave empty to use this server)</span>
+						<span class="text-gray-700">Servidor de origem do firmware (deixe em branco para usar este servidor)</span>
 						<input type="url" v-model="sourceUrl" placeholder="https://relief.example.org" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<PrimaryButton :disabled="savingSource || sourceUrl.trim() === savedSource" @click="saveSource">
-						{{ savingSource ? 'Saving…' : 'Save' }}
+						{{ savingSource ? 'Salvando…' : 'Salvar' }}
 					</PrimaryButton>
 				</div>
 				<p v-if="savedSource" class="text-sm rounded bg-amber-50 border border-amber-300 px-3 py-2">
-					Devices paired here currently get software from <strong>{{ savedSource }}</strong>. The releases below are not
-					offered to them (but remain available to any server pointed at this one).
+					Os dispositivos pareados aqui recebem o software de <strong>{{ savedSource }}</strong>. As versões abaixo não são
+					disponibilizadas para eles (mas continuam acessíveis a qualquer servidor que use este como origem).
 				</p>
 			</section>
 
 			<!-- Releases -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Software Releases</h2>
+				<h2 class="text-lg font-semibold">Versões de software</h2>
 				<table v-if="releases.length" class="w-full text-sm">
 					<thead>
 						<tr class="text-left text-gray-600">
-							<th class="py-1">Release</th>
-							<th>Live on channel</th>
+							<th class="py-1">Versão</th>
+							<th>Disponível no canal</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -225,66 +225,66 @@ onMounted(fetchAll);
 								<div><strong>{{ releaseLabel(release) }}</strong> {{ release.version }}
 									<span class="text-gray-500">({{ releaseDetail(release) }}, {{ formatSize(release.size_bytes) }})</span>
 								</div>
-								<div v-if="release.required_base_version" class="text-xs text-gray-500">applies on top of {{ release.required_base_version }}</div>
+								<div v-if="release.required_base_version" class="text-xs text-gray-500">aplicada sobre a versão {{ release.required_base_version }}</div>
 								<div class="text-xs text-gray-400">{{ release.filename }}</div>
 							</td>
 							<td v-if="isDownloadOnly(release)" class="text-gray-500">
-								Download only — available to anyone who can pair devices
+								Somente para download — disponível a quem puder parear dispositivos
 							</td>
 							<td v-else>
 								<label v-for="c in CHANNELS" :key="c" class="mr-3 whitespace-nowrap">
 									<input type="checkbox" :checked="release.channels?.includes(c)" @change="toggleTag(release, c)" class="rounded border-gray-300" />
-									{{ c }}
+									{{ ({ stable: 'Estável', testing: 'Teste', developer: 'Desenvolvimento' })[c] || c }}
 								</label>
 							</td>
 							<td class="text-right">
-								<button type="button" class="text-red-700 underline" @click="deleteRelease(release)">Delete</button>
+								<button type="button" class="text-red-700 underline" @click="deleteRelease(release)">Excluir</button>
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<p v-else class="text-sm text-gray-400">No releases uploaded yet.</p>
+				<p v-else class="text-sm text-gray-400">Nenhuma versão enviada ainda.</p>
 
-				<h3 class="font-medium text-sm pt-2">Upload a release</h3>
+				<h3 class="font-medium text-sm pt-2">Enviar uma versão</h3>
 				<fieldset :disabled="task.id !== null" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 					<label class="block">
-						<span class="text-gray-700">Kind</span>
+						<span class="text-gray-700">Categoria</span>
 						<select v-model="upload.kind" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="app">App (.tar.gz)</option>
-							<option value="os">OS bundle (.raucb)</option>
-							<option value="print_client">RI Print Client (installer)</option>
+							<option value="app">Aplicativo (.tar.gz)</option>
+							<option value="os">Pacote do sistema operacional (.raucb)</option>
+							<option value="print_client">Cliente RI Print (instalador)</option>
 						</select>
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Type</span>
+						<span class="text-gray-700">Tipo</span>
 						<select v-model="upload.release_type" :disabled="upload.kind === 'print_client'" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="full">Full</option>
-							<option v-if="upload.kind === 'os'" value="hotfix">Hotfix (small, on top of one base version)</option>
-							<option v-if="upload.kind === 'os'" value="disk_image">Raspberry Pi SD Card Image (SD card re-flash; never auto-offered)</option>
-							<option v-if="upload.kind === 'os'" value="vm_image">Virtual Machine Image (.img.xz; never auto-offered)</option>
+							<option value="full">Completa</option>
+							<option v-if="upload.kind === 'os'" value="hotfix">Correção (pequena, aplicada sobre uma versão base)</option>
+							<option v-if="upload.kind === 'os'" value="disk_image">Imagem de cartão SD do Raspberry Pi (regravação; nunca oferecida automaticamente)</option>
+							<option v-if="upload.kind === 'os'" value="vm_image">Imagem de máquina virtual (.img.xz; nunca oferecida automaticamente)</option>
 						</select>
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Version</span>
-						<input type="text" v-model="upload.version" placeholder="e.g. 0.4.0_0.1.1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+						<span class="text-gray-700">Versão</span>
+						<input type="text" v-model="upload.version" placeholder="ex.: 0.4.0_0.1.1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block">
-						<span class="text-gray-700">{{ upload.kind === 'print_client' ? 'Platform' : 'Architecture' }}</span>
+						<span class="text-gray-700">{{ upload.kind === 'print_client' ? 'Plataforma' : 'Arquitetura' }}</span>
 						<select v-if="upload.kind === 'print_client'" v-model="upload.architecture" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
 							<option v-for="(label, key) in platforms" :key="key" :value="key">{{ label }}</option>
 						</select>
 						<input v-else type="text" v-model="upload.architecture" placeholder="aarch64" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label v-if="upload.release_type === 'hotfix'" class="block sm:col-span-2">
-						<span class="text-gray-700">Required base version (exact)</span>
+						<span class="text-gray-700">Versão base exigida (exata)</span>
 						<input type="text" v-model="upload.required_base_version" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block sm:col-span-2">
-						<span class="text-gray-700">File</span>
+						<span class="text-gray-700">Arquivo</span>
 						<input ref="fileInput" type="file" @change="uploadFile = $event.target.files[0]" class="mt-1 block w-full text-sm" />
 					</label>
 					<label class="block sm:col-span-2">
-						<span class="text-gray-700">Notes (optional)</span>
+						<span class="text-gray-700">Observações (opcional)</span>
 						<input type="text" v-model="upload.notes" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 				</fieldset>
@@ -293,8 +293,8 @@ onMounted(fetchAll);
 					<div class="flex justify-between text-sm">
 						<span>
 							<strong>{{ task.file?.name }}</strong>
-							<template v-if="task.running"> — uploading…</template>
-							<template v-else-if="task.failed"> — interrupted</template>
+							<template v-if="task.running"> — enviando…</template>
+							<template v-else-if="task.failed"> — interrompido</template>
 						</span>
 						<span>{{ percent }}% · {{ formatSize(task.received) }} of {{ formatSize(task.size) }}</span>
 					</div>
@@ -302,20 +302,21 @@ onMounted(fetchAll);
 						<div class="h-3 rounded" :class="task.failed ? 'bg-red-500' : 'bg-blue-600'" :style="{ width: percent + '%' }"></div>
 					</div>
 					<div class="flex gap-3 text-sm">
-						<PrimaryButton v-if="task.failed && !task.running" @click="resumeUpload">Resume</PrimaryButton>
-						<button type="button" class="text-red-700 underline" @click="cancelUpload">Cancel upload</button>
+						<PrimaryButton v-if="task.failed && !task.running" @click="resumeUpload">Retomar</PrimaryButton>
+						<button type="button" class="text-red-700 underline" @click="cancelUpload">Cancelar envio</button>
 					</div>
 				</div>
-				<PrimaryButton v-else :disabled="!uploadFile || !upload.version" @click="startUpload">Upload</PrimaryButton>
+				<PrimaryButton v-else :disabled="!uploadFile || !upload.version" @click="startUpload">Enviar</PrimaryButton>
 
 				<p class="text-xs text-gray-500">
-					Large files are sent in small pieces, so there is no practical size limit and a dropped connection resumes
-					where it stopped (keep this page open while it uploads). A newly uploaded release is offered to no one
-					until you tick a channel (Raspberry Pi SD card images, virtual machine images and the print client never
-					go to devices; anyone who can pair a device downloads them from the Devices page, and only the latest upload
-					per platform or image type is kept — uploading a new one deletes the older one). Ticking a channel replaces whatever release held that slot there (one full
-					release per kind and architecture, one hotfix per base version). Devices are only ever offered newer
-					versions, never downgrades.
+					Arquivos grandes são enviados em partes pequenas, sem limite prático de tamanho. Se a conexão cair, o envio continua
+					de onde parou (mantenha esta página aberta durante o envio). Uma versão recém-enviada não será oferecida a ninguém
+					até que você selecione um canal (imagens de cartão SD do Raspberry Pi, imagens de máquina virtual e o cliente de
+					impressão nunca são enviados aos dispositivos; qualquer pessoa autorizada a parear um dispositivo pode baixá-los na
+					página Dispositivos, e somente o envio mais recente de cada plataforma ou tipo de imagem é mantido — enviar uma nova
+					versão exclui a anterior). Ao selecionar um canal, a versão que ocupava essa posição é substituída (uma versão
+					completa por categoria e arquitetura, uma correção por versão base). Os dispositivos só recebem versões mais novas,
+					nunca versões anteriores.
 				</p>
 			</section>
 		</div>

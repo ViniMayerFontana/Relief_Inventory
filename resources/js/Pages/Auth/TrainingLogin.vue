@@ -45,7 +45,7 @@ const groups = computed(() => {
 	}
 	return [...byTeam.entries()]
 		.sort(([a], [b]) => (a || 99) - (b || 99))
-		.map(([key, people]) => ({ label: key ? 'Team ' + key : 'No team yet', people }));
+		.map(([key, people]) => ({ label: key ? 'Equipe ' + key : 'Sem equipe', people }));
 });
 
 function pick(trainee) {
@@ -72,7 +72,7 @@ function back() {
 
 async function submit() {
 	if (!team.value) {
-		error.value = 'Choose your team.';
+		error.value = 'Escolha sua equipe.';
 		return;
 	}
 	busy.value = true;
@@ -83,7 +83,7 @@ async function submit() {
 			: await axios.post('/training-login', { person_id: selected.value.id, team: team.value });
 		window.location.href = response.data.redirect || '/dashboard';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not log in. Please try again.';
+		error.value = e.response?.data?.message || 'Não foi possível entrar. Tente novamente.';
 	} finally {
 		busy.value = false;
 	}
@@ -91,29 +91,29 @@ async function submit() {
 </script>
 
 <template>
-	<Head title="Training Login" />
+	<Head title="Acesso ao treinamento" />
 	<GuestLayout>
 		<div class="text-center mb-4">
-			<h1 class="text-xl font-bold text-gray-800">Training Login</h1>
-			<p class="text-sm text-gray-600">Tap your name to start.</p>
+			<h1 class="text-xl font-bold text-gray-800">Acesso ao treinamento</h1>
+			<p class="text-sm text-gray-600">Toque no seu nome para começar.</p>
 		</div>
 
 		<!-- ======================= PICK A NAME ======================= -->
 		<div v-if="!selected && !adding" class="space-y-4">
 			<div class="flex gap-2">
-				<input v-model="search" type="text" placeholder="Find your name..."
+				<input v-model="search" type="text" placeholder="Encontre seu nome..."
 					class="flex-1 border-gray-300 rounded-md shadow-sm" />
 				<button type="button" @click="startAdd"
 					class="px-3 py-2 bg-gray-800 text-white rounded-md text-sm font-semibold hover:bg-gray-700">
-					Add New
+					Adicionar novo
 				</button>
 			</div>
 
 			<p v-if="!trainees.length" class="text-sm text-gray-500 text-center">
-				No one is on the training list yet — tap Add New.
+				Ainda não há ninguém na lista de treinamento — toque em “Adicionar novo”.
 			</p>
 			<p v-else-if="!filtered.length" class="text-sm text-gray-500 text-center">
-				No name matches. Tap Add New if you're not on the list.
+				Nenhum nome encontrado. Toque em “Adicionar novo” se seu nome não estiver na lista.
 			</p>
 
 			<div v-for="group in groups" :key="group.label" class="space-y-2">
@@ -129,18 +129,18 @@ async function submit() {
 
 		<!-- ======================= CONFIRM TEAM (and name, when adding) ======================= -->
 		<form v-else class="space-y-4" @submit.prevent="submit">
-			<button type="button" @click="back" class="text-sm text-gray-500">&larr; Back</button>
+			<button type="button" @click="back" class="text-sm text-gray-500">&larr; Voltar</button>
 
 			<p v-if="selected" class="text-center font-medium text-gray-800">{{ selected.full_name }}</p>
 			<div v-else class="grid grid-cols-2 gap-2">
-				<input ref="firstEl" v-model="firstName" type="text" placeholder="First name" required
+				<input ref="firstEl" v-model="firstName" type="text" placeholder="Nome" required
 					class="border-gray-300 rounded-md shadow-sm" />
-				<input v-model="lastName" type="text" placeholder="Last name" required
+				<input v-model="lastName" type="text" placeholder="Sobrenome" required
 					class="border-gray-300 rounded-md shadow-sm" />
 			</div>
 
 			<div>
-				<p class="text-sm text-gray-600 text-center mb-2">Your team</p>
+				<p class="text-sm text-gray-600 text-center mb-2">Sua equipe</p>
 				<div class="flex justify-center gap-2">
 					<button v-for="n in teams" :key="n" type="button" @click="team = n"
 						:class="['w-12 h-12 rounded-md border text-lg font-semibold',
@@ -154,14 +154,14 @@ async function submit() {
 
 			<button type="submit" :disabled="busy"
 				class="w-full py-3 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 disabled:opacity-50">
-				{{ busy ? 'Logging in…' : 'Start' }}
+				{{ busy ? 'Entrando…' : 'Começar' }}
 			</button>
 		</form>
 
 		<div class="text-center pt-4 mt-4 border-t space-x-4">
-			<span class="text-xs text-gray-500">Staff:</span>
-			<Link v-if="staffPinAvailable" :href="route('unlock')" class="text-sm text-gray-500 underline">Log in with PIN</Link>
-			<Link :href="route('login', { email: 1 })" class="text-sm text-gray-500 underline">Log in with email</Link>
+			<span class="text-xs text-gray-500">Equipe:</span>
+			<Link v-if="staffPinAvailable" :href="route('unlock')" class="text-sm text-gray-500 underline">Entrar com PIN</Link>
+			<Link :href="route('login', { email: 1 })" class="text-sm text-gray-500 underline">Entrar com e-mail</Link>
 		</div>
 	</GuestLayout>
 </template>

@@ -24,10 +24,10 @@ defineProps({
 });
 
 const typeOptions = [
-	{ value: 'weight', label: 'Weight' },
+	{ value: 'weight', label: 'Peso' },
 	{ value: 'volume', label: 'Volume' },
-	{ value: 'each', label: 'Each' },
-	{ value: 'other', label: 'Other' },
+	{ value: 'each', label: 'Unidade' },
+	{ value: 'other', label: 'Outro' },
 ];
 
 const typeLabels = Object.fromEntries(typeOptions.map((o) => [o.value, o.label]));
@@ -75,14 +75,14 @@ const unitSort = computed(() => (a, b) => {
 </script>
 
 <template>
-	<Head title="Default Ordering Units" />
+	<Head title="Unidades padrão para pedidos" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<RIForm
-			title="Default Ordering Units"
+			title="Unidades padrão para pedidos"
 			datasource="/json/units"
-			newrecordcaption="Add Unit"
+			newrecordcaption="Adicionar unidade"
 			:filter="unitMatchesSearch"
 			:sort="unitSort"
 		>
@@ -91,14 +91,14 @@ const unitSort = computed(() => (a, b) => {
 					type="text"
 					v-model="unitSearch"
 					class="ri_forminput unit_search"
-					placeholder="Search by name or abbreviation..."
+					placeholder="Buscar por nome ou abreviação..."
 				/>
 			</template>
 
 			<template #thead>
-				<th class="ri_sortable" @click="setSort('name')">Name{{ sortArrow('name') }}</th>
-				<th class="ri_sortable" @click="setSort('abbreviation')">Abbreviation{{ sortArrow('abbreviation') }}</th>
-				<th class="ri_sortable" @click="setSort('type')">Type{{ sortArrow('type') }}</th>
+				<th class="ri_sortable" @click="setSort('name')">Nome{{ sortArrow('name') }}</th>
+				<th class="ri_sortable" @click="setSort('abbreviation')">Abreviação{{ sortArrow('abbreviation') }}</th>
+				<th class="ri_sortable" @click="setSort('type')">Tipo{{ sortArrow('type') }}</th>
 			</template>
 			<template #tbody="{ record }">
 				<td>{{ record.name }}</td>
@@ -108,15 +108,15 @@ const unitSort = computed(() => (a, b) => {
 			<template #default="{ record, editing }">
 				<div class="ri_formtable">
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Name:</div>
+						<div class="ri_fieldlabel">Nome:</div>
 						<TextInput v-model="record.name" required autofocus :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Abbreviation:</div>
+						<div class="ri_fieldlabel">Abreviação:</div>
 						<TextInput v-model="record.abbreviation" required :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Type:</div>
+						<div class="ri_fieldlabel">Tipo:</div>
 						<ChipSelect v-model="record.type" :options="typeOptions" :enabled="editing" />
 					</div>
 				</div>

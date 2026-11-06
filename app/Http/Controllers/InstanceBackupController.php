@@ -82,7 +82,7 @@ class InstanceBackupController extends Controller
     public function revokeClient(Request $request, int $id): JsonResponse
     {
         return $this->confirmed($request, 'instance-trust-revoke', function () use ($id) {
-            $trust = InstanceTrust::find($id) ?? throw new RuntimeException('That computer is not paired.');
+            $trust = InstanceTrust::find($id) ?? throw new RuntimeException('Este computador não está pareado.');
             InstanceTrustService::revoke($trust, Auth::user()->email);
 
             return ['message' => "{$trust->name} can no longer make instance backups."];
@@ -137,7 +137,7 @@ class InstanceBackupController extends Controller
             InstanceBackupSchedule::current()->update($data);
             InstanceAuditLog::record('instance.backup_schedule_changed', null, $data, Auth::user()->email);
 
-            return ['message' => 'Schedule saved.', 'schedule' => InstanceBackupSchedule::current()->toArray()];
+            return ['message' => 'Agendamento salvo.', 'schedule' => InstanceBackupSchedule::current()->toArray()];
         });
     }
 
@@ -148,14 +148,14 @@ class InstanceBackupController extends Controller
         return $this->confirmed($request, 'instance-backup-now', function () use ($data) {
             $this->requireDocker();
             if (ProvisioningCommand::whereIn('command', self::BACKUP_COMMANDS)->whereIn('status', ['pending', 'running'])->exists()) {
-                throw new RuntimeException('An instance backup is already being made.');
+                throw new RuntimeException('Já há um backup da instalação em andamento.');
             }
             $command = $data['files'] ? 'backup-now-files' : 'backup-now';
             ProvisioningCommand::create(['command' => $command, 'requested_by' => Auth::user()->email]);
             InstanceAuditLog::record('instance.backup_requested', null, ['files' => $data['files']], Auth::user()->email);
             Log::notice('Instance backup requested', ['person' => Auth::id(), 'files' => $data['files']]);
 
-            return ['message' => 'The backup was requested. A large one can take a while; this page shows when it is done.'];
+            return ['message' => 'O backup foi solicitado. Um backup grande pode demorar; esta página mostrará quando ele terminar.'];
         });
     }
 
@@ -165,7 +165,7 @@ class InstanceBackupController extends Controller
         abort_unless(ProvisioningClient::applies() && InstanceBackupService::isBackupName($name), 404);
         $path = $this->backups->dir().'/'.$name;
         abort_unless(is_file($path), 404);
-        abort_unless(is_readable($path), 403, 'The web server cannot read this file. Copy it from the server (the backup folder, instance/) or use the RI Launcher.');
+        abort_unless(is_readable($path), 403, 'O servidor web não consegue ler este arquivo. Copie-o do servidor (da pasta instance dos backups) ou use o RI Launcher.');
         InstanceAuditLog::record('instance.backup_downloaded', null, ['file' => $name], Auth::user()->email);
         Log::notice('Instance backup downloaded', ['file' => $name, 'person' => Auth::id()]);
 
@@ -175,7 +175,7 @@ class InstanceBackupController extends Controller
     private function requireDocker(): void
     {
         if (! ProvisioningClient::applies()) {
-            throw new RuntimeException('Instance backups need the Docker install (they are made by the provisioner container).');
+            throw new RuntimeException('Os backups da instalação exigem uma instalação Docker (são criados pelo contêiner provisionador).');
         }
     }
 }

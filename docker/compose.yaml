@@ -27,6 +27,9 @@ x-settings: &settings
   # redirects. Include http:// or https:// (and the port if it isn't 80/443).
   # If you change the port, change the "8080:8080" mapping under `app` too.
   APP_URL: http://localhost:8080
+  APP_LOCALE: pt_BR
+  APP_FALLBACK_LOCALE: pt_BR
+  APP_FAKER_LOCALE: pt_BR
 
   # --- Optional: uncomment and edit what you need ---------------------------
 

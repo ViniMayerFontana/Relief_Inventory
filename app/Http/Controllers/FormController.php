@@ -77,7 +77,7 @@ class FormController extends Controller
     public function destroy(Form $form)
     {
         if ($form->submissions()->exists()) {
-            return response()->json(['message' => 'Can\'t delete a form that already has submissions.'], 422);
+            return response()->json(['message' => 'Não é possível excluir um formulário que já recebeu respostas.'], 422);
         }
 
         $form->delete();

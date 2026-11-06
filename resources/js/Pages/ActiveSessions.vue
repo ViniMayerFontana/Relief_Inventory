@@ -139,34 +139,34 @@ const sortedSessions = computed(() =>
 </script>
 
 <template>
-	<Head title="User Activity" />
+	<Head title="Atividade de usuários" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">User Activity</h1>
+			<h1 class="text-2xl font-bold">Atividade de usuários</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<div class="flex items-center justify-between">
 					<h2 class="text-lg font-semibold">
-						Active in the last {{ activeWindowMinutes }} minutes
+						Ativos nos últimos {{ activeWindowMinutes }} minutos
 						<span class="text-gray-400 font-normal">({{ sortedSessions.length }})</span>
 					</h2>
 					<span v-if="lastRefreshed" class="text-xs text-gray-400">
-						Updated {{ lastRefreshed.toLocaleTimeString() }}
+						Atualizado às {{ lastRefreshed.toLocaleTimeString() }}
 					</span>
 				</div>
 
-				<div v-if="loading" class="text-gray-500">Loading…</div>
-				<div v-else-if="sortedSessions.length === 0" class="text-gray-500">Nobody's currently active.</div>
+				<div v-if="loading" class="text-gray-500">Carregando…</div>
+				<div v-else-if="sortedSessions.length === 0" class="text-gray-500">Ninguém está ativo no momento.</div>
 
 				<table v-else class="min-w-full text-sm">
 					<thead>
 						<tr class="text-left text-gray-500 border-b">
-							<th class="py-2 pr-4">Name</th>
-							<th class="py-2 pr-4">Role</th>
-							<th class="py-2 pr-4">Last Page</th>
-							<th class="py-2 pr-4">Last Active</th>
+							<th class="py-2 pr-4">Nome</th>
+							<th class="py-2 pr-4">Função</th>
+							<th class="py-2 pr-4">Última página</th>
+							<th class="py-2 pr-4">Última atividade</th>
 							<th class="py-2 pr-4">IP</th>
 						</tr>
 					</thead>
@@ -182,14 +182,14 @@ const sortedSessions = computed(() =>
 				</table>
 
 				<p class="text-xs text-gray-500">
-					Someone who logs out won't disappear from this list instantly — their session just stops
-					updating and ages out of the {{ activeWindowMinutes }}-minute window on its own.
+					Quem sair da conta não desaparecerá imediatamente desta lista — a sessão apenas deixará
+					de ser atualizada e sairá da janela de {{ activeWindowMinutes }} minutos por conta própria.
 				</p>
 			</section>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<h2 class="text-lg font-semibold">
-					Login History
+					Histórico de acessos
 					<span class="text-gray-400 font-normal">({{ history.length }})</span>
 				</h2>
 
@@ -197,16 +197,16 @@ const sortedSessions = computed(() =>
 					{{ historyError }}
 				</div>
 
-				<div v-if="historyLoading" class="text-gray-500">Loading…</div>
-				<div v-else-if="history.length === 0" class="text-gray-500">No logins recorded yet.</div>
+				<div v-if="historyLoading" class="text-gray-500">Carregando…</div>
+				<div v-else-if="history.length === 0" class="text-gray-500">Nenhum acesso registrado ainda.</div>
 
 				<table v-else class="min-w-full text-sm">
 					<thead>
 						<tr class="text-left text-gray-500 border-b">
-							<th class="py-2 pr-4">Name</th>
-							<th class="py-2 pr-4">Method</th>
-							<th class="py-2 pr-4">Last Login</th>
-							<th class="py-2 pr-4">Device / Browser</th>
+							<th class="py-2 pr-4">Nome</th>
+							<th class="py-2 pr-4">Método</th>
+							<th class="py-2 pr-4">Último acesso</th>
+							<th class="py-2 pr-4">Dispositivo / navegador</th>
 							<th class="py-2 pr-4">IP</th>
 						</tr>
 					</thead>
@@ -241,13 +241,13 @@ const sortedSessions = computed(() =>
 									<div v-if="personHistoryError" class="text-red-800 text-xs">
 										{{ personHistoryError }}
 									</div>
-									<div v-else-if="personHistoryLoading" class="text-gray-500 text-xs">Loading…</div>
+									<div v-else-if="personHistoryLoading" class="text-gray-500 text-xs">Carregando…</div>
 									<table v-else class="min-w-full text-xs">
 										<thead>
 											<tr class="text-left text-gray-500 border-b">
-												<th class="py-1 pr-4">Method</th>
-												<th class="py-1 pr-4">Logged In</th>
-												<th class="py-1 pr-4">Device / Browser</th>
+												<th class="py-1 pr-4">Método</th>
+												<th class="py-1 pr-4">Acesso em</th>
+												<th class="py-1 pr-4">Dispositivo / navegador</th>
 												<th class="py-1 pr-4">IP</th>
 											</tr>
 										</thead>

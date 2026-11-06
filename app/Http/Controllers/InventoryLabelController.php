@@ -46,7 +46,7 @@ class InventoryLabelController extends Controller
             ->whereIn('id', $ids)->where('qty', '>', 0)->get()->sortBy(fn ($a) => array_search($a->id, $ids))->values();
 
         if ($assignments->isEmpty()) {
-            abort(404, 'No matching inventory labels found.');
+            abort(404, 'Nenhuma etiqueta de estoque correspondente foi encontrada.');
         }
 
         $media = LabelSetting::inventoryMedia();

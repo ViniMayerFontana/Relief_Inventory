@@ -61,14 +61,14 @@ const packageTypeSort = computed(() => (a, b) =>
 </script>
 
 <template>
-	<Head title="Package Types" />
+	<Head title="Tipos de embalagem" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<RIForm
-			title="Package Types"
+			title="Tipos de embalagem"
 			datasource="/json/packagetypes"
-			newrecordcaption="Add Package Type"
+			newrecordcaption="Adicionar tipo de embalagem"
 			:filter="packageTypeMatchesSearch"
 			:sort="packageTypeSort"
 		>
@@ -77,7 +77,7 @@ const packageTypeSort = computed(() => (a, b) =>
 					type="text"
 					v-model="packageTypeSearch"
 					class="ri_forminput packagetype_search"
-					placeholder="Search by name..."
+					placeholder="Buscar por nome..."
 				/>
 			</template>
 
@@ -93,11 +93,11 @@ const packageTypeSort = computed(() => (a, b) =>
 				<div class="ri_formtable">
 					<div class="ri_fieldset">
 						<div class="ri_fieldlabel">Singular:</div>
-						<TextInput v-model="record.singular" placeholder="e.g. Case" required autofocus :enabled="editing" />
+						<TextInput v-model="record.singular" placeholder="ex.: Caixa" required autofocus :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
 						<div class="ri_fieldlabel">Plural:</div>
-						<TextInput v-model="record.plural" placeholder="e.g. Cases" required :enabled="editing" />
+						<TextInput v-model="record.plural" placeholder="ex.: Caixas" required :enabled="editing" />
 					</div>
 				</div>
 			</template>

@@ -61,7 +61,7 @@ export default {
 			return this.data.zip_breakdown.rows.map((z) => ({ label: z.zip, value: z.count }));
 		},
 		zipTitle() {
-			if (!this.data) return 'Orders by Zip';
+			if (!this.data) return 'Pedidos por CEP';
 			const total = this.data.zip_breakdown.zip_count;
 			const shown = this.data.zip_breakdown.rows.length;
 			return shown < total ? `Orders by Zip (top ${shown} of ${total})` : 'Orders by Zip';
@@ -79,7 +79,7 @@ export default {
 				const response = await axios.get('/json/sitrep');
 				this.data = response.data;
 			} catch (error) {
-				this.error = 'Could not load the Situation Report.';
+				this.error = 'Não foi possível carregar o relatório de situação.';
 			} finally {
 				this.loading = false;
 			}
@@ -92,44 +92,44 @@ export default {
 </script>
 
 <template>
-	<Head title="Situation Report" />
+	<Head title="Relatório de situação" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="sr_container">
 			<div class="sr_topbar">
-				<h2 class="ri_datatable_head">Situation Report</h2>
+				<h2 class="ri_datatable_head">Relatório de situação</h2>
 				<div class="sr_actions">
 					<span v-if="data" class="sr_generated">
-						As of {{ new Date(data.generated_at).toLocaleString() }}
+						Em {{ new Date(data.generated_at).toLocaleString() }}
 					</span>
-					<PrintMenu document-key="sitrep" media="report" label="Print / PDF" download-href="/report/sitrep.pdf" />
+					<PrintMenu document-key="sitrep" media="report" label="Imprimir / PDF" download-href="/report/sitrep.pdf" />
 				</div>
 			</div>
 			<p class="sr_note">
-				A live, informal snapshot for sharing outside the organization — not the official report.
-				No names or identifying details are included.
+				Um resumo informal e atualizado para compartilhar fora da organização — não é o relatório oficial.
+				Nomes e dados que identifiquem pessoas não são incluídos.
 			</p>
 
 			<p v-if="error" class="sr_error">{{ error }}</p>
-			<p v-if="loading && !data">Loading...</p>
+			<p v-if="loading && !data">Carregando...</p>
 
 			<div v-if="data" class="sr_grid">
-				<PeriodStatCard title="Orders Fulfilled" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
-				<PeriodStatCard title="Donations Completed" :counts="data.donations_completed" :trend="data.donations_trend" />
+				<PeriodStatCard title="Pedidos atendidos" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
+				<PeriodStatCard title="Doações concluídas" :counts="data.donations_completed" :trend="data.donations_trend" />
 
-				<BarBreakdownCard title="Donations in Progress" :rows="donationPipelineRows" />
-				<BarBreakdownCard title="Orders in Progress" :rows="orderPipelineRows" />
+				<BarBreakdownCard title="Doações em andamento" :rows="donationPipelineRows" />
+				<BarBreakdownCard title="Pedidos em andamento" :rows="orderPipelineRows" />
 
-				<BarBreakdownCard title="Orders by County" :rows="countyRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard :title="zipTitle" :rows="zipRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard title="Stock by Category" :rows="categoryRows" empty-text="No stock on hand yet." />
+				<BarBreakdownCard title="Pedidos por condado" :rows="countyRows" empty-text="Nenhum pedido registrado ainda." />
+				<BarBreakdownCard :title="zipTitle" :rows="zipRows" empty-text="Nenhum pedido registrado ainda." />
+				<BarBreakdownCard title="Estoque por categoria" :rows="categoryRows" empty-text="Nenhum item em estoque ainda." />
 
 				<div class="sr_card">
-					<h3>Stock on Hand</h3>
+					<h3>Estoque disponível</h3>
 					<div class="sr_inv_stats">
-						<div><span class="sr_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="sr_inv_label">Item types stocked</span></div>
-						<div><span class="sr_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="sr_inv_label">Total units on hand</span></div>
+						<div><span class="sr_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="sr_inv_label">Tipos de item em estoque</span></div>
+						<div><span class="sr_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="sr_inv_label">Total de unidades disponíveis</span></div>
 					</div>
 				</div>
 			</div>

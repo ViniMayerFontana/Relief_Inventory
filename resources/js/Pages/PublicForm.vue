@@ -74,7 +74,7 @@ async function submit() {
 			errors.value = e.response.data.errors || {};
 			generalError.value = e.response.data.message || null;
 		} else {
-			generalError.value = e.response?.data?.message || 'Something went wrong. Please try again.';
+			generalError.value = e.response?.data?.message || 'Algo deu errado. Tente novamente.';
 		}
 	} finally {
 		submitting.value = false;
@@ -88,7 +88,7 @@ async function submit() {
 			<h1 class="text-2xl font-bold">{{ form.name }}</h1>
 
 			<div v-if="submitted" class="text-green-700 bg-green-50 border border-green-200 rounded p-4">
-				Thank you — your submission has been received.
+				Obrigado — sua resposta foi recebida.
 			</div>
 
 			<template v-else>
@@ -100,15 +100,15 @@ async function submit() {
 
 				<div class="space-y-2">
 					<label class="block text-sm">
-						<span class="text-gray-700">Your Name</span>
+						<span class="text-gray-700">Seu nome</span>
 						<input v-model="submitterName" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block text-sm">
-						<span class="text-gray-700">Email</span>
+						<span class="text-gray-700">E-mail</span>
 						<input v-model="submitterEmail" type="email" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block text-sm">
-						<span class="text-gray-700">Phone</span>
+						<span class="text-gray-700">Telefone</span>
 						<input v-model="submitterPhone" type="tel" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 				</div>
@@ -146,10 +146,10 @@ async function submit() {
 
 						<div v-else-if="question.type === 'yes_no'" class="flex gap-4">
 							<label class="flex items-center gap-1 text-sm">
-								<input type="radio" :name="`q${question.id}`" v-model="answers[question.id]" value="Yes" /> Yes
+								<input type="radio" :name="`q${question.id}`" v-model="answers[question.id]" value="Yes" /> Sim
 							</label>
 							<label class="flex items-center gap-1 text-sm">
-								<input type="radio" :name="`q${question.id}`" v-model="answers[question.id]" value="No" /> No
+								<input type="radio" :name="`q${question.id}`" v-model="answers[question.id]" value="No" /> Não
 							</label>
 						</div>
 
@@ -185,8 +185,8 @@ async function submit() {
 
 				<div v-if="turnstile_enabled" class="cf-turnstile" :data-sitekey="turnstile_site_key"></div>
 				<div v-if="turnstile_unavailable" class="rounded-md bg-amber-50 border border-amber-300 text-amber-900 text-sm p-3">
-					This form can't accept submissions right now because its spam protection isn't set up on
-					this server. Please contact the organization that sent you this link.
+					Este formulário não pode receber respostas no momento porque a proteção contra spam não está
+					configurada neste servidor. Entre em contato com a organização que enviou este link.
 				</div>
 
 				<button
@@ -194,7 +194,7 @@ async function submit() {
 					:disabled="submitting || turnstile_unavailable"
 					class="w-full bg-indigo-600 text-white rounded-md py-2 font-medium disabled:opacity-50"
 				>
-					{{ submitting ? 'Submitting...' : 'Submit' }}
+					{{ submitting ? 'Enviando...' : 'Enviar' }}
 				</button>
 			</template>
 		</div>

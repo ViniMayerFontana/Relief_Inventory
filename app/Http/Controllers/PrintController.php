@@ -33,13 +33,13 @@ class PrintController extends Controller
 
         $definition = $registry->find($data['document']);
         if (! $definition) {
-            throw ValidationException::withMessages(['document' => 'Unknown document.']);
+            throw ValidationException::withMessages(['document' => 'Documento desconhecido.']);
         }
 
         // Same bar as downloading the PDF itself — printing never widens access.
         $user = $request->user();
         if ($definition['permission'] && ! $user->hasPermission($definition['permission'])) {
-            abort(403, 'You do not have permission to print this document.');
+            abort(403, 'Você não tem permissão para imprimir este documento.');
         }
 
         // validate() returns only the keys the document's rules name.
@@ -47,11 +47,11 @@ class PrintController extends Controller
 
         $printer = Printer::usable()->find($data['printer_id']);
         if (! $printer) {
-            throw ValidationException::withMessages(['printer_id' => 'That printer is not available for printing.']);
+            throw ValidationException::withMessages(['printer_id' => 'Essa impressora não está disponível.']);
         }
         if ($printer->media !== $definition['media']) {
             throw ValidationException::withMessages([
-                'printer_id' => 'That printer is loaded with '.($printer->media_label ?? 'a different media type').', which does not fit this document.',
+                'printer_id' => 'Essa impressora está carregada com '.($printer->media_label ?? 'um tipo de mídia diferente').', que não serve para este documento.',
             ]);
         }
 
@@ -68,8 +68,8 @@ class PrintController extends Controller
             'title' => $job->title,
             'printer' => ['id' => $printer->id, 'name' => $printer->name, 'status' => $printer->status, 'ready' => $printer->isReady()],
             'message' => $printer->isReady()
-                ? "Sent to {$printer->name}."
-                : "Queued for {$printer->name}, which is {$printer->status}; it will print when the print server is back.",
+                ? "Enviado para {$printer->name}."
+                : "Enfileirado para {$printer->name}, que está com status {$printer->status}; será impresso quando o servidor de impressão voltar.",
         ], 201);
     }
 
@@ -89,18 +89,18 @@ class PrintController extends Controller
 
         $printer = Printer::usable()->find($data['printer_id']);
         if (! $printer) {
-            throw ValidationException::withMessages(['printer_id' => 'That printer is not available for printing.']);
+            throw ValidationException::withMessages(['printer_id' => 'Essa impressora não está disponível.']);
         }
 
         $bytes = $request->file('file')->get();
         // The mime type comes from the content, but check the signature too: a PDF starts with %PDF- (within the first KB).
         if (! str_contains(substr($bytes, 0, 1024), '%PDF-')) {
-            throw ValidationException::withMessages(['file' => 'That file is not a PDF.']);
+            throw ValidationException::withMessages(['file' => 'Este arquivo não é um PDF.']);
         }
 
         // The filename is untrusted text, shown as the job's title: drop any path, control characters and excess length.
         $name = preg_replace('/[\x00-\x1F\x7F]/u', '', basename(str_replace('\\', '/', (string) $request->file('file')->getClientOriginalName()))) ?? '';
-        $title = Str::limit(trim($name) !== '' ? trim($name) : 'Uploaded PDF', 120, '');
+        $title = Str::limit(trim($name) !== '' ? trim($name) : 'PDF enviado', 120, '');
 
         $job = $queue->enqueue($printer, 'uploaded-pdf', $title, $bytes, $data['copies'] ?? 1, Auth::id());
 
@@ -110,8 +110,8 @@ class PrintController extends Controller
             'title' => $job->title,
             'printer' => ['id' => $printer->id, 'name' => $printer->name, 'status' => $printer->status, 'ready' => $printer->isReady()],
             'message' => $printer->isReady()
-                ? "Sent {$job->title} to {$printer->name}."
-                : "Queued {$job->title} for {$printer->name}, which is {$printer->status}; it will print when the print server is back.",
+                ? "{$job->title} enviado para {$printer->name}."
+                : "{$job->title} enfileirado para {$printer->name}, que está com status {$printer->status}; será impresso quando o servidor de impressão voltar.",
         ], 201);
     }
 }

@@ -47,12 +47,12 @@ const accountFields = ['first_name', 'last_name', 'email', 'password', 'password
 
 function validateAccount() {
 	const e = {};
-	if (!form.first_name.trim()) e.first_name = 'Please enter a first name.';
-	if (!form.last_name.trim()) e.last_name = 'Please enter a last name.';
-	if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = 'Please enter a valid email address.';
-	if (form.password.length < 8) e.password = 'Use at least 8 characters.';
-	if (form.password !== form.password_confirmation) e.password_confirmation = 'The passwords do not match.';
-	if (props.codeRequired && !form.setup_code.trim()) e.setup_code = 'Enter the setup code from your server configuration.';
+	if (!form.first_name.trim()) e.first_name = 'Informe seu nome.';
+	if (!form.last_name.trim()) e.last_name = 'Informe seu sobrenome.';
+	if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = 'Informe um endereço de e-mail válido.';
+	if (form.password.length < 8) e.password = 'Use pelo menos 8 caracteres.';
+	if (form.password !== form.password_confirmation) e.password_confirmation = 'As senhas não coincidem.';
+	if (props.codeRequired && !form.setup_code.trim()) e.setup_code = 'Informe o código de configuração definido no servidor.';
 	localErrors.value = e;
 	return Object.keys(e).length === 0;
 }
@@ -89,24 +89,24 @@ const submit = () => {
 	});
 };
 
-const stepTitle = computed(() => (step.value === 1 ? 'Create the administrator account' : 'Starting data'));
+const stepTitle = computed(() => (step.value === 1 ? 'Criar conta de administrador' : 'Dados iniciais'));
 </script>
 
 <template>
 	<GuestLayout>
-		<Head title="Set up Relief Inventory" />
+		<Head title="Configuração inicial do Relief Inventory" />
 
-		<h1 class="text-lg font-semibold text-gray-900">Welcome to Relief Inventory</h1>
+		<h1 class="text-lg font-semibold text-gray-900">Bem-vindo ao Relief Inventory</h1>
 		<template v-if="mode === 'restore'">
-			<p class="mt-1 text-sm text-gray-600">Restore from a backup</p>
+			<p class="mt-1 text-sm text-gray-600">Restaurar a partir de um backup</p>
 			<RestoreBackup :code-required="codeRequired" @back="mode = 'new'" />
 		</template>
 
 		<template v-else>
 		<p class="mt-1 text-sm text-gray-600">
-			This is a brand-new installation. Two quick steps and you're in.
-			Moving from another system?
-			<button type="button" class="underline text-blue-700" @click="mode = 'restore'">Restore from a backup</button>
+			Esta é uma instalação nova. São apenas duas etapas rápidas.
+			Vem de outro sistema?
+			<button type="button" class="underline text-blue-700" @click="mode = 'restore'">Restaurar a partir de um backup</button>
 		</p>
 
 		<p class="mt-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
@@ -117,75 +117,75 @@ const stepTitle = computed(() => (step.value === 1 ? 'Create the administrator a
 			<!-- Step 1: administrator -->
 			<div v-show="step === 1" class="mt-3">
 				<p class="text-sm text-gray-600">
-					This person manages everything else — other users, permissions and settings are all
-					added from inside the app afterwards.
+					Essa pessoa administrará o restante — os demais usuários, as permissões e as configurações
+					serão adicionados pelo aplicativo depois.
 				</p>
 
 				<div class="mt-4 grid grid-cols-2 gap-3">
 					<div>
-						<InputLabel for="first_name" value="First name" />
+						<InputLabel for="first_name" value="Nome" />
 						<TextInput id="first_name" type="text" class="mt-1 block w-full" v-model="form.first_name" autofocus autocomplete="given-name" />
 						<InputError class="mt-2" :message="err('first_name')" />
 					</div>
 					<div>
-						<InputLabel for="last_name" value="Last name" />
+						<InputLabel for="last_name" value="Sobrenome" />
 						<TextInput id="last_name" type="text" class="mt-1 block w-full" v-model="form.last_name" autocomplete="family-name" />
 						<InputError class="mt-2" :message="err('last_name')" />
 					</div>
 				</div>
 
 				<div class="mt-4">
-					<InputLabel for="email" value="Email (used to sign in)" />
+					<InputLabel for="email" value="E-mail (usado para entrar)" />
 					<TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" autocomplete="username" />
 					<InputError class="mt-2" :message="err('email')" />
 				</div>
 
 				<div class="mt-4">
-					<InputLabel for="password" value="Password" />
+					<InputLabel for="password" value="Senha" />
 					<TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" autocomplete="new-password" />
 					<InputError class="mt-2" :message="err('password')" />
 				</div>
 
 				<div class="mt-4">
-					<InputLabel for="password_confirmation" value="Confirm password" />
+					<InputLabel for="password_confirmation" value="Confirme a senha" />
 					<TextInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" autocomplete="new-password" />
 					<InputError class="mt-2" :message="err('password_confirmation')" />
 				</div>
 
 				<div v-if="codeRequired" class="mt-4">
-					<InputLabel for="setup_code" value="Setup code" />
+					<InputLabel for="setup_code" value="Código de configuração" />
 					<TextInput id="setup_code" type="password" class="mt-1 block w-full" v-model="form.setup_code" autocomplete="off" />
-					<p class="mt-1 text-xs text-gray-500">This server needs a setup code. On an R Station it is shown on the device under Settings &gt; Local server; with Docker it is RI_SETUP_CODE in your compose file.</p>
+					<p class="mt-1 text-xs text-gray-500">Este servidor exige um código de configuração. No R Station, ele aparece no dispositivo em Configurações &gt; Servidor local; no Docker, é RI_SETUP_CODE no arquivo compose.</p>
 					<InputError class="mt-2" :message="err('setup_code')" />
 				</div>
 
 				<div class="mt-6 flex justify-end">
-					<PrimaryButton type="button" @click="next">Next</PrimaryButton>
+					<PrimaryButton type="button" @click="next">Avançar</PrimaryButton>
 				</div>
 			</div>
 
 			<!-- Step 2: starting data -->
 			<div v-show="step === 2" class="mt-3">
 				<p class="text-sm text-gray-600">
-					The standard categories, units and item catalog are always set up for you. Choose whether
-					to start with a clean slate or with sample data.
+					As categorias, unidades e o catálogo de itens padrão já estão configurados. Escolha
+					se deseja começar do zero ou usar dados de exemplo.
 				</p>
 
 				<label class="mt-4 flex cursor-pointer items-start gap-3 rounded border p-3" :class="form.starting_data === 'empty' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'">
 					<input type="radio" class="mt-1" value="empty" v-model="form.starting_data" />
 					<span>
-						<span class="block text-sm font-medium text-gray-900">Start empty <span class="text-xs font-normal text-blue-700">(recommended for real use)</span></span>
-						<span class="block text-xs text-gray-600">Nothing but the standard catalog. You enter your own donors, partners and stock.</span>
+						<span class="block text-sm font-medium text-gray-900">Começar vazio <span class="text-xs font-normal text-blue-700">(recomendado para uso real)</span></span>
+						<span class="block text-xs text-gray-600">Somente o catálogo padrão. Você cadastra seus próprios doadores, entidades parceiras e estoque.</span>
 					</span>
 				</label>
 
 				<label class="mt-3 flex cursor-pointer items-start gap-3 rounded border p-3" :class="form.starting_data === 'example' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'">
 					<input type="radio" class="mt-1" value="example" v-model="form.starting_data" />
 					<span>
-						<span class="block text-sm font-medium text-gray-900">Load example data</span>
+						<span class="block text-sm font-medium text-gray-900">Carregar dados de exemplo</span>
 						<span class="block text-xs text-gray-600">
-							Fictional donors and partner organizations, donations at every stage, stock on hand and
-							orders in every status — good for trying things out or training.
+							Doadores e entidades parceiras fictícios, doações em todas as etapas, estoque disponível e
+							pedidos em todos os status — ideal para experimentar ou treinar.
 						</span>
 					</span>
 				</label>
@@ -193,26 +193,26 @@ const stepTitle = computed(() => (step.value === 1 ? 'Create the administrator a
 				<label class="mt-3 flex cursor-pointer items-start gap-3 rounded border p-3" :class="form.starting_data === 'simulation' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'">
 					<input type="radio" class="mt-1" value="simulation" v-model="form.starting_data" />
 					<span>
-						<span class="block text-sm font-medium text-gray-900">Simulate a year of activity <span class="text-xs font-normal text-gray-600">(for testing)</span></span>
+						<span class="block text-sm font-medium text-gray-900">Simular um ano de atividades <span class="text-xs font-normal text-gray-600">(para testes)</span></span>
 						<span class="block text-xs text-gray-600">
-							Generates about a year of fictional donations, sorting, partner requests, shipments and stock
-							movement &mdash; roughly 1,000 requests and 10,000+ inventory movements. Meant for testing screens,
-							reports and performance with a realistic amount of data. Takes a minute or two.
+							Gera cerca de um ano de doações fictícias, triagem, pedidos de entidades parceiras, expedições e movimentações de estoque
+							— aproximadamente 1.000 pedidos e mais de 10.000 movimentações de estoque. Ideal para testar telas,
+							relatórios e desempenho com um volume realista de dados. Leva um ou dois minutos.
 						</span>
 					</span>
 				</label>
 
 				<p v-if="form.starting_data !== 'empty'" class="mt-3 rounded border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
-					Example and simulated data can't be removed from inside the app. If you later want a clean instance,
-					you'll need to start over with a fresh database. Don't use this for a real operation.
+					Os dados de exemplo e simulados não podem ser removidos pelo aplicativo. Se mais tarde quiser uma instalação limpa,
+					será necessário começar novamente com um banco de dados vazio. Não use esta opção em uma operação real.
 				</p>
 
 				<InputError class="mt-2" :message="form.errors.starting_data" />
 
 				<div class="mt-6 flex items-center justify-between">
-					<SecondaryButton type="button" @click="step = 1" :disabled="form.processing">Back</SecondaryButton>
+					<SecondaryButton type="button" @click="step = 1" :disabled="form.processing">Voltar</SecondaryButton>
 					<PrimaryButton :class="{ 'opacity-25': form.processing || finishLocked }" :disabled="form.processing || finishLocked">
-						{{ form.processing ? (form.starting_data === 'example' ? 'Setting up (loading examples…)' : 'Setting up…') : 'Finish setup' }}
+						{{ form.processing ? (form.starting_data === 'example' ? 'Configurando (carregando exemplos…)' : 'Configurando…') : 'Concluir configuração inicial' }}
 					</PrimaryButton>
 				</div>
 			</div>

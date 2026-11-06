@@ -1,7 +1,7 @@
 {{-- Shipping label, 4 x 6.5 in ($paper). Facts match the BOL. Zero @page margin (WeasyPrint stacks its own);
      long text is clipped by fixed-height boxes so it can never push the label onto a second page. --}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <title>{{ $orderNumber }}</title>
@@ -35,8 +35,8 @@
     <div class="barcode">{!! DNS1D::getBarcodeHTML($orderNumber, 'C128', 2, 60) !!}</div>
 
     <div class="field shipto">
-        <div class="k">Ship To / Delivery Address</div>
-        <div class="v">{{ \Illuminate\Support\Str::limit($order->person?->full_name ?? 'Unknown', 40) }}</div>
+        <div class="k">Destinatário / Endereço de entrega</div>
+        <div class="v">{{ \Illuminate\Support\Str::limit($order->person?->full_name ?? 'Não informado', 40) }}</div>
         @if($order->person?->address || $order->person?->city)
             <div class="v addr">
                 {{ $order->person->address }}<br>
@@ -45,19 +45,19 @@
         @endif
     </div>
     <div class="field contact">
-        <div class="k">Contact</div>
+        <div class="k">Contato</div>
         <div class="v">{{ \Illuminate\Support\Str::limit(trim(($order->contact_name ?? '').($order->contact_phone ? ' — '.$order->contact_phone : '')), 60) }}</div>
     </div>
     <div class="row">
-        <div class="field"><div class="k">Fulfillment Method</div><div class="v">{{ ucfirst($order->fulfillment_method ?? '') }}</div></div>
-        <div class="field"><div class="k">Pallets</div><div class="v pallets">{{ $order->pallet_count ?? '' }}</div></div>
+        <div class="field"><div class="k">Forma de atendimento</div><div class="v">{{ ucfirst($order->fulfillment_method ?? '') }}</div></div>
+        <div class="field"><div class="k">Paletes</div><div class="v pallets">{{ $order->pallet_count ?? '' }}</div></div>
     </div>
     <div class="row">
-        <div class="field"><div class="k">Date Packed</div><div class="v">{{ $datePacked?->format('M j, Y') }}</div></div>
-        <div class="field"><div class="k">Requested Date</div><div class="v">{{ $order->needed_by_date ? \Illuminate\Support\Carbon::parse($order->needed_by_date)->format('M j, Y') : '' }}</div></div>
+        <div class="field"><div class="k">Data da embalagem</div><div class="v">{{ $datePacked?->format('M j, Y') }}</div></div>
+        <div class="field"><div class="k">Data solicitada</div><div class="v">{{ $order->needed_by_date ? \Illuminate\Support\Carbon::parse($order->needed_by_date)->format('M j, Y') : '' }}</div></div>
     </div>
     <div class="field instr">
-        <div class="k">Special Instructions</div>
+        <div class="k">Instruções especiais</div>
         <div class="v">{{ \Illuminate\Support\Str::limit(preg_replace('/\s+/', ' ', (string) $order->special_instructions), 200) ?: '—' }}</div>
     </div>
 </div>
