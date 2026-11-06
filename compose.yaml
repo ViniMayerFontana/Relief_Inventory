@@ -140,7 +140,7 @@ x-app: &app
   image: ghcr.io/fiforms/reliefinventory:latest
   # (only used by `docker compose build`, i.e. when working from a git checkout)
   build:
-    context: ..
+    context: .
     dockerfile: Dockerfile
   restart: unless-stopped
   environment: &app-env
