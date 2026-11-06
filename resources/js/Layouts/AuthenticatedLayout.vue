@@ -1,0 +1,401 @@
+<!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
+     Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
+
+<script setup>
+import { ref } from 'vue';
+import axios from 'axios';
+import Banner from '@/Components/Banner.vue';
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
+import FeedbackReportModal from '@/Components/FeedbackReportModal.vue';
+import NavLink from '@/Components/NavLink.vue';
+import PrintToast from '@/Components/PrintToast.vue';
+import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
+import { Link, usePage } from '@inertiajs/vue3';
+
+const showingNavigationDropdown = ref(false);
+const showingFeedbackModal = ref(false);
+
+const page = usePage();
+const unreadCount = ref(page.props.notifications.unreadCount);
+const notificationRecords = ref([]);
+const notificationsLoaded = ref(false);
+
+function timeAgo(value) {
+    const seconds = Math.max(0, Math.round((Date.now() - new Date(value)) / 1000));
+    const relativeTime = new Intl.RelativeTimeFormat(document.documentElement.lang || 'pt-BR', { numeric: 'auto' });
+    if (seconds < 60) return relativeTime.format(0, 'second');
+    const minutes = Math.round(seconds / 60);
+    if (minutes < 60) return relativeTime.format(-minutes, 'minute');
+    const hours = Math.round(minutes / 60);
+    if (hours < 24) return relativeTime.format(-hours, 'hour');
+    return relativeTime.format(-Math.round(hours / 24), 'day');
+}
+
+async function loadNotifications() {
+    const response = await axios.get('/json/notifications');
+    notificationRecords.value = response.data.records;
+    unreadCount.value = response.data.unread_count;
+    notificationsLoaded.value = true;
+}
+
+async function markAllNotificationsRead() {
+    await axios.post('/json/notifications/read-all');
+    notificationRecords.value = notificationRecords.value.map((n) => ({ ...n, read_at: n.read_at || new Date().toISOString() }));
+    unreadCount.value = 0;
+}
+</script>
+
+<template>
+    <div>
+        <div class="min-h-screen bg-gray-100">
+            <Banner @open-feedback="showingFeedbackModal = true" />
+            <!-- A training warehouse (MULTI_WAREHOUSE.md §12): practice data, never real stock -->
+            <div v-if="$page.props.warehouse?.training" class="bg-amber-100 text-amber-900 text-sm px-4 py-1">
+                Armazém de treinamento &mdash; todos os dados aqui são apenas para prática.
+            </div>
+            <!-- Instance administrators, until the instance has a recovery key and they have confirmed storing it (HandleInertiaRequests::recoveryKeyProps) -->
+            <div v-if="$page.props.recoveryKey" class="bg-red-100 text-red-900 text-sm px-4 py-2 border-b border-red-300">
+                <template v-if="$page.props.recoveryKey.state === 'none'">
+                    <strong>Configure sua chave de recuperação.</strong>
+                    Sem ela, um backup automático não poderá restaurar as configurações criptografadas dos armazéns após um desastre.
+                </template>
+                <template v-else>
+                    <strong>Confirme que sua chave de recuperação está guardada.</strong>
+                    Ela foi criada, mas o armazenamento ainda não foi confirmado. Se você não guardou a cópia impressa, crie uma nova.
+                </template>
+                <a href="/setup/instance?tab=backups" class="underline font-semibold ml-1">Abrir administração da instância</a>
+            </div>
+            <PrintToast />
+
+            <nav
+                class="border-b border-gray-100 bg-white"
+            >
+                <!-- Primary Navigation Menu -->
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <div class="flex h-16 justify-between">
+                        <div class="flex">
+							<div class="space-x-8 sm:-my-px sm:ms-10 sm:flex" style="padding-top: 12px; font-size: 26px;">
+							<a href="/dashboard">🚚</a>
+							</div>
+                            <!-- Navigation Links -->
+                            <div
+                                class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex" style="margin-left: 10px;"
+                            >
+                                <NavLink
+                                    :href="route('dashboard')"
+                                    :active="fullroute == '/dashboard' || fullroute == '/dashboard#main'"
+                                >
+                                    Painel do Relief Inventory
+                                </NavLink>
+								<NavLink
+								    v-for="crumb in breadcrumb"
+								    :href="crumb.href"
+									:active="fullroute == crumb.href"
+								>
+								    → {{ crumb.title }}
+								</NavLink>
+                            </div>
+                        </div>
+
+                        <div class="hidden sm:ms-6 sm:flex sm:items-center">
+                            <!-- Notification Bell -->
+                            <div class="relative ms-3">
+                                <Dropdown align="right" width="96">
+                                    <template #trigger>
+                                        <button
+                                            type="button"
+                                            class="relative inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                            @click="loadNotifications"
+                                        >
+                                            🔔
+                                            <span
+                                                v-if="unreadCount > 0"
+                                                class="absolute -top-1 -right-1 inline-flex items-center justify-center rounded-full bg-red-600 px-1.5 py-0.5 text-xs font-bold leading-none text-white"
+                                            >{{ unreadCount }}</span>
+                                        </button>
+                                    </template>
+
+                                    <template #content>
+                                        <div class="flex items-center justify-between px-4 py-2 text-sm font-semibold text-gray-700">
+                                            <span>Notificações</span>
+                                            <button
+                                                v-if="unreadCount > 0"
+                                                type="button"
+                                                class="text-xs font-normal text-indigo-600 hover:underline"
+                                                @click.stop="markAllNotificationsRead"
+                                            >Marcar todas como lidas</button>
+                                        </div>
+                                        <div class="max-h-96 overflow-y-auto">
+                                            <p v-if="!notificationsLoaded" class="px-4 py-3 text-sm text-gray-500">Carregando…</p>
+                                            <p v-else-if="notificationRecords.length === 0" class="px-4 py-3 text-sm text-gray-500">
+                                                Nenhuma notificação por enquanto.
+                                            </p>
+                                            <div
+                                                v-for="notification in notificationRecords"
+                                                :key="notification.id"
+                                                class="border-t border-gray-100 px-4 py-2 text-sm"
+                                                :class="notification.read_at ? 'text-gray-500' : 'font-medium text-gray-900'"
+                                            >
+                                                <div>
+                                                    {{ notification.data.category_label }} — {{ notification.data.name }}
+                                                </div>
+                                                <div class="text-xs text-gray-400">{{ timeAgo(notification.created_at) }}</div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </Dropdown>
+                            </div>
+
+                            <!-- Settings Dropdown -->
+                            <div class="relative ms-3">
+                                <Dropdown align="right" width="48">
+                                    <template #trigger>
+                                        <span class="inline-flex rounded-md">
+                                            <button
+                                                type="button"
+                                                class="inline-flex items-center rounded-md border border-transparent bg-white px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out hover:text-gray-700 focus:outline-none"
+                                            >
+											<a :title="$page.props.auth.user.email">
+											{{ $page.props.auth.user.first_name }}
+											{{ $page.props.auth.user.last_name }}
+											</a>
+                                                <svg
+                                                    class="-me-0.5 ms-2 h-4 w-4"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    viewBox="0 0 20 20"
+                                                    fill="currentColor"
+                                                >
+                                                    <path
+                                                        fill-rule="evenodd"
+                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                        clip-rule="evenodd"
+                                                    />
+                                                </svg>
+                                            </button>
+                                        </span>
+                                    </template>
+
+                                    <template #content>
+                                        <div v-if="$page.props.warehouse?.name" class="border-b border-gray-200 px-4 py-2">
+                                            <div class="text-xs text-gray-500">Armazém</div>
+                                            <div class="break-words text-sm font-medium text-gray-800">{{ $page.props.warehouse.name }}</div>
+                                        </div>
+                                        <DropdownLink
+                                            :href="route('profile.edit')"
+                                        >
+                                            Perfil
+                                        </DropdownLink>
+                                        <button
+                                            type="button"
+                                            class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
+                                            @click="showingFeedbackModal = true"
+                                        >
+                                            Relatar um problema
+                                        </button>
+                                        <DropdownLink
+                                            v-if="$page.props.buildingSafety.canView"
+                                            href="/building-safety"
+                                        >
+                                            Quem está no prédio?
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            v-if="$page.props.pinLogin.switchUserAvailable"
+                                            :href="route('switch-user')"
+                                            method="post"
+                                            as="button"
+                                        >
+                                            Trocar de usuário
+                                        </DropdownLink>
+                                        <DropdownLink v-if="$page.props.pendingInvitations > 0" :href="route('account.invitations')">
+                                            Convites ({{ $page.props.pendingInvitations }})
+                                        </DropdownLink>
+                                        <DropdownLink href="/this-device">
+                                            Acesso por PIN neste dispositivo
+                                        </DropdownLink>
+                                        <DropdownLink href="/about-this-install">
+                                            Sobre
+                                        </DropdownLink>
+                                        <DropdownLink
+                                            :href="route('logout')"
+                                            method="post"
+                                            as="button"
+                                        >
+                                            Sair
+                                        </DropdownLink>
+                                    </template>
+                                </Dropdown>
+                            </div>
+                        </div>
+
+                        <!-- Hamburger -->
+                        <div class="-me-2 flex items-center sm:hidden">
+                            <button
+                                @click="
+                                    showingNavigationDropdown =
+                                        !showingNavigationDropdown
+                                "
+                                class="inline-flex items-center justify-center rounded-md p-2 text-gray-400 transition duration-150 ease-in-out hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+                            >
+                                <svg
+                                    class="h-6 w-6"
+                                    stroke="currentColor"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        :class="{
+                                            hidden: showingNavigationDropdown,
+                                            'inline-flex':
+                                                !showingNavigationDropdown,
+                                        }"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M4 6h16M4 12h16M4 18h16"
+                                    />
+                                    <path
+                                        :class="{
+                                            hidden: !showingNavigationDropdown,
+                                            'inline-flex':
+                                                showingNavigationDropdown,
+                                        }"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        stroke-width="2"
+                                        d="M6 18L18 6M6 6l12 12"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Responsive Navigation Menu -->
+                <div
+                    :class="{
+                        block: showingNavigationDropdown,
+                        hidden: !showingNavigationDropdown,
+                    }"
+                    class="sm:hidden"
+                >
+                    <div class="space-y-1 pb-3 pt-2">
+                        <ResponsiveNavLink
+                            :href="route('dashboard')"
+                            :active="route().current('dashboard')"
+                        >
+                            Painel
+                        </ResponsiveNavLink>
+                    </div>
+
+                    <!-- Responsive Settings Options -->
+                    <div
+                        class="border-t border-gray-200 pb-1 pt-4"
+                    >
+                        <div class="px-4">
+                            <div
+                                class="text-base font-medium text-gray-800"
+                            >
+                                {{ $page.props.auth.user.name }}
+                            </div>
+                            <div class="text-sm font-medium text-gray-500">
+                                {{ $page.props.auth.user.email }}
+                            </div>
+                            <div v-if="$page.props.warehouse?.name" class="mt-1 text-sm text-gray-500">
+                                Armazém: {{ $page.props.warehouse.name }}
+                            </div>
+                        </div>
+
+                        <div class="mt-3 space-y-1">
+                            <ResponsiveNavLink :href="route('profile.edit')">
+                                Perfil
+                            </ResponsiveNavLink>
+                            <button
+                                type="button"
+                                class="block w-full ps-3 pe-4 py-2 text-start text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 focus:outline-none"
+                                @click="showingFeedbackModal = true"
+                            >
+                                Relatar um problema
+                            </button>
+                            <ResponsiveNavLink
+                                v-if="$page.props.buildingSafety.canView"
+                                href="/building-safety"
+                            >
+                                Quem está no prédio?
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink v-if="$page.props.pendingInvitations > 0" :href="route('account.invitations')">
+                                Convites ({{ $page.props.pendingInvitations }})
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink href="/this-device">
+                                Acesso por PIN neste dispositivo
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                v-if="$page.props.pinLogin.switchUserAvailable"
+                                :href="route('switch-user')"
+                                method="post"
+                                as="button"
+                            >
+                                Trocar de usuário
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink href="/about-this-install">
+                                Sobre
+                            </ResponsiveNavLink>
+                            <ResponsiveNavLink
+                                :href="route('logout')"
+                                method="post"
+                                as="button"
+                            >
+                                Sair
+                            </ResponsiveNavLink>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <FeedbackReportModal :show="showingFeedbackModal" @close="showingFeedbackModal = false" />
+
+            <!-- Page Heading -->
+            <header
+                class="bg-white shadow"
+                v-if="$slots.header"
+            >
+                <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                    <slot name="header" />
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main>
+                <slot />
+            </main>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+	props: {
+		breadcrumb: {
+			type: Array,
+			required: false,
+			default: [],
+		},
+	},
+	data() {
+	  return {
+	      fullroute: "",
+	  };
+	},
+	created() {
+		this.fullroute = window.location.href.substring(window.location.origin.length);
+		console.log('fullroute is ' + this.fullroute)
+		window.addEventListener(
+		  "hashchange",
+		  () => {
+			    this.fullroute = window.location.href.substring(window.location.origin.length);
+		   },
+		  false,
+		);
+	},
+}
+</script>

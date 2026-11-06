@@ -1,0 +1,414 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* One emoji font for every browser, so the UI's emoji icons look the same everywhere (and the
+   R Station's Chromium needs no emoji font of its own). The Docker image links the font it already
+   carries for PDFs to /fonts/NotoColorEmoji.ttf; outside Docker the file is absent, the request
+   404s and the browser quietly uses its own emoji font. unicode-range keeps the ~10 MB download
+   from starting until a page actually shows an emoji. */
+@font-face {
+  font-family: 'RI Emoji';
+  src: url('/fonts/NotoColorEmoji.ttf') format('truetype');
+  font-display: swap;
+  unicode-range: U+1F000-1FAFF, U+2600-27BF, U+2B50, U+2B55, U+FE0F, U+200D, U+20E3;
+}
+
+/* Single source of truth for spacing between action buttons/links, wherever
+   they appear — RIForm's list-actions bar, its form-actions bar, its
+   title-actions slot, and the standalone adjacent-sibling fallback below all
+   read this instead of each picking their own gap, which is what let three
+   different-looking spacings (14px, 0.75rem, 0.5em) coexist across the app. */
+:root {
+  --ri-action-gap: 0.75rem;
+}
+
+/* Container Styling */
+.ri_form_container {
+  margin: 20px auto;
+  padding: 20px;
+  max-width: 1200px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.ri_datatable_container,
+.ri_dataform_container {
+  padding: 15px;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Headings */
+.ri_datatable_head,
+.ri_dataform_head {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.ri_listactions {
+  display: flex;
+  align-items: center;
+  gap: var(--ri-action-gap);
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+/* Table Styling */
+table.ri_datatable, table.ri_formtable {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+}
+
+table.ri_datatable th, table.ri_datatable td {
+  padding: 10px 15px;
+  text-align: left;
+}
+
+table.ri_datatable th {
+  background-color: #aaaaaa;
+  color: #ffffff;
+  font-weight: bold;
+  border-bottom: 2px solid #ddd;
+}
+
+table.ri_datatable td  {
+  border-bottom: 1px solid #ddd;
+}
+
+table.ri_datatable tr {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+table.ri_datatable tr:hover {
+  background-color: #fafafa;
+}
+
+table.ri_datatable th.ri_sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+table.ri_datatable th.ri_sortable:hover {
+  background-color: #939393;
+}
+
+
+/* Button Styling — also covers <a> "buttons" (e.g. PDF download links that
+   open in a new tab rather than triggering a click handler), so those
+   don't fall back to unstyled browser link defaults. */
+button.ri_formbutton, a.ri_formbutton {
+  background-color: #888888;
+}
+
+button.ri_formbutton:hover, a.ri_formbutton:hover {
+  background-color: #6b7280;
+}
+
+
+button.ri_defaultbutton, a.ri_defaultbutton {
+  background-color: #007bff;
+}
+
+button.ri_defaultbutton:hover, a.ri_defaultbutton:hover {
+  background-color: #0056b3;
+}
+
+button.ri_deletebutton, a.ri_deletebutton {
+  background-color: #dc2626;
+}
+
+button.ri_deletebutton:hover, a.ri_deletebutton:hover,
+button.ri_deletebutton.ri_confirming, a.ri_deletebutton.ri_confirming {
+  background-color: #b91c1c;
+}
+
+/* Title-bar action group: the default New Record-style button plus whatever
+   a page supplies via #titleactions (e.g. Receiving.vue's "Pre-print Labels"
+   and "Donation Offers") all render as children of this one span now, so
+   they share a single --ri-action-gap between every pair regardless of how
+   many there are or what tag they use — previously the New Record button
+   lived outside this container as a float:right sibling, so the gap next to
+   it came from this span's own margin-right (in em, off the h2's larger
+   font-size) rather than the gap used between buttons inside it, which is
+   why the two gaps used to look different. */
+.ri_titleactions {
+  float: right;
+  margin-right: 0.75em;
+  display: flex;
+  align-items: center;
+  gap: var(--ri-action-gap);
+}
+
+button.ri_defaultbutton, button.ri_formbutton, button.ri_deletebutton,
+a.ri_defaultbutton, a.ri_formbutton, a.ri_deletebutton {
+  display: inline-block;
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+
+/* Two of these buttons placed side by side (e.g. a table row's action
+   column) have no gap of their own otherwise — callers relying on a flex
+   `gap` wrapper (like .ri_formactions) are unaffected, this only adds
+   space when one directly follows another with nothing else between. */
+button.ri_defaultbutton + button.ri_defaultbutton,
+button.ri_defaultbutton + button.ri_formbutton,
+button.ri_defaultbutton + button.ri_deletebutton,
+button.ri_formbutton + button.ri_defaultbutton,
+button.ri_formbutton + button.ri_formbutton,
+button.ri_formbutton + button.ri_deletebutton,
+button.ri_deletebutton + button.ri_defaultbutton,
+button.ri_deletebutton + button.ri_formbutton,
+button.ri_deletebutton + button.ri_deletebutton,
+a.ri_defaultbutton + a.ri_defaultbutton,
+a.ri_defaultbutton + a.ri_formbutton,
+a.ri_defaultbutton + a.ri_deletebutton,
+a.ri_formbutton + a.ri_defaultbutton,
+a.ri_formbutton + a.ri_formbutton,
+a.ri_formbutton + a.ri_deletebutton,
+a.ri_deletebutton + a.ri_defaultbutton,
+a.ri_deletebutton + a.ri_formbutton,
+a.ri_deletebutton + a.ri_deletebutton {
+  margin-left: var(--ri-action-gap);
+}
+
+/* Solid-color buttons have no border, so the browser's default focus
+   ring can be nearly invisible on them — tabbing to one gives no clue
+   where focus landed. Plain :focus (not :focus-visible) because focus
+   moved by a scripted .focus() call — e.g. the duplicate-item modal's
+   Tab-cycling — doesn't reliably trigger :focus-visible in Chromium even
+   though it originated from a real keydown; :focus always fires. */
+button.ri_defaultbutton:focus, a.ri_defaultbutton:focus,
+button.ri_formbutton:focus, a.ri_formbutton:focus,
+button.ri_deletebutton:focus, a.ri_deletebutton:focus {
+  outline: 3px solid #2684ff;
+  outline-offset: 2px;
+}
+
+/* Action bar at the bottom of the RIForm detail view: evenly spaced
+   buttons, separated from the form fields, with Delete pushed to the
+   far edge so it can't be hit by accident. */
+.ri_formactions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--ri-action-gap);
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.ri_formactions .ri_deletebutton {
+  margin-left: auto;
+}
+
+button.ri_linkbutton {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #6b7280;
+  text-decoration: underline;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.ri_formtable {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ri_fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ri_fieldlabel {
+    flex: 0 0 200px; /* Set a fixed width for the label on larger screens */
+    text-align: right;
+    padding-right: 1rem;
+    box-sizing: border-box;
+    font-weight: bold;
+    font-size: 13pt;
+}
+
+.ri_formcontrol {
+    flex: 1;
+    min-width: 0; /* Ensure the input doesn't shrink below its minimum width */
+}
+
+.ri_forminput {
+    width: 100%;
+    max-width: 100%;
+    padding: 0.5rem;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+}
+
+.ri_error {
+    color: #b91c1c;
+    margin: 6px 0;
+}
+
+/* Explanatory text about ONE specific field above it (RIForm's "answer to
+   this question" caption, not a general-purpose note) — indented to align
+   under .ri_formcontrol, the same column the field's own input sits in,
+   rather than starting under .ri_fieldlabel like a plain paragraph would.
+   Not the same as .ri_hint, which is unindented, general-purpose hint text
+   not tied to a specific field (a "nothing found" message, help text below
+   a whole section, etc.) — pick whichever matches what the text is about. */
+.ri_fieldhint {
+    margin: 0.25rem 0 0.75rem calc(200px + 1rem);
+    color: #555;
+    font-size: 0.85rem;
+}
+
+.ri_success {
+    color: #15803d;
+    margin: 6px 0;
+}
+
+.ri_qty_input input {
+    width: 4em;
+    max-width: 4em;
+}
+
+.ri_qty_input input[type="number"]::-webkit-outer-spin-button,
+.ri_qty_input input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.ri_qty_input input[type="number"] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+
+.ir-combo-box {
+  position: relative;
+}
+
+.ir-combo-box-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.ir-combo-box-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.ir-combo-box-option {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.ir-combo-box-option:hover {
+  background-color: #f0f0f0;
+}
+
+.ir_combo_box_highlighted {
+  background-color: #e0e7ff;
+}
+
+.ri_subtable_container {
+	border-style: solid;
+	border-width: 2px;
+	border-color: #888888;
+	padding-top: 0px;
+	padding-bottom: 6px;
+	margin-bottom: 12px;
+}
+
+.ri_subtable_container .ri_datatable {
+	margin: 0;
+}
+
+.ri_datasubtable_head {
+	background-color: #888888;
+	color: #ffffff;
+	font-weight: bold;
+	font-size: 14pt;
+	text-align: center;
+	padding: 3px;
+	margin-bottom: 0px;
+	
+}
+
+h2.text-xl {
+	padding-top: 0.5em;
+	padding-bottom: 0.5em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+	  .ri_form_container {
+	    padding: 15px;
+	  }
+	
+	  table.ri_datatable th, table.ri_formtable th,
+	  table.ri_datatable td, table.ri_formtable td {
+	    padding: 8px 10px;
+	  }
+	
+	  button.ri_formbutton, button.ri_defaultbutton, button.ri_deletebutton,
+	  a.ri_formbutton, a.ri_defaultbutton, a.ri_deletebutton {
+	    font-size: 0.9rem;
+	    padding: 8px 15px;
+	  }
+  
+      .ri_fieldset {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .ri_fieldlabel {
+        flex: 1; /* Take up the full width */
+        text-align: left;
+        padding-right: 0;
+      }
+
+      .ri_formcontrol {
+        width: 100%; /* flex:1 only sizes height in column layout, so give
+                        controls (e.g. TileSelect's grid) a real width to
+                        wrap against instead of shrinking to content */
+      }
+
+      .ri_fieldhint {
+        margin-left: 0; /* .ri_fieldlabel is full-width above the field in
+                            this stacked layout, so there's no label column
+                            left to align under. */
+      }
+}

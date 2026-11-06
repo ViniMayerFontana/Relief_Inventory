@@ -1,0 +1,110 @@
+<script setup>
+import GuestLayout from '@/Layouts/GuestLayout.vue';
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import { Head, useForm } from '@inertiajs/vue3';
+import { onMounted } from 'vue';
+
+const props = defineProps({
+    status: {
+        type: String,
+    },
+	turnstile_enabled: {
+	    type: Boolean,
+	    default: true,
+	},
+	turnstile_site_key: {
+	    type: String,
+	    default: null,
+	},
+});
+
+const form = useForm({
+    email: '',
+	'cf-turnstile-response': '', // Add Turnstile response field
+});
+
+// Function to submit the form
+const submit = async () => {
+    if (props.turnstile_enabled) {
+        // Get the Turnstile response token
+        const turnstileResponse = document.querySelector("[name='cf-turnstile-response']")?.value;
+
+        if (!turnstileResponse) {
+            alert("Conclua a verificação CAPTCHA.");
+            return;
+        }
+
+        // Add Turnstile token to the form
+        form['cf-turnstile-response'] = turnstileResponse;
+    }
+
+    // Submit the form
+    form.post(route('password.email'));
+};
+
+// Load Cloudflare Turnstile script on mount (skipped when Turnstile is
+// disabled, e.g. a closed-network deployment with no internet access)
+onMounted(() => {
+    if (!props.turnstile_enabled) return;
+    const script = document.createElement("script");
+    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+    script.async = true;
+    script.defer = true;
+    document.head.appendChild(script);
+});
+</script>
+
+<template>
+    <GuestLayout>
+        <Head title="Esqueci minha senha" />
+
+        <div class="mb-4 text-sm text-gray-600">
+            Esqueceu sua senha? Não tem problema. Informe seu endereço de e-mail
+            e enviaremos um link para redefini-la.
+        </div>
+
+        <div
+            v-if="status"
+            class="mb-4 text-sm font-medium text-green-600"
+        >
+            {{ status }}
+        </div>
+
+        <form @submit.prevent="submit">
+            <div>
+                <InputLabel for="email" value="E-mail" />
+
+                <TextInput
+                    id="email"
+                    type="email"
+                    class="mt-1 block w-full"
+                    v-model="form.email"
+                    required
+                    autofocus
+                    autocomplete="username"
+                />
+
+                <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+			<!-- Cloudflare Turnstile (hidden on closed-network deployments) -->
+			<div v-if="turnstile_enabled" style="margin-top: 1em;">
+				<div class="cf-turnstile" :data-sitekey="turnstile_site_key"></div>
+			</div>
+			
+            <div class="mt-4 flex items-center justify-end">
+                <PrimaryButton
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
+                    Enviar link para redefinir a senha
+                </PrimaryButton>
+            </div>
+
+					
+        </form>
+    </GuestLayout>
+</template>

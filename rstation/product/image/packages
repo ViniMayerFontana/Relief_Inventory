@@ -1,0 +1,45 @@
+# Extra apt packages for the R Station print server (see ../../PRINT_SERVER.md).
+# Appended to the platform's package list at build time. Hotfix bundles can't
+# install packages, so adding or changing anything here means a full image.
+
+# The print system. The print server talks to it over IPP on localhost:631
+# (backend/cups_client.py) — no other client library is needed.
+cups
+
+# The PDF -> printer filters CUPS uses to print the PDFs the website renders.
+cups-filters
+
+# Printer drivers, so Settings > Printers' "Find a specific driver" search has something to
+# offer printers that aren't driverless (backend/printer_setup.py, `drivers`). A curated
+# set rather than printer-driver-all, which drags in the whole HPLIP stack: foomatic's PPD
+# database (the Brother/Ricoh/Kyocera/etc. PCL6 and PostScript entries — the biggest single
+# win), plus the open-source drivers that cover most of what donors actually hand over.
+# Printers that speak IPP Everywhere / AirPrint still need none of this.
+foomatic-db-compressed-ppds
+printer-driver-gutenprint
+printer-driver-brlaser
+printer-driver-pxljr
+printer-driver-foo2zjs
+printer-driver-splix
+printer-driver-escpr
+printer-driver-c2esp
+printer-driver-postscript-hp
+printer-driver-hpcups
+# Label printers (Dymo, Brother P-touch) — the website prints labels too.
+printer-driver-dymo
+printer-driver-ptouch
+
+# Ghostscript renders PDFs for the SATO label filter (rstation-sato-driver, a .deb built by ../../build-sato-driver-deb.sh
+# into debs/ — SATO's own driver is x86-only). cups-filters pulls it in too; named here because that package needs it.
+ghostscript
+
+# No colour emoji font here: the website serves its own to the browser (@font-face in resources/css/app.css).
+# Only the on-device Settings pages (the platform's local app) lack one, and they draw a single emoji (the Wi-Fi lock).
+
+# The offline local server (Settings > Local server; ../../LOCAL_SERVER.md): the container engine and
+# Compose to run the stack baked in by build-offline-bundle.sh, and curl for the supervisor's health
+# probe. Their units are overridden (system/docker.service,
+# docker.socket) so none of it runs unless that page has been switched on.
+docker.io
+docker-compose
+curl

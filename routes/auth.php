@@ -1,0 +1,118 @@
+<?php
+
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\Auth\ConfirmablePasswordController;
+use App\Http\Controllers\Auth\EmailVerificationNotificationController;
+use App\Http\Controllers\Auth\EmailVerificationPromptController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\Auth\PasswordController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\PinController;
+use App\Http\Controllers\Auth\RegisteredUserController;
+use App\Http\Controllers\Auth\RegistrationTrackController;
+use App\Http\Controllers\Auth\RequiredPasswordChangeController;
+use App\Http\Controllers\Auth\TrainingLoginController;
+use App\Http\Controllers\Auth\UnlockController;
+use App\Http\Controllers\Auth\VerifyEmailController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+
+Route::middleware('guest')->group(function () {
+    Route::get('register', [RegisteredUserController::class, 'create'])
+        ->name('register');
+
+    Route::post('register', [RegisteredUserController::class, 'store']);
+
+    Route::get('login', [AuthenticatedSessionController::class, 'create'])
+        ->name('login');
+
+    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+
+    // Shared-terminal PIN unlock — a faster re-auth for someone who
+    // already did a real login on this specific, admin-approved device.
+    // Throttled at the route level too, on top of UnlockController's own
+    // per-person-per-device RateLimiter check (defense in depth: this
+    // guards against hammering across many different person_ids from one
+    // device, which the per-person key alone wouldn't catch).
+    Route::get('unlock', [UnlockController::class, 'show'])->name('unlock');
+    Route::post('unlock/badge', [UnlockController::class, 'scanBadge'])
+        ->middleware('throttle:20,1')->name('unlock.badge');
+    Route::post('unlock/pin', [UnlockController::class, 'attemptPin'])
+        ->middleware('throttle:20,1')->name('unlock.pin');
+
+    // Training Mode tap-your-name login — only in a training warehouse, on approved devices (see the controller).
+    Route::get('training-login', [TrainingLoginController::class, 'show'])->name('training-login');
+    Route::post('training-login', [TrainingLoginController::class, 'login'])
+        ->middleware('throttle:30,1')->name('training-login.login');
+    Route::post('training-login/trainees', [TrainingLoginController::class, 'addTrainee'])
+        ->middleware('throttle:15,1')->name('training-login.add');
+
+    Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
+        ->name('password.request');
+
+    Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->name('password.email');
+
+    Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])
+        ->name('password.reset');
+
+    Route::post('reset-password', [NewPasswordController::class, 'store'])
+        ->name('password.store');
+});
+
+// Outside both groups: the emailed link must work whether or not the
+// person is logged in in the browser that opens it (see the controller).
+Route::get('verify-email/{id}/{hash}', VerifyEmailController::class)
+    ->middleware('throttle:6,1')
+    ->name('verification.verify');
+
+Route::middleware('auth')->group(function () {
+
+    Route::get('verify-email', EmailVerificationPromptController::class)
+        ->name('verification.notice');
+
+    Route::post('email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+        ->middleware('throttle:6,1')
+        ->name('verification.send');
+
+    // "What brings you here?" — asked once, right after email
+    // verification, then an interim landing page until a real
+    // account-approval workflow exists. See VerifyEmailController.
+    Route::get('registration-track', [RegistrationTrackController::class, 'show'])
+        ->name('registration.track');
+    Route::post('registration-track', [RegistrationTrackController::class, 'store'])
+        ->name('registration.track.store');
+
+    Route::get('registration-pending', function (Request $request) {
+        if (! $request->user()->requested_track) {
+            return redirect()->route('registration.track');
+        }
+
+        return Inertia::render('Auth/RegistrationPending', [
+            'requested_track' => $request->user()->requested_track,
+        ]);
+    })->name('registration.pending');
+
+    Route::get('confirm-password', [ConfirmablePasswordController::class, 'show'])
+        ->name('password.confirm');
+
+    Route::post('confirm-password', [ConfirmablePasswordController::class, 'store']);
+
+    Route::put('password', [PasswordController::class, 'update'])->name('password.update');
+
+    // Temporary password set by an administrator (EnsurePasswordChanged).
+    Route::get('change-password', [RequiredPasswordChangeController::class, 'show'])
+        ->name('password.change-required');
+    Route::post('change-password', [RequiredPasswordChangeController::class, 'store'])
+        ->name('password.change-required.store');
+
+    Route::put('pin', [PinController::class, 'update'])->name('pin.update');
+    Route::delete('pin', [PinController::class, 'destroy'])->name('pin.destroy');
+
+    Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
+        ->name('logout');
+
+    Route::post('switch-user', [AuthenticatedSessionController::class, 'switchUser'])
+        ->name('switch-user');
+});

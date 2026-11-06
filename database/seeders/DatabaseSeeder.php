@@ -1,0 +1,28 @@
+<?php
+
+// This file is part of the Relief Inventory Project (https://reliefinventory.app)
+// Licensed under the GNU GPL v. 3. See LICENSE.md for details
+
+namespace Database\Seeders;
+
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+
+class DatabaseSeeder extends Seeder
+{
+    /**
+     * Seed the application's database.
+     */
+    public function run(): void
+    {
+
+        $this->call(StatusesTableSeeder::class);
+        $this->call(UnitsSeeder::class);
+        $this->call(PackageTypesSeeder::class);
+        $this->call(CategoriesSeeder::class);
+        $this->call(ItemFamilySeeder::class);
+        $this->call(ContainerTypesSeeder::class);
+        $this->call(PermissionsSeeder::class);
+
+    }
+}

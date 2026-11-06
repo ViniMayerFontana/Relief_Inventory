@@ -1,0 +1,186 @@
+<?php
+
+// This file is part of the Relief Inventory Project (https://reliefinventory.app)
+// Licensed under the GNU GPL v. 3. See LICENSE.md for details
+
+use App\Models\County;
+use App\Models\Person;
+use App\Models\Transaction;
+use App\Services\WarehouseMetrics;
+use Illuminate\Support\Carbon;
+
+function makeOrderAt(string $status, Carbon $statusChangedAt, ?Person $person = null): Transaction
+{
+    $order = Transaction::create([
+        'type' => 'order',
+        'person_id' => $person?->id,
+        'status_id' => Transaction::statusId($status),
+        'order_date' => $statusChangedAt->toDateString(),
+    ]);
+    $order->forceFill(['status_changed_at' => $statusChangedAt])->save();
+
+    return $order;
+}
+
+function makeDonationAt(string $status, Carbon $statusChangedAt): Transaction
+{
+    $donation = Transaction::create([
+        'type' => 'donation',
+        'status_id' => Transaction::statusId($status),
+        'order_date' => $statusChangedAt->toDateString(),
+    ]);
+    $donation->forceFill(['status_changed_at' => $statusChangedAt])->save();
+
+    return $donation;
+}
+
+test('orders fulfilled counts bucket by status_changed_at', function () {
+    makeOrderAt(Transaction::STATUS_FILLED, now()->subHours(2));
+    makeOrderAt(Transaction::STATUS_SHIPPED, now()->subDays(5));
+    makeOrderAt(Transaction::STATUS_COMPLETED, now()->subDays(20));
+    makeOrderAt(Transaction::STATUS_DELIVERED, now()->subDays(60));
+    makeOrderAt(Transaction::STATUS_NEW_ORDER, now()->subHours(1)); // not fulfilled - excluded regardless of recency
+
+    $counts = (new WarehouseMetrics)->ordersFulfilledCounts();
+
+    expect($counts['today'])->toBe(1)
+        ->and($counts['last_7_days'])->toBe(2)
+        ->and($counts['last_30_days'])->toBe(3)
+        ->and($counts['all_time'])->toBe(4);
+});
+
+test('an order counts as fulfilled from Filled onward, never before or when closed unfulfilled', function (string $status, bool $fulfilled) {
+    makeOrderAt($status, now()->subHours(1));
+
+    expect((new WarehouseMetrics)->ordersFulfilledCounts()['all_time'])->toBe($fulfilled ? 1 : 0);
+})->with([
+    [Transaction::STATUS_NEW_ORDER, false],
+    [Transaction::STATUS_READY_TO_FILL, false],
+    [Transaction::STATUS_FILLING, false],
+    [Transaction::STATUS_CLOSED_UNFULFILLED, false],
+    [Transaction::STATUS_FILLED, true],
+    [Transaction::STATUS_READY_TO_SHIP, true],
+    [Transaction::STATUS_SHIPPED, true],
+    [Transaction::STATUS_DELIVERED, true],
+    [Transaction::STATUS_DELIVERED_AWAITING_BOL, true],
+    [Transaction::STATUS_COMPLETED, true],
+]);
+
+test('donations completed counts only include Complete status', function () {
+    makeDonationAt(Transaction::STATUS_COMPLETE, now()->subHours(3));
+    makeDonationAt(Transaction::STATUS_SORTING, now()->subHours(1)); // in progress - excluded
+
+    $counts = (new WarehouseMetrics)->donationsCompletedCounts();
+
+    expect($counts['today'])->toBe(1)
+        ->and($counts['all_time'])->toBe(1);
+});
+
+test('trend direction is up when the current window exceeds the prior window beyond the static threshold', function () {
+    // current 7-day window: 3 fulfilled; prior 7-day window: 1 fulfilled
+    makeOrderAt(Transaction::STATUS_FILLED, now()->subDays(1));
+    makeOrderAt(Transaction::STATUS_FILLED, now()->subDays(2));
+    makeOrderAt(Transaction::STATUS_FILLED, now()->subDays(3));
+    makeOrderAt(Transaction::STATUS_FILLED, now()->subDays(10));
+
+    $trend = (new WarehouseMetrics)->ordersTrend(7);
+
+    expect($trend['current'])->toBe(3)
+        ->and($trend['prior'])->toBe(1)
+        ->and($trend['direction'])->toBe('up');
+});
+
+test('trend direction is static when the prior window was zero and the current window is also zero', function () {
+    $trend = (new WarehouseMetrics)->ordersTrend(7);
+
+    expect($trend['current'])->toBe(0)
+        ->and($trend['prior'])->toBe(0)
+        ->and($trend['direction'])->toBe('static');
+});
+
+test('trend direction is up (undefined percent) when the prior window was zero but current is not', function () {
+    makeOrderAt(Transaction::STATUS_FILLED, now()->subDays(1));
+
+    $trend = (new WarehouseMetrics)->ordersTrend(7);
+
+    expect($trend['current'])->toBe(1)
+        ->and($trend['prior'])->toBe(0)
+        ->and($trend['direction'])->toBe('up')
+        ->and($trend['percent'])->toBeNull();
+});
+
+test('trend direction is static when change is within the threshold band', function () {
+    // 21 vs 20 = 5% change, right at the static/up boundary (threshold is "< 5%", so 5% itself is NOT static)
+    // use a clearly-under-threshold pair instead: 100 vs 98 = ~2%
+    for ($i = 0; $i < 100; $i++) {
+        makeOrderAt(Transaction::STATUS_FILLED, now()->subDays(1));
+    }
+    for ($i = 0; $i < 98; $i++) {
+        makeOrderAt(Transaction::STATUS_FILLED, now()->subDays(8));
+    }
+
+    $trend = (new WarehouseMetrics)->ordersTrend(7);
+
+    expect($trend['direction'])->toBe('static');
+});
+
+test('pipeline counts group by status and report zero for statuses with no rows', function () {
+    makeDonationAt(Transaction::STATUS_RECEIVED, now());
+    makeDonationAt(Transaction::STATUS_RECEIVED, now());
+    makeOrderAt(Transaction::STATUS_NEW_ORDER, now());
+
+    $counts = (new WarehouseMetrics)->pipelineCounts();
+
+    expect($counts['donations'][Transaction::STATUS_RECEIVED])->toBe(2)
+        ->and($counts['donations'][Transaction::STATUS_SORTING])->toBe(0)
+        ->and($counts['orders'][Transaction::STATUS_NEW_ORDER])->toBe(1)
+        ->and($counts['orders'][Transaction::STATUS_SHIPPED])->toBe(0);
+});
+
+test('order county breakdown groups by partner county without exposing names', function () {
+    $county = County::create(['county' => 'Thurston', 'state' => 'WA']);
+    // county_id isn't mass-assignable on Person (not in $fillable), so set it directly
+    $inCounty = Person::create(['first_name' => 'A', 'last_name' => 'B']);
+    $inCounty->county_id = $county->id;
+    $inCounty->save();
+    $noCounty = Person::create(['first_name' => 'C', 'last_name' => 'D']);
+
+    makeOrderAt(Transaction::STATUS_NEW_ORDER, now(), $inCounty);
+    makeOrderAt(Transaction::STATUS_NEW_ORDER, now(), $inCounty);
+    makeOrderAt(Transaction::STATUS_NEW_ORDER, now(), $noCounty);
+
+    $breakdown = collect((new WarehouseMetrics)->orderCountyBreakdown());
+
+    expect($breakdown->firstWhere('county', 'Thurston')['count'])->toBe(2)
+        ->and($breakdown->firstWhere('county', 'Unspecified')['count'])->toBe(1)
+        ->and(json_encode($breakdown->all()))->not->toContain('A')->not->toContain('B');
+});
+
+test('order zip breakdown groups by partner zip without exposing names, capped with a total count', function () {
+    $withZip = Person::create(['first_name' => 'A', 'last_name' => 'B', 'zip' => '28677']);
+    $noZip = Person::create(['first_name' => 'C', 'last_name' => 'D']);
+
+    makeOrderAt(Transaction::STATUS_NEW_ORDER, now(), $withZip);
+    makeOrderAt(Transaction::STATUS_NEW_ORDER, now(), $withZip);
+    makeOrderAt(Transaction::STATUS_NEW_ORDER, now(), $noZip);
+
+    $breakdown = (new WarehouseMetrics)->orderZipBreakdown();
+    $rows = collect($breakdown['rows']);
+
+    expect($rows->firstWhere('zip', '28677')['count'])->toBe(2)
+        ->and($rows->firstWhere('zip', 'Unspecified')['count'])->toBe(1)
+        ->and($breakdown['zip_count'])->toBe(2)
+        ->and(json_encode($rows->all()))->not->toContain('A')->not->toContain('B');
+});
+
+test('order zip breakdown caps rows to the given limit but still reports the true zip count', function () {
+    foreach (range(1, 5) as $i) {
+        $person = Person::create(['first_name' => 'P'.$i, 'zip' => sprintf('%05d', 10000 + $i)]);
+        makeOrderAt(Transaction::STATUS_NEW_ORDER, now(), $person);
+    }
+
+    $breakdown = (new WarehouseMetrics)->orderZipBreakdown(limit: 3);
+
+    expect($breakdown['rows'])->toHaveCount(3)
+        ->and($breakdown['zip_count'])->toBe(5);
+});

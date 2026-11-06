@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+    <php>
+        <!-- The whole suite grows ~1 MB per test file (Laravel app instances per test), and ListPayloadLimitsTest
+             builds large JSON payloads late in the run: PHP's default 128M ran out once the suite passed ~60 files. -->
+        <ini name="memory_limit" value="512M"/>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_LOCALE" value="pt_BR"/>
+        <env name="APP_FALLBACK_LOCALE" value="pt_BR"/>
+        <!-- Maintenance mode lives in the per-process array cache, never in storage/framework/down: that file is shared by every
+             parallel worker (and by a dev server on the same checkout), so one test's `down` made other workers' requests 503. -->
+        <env name="APP_MAINTENANCE_DRIVER" value="cache"/>
+        <env name="APP_MAINTENANCE_STORE" value="array"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="BROADCAST_CONNECTION" value="null"/>
+        <env name="CACHE_STORE" value="array"/>
+        <env name="CLOUDFLARE_TURNSTILE_ENABLED" value="false"/>
+        <!-- Real MariaDB, not sqlite: this app has MySQL-specific migration/query
+             behavior (see the 2025_01_24_013228 dropForeign-by-name fix), and
+             testing against a different engine than production risks tests
+             passing on behavior that's actually broken on the real database.
+             test_reliefinventory is a separate, disposable database (covered
+             by MariaDB's default `test\_%` grant, so no extra privileges are
+             needed) — RefreshDatabase can freely wipe it without ever
+             touching the real reliefinventory database. -->
+        <env name="DB_CONNECTION" value="mariadb"/>
+        <env name="DB_DATABASE" value="test_reliefinventory"/>
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="PULSE_ENABLED" value="false"/>
+        <env name="RI_RUNTIME" value="systemd"/>
+        <!-- The test warehouse's files and key (MULTI_WAREHOUSE.md §11), never the dev instance's. -->
+        <env name="RI_WAREHOUSE_STORAGE_DIR" value="storage/framework/testing/warehouses"/>
+        <env name="RI_WAREHOUSE_SECRETS_DIR" value="storage/framework/testing/warehouse-secrets"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="TELESCOPE_ENABLED" value="false"/>
+    </php>
+</phpunit>

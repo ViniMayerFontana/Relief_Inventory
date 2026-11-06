@@ -1,0 +1,172 @@
+<?php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Name
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of your application, which will be used when the
+    | framework needs to place the application's name in a notification or
+    | other UI elements where an application name needs to be displayed.
+    |
+    */
+
+    'name' => env('APP_NAME', 'Relief Inventory'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Environment
+    |--------------------------------------------------------------------------
+    |
+    | This value determines the "environment" your application is currently
+    | running in. This may determine how you prefer to configure various
+    | services the application utilizes. Set this in your ".env" file.
+    |
+    */
+
+    'env' => env('APP_ENV', 'production'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Debug Mode
+    |--------------------------------------------------------------------------
+    |
+    | When your application is in debug mode, detailed error messages with
+    | stack traces will be shown on every error that occurs within your
+    | application. If disabled, a simple generic error page is shown.
+    |
+    */
+
+    'debug' => (bool) env('APP_DEBUG', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application URL
+    |--------------------------------------------------------------------------
+    |
+    | This URL is used by the console to properly generate URLs when using
+    | the Artisan command line tool. You should set this to the root of
+    | the application so that it's available within Artisan commands.
+    |
+    */
+
+    'url' => env('APP_URL', 'http://localhost'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Timezone
+    |--------------------------------------------------------------------------
+    |
+    | Here you may specify the default timezone for your application, which
+    | will be used by the PHP date and date-time functions. The timezone
+    | is set to "UTC" by default as it is suitable for most use cases.
+    |
+    */
+
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Application Locale Configuration
+    |--------------------------------------------------------------------------
+    |
+    | The application locale determines the default locale that will be used
+    | by Laravel's translation / localization methods. This option can be
+    | set to any locale for which you plan to have translation strings.
+    |
+    */
+
+    'locale' => env('APP_LOCALE', 'pt_BR'),
+
+    'fallback_locale' => env('APP_FALLBACK_LOCALE', 'pt_BR'),
+
+    'faker_locale' => env('APP_FAKER_LOCALE', 'pt_BR'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Encryption Key
+    |--------------------------------------------------------------------------
+    |
+    | This key is utilized by Laravel's encryption services and should be set
+    | to a random, 32 character string to ensure that all encrypted values
+    | are secure. You should do this prior to deploying the application.
+    |
+    */
+
+    'cipher' => 'AES-256-CBC',
+
+    'key' => env('APP_KEY'),
+
+    'previous_keys' => [
+        ...array_filter(
+            explode(',', env('APP_PREVIOUS_KEYS', ''))
+        ),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Maintenance Mode Driver
+    |--------------------------------------------------------------------------
+    |
+    | These configuration options determine the driver used to determine and
+    | manage Laravel's "maintenance mode" status. The "cache" driver will
+    | allow maintenance mode to be controlled across multiple machines.
+    |
+    | Supported drivers: "file", "cache"
+    |
+    */
+
+    'maintenance' => [
+        'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
+        'store' => env('APP_MAINTENANCE_STORE', 'database'),
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Hosting Attribution
+    |--------------------------------------------------------------------------
+    |
+    | Shown on the welcome page to credit whoever hosts a given deployment
+    | (each install is independently deployable per the project README).
+    |
+    */
+
+    'hosted_by' => env('HOSTED_BY', 'unknown'),
+
+    'hosted_link' => env('HOSTED_LINK', 'https://example.com'),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Docker image support
+    |--------------------------------------------------------------------------
+    |
+    | git_commit: the Docker image has no .git directory, so the commit it was
+    | built from is baked in as RI_GIT_COMMIT (see Dockerfile) and
+    | GitVersionService uses it in preference to asking git.
+    |
+    | trusted_proxies: comma-separated proxy IPs/CIDRs (or "*") whose
+    | X-Forwarded-* headers are believed, so generated URLs use the public
+    | https scheme/host when a TLS-terminating reverse proxy sits in front.
+    | Empty (the default) trusts none.
+    |
+    */
+
+    'git_commit' => env('RI_GIT_COMMIT'),
+
+    // The release tag the image was built for (RI_VERSION build arg); null on a source install,
+    // where GitVersionService::release() asks `git describe --tags` instead.
+    'version' => env('RI_VERSION'),
+
+    'trusted_proxies' => env('TRUSTED_PROXIES'),
+
+    /*
+    | Optional hardening for the first-run wizard (/install): when set, whoever
+    | completes the wizard must also type this code. Leave unset for the
+    | WordPress-style "first visitor sets it up" flow (fine on a private
+    | network); set it when a brand-new instance is reachable from the internet.
+    */
+    'setup_code' => env('RI_SETUP_CODE'),
+
+];

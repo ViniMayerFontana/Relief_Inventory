@@ -1,0 +1,163 @@
+<?php
+
+// This file is part of the Relief Inventory Project (https://reliefinventory.app)
+// Licensed under the GNU GPL v. 3. See LICENSE.md for details
+
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use App\Models\LoginHistory;
+use App\Models\Person;
+use App\Models\User;
+use App\Services\PinLoginService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Inertia\Inertia;
+use Inertia\Response;
+
+/**
+ * Shared-terminal PIN unlock — a faster re-auth for someone who's already
+ * done a real email+password login on this specific, admin-approved
+ * device, not a weaker substitute for one anywhere else. Two independent
+ * gates checked on every request here (never just one): the device must
+ * be approved (TrustedDevice::status), and the specific person must hold
+ * a live, unexpired grant on it (DeviceTrustGrant) — see PinLoginService.
+ */
+class UnlockController extends Controller
+{
+    private const BADGE_VERIFICATION_TTL_SECONDS = 60;
+
+    public function show(Request $request, PinLoginService $pinLogin): Response|RedirectResponse
+    {
+        $settings = $pinLogin->settings();
+
+        if (! $settings->enabled) {
+            return redirect()->route('login', ['email' => 1]);
+        }
+
+        $device = $pinLogin->currentDevice($request);
+        $people = $device?->isApproved() ? $pinLogin->peopleTrustedOnDevice($device) : collect();
+
+        return Inertia::render('Auth/Unlock', [
+            'deviceApproved' => (bool) $device?->isApproved(),
+            'people' => $people->map(fn (Person $p) => ['id' => $p->id, 'full_name' => $p->full_name])->values(),
+            'requireBadgeAndPin' => $settings->require_badge_and_pin,
+            'badgeLoginEnabled' => $settings->badge_login_enabled,
+        ]);
+    }
+
+    /**
+     * Resolve a scanned/typed badge code to a person, and mark them
+     * badge-verified for a short window — the PIN submission that follows
+     * checks this marker when require_badge_and_pin is on. A badge alone
+     * never logs anyone in; it only ever identifies who's about to try a
+     * PIN, same as tapping a name tile does when that setting is off.
+     */
+    public function scanBadge(Request $request, PinLoginService $pinLogin)
+    {
+        $data = $request->validate(['badge_code' => 'required|string|max:255']);
+
+        $settings = $pinLogin->settings();
+        $device = $pinLogin->currentDevice($request);
+        if (! $settings->enabled || ! $settings->badge_login_enabled || ! $device?->isApproved()) {
+            return response()->json(['message' => 'O desbloqueio por PIN não está disponível neste dispositivo.'], 403);
+        }
+
+        $person = Person::where('badge_code', $data['badge_code'])->first();
+        if (! $person) {
+            return response()->json(['message' => 'Crachá não reconhecido.'], 404);
+        }
+
+        if (! $pinLogin->activeGrant($device, $person->id)) {
+            return response()->json([
+                'message' => 'Este crachá ainda não está configurado para acesso rápido neste dispositivo — entre primeiro com seu e-mail.',
+            ], 401);
+        }
+
+        $request->session()->put('pin_badge_verified_person_id', $person->id);
+        $request->session()->put('pin_badge_verified_at', now()->toIso8601String());
+
+        return response()->json(['person' => ['id' => $person->id, 'full_name' => $person->full_name]]);
+    }
+
+    public function attemptPin(Request $request, PinLoginService $pinLogin)
+    {
+        // person_id is deliberately NOT validated with `exists:people,id` here —
+        // this is a guest-accessible endpoint, and an `exists` failure would let
+        // an unauthenticated caller enumerate valid person IDs before the
+        // device-approval check below even runs. An invalid ID instead just
+        // fails the activeGrant() check further down with the same generic
+        // "session expired" message as any other invalid grant.
+        $data = $request->validate([
+            'person_id' => 'required|integer',
+            'pin' => 'required|digits:5',
+        ]);
+
+        $settings = $pinLogin->settings();
+        $device = $pinLogin->currentDevice($request);
+        if (! $settings->enabled || ! $device?->isApproved()) {
+            return response()->json(['message' => 'O desbloqueio por PIN não está disponível neste dispositivo.'], 403);
+        }
+
+        if (! $pinLogin->activeGrant($device, $data['person_id'])) {
+            return response()->json(['message' => 'Sua sessão de acesso rápido expirou. Entre com seu e-mail.'], 401);
+        }
+
+        $rateLimitKey = 'pin-unlock:'.$device->device_token.':'.$data['person_id'];
+        if (RateLimiter::tooManyAttempts($rateLimitKey, 5)) {
+            return response()->json([
+                'message' => 'Muitas tentativas incorretas. Entre com seu e-mail.',
+            ], 429);
+        }
+
+        if ($settings->require_badge_and_pin && ! $this->badgeRecentlyVerified($request, $data['person_id'])) {
+            return response()->json(['message' => 'Leia seu crachá primeiro.'], 422);
+        }
+
+        $person = Person::findOrFail($data['person_id']);
+
+        if (! $person->verifyPin($data['pin'])) {
+            RateLimiter::hit($rateLimitKey, 300);
+
+            return response()->json(['message' => 'PIN incorreto.'], 401);
+        }
+
+        if ($person->isLoginDisabled()) {
+            return response()->json(['message' => 'Esta conta foi desativada.'], 403);
+        }
+
+        RateLimiter::clear($rateLimitKey);
+        $request->session()->forget(['pin_badge_verified_person_id', 'pin_badge_verified_at']);
+
+        Auth::login(User::findOrFail($person->id));
+        $request->session()->regenerate();
+
+        LoginHistory::record($person->id, 'pin', $request->ip(), $request->userAgent());
+
+        // A successful PIN unlock re-proves presence on the device, so it's
+        // worth refreshing the grant's expiry too (session_duration mode
+        // especially — otherwise a person who's been actively working
+        // could still get bumped mid-shift at the original login's expiry).
+        $pinLogin->grantTrust($device, $person->id);
+        $wasKiosk = $pinLogin->clearKioskMode($device);
+
+        // See AuthenticatedSessionController::store — same "land back on the
+        // kiosk page, don't force it" handling for a device coming out of lock.
+        return response()->json([
+            'redirect' => $wasKiosk ? '/volunteers/kiosk?closeout=1' : route('dashboard'),
+        ]);
+    }
+
+    private function badgeRecentlyVerified(Request $request, int $personId): bool
+    {
+        if ($request->session()->get('pin_badge_verified_person_id') !== $personId) {
+            return false;
+        }
+
+        $verifiedAt = $request->session()->get('pin_badge_verified_at');
+
+        return $verifiedAt && now()->diffInSeconds($verifiedAt) < self::BADGE_VERIFICATION_TTL_SECONDS;
+    }
+}

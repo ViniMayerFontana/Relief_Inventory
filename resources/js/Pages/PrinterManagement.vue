@@ -1,0 +1,341 @@
+<!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
+     Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
+
+<!-- PrinterManagement.vue
+
+	Every printer on every print server at a glance (permission: manage-devices): live
+	status (idle / printing / error / offline / unavailable) and how many jobs are waiting,
+	with a Clear Queue action for people who also hold manage-print-queue, and the order
+	printers appear in Print menus — set by dragging a printer within its site (or with the
+	up/down buttons, for keyboards and touch), saved as sort_order. Also holds the label size
+	settings (pallet and inventory labels) (LabelSetting; PrinterAdminController::saveLabelSettings). A "Print a PDF"
+	card (manage-print-queue) uploads any PDF to a chosen printer (PrintController::storeUpload). Printers are set up
+	(name, site, paper, on/off) on the R Station Devices page. Server half:
+	PrinterAdminController::overview/reorder.
+-->
+
+<script setup>
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head } from '@inertiajs/vue3';
+import axios from 'axios';
+import { computed, onMounted, onUnmounted, ref } from 'vue';
+
+defineProps({
+	breadcrumb: {
+		type: Array,
+	},
+	canClearQueue: {
+		type: Boolean,
+		default: false,
+	},
+	canUploadPdf: {
+		type: Boolean,
+		default: false,
+	},
+});
+
+const REFRESH_MS = 5000;
+
+const printers = ref([]);
+const error = ref('');
+const notice = ref('');
+const dragging = ref(null); // printer id being dragged
+const dragOver = ref(null); // printer id it is hovering over
+const confirmingClear = ref(null);
+const labelSettings = ref(null); // { pallet_label_media, options: [{ key, label }] }, loaded once so the 5 s refresh can't undo a pick
+const savingLabelSize = ref(false);
+
+// "Print a PDF": upload any PDF to one of the printers. It prints at its own page size, so the paper has to match.
+const pdfFile = ref(null);
+const pdfPrinterId = ref('');
+const pdfCopies = ref(1);
+const pdfInput = ref(null);
+const sendingPdf = ref(false);
+let timer = null;
+
+// Printers grouped by site, in the order the server sent them (site, then sort_order).
+const groups = computed(() => {
+	const map = new Map();
+	for (const printer of printers.value) {
+		const key = printer.site_id ?? 'none';
+		if (!map.has(key)) map.set(key, { key, site: printer.site || 'No site assigned', printers: [] });
+		map.get(key).printers.push(printer);
+	}
+	return [...map.values()];
+});
+
+async function load() {
+	if (dragging.value !== null) return; // don't pull the list out from under a drag
+	try {
+		const { data } = await axios.get('/json/printer-overview');
+		printers.value = data.printers;
+		if (!labelSettings.value) labelSettings.value = data.label_settings;
+	} catch (e) {
+		error.value = e.response?.data?.message || 'Não foi possível carregar as impressoras.';
+	}
+}
+
+function dot(printer) {
+	if (printer.status === 'idle' || printer.status === 'printing') return 'bg-green-500';
+	if (printer.status === 'error') return 'bg-red-500';
+	return 'bg-amber-500';
+}
+
+function statusText(printer) {
+	if (printer.status === 'unavailable') return printer.status_message || 'indisponível';
+	const labels = { idle: 'pronta', printing: 'imprimindo', error: 'erro', offline: 'offline' };
+	return printer.status_message ? `${labels[printer.status] || printer.status}: ${printer.status_message}` : labels[printer.status] || printer.status;
+}
+
+// ---- Ordering ----
+async function saveOrder(group, ids) {
+	error.value = '';
+	notice.value = '';
+	try {
+		await axios.post('/json/printers/reorder', { ids });
+		notice.value = `Ordem de impressão salva para ${group.site}.`;
+	} catch (e) {
+		error.value = e.response?.data?.message || 'Não foi possível salvar a ordem.';
+	}
+	dragging.value = null;
+	dragOver.value = null;
+	await load();
+}
+
+function moveWithin(group, printer, delta) {
+	const ids = group.printers.map((p) => p.id);
+	const from = ids.indexOf(printer.id);
+	const to = from + delta;
+	if (to < 0 || to >= ids.length) return;
+	ids.splice(to, 0, ids.splice(from, 1)[0]);
+	saveOrder(group, ids);
+}
+
+function onDragStart(event, printer) {
+	dragging.value = printer.id;
+	event.dataTransfer.effectAllowed = 'move';
+	event.dataTransfer.setData('text/plain', String(printer.id)); // Firefox needs data to start a drag
+}
+
+function onDrop(group, target) {
+	const ids = group.printers.map((p) => p.id);
+	const from = ids.indexOf(dragging.value);
+	const to = ids.indexOf(target.id);
+	if (from === -1 || to === -1 || from === to) {
+		dragging.value = dragOver.value = null;
+		return;
+	}
+	ids.splice(to, 0, ids.splice(from, 1)[0]);
+	saveOrder(group, ids);
+}
+
+function onDragEnd() {
+	dragging.value = null;
+	dragOver.value = null;
+}
+
+// ---- Print a PDF (manage-print-queue) ----
+// Printers that can take a job: switched on, with paper and a site (the same rule as the Print menus).
+const usablePrinters = computed(() => printers.value.filter((p) => p.active && p.media_label && p.site_id));
+const pdfPrinter = computed(() => usablePrinters.value.find((p) => p.id === Number(pdfPrinterId.value)) || null);
+
+function onPdfPicked(event) {
+	pdfFile.value = event.target.files?.[0] || null;
+}
+
+async function sendPdf() {
+	error.value = '';
+	notice.value = '';
+	if (!pdfFile.value || !pdfPrinter.value) return;
+	sendingPdf.value = true;
+	try {
+		const form = new FormData();
+		form.append('file', pdfFile.value);
+		form.append('printer_id', pdfPrinter.value.id);
+		form.append('copies', Math.max(1, Math.min(99, Number(pdfCopies.value) || 1)));
+		const { data } = await axios.post('/json/print-upload', form);
+		notice.value = data.message;
+		pdfFile.value = null;
+		if (pdfInput.value) pdfInput.value.value = '';
+		await load();
+	} catch (e) {
+		const errors = e.response?.data?.errors;
+		error.value = (errors && Object.values(errors).flat()[0]) || e.response?.data?.message || 'Não foi possível enviar o PDF.';
+	} finally {
+		sendingPdf.value = false;
+	}
+}
+
+// ---- Pallet label size ----
+async function saveLabelSize() {
+	savingLabelSize.value = true;
+	error.value = '';
+	notice.value = '';
+	try {
+		const { data } = await axios.put('/json/printers/label-settings', {
+			pallet_label_media: labelSettings.value.pallet_label_media,
+			inventory_label_media: labelSettings.value.inventory_label_media,
+		});
+		labelSettings.value = data;
+		notice.value = 'Tamanhos das etiquetas salvos. As novas etiquetas já usarão esses tamanhos.';
+	} catch (e) {
+		error.value = e.response?.data?.message || 'Não foi possível salvar os tamanhos das etiquetas.';
+	} finally {
+		savingLabelSize.value = false;
+	}
+}
+
+// ---- Clearing a queue (manage-print-queue) ----
+async function clearQueue(printer) {
+	if (confirmingClear.value !== printer.id) {
+		confirmingClear.value = printer.id;
+		return;
+	}
+	confirmingClear.value = null;
+	error.value = '';
+	notice.value = '';
+	try {
+		const { data } = await axios.post('/json/print-jobs/clear', { printer_id: printer.id });
+		notice.value = `${data.cleared} ${data.cleared === 1 ? 'trabalho pendente removido' : 'trabalhos pendentes removidos'} da fila de ${printer.name || printer.queue_name}.`;
+		await load();
+	} catch (e) {
+		error.value = e.response?.data?.message || 'Não foi possível limpar essa fila.';
+	}
+}
+
+onMounted(() => {
+	load();
+	timer = setInterval(load, REFRESH_MS);
+});
+onUnmounted(() => clearInterval(timer));
+</script>
+
+<template>
+	<Head title="Impressoras" />
+	<AuthenticatedLayout :breadcrumb="breadcrumb">
+		<div class="max-w-4xl mx-auto p-4 space-y-6">
+			<h1 class="text-2xl font-bold">Impressoras</h1>
+
+			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
+			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
+
+			<section v-if="labelSettings" class="bg-white shadow rounded-lg p-6 space-y-3">
+				<h2 class="text-lg font-semibold">Tamanhos das etiquetas</h2>
+				<p class="text-sm text-gray-600">
+					As etiquetas são formatadas para estes tamanhos, e o menu de impressão oferece somente impressoras configuradas com o
+					mesmo papel (definido na página
+					<a href="/setup/devices" class="underline">Dispositivos R Station</a>).
+				</p>
+				<div class="flex flex-wrap items-center gap-x-6 gap-y-3">
+					<label class="flex items-center gap-2 text-sm">
+						Etiquetas de palete
+						<select v-model="labelSettings.pallet_label_media" class="border rounded px-2 py-1" :disabled="savingLabelSize" @change="saveLabelSize">
+							<option v-for="option in labelSettings.pallet_options" :key="option.key" :value="option.key">{{ option.label }}</option>
+						</select>
+					</label>
+					<label class="flex items-center gap-2 text-sm">
+						Etiquetas de estoque
+						<select v-model="labelSettings.inventory_label_media" class="border rounded px-2 py-1" :disabled="savingLabelSize" @change="saveLabelSize">
+							<option v-for="option in labelSettings.inventory_options" :key="option.key" :value="option.key">{{ option.label }}</option>
+						</select>
+					</label>
+					<span v-if="savingLabelSize" class="text-sm text-gray-500">Salvando…</span>
+				</div>
+			</section>
+
+			<section v-if="canUploadPdf" class="bg-white shadow rounded-lg p-6 space-y-3">
+				<h2 class="text-lg font-semibold">Imprimir um PDF</h2>
+				<p class="text-sm text-gray-600">
+					Envie qualquer PDF para uma impressora. A impressão usará o tamanho de página do arquivo, então use um PDF preparado para o papel
+					carregado na impressora.
+				</p>
+				<p v-if="!usablePrinters.length" class="text-sm text-gray-500">
+					Nenhuma impressora está pronta para uso — configure uma (nome, local, papel e ativação) na página
+					<a href="/setup/devices" class="underline">Dispositivos R Station</a>.
+				</p>
+				<form v-else class="flex flex-wrap items-end gap-x-4 gap-y-3" @submit.prevent="sendPdf">
+					<label class="text-sm">
+						<span class="block text-gray-600">Arquivo PDF</span>
+						<input ref="pdfInput" type="file" accept="application/pdf,.pdf" class="block text-sm" :disabled="sendingPdf" @change="onPdfPicked" />
+					</label>
+					<label class="text-sm">
+						<span class="block text-gray-600">Impressora</span>
+						<select v-model="pdfPrinterId" class="border rounded px-2 py-1" :disabled="sendingPdf">
+							<option value="" disabled>Escolha uma impressora…</option>
+							<option v-for="printer in usablePrinters" :key="printer.id" :value="printer.id">
+								{{ printer.name || printer.queue_name }} — {{ printer.media_label }}<template v-if="printer.site"> · {{ printer.site }}</template>
+							</option>
+						</select>
+					</label>
+					<label class="text-sm">
+						<span class="block text-gray-600">Cópias</span>
+						<input v-model="pdfCopies" type="number" min="1" max="99" class="border rounded px-2 py-1 w-20" :disabled="sendingPdf" />
+					</label>
+					<button type="submit" class="ri_defaultbutton" :disabled="sendingPdf || !pdfFile || !pdfPrinter">
+						{{ sendingPdf ? 'Enviando…' : 'Imprimir' }}
+					</button>
+				</form>
+			</section>
+
+			<p v-if="!printers.length" class="text-sm text-gray-500">
+				Ainda não há impressoras. Elas aparecerão aqui quando um servidor de impressão as informar; configure-as na página
+				<a href="/setup/devices" class="underline">Dispositivos R Station</a>.
+			</p>
+
+			<section v-for="group in groups" :key="group.key" class="bg-white shadow rounded-lg p-6 space-y-3">
+				<h2 class="text-lg font-semibold">{{ group.site }}</h2>
+				<ul class="space-y-2">
+					<li
+						v-for="(printer, index) in group.printers"
+						:key="printer.id"
+						draggable="true"
+						class="border rounded p-3 flex items-center gap-3 bg-gray-50"
+						:class="{ 'opacity-50': dragging === printer.id, 'ring-2 ring-blue-400': dragOver === printer.id && dragging !== printer.id }"
+						@dragstart="onDragStart($event, printer)"
+						@dragover.prevent="dragOver = printer.id"
+						@drop.prevent="onDrop(group, printer)"
+						@dragend="onDragEnd"
+					>
+						<span class="cursor-grab select-none text-gray-400 text-xl leading-none" title="Arraste para reordenar" aria-hidden="true">⠿</span>
+						<span class="inline-block w-3 h-3 rounded-full shrink-0" :class="dot(printer)" :title="statusText(printer)"></span>
+						<div class="grow min-w-0 text-sm">
+							<div class="flex flex-wrap items-baseline gap-x-2">
+								<strong>{{ printer.name || printer.queue_name }}</strong>
+								<span v-if="!printer.active" class="text-xs text-gray-400">desativada — não aparece nos menus de impressão</span>
+								<span v-if="printer.media_label" class="text-xs text-gray-500">{{ printer.media_label }}</span>
+							</div>
+							<div class="text-xs text-gray-500">
+								{{ statusText(printer) }}<template v-if="printer.device_name"> · em {{ printer.device_name }}</template>
+							</div>
+						</div>
+						<div class="text-xs text-right whitespace-nowrap">
+							<div :class="printer.waiting_jobs ? 'text-amber-700 font-medium' : 'text-gray-400'">
+								{{ printer.waiting_jobs }} aguardando
+							</div>
+							<div v-if="printer.failed_jobs" class="text-red-700">{{ printer.failed_jobs }} com falha</div>
+						</div>
+						<button
+							v-if="canClearQueue && (printer.waiting_jobs || printer.failed_jobs)"
+							type="button"
+							class="text-xs underline whitespace-nowrap"
+							:class="confirmingClear === printer.id ? 'text-red-700 font-semibold' : 'text-gray-600'"
+							@click="clearQueue(printer)"
+						>
+							{{ confirmingClear === printer.id ? 'Confirmar limpeza' : 'Limpar fila' }}
+						</button>
+						<span class="flex flex-col">
+							<button type="button" class="text-gray-500 hover:text-gray-900 disabled:opacity-25 leading-none" :disabled="index === 0" :aria-label="`Mover ${printer.name || printer.queue_name} para cima`" @click="moveWithin(group, printer, -1)">▲</button>
+							<button type="button" class="text-gray-500 hover:text-gray-900 disabled:opacity-25 leading-none" :disabled="index === group.printers.length - 1" :aria-label="`Mover ${printer.name || printer.queue_name} para baixo`" @click="moveWithin(group, printer, 1)">▼</button>
+						</span>
+					</li>
+				</ul>
+			</section>
+
+			<p v-if="printers.length" class="text-xs text-gray-500">
+				Arraste uma impressora (ou use as setas) para alterar a ordem em que aparece nos menus de impressão do seu local. O status é atualizado a cada poucos
+				segundos. Para renomear uma impressora, alterar seu local ou tipo de papel, ou ativá-la ou desativá-la, use a página
+				<a href="/setup/devices" class="underline">Dispositivos R Station</a>.
+			</p>
+		</div>
+	</AuthenticatedLayout>
+</template>

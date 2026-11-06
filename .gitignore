@@ -1,0 +1,77 @@
+/.phpunit.cache
+/node_modules
+/public/build
+/public/hot
+/public/storage
+/secrets
+/storage/*.key
+/storage/pail
+/storage/backups
+/vendor
+/chatgpt
+/docs
+/ReviewWithTim
+.env
+.env.backup
+.env.production
+.phpactor.json
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+/.fleet
+/.idea
+/.vscode
+/.zed
+.DS_Store
+
+# feedback-triage: a local-only Claude Code skill for triaging /setup/feedback
+# reports on the demo unit (see .claude/skills/feedback-triage/README.md).
+# Deliberately never committed — deployed to the demo box by hand, outside
+# git and outside the normal deploy pipeline, never to wa26.
+/.claude/skills/feedback-triage/
+/app/Console/Commands/FeedbackAgentList.php
+/app/Console/Commands/FeedbackAgentAct.php
+/database/migrations/*_add_claude_agent_system_person.php
+
+# dev-autofix: a local-only Claude Code skill/loop for the monitor Linode dev
+# box (dev.reliefinventory.app) that pulls TODO.md + /setup/feedback reports,
+# groups them by page/component, and implements+tests fixes on autofix/*
+# branches for human review via the read-only `devbox` git remote. Never
+# pushes to origin itself. Deliberately never committed — deployed to that
+# box by hand, outside the normal deploy pipeline.
+/.claude/skills/dev-autofix/
+
+# print-client (Tauri desktop print server)
+/print-client/target
+/print-client/src-tauri/target
+/print-client/node_modules
+/print-client/ui/dist
+/print-client/src-tauri/gen
+/print-client/src-tauri/resources/SumatraPDF*
+
+# Python bytecode (the Pi print-server tests import the extensionless helper scripts, which writes caches next to them)
+__pycache__/
+*.pyc
+
+# Docker stack: daily DB dumps written by the scheduler container
+/docker/backups
+
+# Local-only working files, never committed
+/.claude/hours-log.txt
+/DiscussionPoints/
+/ShoppingList/
+/landing/
+rstation/product/image/debs/
+# launcher (RI Launcher)
+/launcher/target
+/launcher/src-tauri/target
+/launcher/node_modules
+/launcher/ui/dist
+/launcher/src-tauri/gen
+
+# Personal productivity dashboard (not project files)
+/TASKS.md
+/dashboard.html

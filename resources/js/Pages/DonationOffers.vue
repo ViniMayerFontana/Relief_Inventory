@@ -1,0 +1,807 @@
+<!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
+     Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
+
+<!-- DonationOffers.vue
+
+	Pre-arrival donation offers: someone calls to offer a donation before
+	anything ships. Lives inside Receiving (URL nested under it, linked from
+	Receiving.vue's header — no top-level nav item) but is its own page/
+	permission-gated RIForm rather than tabs bolted onto Receiving.vue, since
+	an offer's record shape/lifecycle (offered -> accepted/refused/diverted,
+	then pending -> cancelled/received) is genuinely different from a
+	Transaction.
+
+	Recording/editing an offer only needs manage-receiving (anyone answering
+	the phone can log a call); the decision buttons (Approve/Refuse/Divert/
+	Cancel/Match) call endpoints gated on manage-donation-offers and are
+	simply hidden by the server 403 for anyone without it, same as any other
+	permission-gated action elsewhere in the app.
+
+	The full status_log history (who/when/how/notes for every transition —
+	the "full conversation history" requirement) is always visible, same
+	always-visible-history pattern as FeedbackReports.vue.
+-->
+
+<script setup>
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import HelpLink from '@/Components/HelpLink.vue';
+import { Head, Link } from '@inertiajs/vue3';
+import TextInput from '@/Components/TextInput.vue';
+import TextArea from '@/Components/TextArea.vue';
+import SearchSelect from '@/Components/SearchSelect.vue';
+import RIForm from '@/Components/RIForm.vue';
+import Modal from '@/Components/Modal.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+
+defineProps({
+	breadcrumb: {
+		type: Array,
+	},
+	// Whether to show the decision buttons at all — see routes/web/receiving.php.
+	// The endpoints are still independently gated server-side either way;
+	// this just avoids offering an action already known to 403.
+	canDecide: {
+		type: Boolean,
+		default: false,
+	},
+});
+
+const contactMethodOptions = [
+	{ value: 'phone', label: 'Telefone' },
+	{ value: 'email', label: 'E-mail' },
+	{ value: 'in_person', label: 'Presencial' },
+	{ value: 'other', label: 'Outro' },
+];
+
+const statusLabels = {
+	offered: 'Oferecida',
+	pending: 'Aguardando chegada',
+	refused: 'Recusada',
+	diverted: 'Redirecionada',
+	cancelled: 'Cancelada',
+	received: 'Recebida',
+};
+
+const statusClasses = {
+	offered: 'don_badge_offered',
+	pending: 'don_badge_pending',
+	refused: 'don_badge_terminal',
+	diverted: 'don_badge_terminal',
+	cancelled: 'don_badge_terminal',
+	received: 'don_badge_received',
+};
+</script>
+
+<template>
+	<Head title="Ofertas de doação" />
+	<AuthenticatedLayout :breadcrumb="breadcrumb">
+		<RIForm
+			ref="riform"
+			title="Ofertas de doação"
+			datasource="/json/donation-offers"
+			newrecordcaption="Registrar oferta de doação"
+			:filter="offerFilter"
+			:sort="offerSort"
+			@select="onOpenRecord"
+			@new="onOpenRecord"
+		>
+			<template #listactions>
+				<label class="don_checkbox">
+					<input type="checkbox" v-model="pendingOnly" />
+					Apenas pendentes (ordenadas pela previsão de chegada)
+				</label>
+				<Link href="/receiving" class="don_backlink">&larr; Voltar ao recebimento</Link>
+				<HelpLink guide="donation-offers">Guia de ofertas de doação</HelpLink>
+			</template>
+
+			<template #thead>
+				<th>Doador</th>
+				<th>Status</th>
+				<th>Previsão de chegada (período)</th>
+				<th>Descrição</th>
+			</template>
+
+			<template #tbody="{ record }">
+				<td>{{ donorName(record) }}</td>
+				<td>
+					<span class="don_badge" :class="statusClasses[record.status]">{{ statusLabels[record.status] }}</span>
+					<span v-if="record.is_overdue" class="don_badge don_badge_overdue">atrasada</span>
+				</td>
+				<td>{{ formatEtaRange(record.eta_start, record.eta_end) }}</td>
+				<td>{{ record.description }}</td>
+			</template>
+
+			<template #default="{ record, editing }">
+				<div class="ri_formtable">
+					<div class="ri_fieldset">
+						<div class="ri_fieldlabel">Doador / origem:</div>
+						<SearchSelect
+							ref="donorSelect"
+							v-model="record.person_id"
+							optionsource="/json/people"
+							display="search_label"
+							:searchfields="['organization', 'first_name', 'last_name']"
+							placeholder="Buscar doadores..."
+							:allowcreate="true"
+							:enabled="editing && isEditableStatus(record)"
+							@selected="(p) => { creatingDonor = false; record.person = p; record.contact_person_id = null; }"
+							@create="startNewDonor"
+						/>
+					</div>
+					<Modal :show="creatingDonor" @close="creatingDonor = false" max-width="sm">
+						<div class="p-6 space-y-4">
+							<h2 class="text-lg font-semibold">Novo doador</h2>
+							<div>
+								<InputLabel value="Nome" />
+								<TextInput v-model="newDonor.first_name" class="mt-1 block w-full" autofocus />
+							</div>
+							<div>
+								<InputLabel value="Sobrenome" />
+								<TextInput v-model="newDonor.last_name" class="mt-1 block w-full" />
+							</div>
+							<div>
+								<InputLabel value="Organização" />
+								<TextInput v-model="newDonor.organization" class="mt-1 block w-full" />
+							</div>
+							<p v-if="donorError" class="text-sm text-red-700">{{ donorError }}</p>
+							<div class="flex justify-end gap-3">
+								<SecondaryButton :disabled="donorSaving" @click="creatingDonor = false">Cancelar</SecondaryButton>
+								<PrimaryButton :disabled="donorSaving" @click="saveNewDonor(record)">Salvar doador</PrimaryButton>
+							</div>
+						</div>
+					</Modal>
+
+					<template v-if="record.person_id && record.person?.is_organization">
+						<div class="ri_fieldset">
+							<div class="ri_fieldlabel">Pessoa de contato:</div>
+							<SearchSelect
+								ref="contactSelect"
+								v-model="record.contact_person_id"
+								:optionsource="`/json/people?parent_person_id=${record.person_id}`"
+								display="full_name"
+								:searchfields="['first_name', 'last_name']"
+								placeholder="Buscar contatos desta organização..."
+								:allowcreate="true"
+								:enabled="editing && isEditableStatus(record)"
+								@create="startNewContact"
+							/>
+						</div>
+						<Modal :show="creatingContact" @close="creatingContact = false" max-width="sm">
+							<div class="p-6 space-y-4">
+								<h2 class="text-lg font-semibold">Novo contato</h2>
+								<div>
+									<InputLabel value="Nome" />
+									<TextInput v-model="newContact.first_name" class="mt-1 block w-full" autofocus />
+								</div>
+								<div>
+									<InputLabel value="Sobrenome" />
+									<TextInput v-model="newContact.last_name" class="mt-1 block w-full" />
+								</div>
+								<div>
+									<InputLabel value="Telefone" />
+									<TextInput v-model="newContact.phone" class="mt-1 block w-full" />
+								</div>
+								<p v-if="contactError" class="text-sm text-red-700">{{ contactError }}</p>
+								<div class="flex justify-end gap-3">
+									<SecondaryButton :disabled="contactSaving" @click="creatingContact = false">Cancelar</SecondaryButton>
+									<PrimaryButton :disabled="contactSaving" @click="saveNewContact(record)">Salvar contato</PrimaryButton>
+								</div>
+							</div>
+						</Modal>
+					</template>
+
+					<div class="ri_fieldset">
+						<div class="ri_fieldlabel">O que está sendo oferecido:</div>
+						<TextArea v-model="record.description" :enabled="editing && isEditableStatus(record)" />
+					</div>
+
+					<!-- Only when logging a new offer: recorded on the offer's first history entry
+					     (DonationOfferController::store). Later calls go through Log a Call. -->
+					<template v-if="!record.id">
+						<div class="ri_fieldset">
+							<div class="ri_fieldlabel">Como a oferta foi recebida?</div>
+							<select v-model="record.contact_method" class="ri_forminput" :disabled="!editing">
+								<option :value="null">Não informado</option>
+								<option value="phone">Telefone</option>
+								<option value="email">E-mail</option>
+								<option value="in_person">Presencialmente</option>
+								<option value="other">Outro</option>
+							</select>
+						</div>
+						<div class="ri_fieldset">
+							<div class="ri_fieldlabel">Anotações da conversa:</div>
+							<TextArea v-model="record.notes" :enabled="editing" />
+						</div>
+					</template>
+
+					<div class="ri_fieldset" v-if="record.status === 'offered'">
+						<div class="ri_fieldlabel">Previsão aproximada de chegada (se conhecida):</div>
+						<div class="ri_formcontrol don_etarange">
+							<input
+								type="date"
+								v-model.lazy="record.eta_start"
+								class="ri_forminput"
+								:disabled="!editing"
+							/>
+							<span>até</span>
+							<input
+								type="date"
+								v-model.lazy="record.eta_end"
+								class="ri_forminput"
+								:disabled="!editing"
+							/>
+						</div>
+					</div>
+
+					<template v-if="record.status === 'pending'">
+						<div class="ri_fieldset">
+							<div class="ri_fieldlabel">Previsão de chegada:</div>
+							<div class="ri_formcontrol don_etarange">
+								<input
+									type="date"
+									v-model.lazy="record.eta_start"
+									class="ri_forminput"
+									:disabled="!editing"
+								/>
+								<span>até</span>
+								<input
+									type="date"
+									v-model.lazy="record.eta_end"
+									class="ri_forminput"
+									:disabled="!editing"
+								/>
+							</div>
+						</div>
+						<div class="ri_fieldset">
+							<div class="ri_fieldlabel">Observações sobre o transporte:</div>
+							<TextArea v-model="record.transit_notes" :enabled="false" />
+						</div>
+					</template>
+
+					<div class="ri_fieldset" v-if="record.status === 'refused'">
+						<div class="ri_fieldlabel">Motivo da recusa:</div>
+						<TextArea v-model="record.refused_reason" :enabled="false" />
+					</div>
+					<div class="ri_fieldset" v-if="record.status === 'diverted'">
+						<div class="ri_fieldlabel">Redirecionada para:</div>
+						<TextInput v-model="record.diverted_to" :enabled="false" />
+					</div>
+					<div class="ri_fieldset" v-if="record.status === 'cancelled'">
+						<div class="ri_fieldlabel">Motivo do cancelamento:</div>
+						<TextArea v-model="record.cancelled_reason" :enabled="false" />
+					</div>
+				</div>
+
+				<!-- Donor history: past donations, requests, and offers, so the
+				     decision isn't made blind. Each subsection always shows its
+				     header, even empty — a section that just disappears when
+				     there's nothing to show reads as "did this load?" rather
+				     than "there's genuinely none." -->
+				<template v-if="record.person">
+					<h3 class="don_subhead">Histórico do doador</h3>
+
+					<h4 class="don_subsubhead">Doações</h4>
+					<div v-if="!pastDonations(record).length" class="ri_hint">Nenhuma doação anterior registrada.</div>
+					<ul v-else class="don_historylist">
+						<li v-for="d in pastDonations(record)" :key="'d' + d.id">
+							Doação nº {{ d.id }} — {{ d.order_date }} — {{ d.status?.name || 'Status desconhecido' }}
+						</li>
+					</ul>
+
+					<h4 class="don_subsubhead">Pedidos</h4>
+					<div v-if="!pastRequests(record).length" class="ri_hint">Nenhum pedido anterior registrado.</div>
+					<ul v-else class="don_historylist">
+						<li v-for="d in pastRequests(record)" :key="'r' + d.id">
+							Pedido nº {{ d.id }} — {{ d.order_date }} — {{ requestStatusLabel(d.status?.name) }}
+						</li>
+					</ul>
+
+					<h4 class="don_subsubhead">Ofertas</h4>
+					<div v-if="!pastOffers(record).length" class="ri_hint">Nenhuma oferta anterior registrada.</div>
+					<ul v-else class="don_historylist">
+						<li v-for="o in pastOffers(record)" :key="'o' + o.id">
+							Oferta nº {{ o.id }} — {{ o.status_date }} — {{ statusLabels[o.status] }}
+						</li>
+					</ul>
+				</template>
+
+				<!-- Full audit trail: every transition, who/when/how/notes -->
+				<h3 class="don_subhead">Histórico</h3>
+				<div class="don_historylog">
+					<div
+						v-for="log in record.status_logs || []"
+						:key="log.id"
+						class="don_logentry"
+					>
+						<span class="font-semibold">
+							{{ logHeadline(log) }}
+						</span>
+						por {{ log.changed_by?.full_name || 'Desconhecido' }}
+						<span class="don_logmeta">— {{ formatDateTime(log.created_at) }}<template v-if="log.contact_method"> · {{ contactMethodLabel(log.contact_method) }}</template></span>
+						<div v-if="log.notes" class="don_lognotes">{{ log.notes }}</div>
+					</div>
+				</div>
+			</template>
+
+			<template #actions="{ editing, record, save, cancel }">
+				<div class="ri_formactions">
+					<template v-if="editing">
+						<button @click="save()" class="ri_defaultbutton">Salvar</button>
+						<button @click="cancel()" class="ri_formbutton">Cancelar</button>
+					</template>
+					<button v-else @click="cancel()" class="ri_defaultbutton">Voltar à lista</button>
+				</div>
+
+				<!-- Decisions are actions on the offer, not field edits — they're
+				     always available here regardless of the record's own
+				     edit-lock toggle above, so approving/refusing/etc. doesn't
+				     require first unlocking the record for editing. -->
+				<template v-if="record.status === 'offered' && canDecide">
+					<h3 class="don_subhead">Decisão</h3>
+					<div class="don_decisionrow">
+						<button @click="startDecision(record, 'approve')" class="ri_defaultbutton">Aprovar</button>
+						<button @click="startDecision(record, 'refuse')" class="ri_formbutton">Recusar</button>
+						<button @click="startDecision(record, 'divert')" class="ri_formbutton">Redirecionar</button>
+					</div>
+				</template>
+				<p v-else-if="record.status === 'offered'" class="ri_hint">
+					Decidir sobre esta oferta (aprovar/recusar/redirecionar) requer a permissão de ofertas de doação.
+				</p>
+
+				<template v-if="record.status === 'pending' && canDecide">
+					<h3 class="don_subhead">Decisão</h3>
+					<div class="don_decisionrow">
+						<button @click="startDecision(record, 'cancel')" class="ri_formbutton">Cancelar oferta</button>
+						<button @click="startDecision(record, 'match')" class="ri_defaultbutton">Vincular à chegada</button>
+					</div>
+					<p class="ri_hint">
+						Ou
+						<Link :href="`/receiving?match_offer_id=${record.id}`">inicie um novo recebimento para esta oferta</Link>.
+					</p>
+				</template>
+
+				<!-- A follow-up call that doesn't decide anything — the donor
+				     pushes the ETA out or adds detail before anyone's
+				     approved/refused it yet. Available whenever a decision
+				     would be (offered or pending), separate from those
+				     buttons since it doesn't change the status. -->
+				<template v-if="record.status === 'offered' || record.status === 'pending'">
+					<div class="don_decisionrow">
+						<button @click="startDecision(record, 'note')" class="ri_formbutton">Registrar ligação / atualizar previsão</button>
+					</div>
+				</template>
+
+				<!-- Inline confirm panel — shown after a decision button is clicked -->
+				<div v-if="decision" class="don_decisionpanel">
+					<h4 class="don_subhead">
+						{{ { approve: 'Aprovar oferta', refuse: 'Recusar oferta', divert: 'Redirecionar oferta', cancel: 'Cancelar oferta', match: 'Vincular à chegada', note: 'Registrar ligação / atualizar' }[decision.action] }}
+					</h4>
+
+					<div class="ri_fieldset" v-if="decision.action === 'note'">
+						<div class="ri_fieldlabel">Previsão de chegada:</div>
+						<div class="ri_formcontrol don_etarange">
+							<input type="date" v-model.lazy="decision.eta_start" class="ri_forminput" />
+							<span>até</span>
+							<input type="date" v-model.lazy="decision.eta_end" class="ri_forminput" />
+						</div>
+					</div>
+					<div class="ri_fieldset" v-if="decision.action === 'note'">
+						<div class="ri_fieldlabel">O que está sendo oferecido (atualize se houver mudanças):</div>
+						<TextArea v-model="decision.description" />
+					</div>
+
+					<div class="ri_fieldset" v-if="decision.action === 'approve'">
+						<div class="ri_fieldlabel">Previsão de chegada (data inicial obrigatória):</div>
+						<div class="ri_formcontrol don_etarange">
+							<input type="date" v-model.lazy="decision.eta_start" class="ri_forminput" />
+							<span>até</span>
+							<input type="date" v-model.lazy="decision.eta_end" class="ri_forminput" />
+						</div>
+					</div>
+					<div class="ri_fieldset" v-if="decision.action === 'approve'">
+						<div class="ri_fieldlabel">Observações sobre o transporte:</div>
+						<TextArea v-model="decision.transit_notes" />
+					</div>
+
+					<div class="ri_fieldset" v-if="decision.action === 'refuse'">
+						<div class="ri_fieldlabel">Motivo (obrigatório):</div>
+						<TextArea v-model="decision.refused_reason" />
+					</div>
+
+					<div class="ri_fieldset" v-if="decision.action === 'divert'">
+						<div class="ri_fieldlabel">Redirecionada para (obrigatório):</div>
+						<TextInput v-model="decision.diverted_to" />
+					</div>
+
+					<div class="ri_fieldset" v-if="decision.action === 'cancel'">
+						<div class="ri_fieldlabel">Motivo (obrigatório):</div>
+						<TextArea v-model="decision.cancelled_reason" />
+					</div>
+
+					<div class="ri_fieldset" v-if="decision.action === 'match'">
+						<div class="ri_fieldlabel">Vincular à doação recebida:</div>
+						<SearchSelect
+							v-model="decision.donation_id"
+							optionsource="/json/donation-offers/unmatched-donations"
+							display="label"
+							:searchfields="['label']"
+							placeholder="Buscar recebimentos não vinculados..."
+						/>
+					</div>
+
+					<div class="ri_fieldset">
+						<div class="ri_fieldlabel">Forma de contato:</div>
+						<select v-model="decision.contact_method" class="ri_forminput">
+							<option :value="null">—</option>
+							<option v-for="o in contactMethodOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
+						</select>
+					</div>
+					<div class="ri_fieldset">
+						<div class="ri_fieldlabel">Observações{{ decision.action === 'note' ? ' (obrigatório)' : '' }}:</div>
+						<TextArea v-model="decision.notes" />
+					</div>
+
+					<p v-if="decisionError" class="ri_error">{{ decisionError }}</p>
+					<div class="ri_formactions">
+						<button @click="confirmDecision(record)" :disabled="decisionSaving" class="ri_defaultbutton">Confirmar</button>
+						<button @click="decision = null" class="ri_formbutton">Cancelar</button>
+					</div>
+				</div>
+			</template>
+		</RIForm>
+	</AuthenticatedLayout>
+</template>
+
+<script>
+import axios from 'axios';
+import { invalidateOptions } from '@/Components/SearchSelect.vue';
+
+export default {
+	data() {
+		return {
+			// Defaults to showing everything — defaulting this to true hid a
+			// just-logged offer (status 'offered', not yet 'pending') right
+			// after saving it, with no visible explanation why.
+			pendingOnly: false,
+
+			creatingDonor: false,
+			newDonor: { first_name: '', last_name: '', organization: '' },
+			donorSaving: false,
+			donorError: null,
+
+			creatingContact: false,
+			newContact: { first_name: '', last_name: '', phone: '' },
+			contactSaving: false,
+			contactError: null,
+
+			decision: null, // { action, ...fields }
+			decisionSaving: false,
+			decisionError: null,
+		};
+	},
+	computed: {
+		offerFilter() {
+			const pendingOnly = this.pendingOnly;
+			return (record) => (pendingOnly ? record.status === 'pending' : true);
+		},
+		offerSort() {
+			return (a, b) => {
+				if (!a.eta_start && !b.eta_start) return 0;
+				if (!a.eta_start) return 1;
+				if (!b.eta_start) return -1;
+				return new Date(a.eta_start) - new Date(b.eta_start);
+			};
+		},
+	},
+	methods: {
+		donorName(record) {
+			return record.person?.full_name || '(no donor recorded)';
+		},
+		formatDateTime(value) {
+			return value ? new Date(value).toLocaleString() : '';
+		},
+		// Parses a "YYYY-MM-DD" string as a local calendar date, not UTC —
+		// `new Date("YYYY-MM-DD")` is spec'd to parse as UTC midnight, which
+		// can render as the wrong day in a timezone west of UTC.
+		formatLocalDate(value) {
+			if (!value) return '';
+			const [y, m, d] = value.split('-').map(Number);
+			return new Date(y, m - 1, d).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+		},
+		formatEtaRange(start, end) {
+			if (!start) return '';
+			const startLabel = this.formatLocalDate(start);
+			if (!end || end === start) return startLabel;
+			return `${startLabel} – ${this.formatLocalDate(end)}`;
+		},
+		contactMethodLabel(value) {
+			return { phone: 'Telefone', email: 'E-mail', in_person: 'Presencial', other: 'Outro' }[value] || value;
+		},
+		// A logNote() entry (follow-up call, no decision made) has
+		// from_status === to_status — distinguish that from the initial
+		// "logged as" entry (from_status null) and an actual transition.
+		// Duplicates the <script setup> statusLabels map by value (same
+		// reason contactMethodLabel() above duplicates its options rather
+		// than importing them: methods here run outside script setup's
+		// scope and can't see its top-level consts).
+		logHeadline(log) {
+			const labels = {
+				offered: 'Offered',
+				pending: 'Pending Arrival',
+				refused: 'Refused',
+				diverted: 'Diverted',
+				cancelled: 'Cancelled',
+				received: 'Received',
+			};
+			if (!log.from_status) return `Logged as ${labels[log.to_status]}`;
+			if (log.from_status === log.to_status) return `Update — ${labels[log.to_status]}`;
+			return `${labels[log.from_status]} → ${labels[log.to_status]}`;
+		},
+		isEditableStatus(record) {
+			// !record.id covers a brand-new record before its first save,
+			// regardless of whatever status the template happens to carry.
+			return !record.id || record.status === 'offered' || record.status === 'pending';
+		},
+		// Person.orderDonations (order_donations here, per Inertia's snake_case
+		// props) returns every Transaction for this person regardless of
+		// type — donations and orders share one table. Split by type rather
+		// than showing one undifferentiated list, since "New Order"/"Ready
+		// to Fill" statuses only make sense for orders and are confusing
+		// mislabeled as a "Donation".
+		pastDonations(record) {
+			return (record.person?.order_donations || [])
+				.filter((d) => d.type === 'donation' && d.id !== record.donation_id);
+		},
+		pastRequests(record) {
+			return (record.person?.order_donations || []).filter((d) => d.type === 'order');
+		},
+		// Backend/DB language stays "order" (status strings, permission
+		// keys, routes); partner-facing UI language says "Request" instead
+		// — swap the word in an order's status name for display only.
+		requestStatusLabel(statusName) {
+			return statusName ? statusName.replace('Order', 'Request') : 'Status desconhecido';
+		},
+		pastOffers(record) {
+			return (record.person?.donation_offers || []).filter((o) => o.id !== record.id);
+		},
+
+		onOpenRecord() {
+			this.creatingDonor = false;
+			this.creatingContact = false;
+			this.donorError = null;
+			this.contactError = null;
+			this.decision = null;
+			this.decisionError = null;
+		},
+
+		// ---------- donor quick-add ----------
+		startNewDonor(name) {
+			this.creatingDonor = true;
+			this.donorError = null;
+			const parts = (name || '').trim().split(/\s+/);
+			this.newDonor = {
+				first_name: parts[0] || '',
+				last_name: parts.slice(1).join(' '),
+				organization: parts.length <= 1 ? (name || '') : '',
+			};
+		},
+		async saveNewDonor(record) {
+			this.donorError = null;
+			const hasName = this.newDonor.first_name.trim() && this.newDonor.last_name.trim();
+			const hasOrg = (this.newDonor.organization || '').trim();
+			if (!hasName && !hasOrg) {
+				this.donorError = 'Informe o nome e o sobrenome ou uma organização.';
+				return;
+			}
+			this.donorSaving = true;
+			try {
+				const response = await axios.post('/json/people', this.newDonor);
+				invalidateOptions('/json/people');
+				await this.$refs.donorSelect?.refresh(response.data.record.id);
+				record.person_id = response.data.record.id;
+				record.person = response.data.record;
+				this.creatingDonor = false;
+			} catch (error) {
+				this.donorError = error.response?.data?.message || 'Não foi possível salvar o doador.';
+			} finally {
+				this.donorSaving = false;
+			}
+		},
+
+		// ---------- shipment contact quick-add ----------
+		startNewContact(name) {
+			this.creatingContact = true;
+			this.contactError = null;
+			const parts = (name || '').trim().split(/\s+/);
+			this.newContact = { first_name: parts[0] || '', last_name: parts.slice(1).join(' '), phone: '' };
+		},
+		async saveNewContact(record) {
+			this.contactError = null;
+			if (!this.newContact.first_name.trim() && !this.newContact.last_name.trim()) {
+				this.contactError = 'Informe o nome do contato.';
+				return;
+			}
+			this.contactSaving = true;
+			try {
+				const response = await axios.post('/json/people', { ...this.newContact, parent_person_id: record.person_id });
+				invalidateOptions(`/json/people?parent_person_id=${record.person_id}`);
+				await this.$refs.contactSelect?.refresh(response.data.record.id);
+				record.contact_person_id = response.data.record.id;
+				this.creatingContact = false;
+			} catch (error) {
+				this.contactError = error.response?.data?.message || 'Não foi possível salvar o contato.';
+			} finally {
+				this.contactSaving = false;
+			}
+		},
+
+		// ---------- decisions: approve/refuse/divert/cancel/match ----------
+		// eta_start/eta_end arrive from the server as a plain "YYYY-MM-DD"
+		// string (deliberately uncast on the model — see DonationOffer.php),
+		// which is exactly what <input type="date"> expects.
+		toDateInput(value) {
+			return value || '';
+		},
+		startDecision(record, action) {
+			this.decisionError = null;
+			this.decision = {
+				action,
+				eta_start: this.toDateInput(record.eta_start),
+				eta_end: this.toDateInput(record.eta_end),
+				description: record.description || '',
+				transit_notes: '',
+				refused_reason: '',
+				diverted_to: '',
+				cancelled_reason: '',
+				donation_id: null,
+				contact_method: null,
+				notes: '',
+			};
+		},
+		async confirmDecision(record) {
+			this.decisionError = null;
+			const { action } = this.decision;
+
+			if (action === 'approve' && !this.decision.eta_start) {
+				this.decisionError = 'Informe a previsão de chegada.';
+				return;
+			}
+			if (action === 'refuse' && !this.decision.refused_reason.trim()) {
+				this.decisionError = 'Informe um motivo.';
+				return;
+			}
+			if (action === 'divert' && !this.decision.diverted_to.trim()) {
+				this.decisionError = 'Informe para onde esta doação foi redirecionada.';
+				return;
+			}
+			if (action === 'cancel' && !this.decision.cancelled_reason.trim()) {
+				this.decisionError = 'Informe um motivo.';
+				return;
+			}
+			if (action === 'match' && !this.decision.donation_id) {
+				this.decisionError = 'Selecione o recebimento que chegou para associá-lo.';
+				return;
+			}
+			if (action === 'note' && !this.decision.notes.trim()) {
+				this.decisionError = 'Informe uma observação sobre a ligação.';
+				return;
+			}
+
+			// 'note' (a follow-up call that doesn't decide anything) hits
+			// its own endpoint — every other action shares the /{action}
+			// naming convention.
+			const endpoint = action === 'note' ? 'note' : action;
+
+			this.decisionSaving = true;
+			try {
+				const response = await axios.post(`/json/donation-offers/${record.id}/${endpoint}`, this.decision);
+				Object.assign(record, response.data.record);
+				this.decision = null;
+				this.$refs.riform?.fetchRecords();
+			} catch (error) {
+				this.decisionError = error.response?.data?.message || 'Não foi possível salvar.';
+			} finally {
+				this.decisionSaving = false;
+			}
+		},
+	},
+};
+</script>
+
+<style scoped>
+.don_subhead {
+	margin-top: 1.5em;
+}
+.don_subsubhead {
+	margin-top: 0.75em;
+	font-size: 0.9em;
+	color: #555;
+}
+.don_checkbox {
+	display: flex;
+	align-items: center;
+	gap: 0.4em;
+	font-weight: normal;
+}
+.don_backlink {
+	color: #007bff;
+	text-decoration: underline;
+	font-size: 0.9em;
+	align-self: center;
+}
+.don_badge {
+	display: inline-block;
+	margin-right: 0.4em;
+	padding: 0.1em 0.5em;
+	font-size: 0.8em;
+	border-radius: 3px;
+	background: #f3f4f6;
+	color: #374151;
+}
+.don_badge_offered {
+	background: #dbeafe;
+	color: #1e40af;
+}
+.don_badge_pending {
+	background: #fef3c7;
+	color: #92400e;
+}
+.don_badge_received {
+	background: #dcfce7;
+	color: #166534;
+}
+.don_badge_terminal {
+	background: #f3f4f6;
+	color: #6b7280;
+}
+.don_badge_overdue {
+	background: #fee2e2;
+	color: #991b1b;
+}
+.don_historylist {
+	margin: 0.25em 0 0.75em 1.25em;
+	font-size: 0.9em;
+	color: #444;
+}
+.don_historylog {
+	margin: 0.5em 0;
+}
+.don_etarange {
+	display: flex;
+	align-items: center;
+	gap: 0.5em;
+}
+.don_etarange .ri_forminput {
+	width: auto;
+}
+.don_logentry {
+	border: 1px solid #e5e7eb;
+	border-radius: 4px;
+	background: #fafafa;
+	padding: 0.5em 0.75em;
+	margin-bottom: 0.4em;
+	font-size: 0.85em;
+}
+.don_logmeta {
+	color: #888;
+}
+.don_lognotes {
+	margin-top: 0.25em;
+	color: #333;
+}
+.don_decisionrow {
+	display: flex;
+	gap: 0.5em;
+	flex-wrap: wrap;
+	margin: 0.5em 0;
+}
+.don_decisionpanel {
+	border: 1px solid #e5e7eb;
+	border-radius: 4px;
+	padding: 0.75em;
+	margin-top: 0.75em;
+	background: #fafafa;
+}
+</style>

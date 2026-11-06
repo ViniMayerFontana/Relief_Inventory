@@ -1,0 +1,17 @@
+# FrankenPHP (Caddy + embedded PHP) in plain "classic" mode: every request is a
+# normal PHP request, exactly like php-fpm. TLS is off here — put a reverse proxy
+# (or your platform's ingress) in front for HTTPS, or set RI_HTTPS=auto and the
+# entrypoint serves Caddyfile.https instead (certificates handled in the container).
+{
+	frankenphp
+	auto_https off
+	admin off
+	# access log to stdout, errors to stderr
+	log {
+		output stderr
+	}
+}
+
+:{$RI_HTTP_PORT:8080} {
+	import /etc/caddy/Caddyfile.app
+}

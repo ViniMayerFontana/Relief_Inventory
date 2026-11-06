@@ -1,0 +1,204 @@
+<script setup>
+import GuestLayout from '@/Layouts/GuestLayout.vue';
+import InputError from '@/Components/InputError.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import { Head, Link, useForm } from '@inertiajs/vue3';
+import { onMounted, watch } from 'vue';
+
+const props = defineProps({
+	turnstile_enabled: {
+	    type: Boolean,
+	    default: true,
+	},
+	turnstile_site_key: {
+	    type: String,
+	    default: null,
+	},
+});
+
+const form = useForm({
+	first_name: '',
+	last_name: '',
+    email: '',
+    password: '',
+    password_confirmation: '',
+	'cf-turnstile-response': '', // Add Turnstile response field
+	cfturnstile: null,
+});
+
+// Function to reload Turnstile
+const reloadTurnstile = () => {
+    if (window.turnstile) {
+	    window.turnstile.reset(form.cfturnstile);
+    }
+};
+
+const renderTurnstile = () => {
+    if (window.turnstile) {
+	    form.cfturnstile = window.turnstile.render('.cf-turnstile');
+    }
+};
+
+const submit = () => {
+	if (props.turnstile_enabled) {
+		// Get the Turnstile response token
+		const turnstileResponse = document.querySelector("[name='cf-turnstile-response']")?.value;
+
+		if (!turnstileResponse) {
+		    alert("Conclua a verificação CAPTCHA.");
+		    return;
+		}
+
+		// Add Turnstile token to the form
+		form['cf-turnstile-response'] = turnstileResponse;
+	}
+
+	// Submit the form
+    form.post(route('register'), {
+        onFinish: () => {
+			form.reset('password', 'password_confirmation');
+			if (props.turnstile_enabled) reloadTurnstile();
+		},
+    });
+};
+
+// Load Cloudflare Turnstile script on mount (skipped when Turnstile is
+// disabled, e.g. a closed-network deployment with no internet access)
+onMounted(() => {
+    if (!props.turnstile_enabled) return;
+
+    // Already loaded (e.g. arrived here from another Inertia page)
+    if (window.turnstile) {
+        renderTurnstile();
+        return;
+    }
+
+    // Render when the script actually finishes loading, not after a fixed
+    // delay -- on a slow connection a timer fires before window.turnstile
+    // exists and the widget silently never appears.
+    let script = document.getElementById('cf-turnstile-script');
+    if (!script) {
+        script = document.createElement("script");
+        script.id = 'cf-turnstile-script';
+        script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    }
+    script.addEventListener('load', renderTurnstile, { once: true });
+});
+</script>
+
+<template>
+    <GuestLayout>
+        <Head title="Cadastro" />
+
+        <form @submit.prevent="submit">
+			<div>
+			    <InputLabel for="first_name" value="Nome" />
+
+			    <TextInput
+			        id="first_name"
+			        type="text"
+			        class="mt-1 block w-full"
+			        v-model="form.first_name"
+			        required
+			        autofocus
+			        autocomplete="first_name"
+			    />
+
+			    <InputError class="mt-2" :message="form.errors.first_name" />
+			</div>
+			<div>
+			    <InputLabel for="last_name" value="Sobrenome" />
+
+			    <TextInput
+			        id="last_name"
+			        type="text"
+			        class="mt-1 block w-full"
+			        v-model="form.last_name"
+			        required
+			        autofocus
+			        autocomplete="last_name"
+			    />
+
+			    <InputError class="mt-2" :message="form.errors.last_name" />
+			</div>
+
+            <div class="mt-4">
+                <InputLabel for="email" value="E-mail" />
+
+                <TextInput
+                    id="email"
+                    type="email"
+                    class="mt-1 block w-full"
+                    v-model="form.email"
+                    required
+                    autocomplete="username"
+                />
+
+                <InputError class="mt-2" :message="form.errors.email" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel for="password" value="Senha" />
+
+                <TextInput
+                    id="password"
+                    type="password"
+                    class="mt-1 block w-full"
+                    v-model="form.password"
+                    required
+                    autocomplete="new-password"
+                />
+
+                <InputError class="mt-2" :message="form.errors.password" />
+            </div>
+
+            <div class="mt-4">
+                <InputLabel
+                    for="password_confirmation"
+                    value="Confirme a senha"
+                />
+
+                <TextInput
+                    id="password_confirmation"
+                    type="password"
+                    class="mt-1 block w-full"
+                    v-model="form.password_confirmation"
+                    required
+                    autocomplete="new-password"
+                />
+
+                <InputError
+                    class="mt-2"
+                    :message="form.errors.password_confirmation"
+                />
+            </div>
+
+			<!-- Cloudflare Turnstile (hidden on closed-network deployments) -->
+			<div v-if="turnstile_enabled" style="margin-top: 1em;">
+				<div class="cf-turnstile" :data-sitekey="turnstile_site_key"></div>
+			</div>
+			
+            <div class="mt-4 flex items-center justify-end">
+                <Link
+                    :href="route('login')"
+                    class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                >
+                    Já tem cadastro?
+                </Link>
+
+                <PrimaryButton
+                    class="ms-4"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                >
+                    Cadastrar
+                </PrimaryButton>
+            </div>
+        </form>
+    </GuestLayout>
+</template>

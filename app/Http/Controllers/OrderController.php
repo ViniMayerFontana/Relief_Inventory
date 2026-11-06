@@ -1,0 +1,432 @@
+<?php
+
+// This file is part of the Relief Inventory Project (https://reliefinventory.app)
+// Licensed under the GNU GPL v. 3. See LICENSE.md for details
+
+namespace App\Http\Controllers;
+
+use App\Models\ItemType;
+use App\Models\Transaction;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Spatie\LaravelPdf\Facades\Pdf;
+use Spatie\LaravelPdf\PdfBuilder;
+
+/**
+ * Order intake sessions.
+ *
+ * "Order" is the name throughout this file/the DB (matches the `orders`
+ * status strings and the manage-orders permission key) — partner-facing UI
+ * calls the same thing a "Request" instead (see Transaction's status
+ * constants for the full rationale). Same object, two audiences.
+ *
+ * Like donation sorting (and unlike the RIForm document model), order entry
+ * is an event stream: the order header is created the moment a partner is
+ * confirmed, and each requested line is committed as it is entered. A crash
+ * or dropped connection never loses more than the line being typed. Phone
+ * orders and hand-entered PDF order forms both come through this same API —
+ * they are the same activity (a volunteer rapid-keying item numbers).
+ *
+ * Orders are only editable while in "New Order" status; once filling starts
+ * the order locks against intake edits (server-enforced, mirroring sorting's
+ * completed-session rule).
+ */
+class OrderController extends Controller
+{
+    private const WITH_RELATIONS = [
+        'person.county',
+        'enteredBy',
+        'status',
+        'orderLines.itemtype.unit',
+        'itemLedgers.item.itemtype',
+    ];
+
+    private const LINE_VALIDATION = [
+        'itemtype_id' => 'required|exists:itemtypes,id',
+        'qty_requested' => 'required|integer|min:1',
+        'comments' => 'nullable|string',
+        // Self-reported by the partner, entered by staff on their behalf (no
+        // partner portal exists yet). Never required — decision-support
+        // context for the fair-share allocation review, not a formula
+        // input; see dev/FACILITY_NETWORK.md.
+        'need_level' => 'nullable|in:critical,moderate,low',
+    ];
+
+    private const COMPLETE_VALIDATION = [
+        'comments' => 'nullable|string',
+        'fulfillment_method' => 'required|in:delivery,pickup',
+        'needed_by_date' => 'nullable|date',
+        // delivery_days/preferred_time are delivery-only — see complete().
+        'delivery_days' => 'nullable|array',
+        'delivery_days.*' => 'in:Sun,Mon,Tue,Wed,Thu,Fri,Sat',
+        'preferred_time' => 'nullable|string|max:100',
+        'contact_name' => 'nullable|string|max:191',
+        'contact_phone' => 'nullable|string|max:50',
+        'other_needs' => 'nullable|string',
+        // Delivery instructions for the driver (gate codes, dock location,
+        // contact-on-arrival) — separate from other_needs (additional
+        // requested items). Carried through to the BOL.
+        'special_instructions' => 'nullable|string',
+    ];
+
+    /**
+     * Intake edits are only allowed while the order is still "New Order" —
+     * once filling has begun, changing the requested lines would silently
+     * desync what the floor is picking from what the partner sees.
+     */
+    private function rejectIfLocked(Transaction $order)
+    {
+        if ($order->status?->name !== Transaction::STATUS_NEW_ORDER) {
+            abort(response()->json([
+                'message' => 'Este pedido está em separação e não pode mais ser editado.',
+            ], 409));
+        }
+    }
+
+    private function orderQuery()
+    {
+        return Transaction::where('type', 'order')
+            ->with(self::WITH_RELATIONS);
+    }
+
+    /**
+     * Open orders (still in intake or being filled) and recently
+     * shipped/completed ones.
+     */
+    public function index()
+    {
+        $openStatuses = [
+            Transaction::statusId(Transaction::STATUS_NEW_ORDER),
+            Transaction::statusId(Transaction::STATUS_READY_TO_FILL),
+            Transaction::statusId(Transaction::STATUS_FILLING),
+            Transaction::statusId(Transaction::STATUS_FILLED),
+            Transaction::statusId(Transaction::STATUS_READY_TO_SHIP),
+            Transaction::statusId(Transaction::STATUS_SHIPPED),
+            Transaction::statusId(Transaction::STATUS_DELIVERED),
+            Transaction::statusId(Transaction::STATUS_DELIVERED_AWAITING_BOL),
+        ];
+
+        return response()->json([
+            'open' => $this->orderQuery()
+                ->whereIn('status_id', $openStatuses)
+                ->orderBy('id', 'desc')
+                ->get(),
+            'recent' => $this->orderQuery()
+                ->whereNotIn('status_id', $openStatuses)
+                ->orderBy('id', 'desc')
+                ->limit(25)
+                ->get(),
+        ]);
+    }
+
+    /**
+     * Advisory usable stock on hand per itemtype, for the intake screen's
+     * "~N on hand" hint. Staff-facing only — partner-facing surfaces must
+     * never show actual quantities (three-state availability at most).
+     */
+    public function stockHints()
+    {
+        // Ledger rows predating the disposition column count as usable.
+        $hints = DB::table('item_ledgers')
+            ->join('items', 'items.id', '=', 'item_ledgers.item_id')
+            ->groupBy('items.itemtype_id')
+            ->selectRaw("items.itemtype_id,
+                SUM(CASE WHEN COALESCE(item_ledgers.disposition, 'usable') = 'usable'
+                    THEN COALESCE(item_ledgers.qty_added, 0) ELSE 0 END)
+                - SUM(COALESCE(item_ledgers.qty_subtracted, 0)) AS on_hand")
+            ->pluck('on_hand', 'itemtype_id');
+
+        return response()->json(['hints' => $hints]);
+    }
+
+    /**
+     * Open a new order for a confirmed partner. Status is system-controlled:
+     * every order starts as "New Order" and progresses via filling actions,
+     * never from the form.
+     */
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'person_id' => 'required|exists:people,id',
+            'order_date' => 'nullable|date',
+            'comments' => 'nullable|string',
+        ]);
+
+        $order = Transaction::create([
+            'type' => 'order',
+            'person_id' => $data['person_id'],
+            'person_id_user' => Auth::id(),
+            'status_id' => Transaction::statusId(Transaction::STATUS_NEW_ORDER),
+            'order_date' => $data['order_date'] ?? now()->toDateString(),
+            'comments' => $data['comments'] ?? null,
+        ]);
+
+        return response()->json([
+            'record' => $order->load(self::WITH_RELATIONS),
+        ], 201);
+    }
+
+    public function show($id)
+    {
+        return response()->json([
+            'record' => $this->orderQuery()->findOrFail($id),
+        ]);
+    }
+
+    /**
+     * Update order header fields (partner, date, comments).
+     */
+    public function update(Request $request, $id)
+    {
+        $order = Transaction::where('type', 'order')->findOrFail($id);
+        $this->rejectIfLocked($order);
+
+        $data = $request->validate([
+            'person_id' => 'sometimes|required|exists:people,id',
+            'order_date' => 'sometimes|required|date',
+            'comments' => 'nullable|string',
+        ]);
+
+        $order->fill($data)->save();
+
+        return response()->json([
+            'record' => $order->load(self::WITH_RELATIONS),
+        ]);
+    }
+
+    /**
+     * Finalize intake from the Review & Confirm screen: save the
+     * completion fields (comments, delivery/pickup + timing, contact,
+     * other-needs) and move the order out of New Order into Ready to Fill
+     * — which locks it against further intake edits, same as any other
+     * non-New-Order status (see rejectIfLocked). This is the hook a future
+     * fill/pick workflow queries against (status = Ready to Fill) to know
+     * what's ready to work.
+     */
+    public function complete(Request $request, $id)
+    {
+        $order = Transaction::where('type', 'order')->findOrFail($id);
+        $this->rejectIfLocked($order);
+
+        $data = $request->validate(self::COMPLETE_VALIDATION);
+        $data['status_id'] = Transaction::statusId(Transaction::STATUS_READY_TO_FILL);
+
+        // The warehouse controls pickup days/times, not the partner — force
+        // these clear on pickup regardless of what the client sent (e.g. a
+        // leftover selection from switching the radio before submitting).
+        if ($data['fulfillment_method'] === 'pickup') {
+            $data['delivery_days'] = null;
+            $data['preferred_time'] = null;
+        }
+
+        $order->fill($data)->save();
+
+        return response()->json([
+            'record' => $order->load(self::WITH_RELATIONS),
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $order = Transaction::where('type', 'order')->findOrFail($id);
+        $this->rejectIfLocked($order);
+
+        DB::transaction(function () use ($order) {
+            $order->orderLines()->delete();
+            $order->delete();
+        });
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Append one requested line as it is entered.
+     */
+    public function storeLine(Request $request, $id)
+    {
+        $order = Transaction::where('type', 'order')->findOrFail($id);
+        $this->rejectIfLocked($order);
+        $data = $request->validate(self::LINE_VALIDATION);
+
+        $line = $order->orderLines()->create($data);
+
+        return response()->json([
+            'record' => $line->load('itemtype.unit'),
+        ], 201);
+    }
+
+    /**
+     * Correct a previously entered line (also used to combine duplicate
+     * entries of the same item into one line).
+     */
+    public function updateLine(Request $request, $id, $lineId)
+    {
+        $order = Transaction::where('type', 'order')->findOrFail($id);
+        $this->rejectIfLocked($order);
+        $line = $order->orderLines()->findOrFail($lineId);
+
+        $data = $request->validate([
+            'itemtype_id' => 'sometimes|required|exists:itemtypes,id',
+            'qty_requested' => 'sometimes|required|integer|min:1',
+            'comments' => 'nullable|string',
+            'need_level' => 'nullable|in:critical,moderate,low',
+        ]);
+
+        $line->fill($data)->save();
+
+        return response()->json([
+            'record' => $line->load('itemtype.unit'),
+        ]);
+    }
+
+    public function destroyLine($id, $lineId)
+    {
+        $order = Transaction::where('type', 'order')->findOrFail($id);
+        $this->rejectIfLocked($order);
+        $order->orderLines()->findOrFail($lineId)->delete();
+
+        return response()->json(['success' => true]);
+    }
+
+    /**
+     * Offline order form: printed or emailed to a POD/partner who fills in
+     * quantities by hand and returns it, to be hand-keyed in as a
+     * volunteer-transcription order (same intake channel as a phone order —
+     * see the order-intake design notes). Deliberately never prints an
+     * actual stock number: presence in this list ("we have some") is a
+     * request-eligible signal, not a promise, and that boundary lives in
+     * the query itself (on_hand > 0), never rendered.
+     *
+     * sort_hold item types are excluded — they're valid at the sorting
+     * table but not yet supervisor-reviewed into a real orderable number.
+     */
+    public function orderFormPdf()
+    {
+        return $this->orderFormBuilder();
+    }
+
+    /** Unrendered PDF — shared by the download route and the print queue. */
+    public function orderFormBuilder(): PdfBuilder
+    {
+        $generatedAt = now();
+
+        return Pdf::view('reports.order-form', ['categories' => $this->buildOrderFormRecords(), 'generatedAt' => $generatedAt])
+            ->driver('weasyprint')
+            ->format('letter')
+            ->name('order-form-'.$generatedAt->format('Y-m-d').'.pdf');
+    }
+
+    public function buildOrderFormRecords()
+    {
+        $rows = DB::table('itemtypes')
+            ->join('items', 'items.itemtype_id', '=', 'itemtypes.id')
+            ->leftJoin('item_ledgers', 'item_ledgers.item_id', '=', 'items.id')
+            ->leftJoin('categories', 'categories.id', '=', 'itemtypes.category_id')
+            ->leftJoin('units', 'units.id', '=', 'itemtypes.unit_id')
+            ->where('itemtypes.status', 'orderable')
+            ->groupBy('itemtypes.id', 'itemtypes.family', 'itemtypes.variant', 'itemtypes.name', 'categories.name', 'units.abbreviation', 'units.name')
+            ->havingRaw("
+                SUM(CASE WHEN COALESCE(item_ledgers.disposition, 'usable') = 'usable'
+                    THEN COALESCE(item_ledgers.qty_added, 0) ELSE 0 END)
+                - SUM(COALESCE(item_ledgers.qty_subtracted, 0)) > 0
+            ")
+            ->selectRaw('itemtypes.id, itemtypes.family, itemtypes.variant, itemtypes.name, categories.name as category, COALESCE(units.abbreviation, units.name) as unit')
+            ->get();
+
+        $records = $rows->map(fn ($row) => [
+            'display_number' => (new ItemType(['family' => $row->family, 'variant' => $row->variant]))->display_number,
+            'name' => $row->name,
+            'category' => $row->category,
+            'unit' => $row->unit,
+        ])->sortBy([['category', 'asc'], ['display_number', 'asc']])->values();
+
+        return $records->groupBy('category');
+    }
+
+    /**
+     * BOL (Bill of Lading) — "the most important piece of paper in
+     * shipping," per the design notes: a chain-of-custody document, not
+     * just an itemized shipment record. Driver/carrier is filled in once
+     * the Shipping page has assigned one (Ready to Ship or later); before
+     * that the printed form leaves those lines blank for hand-entry. The
+     * signature lines themselves are always blank on this generated copy —
+     * this produces the document to be signed, not a signature-capture
+     * flow (that happens on paper, then comes back via the Driver Portal
+     * as the signed_bol_path upload). Only generatable once an order has
+     * actually been filled. bol_number is assigned the first time this is
+     * called and reused on every reprint after that, so a reload/reprint
+     * never changes the number on an already-printed BOL.
+     */
+    public function bolPdf($id)
+    {
+        return $this->bolBuilder($id);
+    }
+
+    /** Unrendered PDF — shared by the download route and the print queue. */
+    public function bolBuilder($id): PdfBuilder
+    {
+        $order = Transaction::where('type', 'order')
+            ->with(['person', 'driver', 'orderLines.itemtype.unit', 'orderLines.itemLedgers'])
+            ->findOrFail($id);
+
+        $this->abortUnlessFilled($order, 'A BOL can only be generated once an order has been filled.');
+
+        if (! $order->bol_number) {
+            $order->bol_number = 'BOL-'.str_pad($order->id, 6, '0', STR_PAD_LEFT);
+            $order->save();
+        }
+
+        $generatedAt = now();
+
+        return Pdf::view('reports.bol', ['order' => $order, 'generatedAt' => $generatedAt])
+            ->driver('weasyprint')
+            ->format('letter')
+            ->name($order->bol_number.'.pdf');
+    }
+
+    private function abortUnlessFilled(Transaction $order, string $message): void
+    {
+        $eligible = [
+            Transaction::STATUS_FILLED,
+            Transaction::STATUS_READY_TO_SHIP,
+            Transaction::STATUS_SHIPPED,
+            Transaction::STATUS_DELIVERED,
+            Transaction::STATUS_DELIVERED_AWAITING_BOL,
+            Transaction::STATUS_COMPLETED,
+        ];
+        if (! in_array($order->status?->name, $eligible, true)) {
+            abort(409, $message);
+        }
+    }
+
+    /**
+     * Shipping label (4 x 6.5 in) — the same shipment facts as the BOL, sized for the pallet. Always the
+     * large label (not a LabelSetting choice: it has to hold an address and instructions). The barcode
+     * is the order number, "ORD-" + the id zero-padded like bol_number. Date Packed is when the last
+     * fill record was written (there is no packed-at column; the status timestamp moves on at shipping).
+     */
+    public function shippingLabelPdf($id)
+    {
+        return $this->shippingLabelBuilder($id);
+    }
+
+    public function shippingLabelBuilder($id): PdfBuilder
+    {
+        $order = Transaction::where('type', 'order')->with('person')->findOrFail($id);
+
+        $this->abortUnlessFilled($order, 'A shipping label can only be generated once an order has been filled.');
+
+        $media = config('printing.media.label_large');
+        $packed = $order->itemLedgers()->whereNotNull('order_line_id')->max('created_at');
+
+        return Pdf::view('reports.shipping-label', [
+            'order' => $order,
+            'orderNumber' => 'ORD-'.str_pad((string) $order->id, 6, '0', STR_PAD_LEFT),
+            'datePacked' => $packed ? Carbon::parse($packed) : $order->status_changed_at,
+            'paper' => ['width' => $media['width'], 'height' => $media['height']],
+        ])->driver('weasyprint')->paperSize($media['width'], $media['height'], 'in')
+            ->name('shipping-label-'.$order->id.'.pdf');
+    }
+}

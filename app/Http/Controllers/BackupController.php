@@ -1,0 +1,170 @@
+<?php
+
+// This file is part of the Relief Inventory Project (https://reliefinventory.app)
+// Licensed under the GNU GPL v. 3. See LICENSE.md for details
+
+namespace App\Http\Controllers;
+
+use App\Models\Backup;
+use App\Models\BackupSchedule;
+use App\Models\Control\InstanceAuditLog;
+use App\Services\BackupService;
+use App\Services\RestoreService;
+use App\Services\Warehouses\WarehouseContext;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use RuntimeException;
+
+/**
+ * Backs the Backups section of /setup/system (permission: manage-backups): start an on-demand backup zip, list,
+ * download and delete them. The work itself is BackupService's detached process; this only starts it and reports status.
+ * The application-key panel is a separate permission (view-app-key) and a password-confirmed POST.
+ */
+class BackupController extends Controller
+{
+    public function __construct(private BackupService $backups, private RestoreService $restore) {}
+
+    public function index()
+    {
+        $this->backups->reapInterrupted();
+        $this->backups->prune();
+
+        return response()->json([
+            'records' => Backup::orderByDesc('id')->limit(100)->get(),
+            'keep_days' => (int) config('backup.keep_days'),
+            'schedule' => $this->schedulePayload(),
+        ]);
+    }
+
+    /** The warehouse's snapshot schedule, plus what the page needs to explain it (the size of the latest zip for a space estimate). */
+    private function schedulePayload(): array
+    {
+        return BackupSchedule::current()->toArray() + [
+            'scheduler_enabled' => (bool) config('backup.container.enabled'),
+            // The schedule's hours are in the server's timezone (what now() is); the page says which, so nobody has to guess.
+            'timezone' => config('app.timezone'),
+            'last_size_bytes' => Backup::where('status', 'complete')->orderByDesc('id')->value('size_bytes'),
+        ];
+    }
+
+    public function schedule()
+    {
+        return response()->json($this->schedulePayload());
+    }
+
+    public function updateSchedule(Request $request)
+    {
+        $data = $request->validate([
+            'hourly_enabled' => 'required|boolean', 'hourly_keep' => 'required|integer|min:1|max:168',
+            'daily_enabled' => 'required|boolean', 'daily_hour' => 'required|integer|min:0|max:23',
+            'daily_keep' => 'required|integer|min:1|max:90', 'daily_with_files' => 'required|boolean',
+            'weekly_enabled' => 'required|boolean', 'weekly_dow' => 'required|integer|min:0|max:6',
+            'weekly_keep' => 'required|integer|min:1|max:52', 'weekly_with_files' => 'required|boolean',
+            'monthly_enabled' => 'required|boolean', 'monthly_keep' => 'required|integer|min:1|max:36', 'monthly_with_files' => 'required|boolean',
+        ]);
+        BackupSchedule::current()->update($data);
+        Log::notice('Backup schedule changed', ['person' => Auth::id()] + $data);
+        InstanceAuditLog::record('warehouse.backup_schedule_changed', app(WarehouseContext::class)->current(), $data, Auth::user()->email);
+
+        return response()->json($this->schedulePayload());
+    }
+
+    /**
+     * Roll this warehouse back to one of its own snapshots (RestoreService::runSnapshot). Everything entered since the snapshot is lost, so it
+     * takes the same two things as a restore from the Restore page: the administrator's permission and password. The restore replaces the
+     * database and its sessions, so who is doing it travels in a file (stageOwnRestore) and the person stays Administrator afterwards.
+     */
+    public function restoreSnapshot(Request $request, int $id)
+    {
+        $user = Auth::user();
+        $warehouse = app(WarehouseContext::class)->current();
+        abort_unless($user->hasPermission('admin-system'), 403, 'Permissão obrigatória ausente: admin-system');
+        abort_unless($warehouse->isActive() && ! $warehouse->is_training, 403, 'Não é possível reverter este armazém por aqui.');
+        $data = $request->validate(['password' => 'required|string']);
+
+        if (! $user->password || ! Hash::check($data['password'], $user->password) || ! $user->account) {
+            return response()->json(['message' => 'A senha está incorreta.', 'errors' => ['password' => ['A senha está incorreta.']]], 422);
+        }
+        $backup = Backup::findOrFail($id);
+        abort_unless($backup->status === 'complete' && $backup->filename && RestoreService::isSnapshotName($backup->filename) && is_file($backup->path()), 404);
+        if (! BackupService::hasDatabase($backup->scope)) {
+            return response()->json(['message' => 'Esse backup contém apenas arquivos; não há dados para restaurar.'], 422);
+        }
+        if ($this->restore->isRunning() || Backup::whereIn('status', Backup::ACTIVE)->exists()) {
+            return response()->json(['message' => 'Há um backup ou uma restauração em andamento. Aguarde a conclusão.'], 409);
+        }
+
+        $this->restore->stageOwnRestore([
+            'account_id' => $user->account->id, 'first_name' => (string) $user->first_name, 'last_name' => (string) $user->last_name,
+            'any_lineage' => false,
+        ]);
+        InstanceAuditLog::record('warehouse.rollback_started', $warehouse, ['backup' => $backup->filename, 'tiers' => $backup->tiers], $user->email);
+        Log::warning('Rollback to a snapshot started', ['person' => $user->id, 'backup' => $backup->filename]);
+        $this->restore->launchSnapshot($backup->filename);
+
+        return response()->json(['message' => 'A reversão foi iniciada.'], 202);
+    }
+
+    public function store(Request $request)
+    {
+        // A files-only zip is a disaster-recovery tool (`backup:create --scope=storage`); the page offers the two
+        // everyday choices only.
+        $data = $request->validate(['scope' => 'required|in:database,full']);
+
+        try {
+            $backup = $this->backups->start(Auth::id(), $data['scope']);
+        } catch (RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 409);
+        }
+        Log::notice('Backup requested', ['backup' => $backup->id, 'person' => Auth::id(), 'scope' => $backup->scope]);
+
+        return response()->json(['message' => 'O backup foi iniciado.', 'record' => $backup], 202);
+    }
+
+    public function download(int $id)
+    {
+        $backup = Backup::findOrFail($id);
+        abort_unless($backup->status === 'complete' && is_file($backup->path()), 404);
+        Log::notice('Backup downloaded', ['backup' => $backup->id, 'person' => Auth::id()]);
+
+        // BinaryFileResponse streams from disk and honours Range requests, so a multi-GB download can resume.
+        return response()->download($backup->path(), $backup->filename, ['Cache-Control' => 'no-store']);
+    }
+
+    public function destroy(int $id)
+    {
+        $backup = Backup::findOrFail($id);
+        if ($backup->isActive()) {
+            return response()->json(['message' => 'Esse backup ainda está em andamento.'], 409);
+        }
+        $this->backups->delete($backup);
+        Log::notice('Backup deleted', ['backup' => $id, 'person' => Auth::id()]);
+
+        return response()->json(['message' => 'Backup excluído.']);
+    }
+
+    /**
+     * Reveal this warehouse's key (what its encrypted values are under; the instance's APP_KEY is not what a restore needs). A POST (never a GET, so it can't be linked, prefetched or land in a URL log) that
+     * re-asks for the person's own password, is throttled at the route, never cached, and is logged.
+     */
+    public function appKey(Request $request)
+    {
+        $data = $request->validate(['password' => 'required|string']);
+        $user = Auth::user();
+
+        if (! $user->password || ! Hash::check($data['password'], $user->password)) {
+            Log::warning('Warehouse key reveal refused: wrong or missing password', ['person' => $user->id]);
+
+            return response()->json([
+                'message' => 'A senha está incorreta.',
+                'errors' => ['password' => [$user->password ? 'A senha está incorreta.' : 'Sua conta não tem uma senha definida, portanto a chave não pode ser exibida.']],
+            ], 422);
+        }
+        Log::warning('Warehouse key revealed', ['person' => $user->id]);
+        InstanceAuditLog::record('warehouse.key_revealed', app(WarehouseContext::class)->current(), [], $user->email);
+
+        return response()->json(['key' => app(WarehouseContext::class)->current()->key()])->header('Cache-Control', 'no-store, private');
+    }
+}
