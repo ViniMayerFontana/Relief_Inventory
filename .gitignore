@@ -75,3 +75,7 @@ rstation/product/image/debs/
 # Personal productivity dashboard (not project files)
 /TASKS.md
 /dashboard.html
+
+# Personal AI-instruction overlays (loaded additively by the harnesses, never committed)
+/AGENTS.local.md
+/CLAUDE.local.md

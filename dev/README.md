@@ -1,7 +1,7 @@
 # Developer docs
 
-Start here for how to build, test and change the project. Humans and agents use the same docs; `/CLAUDE.md` holds only the
-conventions an agent must always have loaded and points back here.
+Start here for how to build, test and change the project. Humans and agents use the same docs; `/AGENTS.md` (mirrored
+byte-identical as `/CLAUDE.md`) holds only the conventions an agent must always have loaded and points back here.
 
 ## Processes
 | To do this | Read |

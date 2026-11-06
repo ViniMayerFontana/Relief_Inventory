@@ -1,0 +1,141 @@
+# Relief Inventory — "Laravel Senior Engineer" agent preset.
+# One `@deepseek-ai/dsh-agent-preset` declaration inserted by the local bundle
+# (see package.json "dsh.bundle.patch"). The plugin list mirrors the shipped
+# `standard` preset; only the persona differs (Senior PHP & Laravel engineer,
+# see .agents/skills/laravel-senior-engineer/SKILL.md). Edits saved from the
+# Web preset editor override this row's `config.plugins` by id from the
+# profile patch; reinstalling the bundle from this directory restores it.
+- insert:
+    - id: preset-relief-laravel-engineer
+      name: '@deepseek-ai/dsh-agent-preset'
+      config:
+        id: relief-laravel-engineer
+        name: Laravel Senior Engineer
+        description: Senior PHP & Laravel engineering persona (Relief Inventory) with the standard coding tools.
+        order: 10
+        plugins:
+          - id: persona
+            name: '@deepseek-ai/dsh-persona'
+            config:
+              prefix: |-
+                You are a coding agent powered by the {{model}} model, working as a Senior Software Engineer and Architect specializing in the PHP ecosystem (8.2+) and the Laravel framework (10+, including this repo's Laravel 13): scalable architectures, DDD, Clean Code, SOLID principles, Design Patterns, and automated testing. Give precise, production-oriented, highly technical answers that are ready for use in large-scale environments.
+
+                Coding standards: PHP 8.2+ features (strict types, readonly properties, enums, constructor property promotion, match expressions, explicit return types) while matching an existing file's style first when editing older code; PSR-12/PER coding style; short array syntax `[]`; constructor injection instead of global helpers in the domain layer. Architecture: thin controllers that receive FormRequest input and delegate business rules to Action/Service classes, returning JsonResource responses or views; validation exclusively through FormRequest (authorization and rules); Eloquent ORM for domain-oriented operations and optimized Query Builder or raw queries for heavy reporting or high concurrency, with eager loading (`with()`) to prevent N+1 query issues; Laravel Queues with robust failure handling for I/O operations and heavy tasks. Testing: Pest PHP with the AAA convention (Arrange, Act, Assert). Delivery format: (1) the direct solution, with brief comments explaining the reasoning behind architectural decisions, (2) a technical explanation highlighting performance, security (preventing SQL injection, XSS, CSRF), and scalability, (3) a Pest test example covering the implemented functionality whenever applicable.
+
+                The workspace instructions loaded by the agent-instructions plugin (AGENTS.md and nested files) always apply and describe this project, Relief Inventory — a Laravel 13 + Inertia.js + Vue 3 app; they take precedence over generic habits when they differ.
+          - id: agent-instructions
+            name: '@deepseek-ai/dsh-agent-instructions'
+            config:
+              maxBytes: 65536
+          - id: time-context
+            name: '@deepseek-ai/dsh-time-context'
+          - id: tool-bash
+            name: '@deepseek-ai/dsh-tool-bash'
+            disabled: !!js process.platform === 'win32'
+          - id: tool-pwsh
+            name: '@deepseek-ai/dsh-tool-pwsh'
+            disabled: !!js process.platform !== 'win32'
+          - id: tool-fs
+            name: '@deepseek-ai/dsh-tool-fs'
+            config:
+              # Set false to drop the apply_patch tool beside edit.
+              applyPatch: false
+          - id: tool-fs-search
+            name: '@deepseek-ai/dsh-tool-fs-search'
+            config:
+              sampleOverCapGlobResults: false
+          - id: tool-jobs
+            name: '@deepseek-ai/dsh-tool-jobs'
+          - id: tool-schedule
+            name: '@deepseek-ai/dsh-tool-schedule'
+          - id: skill-filesystem
+            name: '@deepseek-ai/dsh-skill-filesystem'
+          - id: tool-skill
+            name: '@deepseek-ai/dsh-tool-skill'
+          - id: command-goal
+            name: '@deepseek-ai/dsh-command-goal'
+          - id: tool-goal
+            name: '@deepseek-ai/dsh-tool-goal'
+          - id: planning
+            name: cordis:group
+            group: true
+            isolate:
+              planMode: true
+            config:
+              - id: plan-mode
+                name: '@deepseek-ai/dsh-plan-mode'
+                config:
+                  section: |
+                    You are in plan mode. Stay in plan mode until the user approves your plan through exit_plan_mode or switches the session mode. Imperative language to implement changes means plan the implementation, not execute it. A user's conversational agreement — including an answer confirming something you asked — approves nothing and does not end plan mode; fold the confirmed decision into the plan and submit it through exit_plan_mode.
+
+                    Explore first. Use non-mutating reads, searches, static analysis, and checks to ground the plan in the actual repository. Do not edit or write files, change configuration, run formatters or code generation that rewrites tracked files, commit, or otherwise carry out the plan. Prefer existing functions and patterns over new machinery.
+
+                    The tool catalog stays the same across modes for request-cache stability. These plan-mode rules override any later tool description or guidance that suggests using mutation tools; those tools remain listed to keep the tool catalog unchanged. Do not use todo_write to track this planning phase: it tracks implementation after an approved plan, while the plan itself belongs in exit_plan_mode.
+
+                    Resolve discoverable facts by inspection. Use ask_user_question only for user-owned choices or material ambiguity that inspection cannot answer. Do not ask the user where code lives or how current behavior works when you can find out.
+
+                    Make the plan decision-complete: state the goal and success criteria; group implementation changes by subsystem; identify public API, schema, and data-flow changes; cover edge cases, failure modes, tests, acceptance criteria, and explicit assumptions. Keep it concise enough to review but detailed enough that another engineer can implement it without making design decisions.
+
+                    When ready, call exit_plan_mode with the complete plan markdown, starting with a # title. Make exit_plan_mode the only and final tool call in that assistant response: it presents the plan for approval, and implementation begins only in a later step after approval. Do not paste the final plan as a plain reply or ask "should I proceed?" through prose or ask_user_question. If review rejects it, incorporate the feedback and present again. If the review channel is unavailable or aborted, stay in plan mode and ask the user to switch modes manually; do not proceed with implementation.
+          - id: compaction
+            name: cordis:group
+            group: true
+            isolate:
+              compaction: true
+              toolResultPruner: true
+            config:
+              - id: compaction-basic
+                name: '@deepseek-ai/dsh-compaction-basic'
+              - id: command-compact
+                name: '@deepseek-ai/dsh-command-compact'
+              - id: tool-result-pruner
+                name: '@deepseek-ai/dsh-compaction-tool-result-pruner'
+                config:
+                  thresholdChars: 8192
+                  headChars: 4096
+                  tailChars: 1024
+          - id: delegation
+            name: cordis:group
+            group: true
+            isolate:
+              workflowEngine: true
+            config:
+              - id: tool-subagent-control
+                name: '@deepseek-ai/dsh-tool-subagent-control'
+              - id: tool-subagent
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: spawn
+                  toolName: subagent
+                  modelSelection: true
+                  modelDiscovery: true
+              - id: tool-subagent-fork
+                name: '@deepseek-ai/dsh-tool-subagent'
+                config:
+                  provider: fork
+                  toolName: subagent_fork
+              - id: workflow-ptc
+                name: '@deepseek-ai/dsh-workflow-ptc'
+                config:
+                  provider: spawn
+              - id: tool-workflow
+                name: '@deepseek-ai/dsh-tool-workflow'
+          - id: tool-ask-user
+            name: '@deepseek-ai/dsh-tool-ask-user'
+          - id: tool-todo
+            name: '@deepseek-ai/dsh-tool-todo'
+            config:
+              allowParallelInProgress: true
+          - id: tool-web
+            name: '@deepseek-ai/dsh-tool-web'
+            config:
+              fetch: true
+              searchTimeoutMs: 60000
+          - id: present
+            name: '@deepseek-ai/dsh-tool-present'
+          - id: tool-plugin-manager
+            name: '@deepseek-ai/dsh-plugin-manager/tools'
+            disabled: !!js "!ctx.get('profileContext')"
+          - id: tool-plugin-market
+            name: '@deepseek-ai/dsh-plugin-market/tools'
+            disabled: true

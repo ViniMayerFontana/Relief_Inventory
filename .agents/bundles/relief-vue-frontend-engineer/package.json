@@ -1,0 +1,13 @@
+{
+	"name": "relief-vue-frontend-engineer-bundle",
+	"description": "Relief Inventory local DeepSeek Harness bundle: the 'Vue.js Senior Front-end Engineer' agent preset (standard tooling with the Senior Vue.js engineering persona).",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"main": "index.js",
+	"dsh": {
+		"bundle": {
+			"patch": "./cordis.patch.yml"
+		}
+	}
+}

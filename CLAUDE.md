@@ -1,7 +1,7 @@
-# CLAUDE.md
+# AGENTS.md
 
-Guidance for Claude Code in this repo. Keep this file short: durable conventions and pointers only. Subsystem detail
-lives in `dev/notes/`; the doc map is `dev/README.md`.
+Guidance for AI coding agents in this repo (DeepSeek Harness, Claude Code, and similar). Keep this file short: durable
+conventions and pointers only. Subsystem detail lives in `dev/notes/`; the doc map is `dev/README.md`.
 
 ## What this is
 
@@ -29,11 +29,27 @@ administrator updates by hand from a shell (`dev/BUILDING.md`, "Updating"). Don'
 (in a comment next to the code, or the matching `dev/notes/` file). Markdown files are named `ALL_UPPERCASE_WITH_UNDERSCORES.md`
 (`README.md` too); `dev/notes/` files are named for their topic, e.g. `PRINT_QUEUE.md`.
 
+## Agent setup in this repo
+
+- `AGENTS.md` (this file) is the canonical always-loaded instruction file. `CLAUDE.md` is a byte-identical copy for Claude
+  Code; instruction loaders collapse identical copies, so both stay consistent. Edit this file first, then copy it over
+  `CLAUDE.md` unchanged.
+- `.agents/skills/<name>/SKILL.md` holds project skills (DeepSeek Harness discovers them there; `.claude/skills/` mirrors
+  them for Claude Code — keep both copies in sync). Existing: `admin-page-style`, `laravel-senior-engineer` (the repo's
+  PHP/Laravel engineering persona), `vue-senior-frontend-engineer` (the Vue.js front-end engineering persona).
+- `.agents/bundles/<name>/` holds local DeepSeek Harness profile bundles — currently `relief-laravel-engineer` (the
+  "Laravel Senior Engineer" agent preset) and `relief-vue-frontend-engineer` (the "Vue.js Senior Front-end Engineer"
+  agent preset): standard tooling plus each persona. Install or update them with the plugin manager from the bundle
+  directory (a `link:` spec, so edits here reach the profile on reload).
+- `AGENTS.local.md` / `CLAUDE.local.md` (gitignored) are personal overlays the harness loads additively; keep uncommitted
+  preferences there, never project conventions.
+
 ## Editing docs
 
-Keep persistent docs (CLAUDE.md, TODO, ROADMAP, README) brief: a short summary, plus a link to a file in `dev/` (project-wide,
-persistent topics) or `dev/notes/` (implementation-specific notes) when detail is needed. Don't paste implementation detail or dated
-history into them. New detail goes in the matching `dev/` file; add a pointer in `dev/README.md` if you create one.
+Keep persistent docs (AGENTS.md/CLAUDE.md, TODO, ROADMAP, README) brief: a short summary, plus a link to a file in `dev/`
+(project-wide, persistent topics) or `dev/notes/` (implementation-specific notes) when detail is needed. Don't paste
+implementation detail or dated history into them. New detail goes in the matching `dev/` file; add a pointer in
+`dev/README.md` if you create one.
 
 ## Committing
 
