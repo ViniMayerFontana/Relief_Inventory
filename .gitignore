@@ -75,3 +75,10 @@ rstation/product/image/debs/
 # Personal productivity dashboard (not project files)
 /TASKS.md
 /dashboard.html
+
+# DeepSeek Harness runtime mirrors of agent profiles (canonical, versioned copies live in /Agents)
+/.dsh/
+
+# ai-localizer CLI working files (translate queue + on-disk cache)
+.i18n-cache/
+.i18n-queue/

@@ -4,6 +4,7 @@
 
 import '../css/app.css';
 import { setWarehouse, withWarehouse } from './bootstrap';
+import { i18n, setLocale } from './i18n';
 
 import { createInertiaApp, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -22,11 +23,15 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         setWarehouse(props.initialPage.props.warehouse);
         router.on('navigate', (event) => setWarehouse(event.detail.page.props.warehouse));
+        // App locale from the backend (APP_LOCALE via HandleInertiaRequests);
+        // no-op for unknown locales, which keeps the 'en' fallback.
+        setLocale(props.initialPage.props.locale);
         const app = createApp({ render: () => h(App, props) });
         // Templates: `:href="$withWarehouse('/report/x.csv')"` — every plain download link names its warehouse.
         app.config.globalProperties.$withWarehouse = withWarehouse;
         return app
             .use(plugin)
+            .use(i18n)
             .use(ZiggyVue)
             .mount(el);
     },

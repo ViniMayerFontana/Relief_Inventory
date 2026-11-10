@@ -1,0 +1,11 @@
+{
+  "Pages": {
+    "placeholder": {
+      "search_by_category_name": "Buscar por nome da categoria..."
+    },
+    "title": {
+      "item_category_entry": "Cadastro de categorias de itens",
+      "item_category_management": "Gerenciamento de categorias de itens"
+    }
+  }
+}

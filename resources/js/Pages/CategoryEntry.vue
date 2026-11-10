@@ -36,7 +36,7 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
 </script>
 
 <template>
-  <Head title="Item Category Entry" />
+  <Head :title="$t('Pages.title.item_category_entry')" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <template #header>
     </template>

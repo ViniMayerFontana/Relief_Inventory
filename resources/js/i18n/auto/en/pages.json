@@ -1,0 +1,11 @@
+{
+  "Pages": {
+    "placeholder": {
+      "search_by_category_name": "Search by Category Name..."
+    },
+    "title": {
+      "item_category_entry": "Item Category Entry",
+      "item_category_management": "Item Category Management"
+    }
+  }
+}

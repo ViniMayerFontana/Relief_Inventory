@@ -1,0 +1,15 @@
+{
+  "Errors": {
+    "TurnstileMisconfigured": {
+      "text": {
+        "and_set_both": ", e defina tanto",
+        "docker_compose_up_d": "docker compose up -d",
+        "or_give_it_keys": "Ou forneça as chaves",
+        "then_run": "; então execute:",
+        "this_page_isn_t": "Esta página ainda não está configurada",
+        "this_page_uses_cloudflare": "Esta página usa o Cloudflare Turnstile (uma verificação de bot), que está ativado mas não tem chaves. O administrador do servidor precisa fazer uma das opções abaixo e reiniciar a aplicação:",
+        "turn_it_off": "Desative-o"
+      }
+    }
+  }
+}
