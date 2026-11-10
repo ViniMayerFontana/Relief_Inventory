@@ -267,6 +267,103 @@ Happy to contribute a PR (Apache-2.0).
 
 ---
 
+## Issue 6 — extract registra VALUE de select como chave de tradução
+
+**Título (EN):**
+
+> `Extract turns select option values into translation keys — risks rewriting value: 'x' into value: t('...')`
+
+**Corpo (EN):**
+
+````markdown
+### What happens
+
+In a Vue SFC, an inline options array like
+
+```js
+const typeOptions = [
+  { value: 'weight', label: 'Weight' },
+  { value: 'other',  label: 'Other'  },
+];
+```
+
+gets its option VALUE (`'other'`, a machine identifier persisted to the database via
+`v-model`) extracted as a translatable string — it landed in the base locale as
+`Commons.text.other: "other"`, while the label correctly became
+`Commons.text.other_2: "Other"`.
+
+The replace phase did not rewrite it in our run, but the key map contains
+`Commons|text|other`, so a script-side string-literal replacement pass that matches
+object property values could rewrite `value: 'other'` into `value: t('Commons.text.other')`
+— which would silently change the data written by `v-model` and break stored records.
+This makes every `extract` run on a codebase with inline option arrays a latent
+data-corruption risk, not just a cosmetic false positive.
+
+### Expected
+
+Exclude string literals assigned to common value-like property names
+(`value`, `id`, `key`, `slug`, `type`?) from extraction — or apply the code validators
+(`validateText`) to script object-literal property values, the same way the Blade path
+lacks validators (see our earlier report).
+
+### Workaround used
+
+Verbatim translation for the false-positive key (translation value == source string)
+and per-batch diff review.
+
+### Environment
+
+`@ai-localizer/cli` / `@ai-localizer/core` v0.1.1 (patched replacers; extractor unmodified
+from HEAD 6d478b3), Windows 11, Node v24.20.0, Laravel 13 + Inertia 2 + Vue 3.5.
+
+Happy to contribute a PR (Apache-2.0).
+````
+
+---
+
+## Issue 7 — cleanup varre só o srcRoot: chaves usadas por Blade aparecem como "unused"
+
+**Título (EN):**
+
+> `Cleanup usage scan only covers srcRoot — keys referenced from Blade views are flagged unused and would be deleted`
+
+**Corpo (EN):**
+
+````markdown
+### What happens
+
+`cleanup-i18n-unused.js` builds its "key usage" index by scanning the project's
+`srcRoot` (for Laravel: `resources/js`, 168 files in our project). Keys referenced from
+Blade templates (`resources/views/**`) via `{{ __("Errors.TurnstileMisconfigured.text.this_page_isn_t") }}`
+are therefore reported as unused.
+
+In our run, 10 of 22 keys were flagged — all nine Blade-referenced keys (an error page
+and a report title) plus one false-positive extract key. Running the suggested
+`cleanup --apply` would have deleted the locale keys for a live error page, silently
+reverting it to English (and `__()` would fall back to returning the key itself).
+
+### Expected
+
+The usage scan should include the Blade views root (`resources/views`) for Laravel
+projects — the rewrite phase already knows this path (`rewrite-i18n-blade.js` hardcodes
+it), so the cleanup phase can reuse the same resolution. At minimum, `--apply` should
+refuse to delete keys whose namespace matches a Blade file layout when Blade is a
+detected backend.
+
+### Workaround used
+
+Never run `cleanup --apply` on this project; treat the report as noise.
+
+### Environment
+
+`@ai-localizer/cli` / `@ai-localizer/core` v0.1.1 (HEAD 6d478b3, cleanup unmodified),
+Windows 11, Node v24.20.0, Laravel 13 + Inertia 2 + Vue 3.5.
+
+Happy to contribute a PR (Apache-2.0).
+````
+
+---
+
 ## Checklist de abertura (para quem for colar)
 
 - [ ] Issue 1 (A) — VueReplacer / slots
@@ -274,4 +371,6 @@ Happy to contribute a PR (Apache-2.0).
 - [ ] Issue 3 (D) — kind heading/text
 - [ ] Issue 4 — validators Blade
 - [ ] Issue 5 — init `localeLayout` vs `layout`
+- [ ] Issue 6 — extract pega VALUE de select
+- [ ] Issue 7 — cleanup scan não cobre Blade
 - Anexar/comentar `dev/notes/I18N_GLOSSARY.md` ("Limitações conhecidas") quando útil.

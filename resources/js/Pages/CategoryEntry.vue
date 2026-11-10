@@ -42,7 +42,7 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
     </template>
 
     <RIForm
-      title="Item Category Management"
+      :title="$t('Pages.title.item_category_management')"
       datasource="/json/categories"
 	  newrecordcaption="Add Category"
 	  :filter="categoryMatchesSearch"
@@ -52,7 +52,7 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
           type="text"
           v-model="categorySearch"
           class="ri_forminput category_search"
-          placeholder="Search by Category Name..."
+          :placeholder="$t('Pages.placeholder.search_by_category_name')"
         />
       </template>
       <template #thead>
@@ -64,7 +64,7 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
       <template #default="{ record, editing, templates }">
         <div class="ri_formtable">
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Category Name:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.category_name', {}) }}</div>
             <TextInput
               v-model="record.name"
               required

@@ -1,9 +1,12 @@
 {
   "Pages": {
     "placeholder": {
-      "search_by_category_name": "Search by Category Name..."
+      "search_by_category_name": "Search by Category Name...",
+      "search_by_name": "Search by name...",
+      "search_by_name_or": "Search by name or abbreviation..."
     },
     "title": {
+      "default_ordering_units": "Default Ordering Units",
       "item_category_entry": "Item Category Entry",
       "item_category_management": "Item Category Management"
     }

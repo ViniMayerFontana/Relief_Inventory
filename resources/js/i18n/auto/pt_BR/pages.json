@@ -1,9 +1,12 @@
 {
   "Pages": {
     "placeholder": {
-      "search_by_category_name": "Buscar por nome da categoria..."
+      "search_by_category_name": "Buscar por nome da categoria...",
+      "search_by_name": "Buscar por nome...",
+      "search_by_name_or": "Buscar por nome ou abreviação..."
     },
     "title": {
+      "default_ordering_units": "Unidades padrão para pedidos",
       "item_category_entry": "Cadastro de categorias de itens",
       "item_category_management": "Gerenciamento de categorias de itens"
     }

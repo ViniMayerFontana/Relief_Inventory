@@ -2,8 +2,16 @@
   "Commons": {
     "text": {
       "category_name": "Category Name:",
+      "each": "Each",
+      "other": "other",
+      "other_2": "Other",
       "pallet_report": "Pallet Report",
-      "set": "— set"
+      "set": "— set",
+      "volume": "Volume",
+      "weight": "Weight"
+    },
+    "title": {
+      "package_types": "Package Types"
     }
   }
 }

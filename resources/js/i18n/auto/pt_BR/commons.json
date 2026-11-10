@@ -2,8 +2,16 @@
   "Commons": {
     "text": {
       "category_name": "Nome da categoria:",
+      "each": "Unidade",
+      "other": "other",
+      "other_2": "Outro",
       "pallet_report": "Relatório de pallet",
-      "set": "— defina"
+      "set": "— defina",
+      "volume": "Volume",
+      "weight": "Peso"
+    },
+    "title": {
+      "package_types": "Tipos de embalagem"
     }
   }
 }

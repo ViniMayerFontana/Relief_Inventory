@@ -16,6 +16,7 @@ import { Head } from '@inertiajs/vue3';
 import TextInput from '@/Components/TextInput.vue';
 import ChipSelect from '@/Components/ChipSelect.vue';
 import RIForm from '@/Components/RIForm.vue';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: {
@@ -24,10 +25,10 @@ defineProps({
 });
 
 const typeOptions = [
-	{ value: 'weight', label: 'Weight' },
-	{ value: 'volume', label: 'Volume' },
-	{ value: 'each', label: 'Each' },
-	{ value: 'other', label: 'Other' },
+	{ value: 'weight', label: t('Commons.text.weight') },
+	{ value: 'volume', label: t('Commons.text.volume') },
+	{ value: 'each', label: t('Commons.text.each') },
+	{ value: 'other', label: t('Commons.text.other_2') },
 ];
 
 const typeLabels = Object.fromEntries(typeOptions.map((o) => [o.value, o.label]));
@@ -75,12 +76,12 @@ const unitSort = computed(() => (a, b) => {
 </script>
 
 <template>
-	<Head title="Default Ordering Units" />
+	<Head :title="$t('Pages.title.default_ordering_units')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<RIForm
-			title="Default Ordering Units"
+			:title="$t('Pages.title.default_ordering_units')"
 			datasource="/json/units"
 			newrecordcaption="Add Unit"
 			:filter="unitMatchesSearch"
@@ -91,7 +92,7 @@ const unitSort = computed(() => (a, b) => {
 					type="text"
 					v-model="unitSearch"
 					class="ri_forminput unit_search"
-					placeholder="Search by name or abbreviation..."
+					:placeholder="$t('Pages.placeholder.search_by_name_or')"
 				/>
 			</template>
 

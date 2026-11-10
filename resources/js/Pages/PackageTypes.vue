@@ -61,12 +61,12 @@ const packageTypeSort = computed(() => (a, b) =>
 </script>
 
 <template>
-	<Head title="Package Types" />
+	<Head :title="$t('Commons.title.package_types')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<RIForm
-			title="Package Types"
+			:title="$t('Commons.title.package_types')"
 			datasource="/json/packagetypes"
 			newrecordcaption="Add Package Type"
 			:filter="packageTypeMatchesSearch"
@@ -77,7 +77,7 @@ const packageTypeSort = computed(() => (a, b) =>
 					type="text"
 					v-model="packageTypeSearch"
 					class="ri_forminput packagetype_search"
-					placeholder="Search by name..."
+					:placeholder="$t('Pages.placeholder.search_by_name')"
 				/>
 			</template>
 
