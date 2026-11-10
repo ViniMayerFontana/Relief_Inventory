@@ -487,10 +487,10 @@ function setPasswordChangeRequired(required) {
 </script>
 
 <template>
-  <Head title="User Administration" />
+  <Head :title="$t('Commons.title.user_administration')" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <div class="max-w-4xl mx-auto p-4 space-y-6">
-      <h1 class="text-2xl font-bold">User Administration</h1>
+      <h1 class="text-2xl font-bold">{{ $t('Commons.heading.user_administration', {}) }}</h1>
 
       <div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
       <div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">
@@ -505,47 +505,47 @@ function setPasswordChangeRequired(required) {
       <!-- List view -->
       <section v-if="!selected" class="bg-white shadow rounded-lg p-6 space-y-4">
         <div class="flex items-center justify-between gap-2">
-          <h2 class="text-lg font-semibold">Users</h2>
+          <h2 class="text-lg font-semibold">{{ $t('Commons.heading.users', {}) }}</h2>
           <div class="flex gap-2">
-            <SecondaryButton :disabled="!filteredUsers.length" @click="exportCsv">Export CSV</SecondaryButton>
-            <PrimaryButton @click="newUser">New User</PrimaryButton>
+            <SecondaryButton :disabled="!filteredUsers.length" @click="exportCsv">{{ $t('Commons.button.export_csv', {}) }}</SecondaryButton>
+            <PrimaryButton @click="newUser">{{ $t('Commons.button.new_user', {}) }}</PrimaryButton>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 text-sm items-end">
           <label class="block sm:col-span-4">
-            <span class="text-gray-700">Search</span>
+            <span class="text-gray-700">{{ $t('Commons.text.search', {}) }}</span>
             <input
               v-model="search"
               type="search"
-              placeholder="Name or email"
+              :placeholder="$t('Pages.placeholder.name_or_email')"
               class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
             />
           </label>
           <label class="block">
-            <span class="text-gray-700">Status</span>
+            <span class="text-gray-700">{{ $t('Commons.text.status_2', {}) }}</span>
             <select v-model="statusFilter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-              <option value="">All statuses</option>
+              <option value="">{{ $t('Commons.text.all_statuses', {}) }}</option>
               <option v-for="(label, key) in statusLabels" :key="key" :value="key">
                 {{ label }} ({{ statusCounts[key] || 0 }})
               </option>
             </select>
           </label>
           <label class="block">
-            <span class="text-gray-700">Role</span>
+            <span class="text-gray-700">{{ $t('Commons.text.role', {}) }}</span>
             <select v-model="roleFilter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-              <option value="">All roles</option>
+              <option value="">{{ $t('Commons.text.all_roles', {}) }}</option>
               <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
-              <option value="none">No role</option>
+              <option value="none">{{ $t('Commons.text.no_role', {}) }}</option>
             </select>
           </label>
           <label class="block">
-            <span class="text-gray-700">Last login</span>
+            <span class="text-gray-700">{{ $t('Commons.text.last_login', {}) }}</span>
             <select v-model="loginFilter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-              <option value="">Any time</option>
-              <option value="never">Never logged in</option>
-              <option value="30">Not in 30 days</option>
-              <option value="90">Not in 90 days</option>
+              <option value="">{{ $t('Commons.text.any_time', {}) }}</option>
+              <option value="never">{{ $t('Pages.text.never_logged_in', {}) }}</option>
+              <option value="30">{{ $t('Pages.text.not_in_30_days', {}) }}</option>
+              <option value="90">{{ $t('Pages.text.not_in_90_days', {}) }}</option>
             </select>
           </label>
           <div class="pb-2">
@@ -554,7 +554,7 @@ function setPasswordChangeRequired(required) {
               type="button"
               class="text-sm text-gray-500 underline"
               @click="clearFilters"
-            >Clear filters</button>
+            >{{ $t('Commons.button.clear_filters', {}) }}</button>
           </div>
         </div>
 
@@ -564,7 +564,7 @@ function setPasswordChangeRequired(required) {
             class="px-3 py-1 rounded-md border"
             :class="tab === 'warehouse' ? 'bg-indigo-600 text-white border-indigo-600' : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'"
             @click="tab = 'warehouse'"
-          >Warehouse Users</button>
+          >{{ $t('Commons.button.warehouse_users', {}) }}</button>
           <button
             type="button"
             class="px-3 py-1 rounded-md border"
@@ -578,9 +578,9 @@ function setPasswordChangeRequired(required) {
           class="flex flex-wrap items-center gap-2 rounded bg-indigo-50 border border-indigo-200 px-3 py-2 text-sm"
         >
           <span class="font-semibold">{{ visibleCheckedIds.length }} selected:</span>
-          <SecondaryButton :disabled="bulkBusy" @click="runBulk('approve')">Approve</SecondaryButton>
-          <SecondaryButton :disabled="bulkBusy" @click="runBulk('resend_invite')">Send Invite / Reset Email</SecondaryButton>
-          <SecondaryButton :disabled="bulkBusy" @click="runBulk('require_password_change')">Require Password Change</SecondaryButton>
+          <SecondaryButton :disabled="bulkBusy" @click="runBulk('approve')">{{ $t('Commons.button.approve', {}) }}</SecondaryButton>
+          <SecondaryButton :disabled="bulkBusy" @click="runBulk('resend_invite')">{{ $t('Pages.button.send_invite_reset_email', {}) }}</SecondaryButton>
+          <SecondaryButton :disabled="bulkBusy" @click="runBulk('require_password_change')">{{ $t('Pages.button.require_password_change', {}) }}</SecondaryButton>
           <SecondaryButton :disabled="bulkBusy" @click="runBulk('reactivate')">Reactivate</SecondaryButton>
           <button
             type="button"
@@ -594,11 +594,11 @@ function setPasswordChangeRequired(required) {
             type="button"
             class="text-sm text-gray-500 underline"
             @click="confirmingBulkDeactivate = false"
-          >Cancel</button>
-          <button type="button" class="ml-auto text-sm text-gray-500 underline" @click="checkedIds = []">Clear selection</button>
+          >{{ $t('Commons.button.cancel', {}) }}</button>
+          <button type="button" class="ml-auto text-sm text-gray-500 underline" @click="checkedIds = []">{{ $t('Commons.button.clear_selection', {}) }}</button>
         </div>
 
-        <p v-if="loading" class="text-gray-500 text-sm">Loading users…</p>
+        <p v-if="loading" class="text-gray-500 text-sm">{{ $t('Commons.text.loading_users', {}) }}</p>
 
         <div v-else class="overflow-x-auto">
           <table class="w-full text-sm">
@@ -609,7 +609,7 @@ function setPasswordChangeRequired(required) {
                     type="checkbox"
                     :checked="allVisibleChecked"
                     :disabled="!filteredUsers.length"
-                    title="Select all shown"
+                    :title="$t('Pages.title.select_all_shown')"
                     @change="toggleAllVisible"
                   />
                 </th>
@@ -635,12 +635,12 @@ function setPasswordChangeRequired(required) {
                 <td class="py-1 pr-2">{{ (record.roles || []).map((r) => r.name).join(', ') }}</td>
                 <td class="py-1 pr-2">{{ statusLabel(record) }}</td>
                 <td class="py-1 pr-2 whitespace-nowrap" :class="{ 'text-gray-400': !record.last_login_at }">
-                  {{ record.last_login_at ? formatDateTime(record.last_login_at) : 'Never' }}
+                  {{ record.last_login_at ? formatDateTime(record.last_login_at) : $t('Commons.text.never') }}
                 </td>
               </tr>
               <tr v-if="!filteredUsers.length">
                 <td colspan="6" class="py-3 text-gray-400">
-                  {{ anyFilter ? 'No users match these filters.' : 'No users in this view.' }}
+                  {{ anyFilter ? $t('Pages.text.no_users_match_these') : 'No users in this view.' }}
                 </td>
               </tr>
             </tbody>
@@ -653,15 +653,15 @@ function setPasswordChangeRequired(required) {
 
       <!-- Detail view -->
       <section v-else class="bg-white shadow rounded-lg p-6 space-y-4">
-        <h2 class="text-lg font-semibold">{{ selected.id ? 'Edit User' : 'New User' }}</h2>
+        <h2 class="text-lg font-semibold">{{ selected.id ? $t('Commons.heading.edit_user') : 'New User' }}</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <label class="block">
-            <span class="text-gray-700">First Name</span>
+            <span class="text-gray-700">{{ $t('Commons.text.first_name_2', {}) }}</span>
             <input v-model="selected.first_name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
           </label>
           <label class="block">
-            <span class="text-gray-700">Last Name</span>
+            <span class="text-gray-700">{{ $t('Commons.text.last_name_2', {}) }}</span>
             <input v-model="selected.last_name" type="text" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
           </label>
           <label class="block sm:col-span-2">
@@ -673,11 +673,11 @@ function setPasswordChangeRequired(required) {
           <span class="text-gray-700">Password</span>
           <label class="flex items-start gap-2">
             <input v-model="selected.password_mode" type="radio" value="invite" class="mt-1" />
-            <span>Email them a link to set their own password</span>
+            <span>{{ $t('Pages.text.email_them_a_link', {}) }}</span>
           </label>
           <label class="flex items-start gap-2">
             <input v-model="selected.password_mode" type="radio" value="set" class="mt-1" />
-            <span>Set a password now — the account is active and verified right away</span>
+            <span>{{ $t('Pages.text.set_a_password_now', {}) }}</span>
           </label>
 
           <div v-if="selected.password_mode === 'set'" class="ml-6 space-y-3">
@@ -691,27 +691,25 @@ function setPasswordChangeRequired(required) {
                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm font-mono"
                 />
               </label>
-              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</SecondaryButton>
-              <SecondaryButton type="button" @click="generatePassword(selected)">Generate</SecondaryButton>
+              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? $t('Commons.button.hide') : 'Show' }}</SecondaryButton>
+              <SecondaryButton type="button" @click="generatePassword(selected)">{{ $t('Commons.button.generate', {}) }}</SecondaryButton>
             </div>
             <label class="flex items-center gap-2">
               <input v-model="selected.require_password_change" type="checkbox" />
-              <span>Ask them to choose a new password the first time they log in</span>
+              <span>{{ $t('Pages.text.ask_them_to_choose', {}) }}</span>
             </label>
             <label class="flex items-center gap-2">
               <input v-model="selected.send_login_email" type="checkbox" />
               <span>Email them their login details (the login address and their email — not the password)</span>
             </label>
             <p class="text-xs text-gray-500">
-              You'll need to give them the password yourself. It isn't shown again after you save.
+              {{ $t('Pages.text.you_ll_need_to', {}) }}
             </p>
           </div>
         </div>
         <div v-if="selected.id && !selected.approved_at" class="rounded bg-amber-100 border border-amber-400 text-amber-900 px-4 py-3 text-sm">
-          This is a self-registered account nobody has approved yet — it cannot access anything
-          but the pending-review screen until you approve it below, regardless of what role or
-          permissions you set here.
-          <span v-if="selected.requested_track"> They said they're here as a <strong>{{ selected.requested_track }}</strong>.</span>
+          {{ $t('Pages.text.this_is_a_self', {}) }}
+          <span v-if="selected.requested_track"> {{ $t('Pages.text.they_said_they_re', {}) }} <strong>{{ selected.requested_track }}</strong>.</span>
         </div>
 
         <div class="ri_fieldset" style="display:flex; align-items:center; gap:0.5rem;">
@@ -721,7 +719,7 @@ function setPasswordChangeRequired(required) {
 
         <div>
           <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-700">Role — pick one; it fully replaces the permission set below</span>
+            <span class="text-sm text-gray-700">{{ $t('Pages.text.role_pick_one_it', {}) }}</span>
           </div>
           <div class="flex flex-wrap gap-2 mt-1">
             <button
@@ -735,16 +733,16 @@ function setPasswordChangeRequired(required) {
             >{{ role.name }} <span class="role-chip-count">({{ (role.permissions || []).length }})</span></button>
           </div>
           <p class="text-xs text-gray-500 mt-1">
-            Partner accounts can log in, but ordering isn't available to them yet.
+            {{ $t('Pages.text.partner_accounts_can_log', {}) }}
           </p>
         </div>
 
         <div>
           <div class="flex items-center justify-between">
-            <span class="text-sm text-gray-700">Permissions</span>
+            <span class="text-sm text-gray-700">{{ $t('Commons.text.permissions', {}) }}</span>
             <div class="flex gap-2">
-              <SecondaryButton type="button" @click="grantAll(selected)">Grant All</SecondaryButton>
-              <SecondaryButton type="button" @click="revokeAll(selected)">Revoke All</SecondaryButton>
+              <SecondaryButton type="button" @click="grantAll(selected)">{{ $t('Commons.button.grant_all', {}) }}</SecondaryButton>
+              <SecondaryButton type="button" @click="revokeAll(selected)">{{ $t('Commons.button.revoke_all', {}) }}</SecondaryButton>
             </div>
           </div>
           <p class="text-xs text-gray-500 mb-2">
@@ -777,7 +775,7 @@ function setPasswordChangeRequired(required) {
 
           <dl class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
             <div>
-              <dt class="text-gray-500">Created</dt>
+              <dt class="text-gray-500">{{ $t('Commons.text.created', {}) }}</dt>
               <dd>
                 {{ formatDateTime(selected.created_at) || 'Unknown' }}
                 <span v-if="selected.created_by_name" class="text-gray-500">by {{ selected.created_by_name }}</span>
@@ -785,19 +783,19 @@ function setPasswordChangeRequired(required) {
               </dd>
             </div>
             <div>
-              <dt class="text-gray-500">Approved</dt>
+              <dt class="text-gray-500">{{ $t('Commons.text.approved', {}) }}</dt>
               <dd>
                 <template v-if="selected.approved_at">
                   {{ formatDateTime(selected.approved_at) }}
                   <span v-if="selected.approved_by_name" class="text-gray-500">by {{ selected.approved_by_name }}</span>
                 </template>
-                <span v-else class="text-gray-400">Not yet</span>
+                <span v-else class="text-gray-400">{{ $t('Commons.text.not_yet', {}) }}</span>
               </dd>
             </div>
             <div>
-              <dt class="text-gray-500">Last login</dt>
+              <dt class="text-gray-500">{{ $t('Commons.text.last_login', {}) }}</dt>
               <dd :class="{ 'text-gray-400': !selected.last_login_at }">
-                {{ selected.last_login_at ? formatDateTime(selected.last_login_at) : 'Never' }}
+                {{ selected.last_login_at ? formatDateTime(selected.last_login_at) : $t('Commons.text.never') }}
               </dd>
             </div>
           </dl>
@@ -807,30 +805,30 @@ function setPasswordChangeRequired(required) {
               v-if="!selected.approved_at"
               :disabled="accountActionBusy"
               @click="approve"
-            >Approve</PrimaryButton>
+            >{{ $t('Commons.button.approve', {}) }}</PrimaryButton>
 
             <SecondaryButton
               v-if="!selected.disabled_at"
               :disabled="accountActionBusy"
               @click="resendInvite"
-            >{{ selected.has_password ? 'Send Password Reset' : 'Resend Invite Email' }}</SecondaryButton>
+            >{{ selected.has_password ? $t('Pages.button.send_password_reset') : 'Resend Invite Email' }}</SecondaryButton>
 
             <SecondaryButton
               v-if="!passwordForm"
               :disabled="accountActionBusy"
               @click="openPasswordForm"
-            >Set Password</SecondaryButton>
+            >{{ $t('Commons.button.set_password', {}) }}</SecondaryButton>
 
             <SecondaryButton
               v-if="selected.has_password && !selected.password_change_required"
               :disabled="accountActionBusy"
               @click="setPasswordChangeRequired(true)"
-            >Require Password Change</SecondaryButton>
+            >{{ $t('Pages.button.require_password_change', {}) }}</SecondaryButton>
             <SecondaryButton
               v-if="selected.password_change_required"
               :disabled="accountActionBusy"
               @click="setPasswordChangeRequired(false)"
-            >Don't Require Password Change</SecondaryButton>
+            >{{ $t('Pages.button.don_t_require_password', {}) }}</SecondaryButton>
 
             <button
               v-if="!selected.disabled_at"
@@ -839,13 +837,13 @@ function setPasswordChangeRequired(required) {
               :class="confirmingDeactivate ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500'"
               :disabled="accountActionBusy"
               @click="deactivate"
-            >{{ confirmingDeactivate ? 'Confirm — this account will be blocked from logging in' : 'Deactivate' }}</button>
+            >{{ confirmingDeactivate ? $t('Pages.button.confirm_this_account_will') : 'Deactivate' }}</button>
             <button
               v-if="confirmingDeactivate"
               type="button"
               class="text-sm text-gray-500 underline"
               @click="confirmingDeactivate = false"
-            >Cancel</button>
+            >{{ $t('Commons.button.cancel', {}) }}</button>
 
             <PrimaryButton
               v-if="selected.disabled_at"
@@ -855,14 +853,14 @@ function setPasswordChangeRequired(required) {
           </div>
 
           <div v-if="passwordForm" class="rounded border border-gray-300 p-4 space-y-3 text-sm">
-            <h4 class="font-semibold text-gray-700">Set Password</h4>
+            <h4 class="font-semibold text-gray-700">{{ $t('Commons.button.set_password', {}) }}</h4>
             <p class="text-xs text-gray-500">
               Replaces their current password straight away — for someone whose email isn't arriving.
               You'll need to give it to them yourself.
             </p>
             <div class="flex flex-wrap items-end gap-2">
               <label class="block flex-1 min-w-[12rem]">
-                <span class="text-gray-700">New Password</span>
+                <span class="text-gray-700">{{ $t('Commons.text.new_password', {}) }}</span>
                 <input
                   v-model="passwordForm.password"
                   :type="showPassword ? 'text' : 'password'"
@@ -870,12 +868,12 @@ function setPasswordChangeRequired(required) {
                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm font-mono"
                 />
               </label>
-              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? 'Hide' : 'Show' }}</SecondaryButton>
-              <SecondaryButton type="button" @click="generatePassword(passwordForm)">Generate</SecondaryButton>
+              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? $t('Commons.button.hide') : 'Show' }}</SecondaryButton>
+              <SecondaryButton type="button" @click="generatePassword(passwordForm)">{{ $t('Commons.button.generate', {}) }}</SecondaryButton>
             </div>
             <label class="flex items-center gap-2">
               <input v-model="passwordForm.require_password_change" type="checkbox" />
-              <span>Ask them to choose a new password the next time they log in</span>
+              <span>{{ $t('Pages.text.ask_them_to_choose_2', {}) }}</span>
             </label>
             <label class="flex items-center gap-2">
               <input v-model="passwordForm.send_login_email" type="checkbox" />
@@ -885,14 +883,14 @@ function setPasswordChangeRequired(required) {
               <PrimaryButton :disabled="passwordSaving || !passwordForm.password" @click="savePassword">
                 {{ passwordSaving ? 'Saving…' : 'Save Password' }}
               </PrimaryButton>
-              <button type="button" class="text-sm text-gray-500 underline" @click="passwordForm = null">Cancel</button>
+              <button type="button" class="text-sm text-gray-500 underline" @click="passwordForm = null">{{ $t('Commons.button.cancel', {}) }}</button>
             </div>
           </div>
         </div>
 
         <div class="flex gap-2 pt-2">
           <PrimaryButton :disabled="saving" @click="saveUser">{{ saving ? 'Saving…' : 'Save' }}</PrimaryButton>
-          <button type="button" class="text-sm text-gray-500 underline" @click="cancelEdit">Cancel</button>
+          <button type="button" class="text-sm text-gray-500 underline" @click="cancelEdit">{{ $t('Commons.button.cancel', {}) }}</button>
         </div>
       </section>
     </div>

@@ -2,7 +2,13 @@
   "Pages": {
     "button": {
       "back_to_list": "Back to List",
-      "confirm_delete_cannot_be": "Confirm Delete — cannot be undone"
+      "confirm_delete_cannot_be": "Confirm Delete — cannot be undone",
+      "confirm_this_account_will": "Confirm — this account will be blocked from logging in",
+      "don_t_require_password": "Don't Require Password Change",
+      "require_password_change": "Require Password Change",
+      "resend_invite_email": "Resend Invite Email",
+      "send_invite_reset_email": "Send Invite / Reset Email",
+      "send_password_reset": "Send Password Reset"
     },
     "heading": {
       "add_a_custom_question": "Add a Custom Question",
@@ -10,29 +16,57 @@
     },
     "placeholder": {
       "auto_generated_from_name": "auto-generated from name if left blank",
+      "name_or_email": "Name or email",
       "office_example_org_someone": "office@example.org, someone@example.org",
       "one_choice_per_line": "One choice per line",
       "search_all_fields": "Search all fields...",
       "search_by_category_name": "Search by Category Name...",
       "search_by_name": "Search by name...",
-      "search_by_name_or": "Search by name or abbreviation..."
+      "search_by_name_or": "Search by name or abbreviation...",
+      "search_by_name_or_2": "Search by name or organization...",
+      "search_organizations": "Search organizations..."
     },
     "text": {
       "approving_creates_links_a": "Approving creates/links a Partner-tagged person record",
+      "ask_them_to_choose": "Ask them to choose a new password the first time they log in",
+      "ask_them_to_choose_2": "Ask them to choose a new password the next time they log in",
+      "could_not_save_please": "Could not save. Please try again.",
+      "done": "Done.",
+      "email_them_a_link": "Email them a link to set their own password",
+      "never_logged_in": "Never logged in",
       "no_questions_yet_add": "No questions yet — add presets or a custom question below.",
+      "no_users_in_this": "No users in this view.",
+      "no_users_match_these": "No users match these filters.",
       "none_just_collect_the": "None — just collect the answers",
+      "not_in_30_days": "Not in 30 days",
+      "not_in_90_days": "Not in 90 days",
       "notify_emails_comma_separated": "Notify Emails (comma-separated):",
       "options_required_false_optionstext": ", options: [], required: false, optionsText:",
+      "partner_accounts_can_log": "Partner accounts can log in, but ordering isn't available to them yet.",
+      "partner_donor_info_guide": "Partner & Donor Info Guide",
+      "provide_a_name_first": "Provide a name (first + last) and/or an organization — at least one is required.",
+      "role_pick_one_it": "Role — pick one; it fully replaces the permission set below",
       "saved": "Saved.",
+      "scan_or_type_the": "Scan or type the code from this person's physical badge, if issued — used for PIN-unlock badge scanning.",
+      "set_a_password_now": "Set a password now — the account is active and verified right away",
+      "set_this_when_this": "Set this when this person is a contact at an organization already recorded above (checked \"This record is the organization itself\"), rather than a standalone donor/recipient/contact.",
       "slug_public_url": "Slug (public URL):",
+      "sorting_and_inventory": "Sorting and Inventory",
+      "they_said_they_re": "They said they're here as a",
+      "this_is_a_self": "This is a self-registered account nobody has approved yet — it cannot access anything but the pending-review screen until you approve it below, regardless of what role or permissions you set here.",
+      "this_record_is_the": "This record is the organization itself:",
       "who_can_access": "Who Can Access:",
-      "yes_no": "Yes / No"
+      "yes_no": "Yes / No",
+      "you_don_t_have": "You don't have permission to edit this record — they hold a permission you don't have. Showing read-only.",
+      "you_ll_need_to": "You'll need to give them the password yourself. It isn't shown again after you save."
     },
     "title": {
       "default_ordering_units": "Default Ordering Units",
       "forms_surveys": "Forms & Surveys",
       "item_category_entry": "Item Category Entry",
-      "item_category_management": "Item Category Management"
+      "item_category_management": "Item Category Management",
+      "people_entry_form": "People Entry Form",
+      "select_all_shown": "Select all shown"
     }
   }
 }

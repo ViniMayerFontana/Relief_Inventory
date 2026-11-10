@@ -23,14 +23,14 @@ defineProps({
 </script>
 
 <template>
-  <Head title="People Entry" />
+  <Head :title="$t('Commons.title.people_entry')" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <template #header>
     </template>
 
     <RIForm
       ref="riform"
-      title="People Entry Form"
+      :title="$t('Pages.title.people_entry_form')"
       datasource="/json/people"
       :filter="peopleFilter">
 
@@ -39,13 +39,13 @@ defineProps({
           type="text"
           v-model="peopleSearch"
           class="ri_forminput people_search"
-          placeholder="Search by name or organization..."
+          :placeholder="$t('Pages.placeholder.search_by_name_or_2')"
         />
         <HelpLink guide="people">Partner &amp; Donor Info Guide</HelpLink>
       </template>
 
       <template #thead>
-        <th>People</th>
+        <th>{{ $t('Commons.text.people', {}) }}</th>
       </template>
 
       <template #tbody="{ record }">
@@ -61,7 +61,7 @@ defineProps({
             <span>Phone: {{ record.phone || 'N/A' }}</span>
             <span :title="record.email || ''">Email: {{ shortenEmail(record.email) }}</span>
             <span>Roles: {{ (record.roles || []).map((r) => r.name).join(', ') || 'None' }}</span>
-            <span>Volunteer: {{ record.is_volunteer ? 'Yes' : 'No' }}</span>
+            <span>Volunteer: {{ record.is_volunteer ? $t('Commons.text.yes') : 'No' }}</span>
           </div>
         </td>
       </template>
@@ -69,10 +69,10 @@ defineProps({
       <template #default="{ record, editing, templates }">
         <div class="ri_formtable">
           <p v-if="record.id && record.can_edit === false" class="ri_error">
-            You don't have permission to edit this record — they hold a permission you don't have. Showing read-only.
+            {{ $t('Pages.text.you_don_t_have', {}) }}
           </p>
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">First Name:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.first_name', {}) }}</div>
             <TextInput
               v-model="record.first_name"
               :enabled="canEditRecord(record, editing)"
@@ -80,7 +80,7 @@ defineProps({
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Last Name:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.last_name', {}) }}</div>
             <TextInput
               v-model="record.last_name"
               :enabled="canEditRecord(record, editing)"
@@ -97,7 +97,7 @@ defineProps({
           <p class="ri_fieldhint">Provide a name (first + last) and/or an organization &mdash; at least one is required.</p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">This record is the organization itself:</div>
+            <div class="ri_fieldlabel">{{ $t('Pages.text.this_record_is_the', {}) }}</div>
             <Checkbox
               v-model="record.is_organization"
               :enabled="canEditRecord(record, editing)"
@@ -115,17 +115,16 @@ defineProps({
               v-model="record.parent_person_id"
               optionsource="/json/people?is_organization=1"
               display="full_name"
-              placeholder="Search organizations..."
+              :placeholder="$t('Pages.placeholder.search_organizations')"
               :enabled="canEditRecord(record, editing)"
             />
           </div>
           <p class="ri_fieldhint">
-            Set this when this person is a contact at an organization already recorded above (checked
-            "This record is the organization itself"), rather than a standalone donor/recipient/contact.
+            {{ $t('Pages.text.set_this_when_this', {}) }}
           </p>
 
           <div class="ri_fieldset" v-if="record.parent_person_id">
-            <div class="ri_fieldlabel">Contact Role:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.contact_role', {}) }}</div>
             <TextInput
               v-model="record.contact_role"
               placeholder="e.g. Primary, Delivery, Billing"
@@ -192,7 +191,7 @@ defineProps({
 		       listeners on an ancestor still see it on the way down. -->
 		  <div class="people_address_fields" @blur.capture="maybeAutoLookupCounty(record)">
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">ZIP Code:</div>
+				<div class="ri_fieldlabel">{{ $t('Commons.text.zip_code', {}) }}</div>
 				<TextInput
 				  v-model="record.zip"
 				  maxlength="10"
@@ -201,7 +200,7 @@ defineProps({
 			  </div>
 
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">Address:</div>
+				<div class="ri_fieldlabel">{{ $t('Commons.text.address', {}) }}</div>
 				<TextArea
 				  v-model="record.address"
 				  :enabled="canEditRecord(record, editing)"
@@ -217,7 +216,7 @@ defineProps({
 				&& addressCheck.status === 'idle'" class="people_county_hint">
 				<button type="button" class="ri_formbutton" :disabled="$page.props.offlineMode"
 					@click="verifyAddress(record)">
-					{{ $page.props.offlineMode ? "Can't verify address — offline" : 'Verify Address' }}
+					{{ $page.props.offlineMode ? "Can't verify address — offline" : $t('Commons.button.verify_address') }}
 				</button>
 			  </p>
 
@@ -274,7 +273,7 @@ defineProps({
             <div class="ri_fieldlabel">Partner Status:</div>
             <div>
               <span v-if="record.partner_status" class="people_badge">{{ record.partner_status }}</span>
-              <span v-else class="text-gray-400 text-sm">Not tracked</span>
+              <span v-else class="text-gray-400 text-sm">{{ $t('Commons.text.not_tracked', {}) }}</span>
             </div>
           </div>
           <div v-if="record.id && record.roles?.some((r) => r.name === 'Partner')" class="ri_fieldset">
@@ -291,11 +290,11 @@ defineProps({
               </button>
             </div>
             <div v-if="composingPartnerStatus?.recordId === record.id" class="mt-2 space-y-2">
-              <TextArea v-model="composingPartnerStatus.notes" placeholder="Optional note" />
+              <TextArea v-model="composingPartnerStatus.notes" :placeholder="$t('Commons.placeholder.optional_note')" />
               <div v-if="partnerStatusError" class="ri_error">{{ partnerStatusError }}</div>
               <div class="flex gap-2">
-                <button type="button" class="ri_defaultbutton" @click="confirmPartnerStatusChange(record)">Confirm</button>
-                <button type="button" class="ri_formbutton" @click="composingPartnerStatus = null">Cancel</button>
+                <button type="button" class="ri_defaultbutton" @click="confirmPartnerStatusChange(record)">{{ $t('Commons.button.confirm', {}) }}</button>
+                <button type="button" class="ri_formbutton" @click="composingPartnerStatus = null">{{ $t('Commons.button.cancel', {}) }}</button>
               </div>
             </div>
             <div v-if="record.partner_status_logs?.length" class="mt-2 text-xs text-gray-500 space-y-1">
@@ -331,15 +330,15 @@ defineProps({
 
       <template #actions="{ editing, record, confirmingDelete, save, cancel, delete: doDelete, keepRecord }">
         <div class="ri_formactions" v-if="!editing || (record.id && record.can_edit === false)">
-          <button @click="cancel()" class="ri_defaultbutton">Back to List</button>
+          <button @click="cancel()" class="ri_defaultbutton">{{ $t('Pages.button.back_to_list', {}) }}</button>
         </div>
         <div class="ri_formactions" v-else>
-          <button @click="save()" class="ri_defaultbutton">Save</button>
-          <button @click="cancel()" class="ri_formbutton">Cancel Changes</button>
+          <button @click="save()" class="ri_defaultbutton">{{ $t('Commons.button.save', {}) }}</button>
+          <button @click="cancel()" class="ri_formbutton">{{ $t('Commons.button.cancel_changes', {}) }}</button>
           <button v-if="canDelete" @click="doDelete()" class="ri_deletebutton" :class="{ ri_confirming: confirmingDelete }">
-            {{ confirmingDelete ? 'Confirm Delete — cannot be undone' : 'Delete' }}
+            {{ confirmingDelete ? $t('Pages.button.confirm_delete_cannot_be') : 'Delete' }}
           </button>
-          <button v-if="canDelete && confirmingDelete" @click="keepRecord()" class="ri_linkbutton">Keep Record</button>
+          <button v-if="canDelete && confirmingDelete" @click="keepRecord()" class="ri_linkbutton">{{ $t('Commons.button.keep_record', {}) }}</button>
         </div>
       </template>
     </RIForm>

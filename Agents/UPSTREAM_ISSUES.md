@@ -417,6 +417,136 @@ Happy to contribute a PR (Apache-2.0).
 
 ---
 
+## Issue 9 — extract turns script array literals (incl. RBAC role names) into translation keys
+
+**Título (EN):**
+
+> `Extract registers technical string arrays (e.g. RBAC role names) from scripts as translation keys`
+
+**Corpo (EN):**
+
+````markdown
+### What happens
+
+The extractor scans `<script>` string literals and registers keys for values that are
+program identifiers, not UI copy. Repro from a real SFC:
+
+```js
+const STAFF_ROLE_NAMES = ['Administrator', 'Sorting and Inventory', 'Office'];
+```
+
+→ base locale gains `Commons.text.administrator`, `Commons.text.office`,
+`Commons.text.sorting_and_inventory`.
+
+These are RBAC role names persisted in the database and matched with
+`whereIn('name', ...)` server-side. The key map now offers a translation key for
+every one of them: a future script-side replacement pass (or an agent translating
+the locale files naively) can turn `STAFF_ROLE_NAMES` into translated role names and
+break every `role.name` comparison against the database. The replace phase did not
+inject them in our run (the literals sit in positions the script replacer skips), but
+the locale files actively invite the mistake.
+
+### Expected
+
+Skip string literals assigned to ALL_CAPS / SCREAMING_SNAKE constant arrays, or apply
+the code validators (reject values that match existing DB-identifier conventions), or
+at minimum register such keys under a "technical" namespace that `translate plan`
+excludes by default.
+
+### Workaround used
+
+Verbatim answers (translation value == source string) for the role-name keys.
+
+### Environment
+
+`@ai-localizer/cli` / `@ai-localizer/core` v0.1.1 (HEAD 6d478b3, extractor unmodified),
+Windows 11, Node v24.20.0, Laravel 13 + Inertia 2 + Vue 3.5.
+
+Happy to contribute a PR (Apache-2.0).
+````
+
+---
+
+## Issue 10 — extract registers strings from script comments
+
+**Título (EN):**
+
+> `Extract picks up quoted strings inside script comments as translation keys`
+
+**Corpo (EN):**
+
+````markdown
+### What happens
+
+Quoted phrases inside `//` / `/* */` script comments become translation keys. Repro
+(real SFC comments):
+
+- a comment reading `... the same "Any Day" pattern OrderEntry.vue's delivery-day chips
+  use ...` produced `Commons.text.any_day: "Any Day"`;
+- a comment reading `... what the "no override" (below) falls back to ...` produced
+  `Commons.text.no_override: "no override"`.
+
+These keys reference nothing and never render; worse, they pollute `translate plan`
+(human/AI translators are asked to "translate" comment fragments) and, if a matching
+string ever appears in real UI, the comment-derived key shadows intent.
+
+### Expected
+
+Strip comments before scanning script string literals (the template side already
+ignores `<!-- -->` blocks).
+
+### Environment
+
+`@ai-localizer/cli` / `@ai-localizer/core` v0.1.1 (HEAD 6d478b3), Windows 11,
+Node v24.20.0.
+
+Happy to contribute a PR (Apache-2.0).
+````
+
+---
+
+## Issue 11 — VueReplacer processes only the FIRST <script> block of an SFC
+
+**Título (EN):**
+
+> `VueReplacer ignores a second <script> block — Options-API sections are never rewritten`
+
+**Corpo (EN):**
+
+````markdown
+### What happens
+
+`VueReplacer.replace()` locates the script with a non-greedy single match:
+
+```js
+const scriptMatch = modified.match(/(<script[^>]*>)([\s\S]*?)(<\/script>)/i);
+```
+
+An SFC mixing `<script setup>` with a plain `<script>` (Options API) — which is valid
+and common for pages that keep state in `data()`/`methods` — has only its FIRST script
+block processed. In our project the second block holds user-facing fallback strings
+(error messages, action button labels) that extraction DID register as keys, yet the
+replacer never touches: extract covered 100% of the SFC, replace skipped the whole
+Options-API block (0 injections there, while the template block was fully rewritten).
+
+Note the asymmetry with the template fix from our earlier report (outermost
+`</template>`): the same nested-block reasoning applies to `<script>`.
+
+### Expected
+
+Process every top-level `<script>` block (or, at minimum, all blocks before
+`</template>`), keeping the module-idempotency guards.
+
+### Environment
+
+`@ai-localizer/cli` / `@ai-localizer/core` v0.1.1 (patched template-block finder; the
+script pass is unmodified from HEAD 6d478b3), Windows 11, Node v24.20.0.
+
+Happy to contribute a PR (Apache-2.0).
+````
+
+---
+
 ## Checklist de abertura (para quem for colar)
 
 - [ ] Issue 1 (A) — VueReplacer / slots
@@ -427,4 +557,7 @@ Happy to contribute a PR (Apache-2.0).
 - [ ] Issue 6 — extract pega VALUE de select
 - [ ] Issue 7 — cleanup scan não cobre Blade
 - [ ] Issue 8 — mustache: só a 1ª string do ternário
+- [ ] Issue 9 — extract pega ROLE names de arrays
+- [ ] Issue 10 — extract pega strings de comentários
+- [ ] Issue 11 — segundo bloco <script> ignorado
 - Anexar/comentar `dev/notes/I18N_GLOSSARY.md` ("Limitações conhecidas") quando útil.

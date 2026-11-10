@@ -2,7 +2,13 @@
   "Pages": {
     "button": {
       "back_to_list": "Voltar à lista",
-      "confirm_delete_cannot_be": "Confirmar exclusão — não pode ser desfeita"
+      "confirm_delete_cannot_be": "Confirmar exclusão — não pode ser desfeita",
+      "confirm_this_account_will": "Confirmar — esta conta será bloqueada e não poderá fazer login",
+      "don_t_require_password": "Não exigir troca de senha",
+      "require_password_change": "Exigir troca de senha",
+      "resend_invite_email": "Reenviar e-mail de convite",
+      "send_invite_reset_email": "Enviar convite / redefinir e-mail",
+      "send_password_reset": "Enviar redefinição de senha"
     },
     "heading": {
       "add_a_custom_question": "Adicionar uma pergunta personalizada",
@@ -10,29 +16,57 @@
     },
     "placeholder": {
       "auto_generated_from_name": "gerado automaticamente a partir do nome se deixado em branco",
+      "name_or_email": "Nome ou e-mail",
       "office_example_org_someone": "office@example.org, someone@example.org",
       "one_choice_per_line": "Uma opção por linha",
       "search_all_fields": "Buscar em todos os campos...",
       "search_by_category_name": "Buscar por nome da categoria...",
       "search_by_name": "Buscar por nome...",
-      "search_by_name_or": "Buscar por nome ou abreviação..."
+      "search_by_name_or": "Buscar por nome ou abreviação...",
+      "search_by_name_or_2": "Buscar por nome ou organização...",
+      "search_organizations": "Buscar organizações..."
     },
     "text": {
       "approving_creates_links_a": "Aprovar cria/vincula um registro de pessoa com tag Parceiro",
+      "ask_them_to_choose": "Pedir que escolham uma nova senha no primeiro login",
+      "ask_them_to_choose_2": "Pedir que escolham uma nova senha no próximo login",
+      "could_not_save_please": "Não foi possível salvar. Tente novamente.",
+      "done": "Concluído.",
+      "email_them_a_link": "Enviar por e-mail um link para definirem a própria senha",
+      "never_logged_in": "Nunca fizeram login",
       "no_questions_yet_add": "Nenhuma pergunta ainda — adicione predefinições ou uma pergunta personalizada abaixo.",
+      "no_users_in_this": "Nenhum usuário nesta visualização.",
+      "no_users_match_these": "Nenhum usuário corresponde a estes filtros.",
       "none_just_collect_the": "Nenhum — apenas coletar as respostas",
+      "not_in_30_days": "Sem login há 30 dias",
+      "not_in_90_days": "Sem login há 90 dias",
       "notify_emails_comma_separated": "E-mails de notificação (separados por vírgula):",
       "options_required_false_optionstext": ", options: [], required: false, optionsText:",
+      "partner_accounts_can_log": "Contas de parceiro podem fazer login, mas pedidos ainda não estão disponíveis para elas.",
+      "partner_donor_info_guide": "Guia de informações de parceiros e doadores",
+      "provide_a_name_first": "Informe um nome (nome + sobrenome) e/ou uma organização — pelo menos um é obrigatório.",
+      "role_pick_one_it": "Papel — escolha um; ele substitui totalmente o conjunto de permissões abaixo",
       "saved": "Salvo.",
+      "scan_or_type_the": "Escaneie ou digite o código do crachá físico desta pessoa, se emitido — usado para desbloqueio por PIN com leitura de crachá.",
+      "set_a_password_now": "Definir uma senha agora — a conta fica ativa e verificada imediatamente",
+      "set_this_when_this": "Use isto quando esta pessoa for um contato de uma organização já registrada acima (marcada \"Este registro é a própria organização\"), em vez de um doador/destinatário/contato independente.",
       "slug_public_url": "Slug (URL pública):",
+      "sorting_and_inventory": "Sorting and Inventory",
+      "they_said_they_re": "Eles disseram que estão aqui como",
+      "this_is_a_self": "Esta é uma conta autorregistrada que ninguém aprovou ainda — ela não acessa nada além da tela de revisão pendente até você aprová-la abaixo, independentemente do papel ou permissões definidos aqui.",
+      "this_record_is_the": "Este registro é a própria organização:",
       "who_can_access": "Quem pode acessar:",
-      "yes_no": "Sim / Não"
+      "yes_no": "Sim / Não",
+      "you_don_t_have": "Você não tem permissão para editar este registro — a pessoa possui uma permissão que você não tem. Exibindo somente leitura.",
+      "you_ll_need_to": "Você precisará entregar a senha a ela pessoalmente. Ela não será exibida novamente após salvar."
     },
     "title": {
       "default_ordering_units": "Unidades padrão para pedidos",
       "forms_surveys": "Formulários e pesquisas",
       "item_category_entry": "Cadastro de categorias de itens",
-      "item_category_management": "Gerenciamento de categorias de itens"
+      "item_category_management": "Gerenciamento de categorias de itens",
+      "people_entry_form": "Formulário de cadastro de pessoas",
+      "select_all_shown": "Selecionar todos exibidos"
     }
   }
 }
