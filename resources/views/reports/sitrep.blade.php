@@ -5,7 +5,7 @@
     <title>Situation Report</title>
     <style>
         /* Margins live on @page (not body padding) so every page of a long county list keeps them. */
-        @page { size: letter; margin: 0.75in 0.6in; }  /* office printers can't print within ~0.5in of the top edge */
+        @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 0.75in 0.6in; }  /* office printers can't print within ~0.5in of the top edge */
         body {
             font-family: Arial, sans-serif;
             color: #222;
@@ -98,7 +98,7 @@
 <body>
     <h1>Situation Report</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; generated {{ $data['generated_at']->format('F j, Y \a\t g:i A T') }}
+        {{ config('app.name') }} &mdash; {{ __('reports.generated_at', ['date' => $data['generated_at']->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <div class="section">

@@ -17,10 +17,10 @@
     <title>Donor Report</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Donor Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Donor Report — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
             @top-right {
@@ -55,8 +55,7 @@
 <body>
     <h1>Donor Report</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; what each donor sent and how much was usable, {{ $range }}, generated
-        {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
+        {{ config('app.name') }} &mdash; what each donor sent and how much was usable, {{ $range }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <div class="summary">

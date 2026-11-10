@@ -1,7 +1,7 @@
 {{-- Training report cards (TrainingReportController::pdfBuilder): one row per trainee, a tick per station. --}}
 @php
     $f = $report['filters'];
-    $range = $f['from'] === $f['to'] ? \Carbon\Carbon::parse($f['from'])->format('F j, Y')
+    $range = $f['from'] === $f['to'] ? \Carbon\Carbon::parse($f['from'])->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')
         : \Carbon\Carbon::parse($f['from'])->format('M j, Y').' – '.\Carbon\Carbon::parse($f['to'])->format('M j, Y');
 @endphp
 <!DOCTYPE html>
@@ -10,7 +10,7 @@
     <meta charset="UTF-8">
     <title>Training Report Cards</title>
     <style>
-        @page { size: letter landscape; margin: 0.5in; }
+        @page { size: {{ \App\Support\ReportPaper::size() }} landscape; margin: 0.5in; }
         body { font-family: Arial, sans-serif; color: #222; margin: 0; font-size: 11px; }
         h1 { font-size: 20px; margin: 0 0 2px 0; }
         .subtitle { color: #666; font-size: 11px; margin-bottom: 14px; }

@@ -5,10 +5,10 @@
     <title>Order Request Form</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Order Request Form — generated {{ $generatedAt->format('F j, Y') }}";
+                content: "Order Request Form — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -137,7 +137,7 @@
 <body>
     <h1>Order Request Form</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; generated {{ $generatedAt->format('F j, Y') }}
+        {{ config('app.name') }} &mdash; {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')]) }}
     </div>
 
     <div class="instructions">

@@ -8,7 +8,7 @@
     <title>@yield('title')</title>
     <style>
         /* Margins live on @page (not body padding) so every page of the guide keeps them. */
-        @page { size: letter; margin: 36px 42px; }
+        @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 36px 42px; }
         body {
             font-family: Arial, sans-serif;
             color: #222;
@@ -78,7 +78,7 @@
 </head>
 <body>
     <h1>@yield('title')</h1>
-    <div class="subtitle">{{ config('app.name') }} &mdash; printed {{ now()->format('F j, Y') }}</div>
+    <div class="subtitle">{{ config('app.name') }} &mdash; {{ __('reports.printed', ['date' => now()->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')]) }}</div>
 
 @yield('content')
 

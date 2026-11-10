@@ -5,10 +5,10 @@
     <title>Pick Sheets</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Pick Sheet — generated {{ $generatedAt->format('F j, Y g:ia') }}";
+                content: "Pick Sheet — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y H:i' : 'F j, Y g:ia')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -104,7 +104,7 @@
         <h1>Pick Sheet — Order #{{ $order->id }}</h1>
         <div class="subtitle">
             {{ $order->person?->full_name ?? 'Unknown' }}
-            @if($order->order_date) &mdash; {{ \Illuminate\Support\Carbon::parse($order->order_date)->format('F j, Y') }} @endif
+            @if($order->order_date) &mdash; {{ \Illuminate\Support\Carbon::parse($order->order_date)->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y') }} @endif
         </div>
 
         <table>

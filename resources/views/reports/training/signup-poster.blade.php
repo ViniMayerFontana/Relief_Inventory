@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <title>Sign Up for Training</title>
     <style>
-        @page { size: letter; margin: 0.75in; }
+        @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 0.75in; }
         body { font-family: Arial, sans-serif; color: #1e3a8a; margin: 0; text-align: center; }
         h1 { font-size: 44px; margin: 0.4in 0 0.1in 0; }
         .lead { font-size: 22px; color: #333; margin-bottom: 0.4in; }

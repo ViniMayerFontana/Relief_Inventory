@@ -9,8 +9,8 @@
     <meta charset="UTF-8">
     <title>Training Setup Packet</title>
     <style>
-        @page { size: letter; margin: 0.5in 0.55in; }
-        @page sign { size: letter landscape; margin: 0.5in; }
+        @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 0.5in 0.55in; }
+        @page sign { size: {{ \App\Support\ReportPaper::size() }} landscape; margin: 0.5in; }
         body { font-family: Arial, sans-serif; color: #222; margin: 0; font-size: 11px; line-height: 1.4; }
         h1 { font-size: 22px; margin: 0; }
         .subtitle { color: #666; margin: 2px 0 12px 0; }

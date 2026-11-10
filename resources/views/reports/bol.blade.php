@@ -5,10 +5,10 @@
     <title>{{ $order->bol_number }}</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "{{ $order->bol_number }} — generated {{ $generatedAt->format('F j, Y g:ia') }}";
+                content: "{{ $order->bol_number }} — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y H:i' : 'F j, Y g:ia')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -169,7 +169,7 @@
             </div>
             <div class="field">
                 <div class="label">Requested Date</div>
-                <div class="value">{{ $order->needed_by_date ? \Illuminate\Support\Carbon::parse($order->needed_by_date)->format('F j, Y') : '' }}</div>
+                <div class="value">{{ $order->needed_by_date ? \Illuminate\Support\Carbon::parse($order->needed_by_date)->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y') : '' }}</div>
             </div>
             <div class="field">
                 <div class="label">Delivery Window</div>

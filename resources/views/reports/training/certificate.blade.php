@@ -3,8 +3,8 @@
      Training Mode. --}}
 @php
     $f = $report['filters'];
-    $date = $f['from'] === $f['to'] ? \Carbon\Carbon::parse($f['from'])->format('F j, Y')
-        : \Carbon\Carbon::parse($f['from'])->format('F j').' – '.\Carbon\Carbon::parse($f['to'])->format('F j, Y');
+    $date = $f['from'] === $f['to'] ? \Carbon\Carbon::parse($f['from'])->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')
+        : \Carbon\Carbon::parse($f['from'])->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F' : 'F j').' – '.\Carbon\Carbon::parse($f['to'])->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y');
     $logo = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('img/relief-inventory-logo.png')));
 @endphp
 <!DOCTYPE html>
@@ -13,7 +13,7 @@
     <meta charset="UTF-8">
     <title>Training Certificates</title>
     <style>
-        @page { size: letter landscape; margin: 0.5in; }
+        @page { size: {{ \App\Support\ReportPaper::size() }} landscape; margin: 0.5in; }
         body { font-family: Georgia, 'Times New Roman', serif; color: #222; margin: 0; }
         .cert {
             border: 6px double #0347a4; padding: 0.5in 0.8in; height: 7.45in; box-sizing: border-box;

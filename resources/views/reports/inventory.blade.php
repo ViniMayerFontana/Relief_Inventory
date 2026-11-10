@@ -5,10 +5,10 @@
     <title>Inventory Report</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Inventory Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Inventory Report — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -98,7 +98,7 @@
 <body>
     <h1>Inventory Report</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; stock on hand, generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
+        {{ config('app.name') }} &mdash; stock on hand, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     @foreach($records->groupBy('category') as $category => $rows)

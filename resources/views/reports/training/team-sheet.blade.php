@@ -7,7 +7,7 @@
     <meta charset="UTF-8">
     <title>Training Team Sheets</title>
     <style>
-        @page { size: letter; margin: 0.5in 0.55in; }
+        @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 0.5in 0.55in; }
         body { font-family: Arial, sans-serif; color: #222; margin: 0; font-size: 11.5px; line-height: 1.4; }
         .sheet { page-break-after: always; }
         .sheet:last-child { page-break-after: auto; }
