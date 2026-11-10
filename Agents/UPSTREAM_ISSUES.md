@@ -364,6 +364,59 @@ Happy to contribute a PR (Apache-2.0).
 
 ---
 
+## Issue 8 — Vue mustache pass replaces only the FIRST string literal in an expression
+
+**Título (EN):**
+
+> `VueReplacer mustache pass handles one string literal per {{ }} — ternary fallback strings are never replaced`
+
+**Corpo (EN):**
+
+````markdown
+### What happens
+
+In `@ai-localizer/core` `src/i18n/lib/replacers/vueReplacer.js`, pass 3 ("String literals
+inside {{ }} expressions") matches with
+
+```js
+const mustacheRegex = /(\{\{[^}]*?)(['"])([^'"]{3,200})\2([^}]*?\}\})/g;
+```
+
+The whole `{{ ... }}` region is consumed by a single match anchored on the FIRST quoted
+string, so when the lookup succeeds the replacement is applied — but any other string
+literal inside the same expression is never examined. When the first lookup fails, the
+callback returns the match unchanged and later literals are skipped too.
+
+Repro (all strings below had keys present in the base locale):
+
+```html
+<button ...>{{ confirmingDelete ? 'Confirm Delete — cannot be undone' : 'Delete' }}</button>
+```
+
+- Actual: `Confirm Delete — cannot be undone` → `$t('Pages.button.confirm_delete_cannot_be')`;
+  `Delete` stays hard-coded even though `Commons.button.delete` exists.
+- Expected: every string literal in the expression is looked up independently.
+
+Related asymmetry: extraction registers only some of the literals of the same expression
+(from `{{ record.requires_approval ? 'Required' : 'None' }}` it extracted `None` but not
+`Required`), so the ternary pair cannot be fully covered even after a fix on the replace
+side alone.
+
+### Expected
+
+Iterate over string literals within the mustache expression instead of one match per
+expression; and align extraction so all literals of an expression are registered.
+
+### Environment
+
+`@ai-localizer/cli` / `@ai-localizer/core` v0.1.1 (patched template-block finder; the
+mustache pass is unmodified from HEAD 6d478b3), Windows 11, Node v24.20.0.
+
+Happy to contribute a PR (Apache-2.0).
+````
+
+---
+
 ## Checklist de abertura (para quem for colar)
 
 - [ ] Issue 1 (A) — VueReplacer / slots
@@ -373,4 +426,5 @@ Happy to contribute a PR (Apache-2.0).
 - [ ] Issue 5 — init `localeLayout` vs `layout`
 - [ ] Issue 6 — extract pega VALUE de select
 - [ ] Issue 7 — cleanup scan não cobre Blade
+- [ ] Issue 8 — mustache: só a 1ª string do ternário
 - Anexar/comentar `dev/notes/I18N_GLOSSARY.md` ("Limitações conhecidas") quando útil.

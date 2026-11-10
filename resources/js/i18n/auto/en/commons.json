@@ -1,16 +1,65 @@
 {
   "Commons": {
+    "button": {
+      "add_question": "Add Question",
+      "add_selected": "Add Selected",
+      "cancel": "Cancel",
+      "cancel_changes": "Cancel Changes",
+      "delete": "Delete",
+      "edit": "Edit",
+      "keep_record": "Keep Record",
+      "remove": "Remove",
+      "save": "Save"
+    },
+    "heading": {
+      "questions": "Questions"
+    },
+    "link": {
+      "pick_path": "Pick Path"
+    },
+    "placeholder": {
+      "question_label": "Question label"
+    },
     "text": {
+      "access": "Access",
+      "active": "Active",
+      "approval": "Approval",
+      "archived": "Archived",
       "category_name": "Category Name:",
+      "code": "Code: *",
+      "date": "Date",
+      "draft": "Draft",
       "each": "Each",
+      "help_text": ", help_text:",
+      "intro_text": "Intro Text:",
+      "long_text": "Long Text",
+      "multiple_choice": "Multiple Choice",
+      "name": "Name",
+      "none": "None",
+      "none_2": "none",
+      "number": "Number",
+      "on_approval": "On Approval:",
       "other": "other",
       "other_2": "Other",
       "pallet_report": "Pallet Report",
+      "pull_sequence": "Pull Sequence",
+      "required": ", required",
+      "requires_approval": "Requires Approval:",
+      "review_submissions": "Review Submissions:",
       "set": "— set",
+      "short_text": "Short Text",
+      "single_choice": "Single Choice",
+      "status": "Status: *",
+      "status_2": "Status",
+      "submissions": "Submissions",
+      "type": ", type:",
+      "use": "Use: *",
       "volume": "Volume",
       "weight": "Weight"
     },
     "title": {
+      "location_management": "Location Management",
+      "manage_locations": "Manage Locations",
       "package_types": "Package Types"
     }
   }

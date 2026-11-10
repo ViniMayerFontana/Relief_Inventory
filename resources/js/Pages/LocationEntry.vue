@@ -60,17 +60,17 @@ const locationSort = computed(() => (a, b) => {
 </script>
 
 <template>
-  <Head title="Location Management" />
+  <Head :title="$t('Commons.title.location_management')" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <RIForm
-		title="Manage Locations"
+		:title="$t('Commons.title.manage_locations')"
 		datasource="/json/locations"
 		newrecordcaption="Add Location"
 		:filter="locationMatchesSearch"
 		:sort="locationSort">
 
       <template #titleactions>
-        <Link href="/setup/locations/pick-path" class="ri_formbutton">Pick Path</Link>
+        <Link href="/setup/locations/pick-path" class="ri_formbutton">{{ $t('Commons.link.pick_path', {}) }}</Link>
       </template>
 
       <template #listactions>
@@ -78,7 +78,7 @@ const locationSort = computed(() => (a, b) => {
           type="text"
           v-model="locationSearch"
           class="ri_forminput location_search"
-          placeholder="Search all fields..."
+          :placeholder="$t('Pages.placeholder.search_all_fields')"
         />
       </template>
 
@@ -107,7 +107,7 @@ const locationSort = computed(() => (a, b) => {
       <template #default="{ record, editing }">
         <div class="ri_formtable">
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Code: *</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.code', {}) }}</div>
             <TextInput v-model="record.code" :enabled="editing" required />
           </div>
 
@@ -137,7 +137,7 @@ const locationSort = computed(() => (a, b) => {
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Use: *</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.use', {}) }}</div>
             <ComboBox
               v-model:keyValue="record.use_id"
               v-model:updates="record.use"
@@ -148,13 +148,13 @@ const locationSort = computed(() => (a, b) => {
           </div>
 		  
 		  <div class="ri_fieldset">
-		     <div class="ri_fieldlabel">Pull Sequence</div>
+		     <div class="ri_fieldlabel">{{ $t('Commons.text.pull_sequence', {}) }}</div>
 		     <TextInput v-model="record.PullSequence" type="number" :enabled="editing" />
 		   </div>
 
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Status: *</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.status', {}) }}</div>
             <ComboBox 
               v-model="record.status"
               :options="[{ id: 'active', name: 'Active' }, { id: 'archived', name: 'Archived' }]"

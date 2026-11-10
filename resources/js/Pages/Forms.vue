@@ -28,15 +28,16 @@ import Checkbox from '@/Components/Checkbox.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: { type: Array },
 });
 
 const statusOptions = [
-	{ value: 'draft', label: 'Draft' },
-	{ value: 'active', label: 'Active' },
-	{ value: 'archived', label: 'Archived' },
+	{ value: 'draft', label: t('Commons.text.draft') },
+	{ value: 'active', label: t('Commons.text.active') },
+	{ value: 'archived', label: t('Commons.text.archived') },
 ];
 
 const accessOptions = [
@@ -46,18 +47,18 @@ const accessOptions = [
 ];
 
 const approvalActionOptions = [
-	{ value: 'none', label: 'None — just collect the answers' },
-	{ value: 'create_or_link_partner', label: 'Approving creates/links a Partner-tagged person record' },
+	{ value: 'none', label: t('Pages.text.none_just_collect_the') },
+	{ value: 'create_or_link_partner', label: t('Pages.text.approving_creates_links_a') },
 ];
 
 const typeOptions = [
-	{ value: 'short_text', label: 'Short Text' },
-	{ value: 'long_text', label: 'Long Text' },
-	{ value: 'number', label: 'Number' },
-	{ value: 'date', label: 'Date' },
-	{ value: 'yes_no', label: 'Yes / No' },
-	{ value: 'single_choice', label: 'Single Choice' },
-	{ value: 'multiple_choice', label: 'Multiple Choice' },
+	{ value: 'short_text', label: t('Commons.text.short_text') },
+	{ value: 'long_text', label: t('Commons.text.long_text') },
+	{ value: 'number', label: t('Commons.text.number') },
+	{ value: 'date', label: t('Commons.text.date') },
+	{ value: 'yes_no', label: t('Pages.text.yes_no') },
+	{ value: 'single_choice', label: t('Commons.text.single_choice') },
+	{ value: 'multiple_choice', label: t('Commons.text.multiple_choice') },
 	{ value: 'section_header', label: 'Section Header (no answer)' },
 ];
 
@@ -180,15 +181,15 @@ async function moveQuestion(record, index, direction) {
 </script>
 
 <template>
-	<Head title="Forms & Surveys" />
+	<Head :title="$t('Pages.title.forms_surveys')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
-		<RIForm title="Forms & Surveys" datasource="/json/forms" newrecordcaption="New Form">
+		<RIForm :title="$t('Pages.title.forms_surveys')" datasource="/json/forms" newrecordcaption="New Form">
 			<template #thead>
-				<th>Name</th>
-				<th>Status</th>
-				<th>Access</th>
-				<th>Approval</th>
-				<th>Submissions</th>
+				<th>{{ $t('Commons.text.name', {}) }}</th>
+				<th>{{ $t('Commons.text.status_2', {}) }}</th>
+				<th>{{ $t('Commons.text.access', {}) }}</th>
+				<th>{{ $t('Commons.text.approval', {}) }}</th>
+				<th>{{ $t('Commons.text.submissions', {}) }}</th>
 			</template>
 			<template #tbody="{ record }">
 				<td>{{ record.name }}</td>
@@ -205,12 +206,12 @@ async function moveQuestion(record, index, direction) {
 						<TextInput v-model="record.name" :enabled="editing" required />
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Slug (public URL):</div>
-						<TextInput v-model="record.slug" :enabled="editing" placeholder="auto-generated from name if left blank" />
+						<div class="ri_fieldlabel">{{ $t('Pages.text.slug_public_url', {}) }}</div>
+						<TextInput v-model="record.slug" :enabled="editing" :placeholder="$t('Pages.placeholder.auto_generated_from_name')" />
 						<div v-if="record.slug" class="text-xs text-gray-500 mt-1">/forms/{{ record.slug }}</div>
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Intro Text:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.intro_text', {}) }}</div>
 						<TextArea v-model="record.intro_text" :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
@@ -220,29 +221,29 @@ async function moveQuestion(record, index, direction) {
 						</select>
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Who Can Access:</div>
+						<div class="ri_fieldlabel">{{ $t('Pages.text.who_can_access', {}) }}</div>
 						<select v-model="record.access_mode" :disabled="!editing" class="rounded-md border-gray-300 shadow-sm">
 							<option v-for="o in accessOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
 						</select>
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Requires Approval:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.requires_approval', {}) }}</div>
 						<Checkbox v-model="record.requires_approval" :enabled="editing" />
 						<span class="text-xs text-gray-500 ml-2">Off = just collect the answers, no decision needed.</span>
 					</div>
 					<div class="ri_fieldset" v-if="record.requires_approval">
-						<div class="ri_fieldlabel">On Approval:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.on_approval', {}) }}</div>
 						<select v-model="record.on_approval_action" :disabled="!editing" class="rounded-md border-gray-300 shadow-sm">
 							<option v-for="o in approvalActionOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
 						</select>
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Notify Emails (comma-separated):</div>
-						<TextInput v-model="record.notify_emails" :enabled="editing" placeholder="office@example.org, someone@example.org" />
+						<div class="ri_fieldlabel">{{ $t('Pages.text.notify_emails_comma_separated', {}) }}</div>
+						<TextInput v-model="record.notify_emails" :enabled="editing" :placeholder="$t('Pages.placeholder.office_example_org_someone')" />
 					</div>
 
 					<div v-if="record.id" class="ri_fieldset">
-						<div class="ri_fieldlabel">Review Submissions:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.review_submissions', {}) }}</div>
 						<Link :href="`/setup/forms/${record.id}/submissions`" class="text-blue-600 underline text-sm">
 							{{ record.submissions_count ?? 0 }} submission(s) &rarr;
 						</Link>
@@ -253,12 +254,12 @@ async function moveQuestion(record, index, direction) {
 				     question needs somewhere to attach it to), same gate as
 				     Receiving's photo step. -->
 				<div v-if="record.id" class="mt-6 border-t pt-4 space-y-4">
-					<h3 class="font-semibold">Questions</h3>
+					<h3 class="font-semibold">{{ $t('Commons.heading.questions', {}) }}</h3>
 
 					<div v-if="record.questions?.length" class="space-y-2">
 						<div v-for="(question, index) in record.questions" :key="question.id" class="border rounded p-2 text-sm">
 							<div v-if="editingQuestionId === question.id" class="space-y-2">
-								<TextInput v-model="editQuestionForm.label" placeholder="Question label" />
+								<TextInput v-model="editQuestionForm.label" :placeholder="$t('Commons.placeholder.question_label')" />
 								<TextInput v-model="editQuestionForm.help_text" placeholder="Help text (optional)" />
 								<select v-model="editQuestionForm.type" class="rounded-md border-gray-300 shadow-sm text-sm">
 									<option v-for="o in typeOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
@@ -266,20 +267,20 @@ async function moveQuestion(record, index, direction) {
 								<TextArea
 									v-if="choiceTypes.includes(editQuestionForm.type)"
 									v-model="editQuestionForm.optionsText"
-									placeholder="One choice per line"
+									:placeholder="$t('Pages.placeholder.one_choice_per_line')"
 								/>
 								<label class="flex items-center gap-1 text-xs">
 									<Checkbox v-model="editQuestionForm.required" enabled /> Required
 								</label>
 								<div class="flex gap-2">
-									<PrimaryButton @click="saveEditQuestion(record, question)">Save</PrimaryButton>
-									<SecondaryButton @click="editingQuestionId = null">Cancel</SecondaryButton>
+									<PrimaryButton @click="saveEditQuestion(record, question)">{{ $t('Commons.button.save', {}) }}</PrimaryButton>
+									<SecondaryButton @click="editingQuestionId = null">{{ $t('Commons.button.cancel', {}) }}</SecondaryButton>
 								</div>
 							</div>
 							<div v-else class="flex items-start justify-between gap-2">
 								<div>
 									<span class="font-medium">{{ question.label }}</span>
-									<span class="text-gray-400 text-xs ml-2">({{ question.type }}{{ question.required ? ', required' : '' }})</span>
+									<span class="text-gray-400 text-xs ml-2">({{ question.type }}{{ question.required ? $t('Commons.text.required') : '' }})</span>
 									<div v-if="question.help_text" class="text-xs text-gray-500">{{ question.help_text }}</div>
 									<div v-if="question.options?.length" class="text-xs text-gray-500">
 										Options: {{ question.options.join(', ') }}
@@ -288,16 +289,16 @@ async function moveQuestion(record, index, direction) {
 								<div class="flex gap-2 shrink-0 text-xs">
 									<button @click="moveQuestion(record, index, -1)" :disabled="index === 0" class="text-gray-500">&uarr;</button>
 									<button @click="moveQuestion(record, index, 1)" :disabled="index === record.questions.length - 1" class="text-gray-500">&darr;</button>
-									<button @click="startEditQuestion(question)" class="text-blue-600 underline">Edit</button>
-									<button @click="deleteQuestion(record, question)" class="text-red-600 underline">Remove</button>
+									<button @click="startEditQuestion(question)" class="text-blue-600 underline">{{ $t('Commons.button.edit', {}) }}</button>
+									<button @click="deleteQuestion(record, question)" class="text-red-600 underline">{{ $t('Commons.button.remove', {}) }}</button>
 								</div>
 							</div>
 						</div>
 					</div>
-					<p v-else class="text-gray-400 text-sm">No questions yet — add presets or a custom question below.</p>
+					<p v-else class="text-gray-400 text-sm">{{ $t('Pages.text.no_questions_yet_add', {}) }}</p>
 
 					<div class="border rounded p-3 space-y-2">
-						<h4 class="font-medium text-sm">Add Preset Questions</h4>
+						<h4 class="font-medium text-sm">{{ $t('Pages.heading.add_preset_questions', {}) }}</h4>
 						<div v-for="(group, category) in presetsByCategory" :key="category">
 							<div class="text-xs uppercase text-gray-400 mt-2">{{ category === 'basic_info' ? 'Basic Information' : 'Other' }}</div>
 							<label v-for="preset in group" :key="preset.key" class="flex items-center gap-2 text-sm py-0.5"
@@ -313,13 +314,13 @@ async function moveQuestion(record, index, direction) {
 							</label>
 						</div>
 						<PrimaryButton @click="addSelectedPresets(record)" :disabled="!selectedPresetKeys.length">
-							Add Selected
+							{{ $t('Commons.button.add_selected', {}) }}
 						</PrimaryButton>
 					</div>
 
 					<div class="border rounded p-3 space-y-2">
-						<h4 class="font-medium text-sm">Add a Custom Question</h4>
-						<TextInput v-model="newQuestion.label" placeholder="Question label" />
+						<h4 class="font-medium text-sm">{{ $t('Pages.heading.add_a_custom_question', {}) }}</h4>
+						<TextInput v-model="newQuestion.label" :placeholder="$t('Commons.placeholder.question_label')" />
 						<TextInput v-model="newQuestion.help_text" placeholder="Help text (optional)" />
 						<select v-model="newQuestion.type" class="rounded-md border-gray-300 shadow-sm text-sm">
 							<option v-for="o in typeOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
@@ -327,26 +328,26 @@ async function moveQuestion(record, index, direction) {
 						<TextArea
 							v-if="choiceTypes.includes(newQuestion.type)"
 							v-model="newQuestion.optionsText"
-							placeholder="One choice per line"
+							:placeholder="$t('Pages.placeholder.one_choice_per_line')"
 						/>
 						<label class="flex items-center gap-1 text-xs">
 							<Checkbox v-model="newQuestion.required" enabled /> Required
 						</label>
-						<PrimaryButton @click="addQuestion(record)">Add Question</PrimaryButton>
+						<PrimaryButton @click="addQuestion(record)">{{ $t('Commons.button.add_question', {}) }}</PrimaryButton>
 					</div>
 				</div>
 			</template>
 
 			<template #actions="{ editing, record, confirmingDelete, save, cancel, delete: doDelete, keepRecord }">
 				<div class="ri_formactions">
-					<button v-if="editing" @click="saveWithFeedback(save)" class="ri_defaultbutton">Save</button>
-					<span v-if="justSaved" class="ri_success" style="margin-left: 0.75em;">Saved.</span>
-					<button v-if="editing" @click="cancel()" class="ri_formbutton">Cancel Changes</button>
+					<button v-if="editing" @click="saveWithFeedback(save)" class="ri_defaultbutton">{{ $t('Commons.button.save', {}) }}</button>
+					<span v-if="justSaved" class="ri_success" style="margin-left: 0.75em;">{{ $t('Pages.text.saved', {}) }}</span>
+					<button v-if="editing" @click="cancel()" class="ri_formbutton">{{ $t('Commons.button.cancel_changes', {}) }}</button>
 					<button v-if="editing" @click="doDelete()" class="ri_deletebutton" :class="{ ri_confirming: confirmingDelete }">
-						{{ confirmingDelete ? 'Confirm Delete — cannot be undone' : 'Delete' }}
+						{{ confirmingDelete ? $t('Pages.button.confirm_delete_cannot_be') : 'Delete' }}
 					</button>
-					<button v-if="editing && confirmingDelete" @click="keepRecord()" class="ri_linkbutton">Keep Record</button>
-					<button v-if="!editing" @click="cancel()" class="ri_defaultbutton">Back to List</button>
+					<button v-if="editing && confirmingDelete" @click="keepRecord()" class="ri_linkbutton">{{ $t('Commons.button.keep_record', {}) }}</button>
+					<button v-if="!editing" @click="cancel()" class="ri_defaultbutton">{{ $t('Pages.button.back_to_list', {}) }}</button>
 				</div>
 			</template>
 		</RIForm>

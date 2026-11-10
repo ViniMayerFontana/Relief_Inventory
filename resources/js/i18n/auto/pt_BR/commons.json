@@ -1,16 +1,65 @@
 {
   "Commons": {
+    "button": {
+      "add_question": "Adicionar pergunta",
+      "add_selected": "Adicionar selecionados",
+      "cancel": "Cancelar",
+      "cancel_changes": "Cancelar alterações",
+      "delete": "Excluir",
+      "edit": "Editar",
+      "keep_record": "Manter registro",
+      "remove": "Remover",
+      "save": "Salvar"
+    },
+    "heading": {
+      "questions": "Perguntas"
+    },
+    "link": {
+      "pick_path": "Rota de separação"
+    },
+    "placeholder": {
+      "question_label": "Rótulo da pergunta"
+    },
     "text": {
+      "access": "Acesso",
+      "active": "Ativo",
+      "approval": "Aprovação",
+      "archived": "Arquivado",
       "category_name": "Nome da categoria:",
+      "code": "Código: *",
+      "date": "Data",
+      "draft": "Rascunho",
       "each": "Unidade",
+      "help_text": ", help_text:",
+      "intro_text": "Texto de introdução:",
+      "long_text": "Texto longo",
+      "multiple_choice": "Escolha múltipla",
+      "name": "Nome",
+      "none": "Nenhum",
+      "none_2": "none",
+      "number": "Número",
+      "on_approval": "Ao aprovar:",
       "other": "other",
       "other_2": "Outro",
       "pallet_report": "Relatório de pallet",
+      "pull_sequence": "Sequência de retirada",
+      "required": ", obrigatória",
+      "requires_approval": "Requer aprovação:",
+      "review_submissions": "Revisar envios:",
       "set": "— defina",
+      "short_text": "Texto curto",
+      "single_choice": "Escolha única",
+      "status": "Status: *",
+      "status_2": "Status",
+      "submissions": "Envios",
+      "type": ", type:",
+      "use": "Uso: *",
       "volume": "Volume",
       "weight": "Peso"
     },
     "title": {
+      "location_management": "Gerenciamento de localizações",
+      "manage_locations": "Gerenciar localizações",
       "package_types": "Tipos de embalagem"
     }
   }

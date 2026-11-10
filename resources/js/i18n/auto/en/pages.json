@@ -1,12 +1,36 @@
 {
   "Pages": {
+    "button": {
+      "back_to_list": "Back to List",
+      "confirm_delete_cannot_be": "Confirm Delete — cannot be undone"
+    },
+    "heading": {
+      "add_a_custom_question": "Add a Custom Question",
+      "add_preset_questions": "Add Preset Questions"
+    },
     "placeholder": {
+      "auto_generated_from_name": "auto-generated from name if left blank",
+      "office_example_org_someone": "office@example.org, someone@example.org",
+      "one_choice_per_line": "One choice per line",
+      "search_all_fields": "Search all fields...",
       "search_by_category_name": "Search by Category Name...",
       "search_by_name": "Search by name...",
       "search_by_name_or": "Search by name or abbreviation..."
     },
+    "text": {
+      "approving_creates_links_a": "Approving creates/links a Partner-tagged person record",
+      "no_questions_yet_add": "No questions yet — add presets or a custom question below.",
+      "none_just_collect_the": "None — just collect the answers",
+      "notify_emails_comma_separated": "Notify Emails (comma-separated):",
+      "options_required_false_optionstext": ", options: [], required: false, optionsText:",
+      "saved": "Saved.",
+      "slug_public_url": "Slug (public URL):",
+      "who_can_access": "Who Can Access:",
+      "yes_no": "Yes / No"
+    },
     "title": {
       "default_ordering_units": "Default Ordering Units",
+      "forms_surveys": "Forms & Surveys",
       "item_category_entry": "Item Category Entry",
       "item_category_management": "Item Category Management"
     }

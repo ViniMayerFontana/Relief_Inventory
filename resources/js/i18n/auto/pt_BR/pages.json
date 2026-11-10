@@ -1,12 +1,36 @@
 {
   "Pages": {
+    "button": {
+      "back_to_list": "Voltar à lista",
+      "confirm_delete_cannot_be": "Confirmar exclusão — não pode ser desfeita"
+    },
+    "heading": {
+      "add_a_custom_question": "Adicionar uma pergunta personalizada",
+      "add_preset_questions": "Adicionar perguntas predefinidas"
+    },
     "placeholder": {
+      "auto_generated_from_name": "gerado automaticamente a partir do nome se deixado em branco",
+      "office_example_org_someone": "office@example.org, someone@example.org",
+      "one_choice_per_line": "Uma opção por linha",
+      "search_all_fields": "Buscar em todos os campos...",
       "search_by_category_name": "Buscar por nome da categoria...",
       "search_by_name": "Buscar por nome...",
       "search_by_name_or": "Buscar por nome ou abreviação..."
     },
+    "text": {
+      "approving_creates_links_a": "Aprovar cria/vincula um registro de pessoa com tag Parceiro",
+      "no_questions_yet_add": "Nenhuma pergunta ainda — adicione predefinições ou uma pergunta personalizada abaixo.",
+      "none_just_collect_the": "Nenhum — apenas coletar as respostas",
+      "notify_emails_comma_separated": "E-mails de notificação (separados por vírgula):",
+      "options_required_false_optionstext": ", options: [], required: false, optionsText:",
+      "saved": "Salvo.",
+      "slug_public_url": "Slug (URL pública):",
+      "who_can_access": "Quem pode acessar:",
+      "yes_no": "Sim / Não"
+    },
     "title": {
       "default_ordering_units": "Unidades padrão para pedidos",
+      "forms_surveys": "Formulários e pesquisas",
       "item_category_entry": "Cadastro de categorias de itens",
       "item_category_management": "Gerenciamento de categorias de itens"
     }
