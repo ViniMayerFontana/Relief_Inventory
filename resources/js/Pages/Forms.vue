@@ -183,7 +183,7 @@ async function moveQuestion(record, index, direction) {
 <template>
 	<Head :title="$t('Pages.title.forms_surveys')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
-		<RIForm :title="$t('Pages.title.forms_surveys')" datasource="/json/forms" newrecordcaption="New Form">
+		<RIForm :title="$t('Pages.title.forms_surveys')" datasource="/json/forms" :newrecordcaption="$t('Commons.text.new_form')">
 			<template #thead>
 				<th>{{ $t('Commons.text.name', {}) }}</th>
 				<th>{{ $t('Commons.text.status_2', {}) }}</th>
@@ -195,14 +195,14 @@ async function moveQuestion(record, index, direction) {
 				<td>{{ record.name }}</td>
 				<td>{{ record.status }}</td>
 				<td>{{ record.access_mode }}</td>
-				<td>{{ record.requires_approval ? 'Required' : 'None' }}</td>
+				<td>{{ record.requires_approval ? 'Required' : $t('Commons.text.none') }}</td>
 				<td>{{ record.submissions_count }}</td>
 			</template>
 
 			<template #default="{ record, editing }">
 				<div class="ri_formtable">
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Name:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.name_2', {}) }}</div>
 						<TextInput v-model="record.name" :enabled="editing" required />
 					</div>
 					<div class="ri_fieldset">
@@ -215,7 +215,7 @@ async function moveQuestion(record, index, direction) {
 						<TextArea v-model="record.intro_text" :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Status:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.status_3', {}) }}</div>
 						<select v-model="record.status" :disabled="!editing" class="rounded-md border-gray-300 shadow-sm">
 							<option v-for="o in statusOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
 						</select>
@@ -283,7 +283,7 @@ async function moveQuestion(record, index, direction) {
 									<span class="text-gray-400 text-xs ml-2">({{ question.type }}{{ question.required ? $t('Commons.text.required') : '' }})</span>
 									<div v-if="question.help_text" class="text-xs text-gray-500">{{ question.help_text }}</div>
 									<div v-if="question.options?.length" class="text-xs text-gray-500">
-										Options: {{ question.options.join(', ') }}
+										{{ $t('Commons.text.options') }} {{ question.options.join(', ') }}
 									</div>
 								</div>
 								<div class="flex gap-2 shrink-0 text-xs">
@@ -300,7 +300,7 @@ async function moveQuestion(record, index, direction) {
 					<div class="border rounded p-3 space-y-2">
 						<h4 class="font-medium text-sm">{{ $t('Pages.heading.add_preset_questions', {}) }}</h4>
 						<div v-for="(group, category) in presetsByCategory" :key="category">
-							<div class="text-xs uppercase text-gray-400 mt-2">{{ category === 'basic_info' ? 'Basic Information' : 'Other' }}</div>
+							<div class="text-xs uppercase text-gray-400 mt-2">{{ category === 'basic_info' ? 'Basic Information' : $t('Commons.text.other_2') }}</div>
 							<label v-for="preset in group" :key="preset.key" class="flex items-center gap-2 text-sm py-0.5"
 								:class="{ 'opacity-40': existingPresetKeys(record).has(preset.key) }">
 								<input
@@ -344,7 +344,7 @@ async function moveQuestion(record, index, direction) {
 					<span v-if="justSaved" class="ri_success" style="margin-left: 0.75em;">{{ $t('Pages.text.saved', {}) }}</span>
 					<button v-if="editing" @click="cancel()" class="ri_formbutton">{{ $t('Commons.button.cancel_changes', {}) }}</button>
 					<button v-if="editing" @click="doDelete()" class="ri_deletebutton" :class="{ ri_confirming: confirmingDelete }">
-						{{ confirmingDelete ? $t('Pages.button.confirm_delete_cannot_be') : 'Delete' }}
+						{{ confirmingDelete ? $t('Pages.button.confirm_delete_cannot_be') : $t('Commons.button.delete') }}
 					</button>
 					<button v-if="editing && confirmingDelete" @click="keepRecord()" class="ri_linkbutton">{{ $t('Commons.button.keep_record', {}) }}</button>
 					<button v-if="!editing" @click="cancel()" class="ri_defaultbutton">{{ $t('Pages.button.back_to_list', {}) }}</button>

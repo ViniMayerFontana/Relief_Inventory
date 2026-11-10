@@ -27,10 +27,14 @@
       "search_organizations": "Search organizations..."
     },
     "text": {
+      "add_package_type": "Add Package Type",
       "approving_creates_links_a": "Approving creates/links a Partner-tagged person record",
       "ask_them_to_choose": "Ask them to choose a new password the first time they log in",
       "ask_them_to_choose_2": "Ask them to choose a new password the next time they log in",
+      "could_not_look_up": "Could not look up that address.",
+      "could_not_save_category": "Could not save category.",
       "could_not_save_please": "Could not save. Please try again.",
+      "could_not_update_partner": "Could not update partner status.",
       "done": "Done.",
       "email_them_a_link": "Email them a link to set their own password",
       "never_logged_in": "Never logged in",

@@ -588,7 +588,7 @@ function setPasswordChangeRequired(required) {
             :class="confirmingBulkDeactivate ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500'"
             :disabled="bulkBusy"
             @click="runBulk('deactivate')"
-          >{{ confirmingBulkDeactivate ? `Confirm — block ${visibleCheckedIds.length} from logging in` : 'Deactivate' }}</button>
+          >{{ confirmingBulkDeactivate ? `Confirm — block ${visibleCheckedIds.length} from logging in` : $t('Commons.button.deactivate') }}</button>
           <button
             v-if="confirmingBulkDeactivate"
             type="button"
@@ -613,11 +613,11 @@ function setPasswordChangeRequired(required) {
                     @change="toggleAllVisible"
                   />
                 </th>
-                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('name')">Name {{ sortArrow('name') }}</button></th>
+                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('name')">{{ $t('Commons.button.name') }} {{ sortArrow('name') }}</button></th>
                 <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('email')">Email {{ sortArrow('email') }}</button></th>
-                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('roles')">Roles {{ sortArrow('roles') }}</button></th>
-                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('status')">Status {{ sortArrow('status') }}</button></th>
-                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('last_login')">Last Login {{ sortArrow('last_login') }}</button></th>
+                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('roles')">{{ $t('Commons.button.roles') }} {{ sortArrow('roles') }}</button></th>
+                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('status')">{{ $t('Commons.button.status') }} {{ sortArrow('status') }}</button></th>
+                <th class="py-1 pr-2"><button type="button" class="sort-header" @click="sortBy('last_login')">{{ $t('Commons.button.last_login') }} {{ sortArrow('last_login') }}</button></th>
               </tr>
             </thead>
             <tbody>
@@ -640,7 +640,7 @@ function setPasswordChangeRequired(required) {
               </tr>
               <tr v-if="!filteredUsers.length">
                 <td colspan="6" class="py-3 text-gray-400">
-                  {{ anyFilter ? $t('Pages.text.no_users_match_these') : 'No users in this view.' }}
+                  {{ anyFilter ? $t('Pages.text.no_users_match_these') : $t('Pages.text.no_users_in_this') }}
                 </td>
               </tr>
             </tbody>
@@ -653,7 +653,7 @@ function setPasswordChangeRequired(required) {
 
       <!-- Detail view -->
       <section v-else class="bg-white shadow rounded-lg p-6 space-y-4">
-        <h2 class="text-lg font-semibold">{{ selected.id ? $t('Commons.heading.edit_user') : 'New User' }}</h2>
+        <h2 class="text-lg font-semibold">{{ selected.id ? $t('Commons.heading.edit_user') : $t('Commons.button.new_user') }}</h2>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <label class="block">
@@ -691,7 +691,7 @@ function setPasswordChangeRequired(required) {
                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm font-mono"
                 />
               </label>
-              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? $t('Commons.button.hide') : 'Show' }}</SecondaryButton>
+              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? $t('Commons.button.hide') : $t('Commons.button.show') }}</SecondaryButton>
               <SecondaryButton type="button" @click="generatePassword(selected)">{{ $t('Commons.button.generate', {}) }}</SecondaryButton>
             </div>
             <label class="flex items-center gap-2">
@@ -771,13 +771,13 @@ function setPasswordChangeRequired(required) {
         </div>
 
         <div v-if="selected.id" class="border-t pt-4 space-y-3">
-          <h3 class="text-sm font-semibold text-gray-700">Account — {{ statusLabel(selected) }}</h3>
+          <h3 class="text-sm font-semibold text-gray-700">{{ $t('Commons.heading.account') }} {{ statusLabel(selected) }}</h3>
 
           <dl class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-sm">
             <div>
               <dt class="text-gray-500">{{ $t('Commons.text.created', {}) }}</dt>
               <dd>
-                {{ formatDateTime(selected.created_at) || 'Unknown' }}
+                {{ formatDateTime(selected.created_at) || $t('Commons.text.unknown') }}
                 <span v-if="selected.created_by_name" class="text-gray-500">by {{ selected.created_by_name }}</span>
                 <span v-else-if="selected.created_at" class="text-gray-500">(self-registered or before this was recorded)</span>
               </dd>
@@ -811,7 +811,7 @@ function setPasswordChangeRequired(required) {
               v-if="!selected.disabled_at"
               :disabled="accountActionBusy"
               @click="resendInvite"
-            >{{ selected.has_password ? $t('Pages.button.send_password_reset') : 'Resend Invite Email' }}</SecondaryButton>
+            >{{ selected.has_password ? $t('Pages.button.send_password_reset') : $t('Pages.button.resend_invite_email') }}</SecondaryButton>
 
             <SecondaryButton
               v-if="!passwordForm"
@@ -837,7 +837,7 @@ function setPasswordChangeRequired(required) {
               :class="confirmingDeactivate ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500'"
               :disabled="accountActionBusy"
               @click="deactivate"
-            >{{ confirmingDeactivate ? $t('Pages.button.confirm_this_account_will') : 'Deactivate' }}</button>
+            >{{ confirmingDeactivate ? $t('Pages.button.confirm_this_account_will') : $t('Commons.button.deactivate') }}</button>
             <button
               v-if="confirmingDeactivate"
               type="button"
@@ -868,7 +868,7 @@ function setPasswordChangeRequired(required) {
                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm font-mono"
                 />
               </label>
-              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? $t('Commons.button.hide') : 'Show' }}</SecondaryButton>
+              <SecondaryButton type="button" @click="showPassword = !showPassword">{{ showPassword ? $t('Commons.button.hide') : $t('Commons.button.show') }}</SecondaryButton>
               <SecondaryButton type="button" @click="generatePassword(passwordForm)">{{ $t('Commons.button.generate', {}) }}</SecondaryButton>
             </div>
             <label class="flex items-center gap-2">
@@ -881,7 +881,7 @@ function setPasswordChangeRequired(required) {
             </label>
             <div class="flex gap-2">
               <PrimaryButton :disabled="passwordSaving || !passwordForm.password" @click="savePassword">
-                {{ passwordSaving ? 'Saving…' : 'Save Password' }}
+                {{ passwordSaving ? 'Saving…' : $t('Commons.button.save_password') }}
               </PrimaryButton>
               <button type="button" class="text-sm text-gray-500 underline" @click="passwordForm = null">{{ $t('Commons.button.cancel', {}) }}</button>
             </div>
@@ -889,7 +889,7 @@ function setPasswordChangeRequired(required) {
         </div>
 
         <div class="flex gap-2 pt-2">
-          <PrimaryButton :disabled="saving" @click="saveUser">{{ saving ? 'Saving…' : 'Save' }}</PrimaryButton>
+          <PrimaryButton :disabled="saving" @click="saveUser">{{ saving ? 'Saving…' : $t('Commons.button.save') }}</PrimaryButton>
           <button type="button" class="text-sm text-gray-500 underline" @click="cancelEdit">{{ $t('Commons.button.cancel', {}) }}</button>
         </div>
       </section>

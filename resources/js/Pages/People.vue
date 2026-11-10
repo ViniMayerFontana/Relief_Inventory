@@ -41,7 +41,7 @@ defineProps({
           class="ri_forminput people_search"
           :placeholder="$t('Pages.placeholder.search_by_name_or_2')"
         />
-        <HelpLink guide="people">Partner &amp; Donor Info Guide</HelpLink>
+        <HelpLink guide="people">{{ $t('Pages.text.partner_donor_info_guide', {}) }}</HelpLink>
       </template>
 
       <template #thead>
@@ -58,10 +58,10 @@ defineProps({
             <span v-if="record.parent" class="people_dim">Parent: {{ record.parent.full_name }}</span>
           </div>
           <div class="people_line2">
-            <span>Phone: {{ record.phone || 'N/A' }}</span>
+            <span>{{ $t('Commons.text.phone') }} {{ record.phone || 'N/A' }}</span>
             <span :title="record.email || ''">Email: {{ shortenEmail(record.email) }}</span>
-            <span>Roles: {{ (record.roles || []).map((r) => r.name).join(', ') || 'None' }}</span>
-            <span>Volunteer: {{ record.is_volunteer ? $t('Commons.text.yes') : 'No' }}</span>
+            <span>{{ $t('Commons.text.roles') }} {{ (record.roles || []).map((r) => r.name).join(', ') || $t('Commons.text.none') }}</span>
+            <span>{{ $t('Commons.text.volunteer') }} {{ record.is_volunteer ? $t('Commons.text.yes') : $t('Commons.text.no') }}</span>
           </div>
         </td>
       </template>
@@ -88,13 +88,13 @@ defineProps({
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Organization:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.organization', {}) }}</div>
             <TextInput
               v-model="record.organization"
               :enabled="canEditRecord(record, editing)"
             />
           </div>
-          <p class="ri_fieldhint">Provide a name (first + last) and/or an organization &mdash; at least one is required.</p>
+          <p class="ri_fieldhint">{{ $t('Pages.text.provide_a_name_first', {}) }}</p>
 
           <div class="ri_fieldset">
             <div class="ri_fieldlabel">{{ $t('Pages.text.this_record_is_the', {}) }}</div>
@@ -110,7 +110,7 @@ defineProps({
           </p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Parent Organization:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.parent_organization', {}) }}</div>
             <SearchSelect
               v-model="record.parent_person_id"
               optionsource="/json/people?is_organization=1"
@@ -133,7 +133,7 @@ defineProps({
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Category:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.category', {}) }}</div>
             <SearchSelect
               ref="categorySelect"
               v-model="record.category_id"
@@ -152,16 +152,16 @@ defineProps({
           </p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Badge Code:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.badge_code', {}) }}</div>
             <TextInput
               v-model="record.badge_code"
               :enabled="canEditRecord(record, editing)"
             />
           </div>
-          <p class="ri_fieldhint">Scan or type the code from this person's physical badge, if issued &mdash; used for PIN-unlock badge scanning.</p>
+          <p class="ri_fieldhint">{{ $t('Pages.text.scan_or_type_the', {}) }}</p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Phone:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.phone', {}) }}</div>
             <TextInput
               v-model="record.phone"
               type="tel"
@@ -221,7 +221,7 @@ defineProps({
 			  </p>
 
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">City:</div>
+				<div class="ri_fieldlabel">{{ $t('Commons.text.city', {}) }}</div>
 				<TextInput
 				  v-model="record.city"
 				  :enabled="editing && addressCheck.status !== 'checking'"
@@ -229,7 +229,7 @@ defineProps({
 			  </div>
 
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">State:</div>
+				<div class="ri_fieldlabel">{{ $t('Commons.text.state', {}) }}</div>
 				<TextInput
 				  v-model="record.state"
 				  maxlength="2"
@@ -238,7 +238,7 @@ defineProps({
 			  </div>
 
 			  <div class="ri_fieldset">
-				<div class="ri_fieldlabel">County:</div>
+				<div class="ri_fieldlabel">{{ $t('Commons.text.county', {}) }}</div>
 				<ComboBox
 					v-model:keyValue="record.county_id"
 					v-model:updates="record.county_id"
@@ -254,7 +254,7 @@ defineProps({
 		  </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Roles:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.roles', {}) }}</div>
             <MultiSelect
 				v-model:records="record.people_roles"
 				:template="templates.people_roles"
@@ -270,7 +270,7 @@ defineProps({
           </p>
 
           <div v-if="record.id && record.roles?.some((r) => r.name === 'Partner')" class="ri_fieldset">
-            <div class="ri_fieldlabel">Partner Status:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.partner_status', {}) }}</div>
             <div>
               <span v-if="record.partner_status" class="people_badge">{{ record.partner_status }}</span>
               <span v-else class="text-gray-400 text-sm">{{ $t('Commons.text.not_tracked', {}) }}</span>
@@ -307,7 +307,7 @@ defineProps({
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Volunteer:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.volunteer', {}) }}</div>
             <Checkbox
               v-model="record.is_volunteer"
               :enabled="canEditRecord(record, editing)"
@@ -319,7 +319,7 @@ defineProps({
           </p>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Comments:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.comments', {}) }}</div>
             <TextArea
               v-model="record.comments"
               :enabled="canEditRecord(record, editing)"
@@ -336,7 +336,7 @@ defineProps({
           <button @click="save()" class="ri_defaultbutton">{{ $t('Commons.button.save', {}) }}</button>
           <button @click="cancel()" class="ri_formbutton">{{ $t('Commons.button.cancel_changes', {}) }}</button>
           <button v-if="canDelete" @click="doDelete()" class="ri_deletebutton" :class="{ ri_confirming: confirmingDelete }">
-            {{ confirmingDelete ? $t('Pages.button.confirm_delete_cannot_be') : 'Delete' }}
+            {{ confirmingDelete ? $t('Pages.button.confirm_delete_cannot_be') : $t('Commons.button.delete') }}
           </button>
           <button v-if="canDelete && confirmingDelete" @click="keepRecord()" class="ri_linkbutton">{{ $t('Commons.button.keep_record', {}) }}</button>
         </div>
@@ -348,6 +348,7 @@ defineProps({
 <script>
 import axios from 'axios';
 import { invalidateOptions } from '@/Components/SearchSelect.vue';
+import { t } from '@/i18n';
 
 function normalizeAddr(s) {
   return (s || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
@@ -533,24 +534,24 @@ export default {
     partnerStatusActions(record) {
       const options = {
         '': [
-          { to: 'approved', label: 'Approve' },
-          { to: 'denied', label: 'Deny' },
+          { to: 'approved', label: t('Commons.button.approve') },
+          { to: 'denied', label: t('Commons.text.deny') },
         ],
         pending: [
-          { to: 'approved', label: 'Approve' },
-          { to: 'denied', label: 'Deny' },
+          { to: 'approved', label: t('Commons.button.approve') },
+          { to: 'denied', label: t('Commons.text.deny') },
         ],
         approved: [
-          { to: 'blocked', label: 'Block' },
-          { to: 'denied', label: 'Deny' },
+          { to: 'blocked', label: t('Commons.text.block') },
+          { to: 'denied', label: t('Commons.text.deny') },
         ],
         denied: [
           { to: 'pending', label: 'Reconsider' },
-          { to: 'approved', label: 'Approve' },
+          { to: 'approved', label: t('Commons.button.approve') },
         ],
         blocked: [
           { to: 'approved', label: 'Unblock (Approve)' },
-          { to: 'denied', label: 'Deny' },
+          { to: 'denied', label: t('Commons.text.deny') },
         ],
       };
       return options[record.partner_status || ''] || [];

@@ -65,7 +65,7 @@ const locationSort = computed(() => (a, b) => {
     <RIForm
 		:title="$t('Commons.title.manage_locations')"
 		datasource="/json/locations"
-		newrecordcaption="Add Location"
+		:newrecordcaption="$t('Commons.text.add_location')"
 		:filter="locationMatchesSearch"
 		:sort="locationSort">
 
@@ -83,14 +83,14 @@ const locationSort = computed(() => (a, b) => {
       </template>
 
       <template #thead>
-        <th class="ri_sortable" @click="setSort('code')">Code{{ sortArrow('code') }}</th>
-        <th class="ri_sortable" @click="setSort('route')">Route{{ sortArrow('route') }}</th>
-        <th class="ri_sortable" @click="setSort('block')">Block{{ sortArrow('block') }}</th>
-        <th class="ri_sortable" @click="setSort('aisle')">Aisle{{ sortArrow('aisle') }}</th>
-        <th class="ri_sortable" @click="setSort('lane')">Lane{{ sortArrow('lane') }}</th>
-        <th class="ri_sortable" @click="setSort('stack')">Stack{{ sortArrow('stack') }}</th>
-        <th class="ri_sortable" @click="setSort('use')">Use{{ sortArrow('use') }}</th>
-        <th class="ri_sortable" @click="setSort('status')">Status{{ sortArrow('status') }}</th>
+        <th class="ri_sortable" @click="setSort('code')">{{ $t('Commons.text.code_2') }} {{ sortArrow('code') }}</th>
+        <th class="ri_sortable" @click="setSort('route')">{{ $t('Commons.text.route') }} {{ sortArrow('route') }}</th>
+        <th class="ri_sortable" @click="setSort('block')">{{ $t('Commons.text.block') }} {{ sortArrow('block') }}</th>
+        <th class="ri_sortable" @click="setSort('aisle')">{{ $t('Commons.text.aisle') }} {{ sortArrow('aisle') }}</th>
+        <th class="ri_sortable" @click="setSort('lane')">{{ $t('Commons.text.lane') }} {{ sortArrow('lane') }}</th>
+        <th class="ri_sortable" @click="setSort('stack')">{{ $t('Commons.text.stack') }} {{ sortArrow('stack') }}</th>
+        <th class="ri_sortable" @click="setSort('use')">{{ $t('Commons.text.use_2') }} {{ sortArrow('use') }}</th>
+        <th class="ri_sortable" @click="setSort('status')">{{ $t('Commons.button.status') }} {{ sortArrow('status') }}</th>
       </template>
 
       <template #tbody="{ record, index }">
@@ -112,27 +112,27 @@ const locationSort = computed(() => (a, b) => {
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Route:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.route_2', {}) }}</div>
             <TextInput v-model="record.Route" :enabled="editing" />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Block:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.block_2', {}) }}</div>
             <TextInput v-model="record.Block" :enabled="editing" />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Aisle:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.aisle_2', {}) }}</div>
             <TextInput v-model="record.Aisle" :enabled="editing" />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Lane:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.lane_2', {}) }}</div>
             <TextInput v-model="record.Lane" :enabled="editing" />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Stack:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.stack_2', {}) }}</div>
             <TextInput v-model="record.Stack" :enabled="editing" />
           </div>
 
@@ -157,7 +157,7 @@ const locationSort = computed(() => (a, b) => {
             <div class="ri_fieldlabel">{{ $t('Commons.text.status', {}) }}</div>
             <ComboBox 
               v-model="record.status"
-              :options="[{ id: 'active', name: 'Active' }, { id: 'archived', name: 'Archived' }]"
+              :options="[{ id: 'active', name: $t('Commons.text.active') }, { id: 'archived', name: $t('Commons.text.archived') }]"
               :enabled="editing"
             />
           </div>

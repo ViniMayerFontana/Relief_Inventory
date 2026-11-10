@@ -68,7 +68,7 @@ const packageTypeSort = computed(() => (a, b) =>
 		<RIForm
 			:title="$t('Commons.title.package_types')"
 			datasource="/json/packagetypes"
-			newrecordcaption="Add Package Type"
+			:newrecordcaption="$t('Pages.text.add_package_type')"
 			:filter="packageTypeMatchesSearch"
 			:sort="packageTypeSort"
 		>
@@ -82,8 +82,8 @@ const packageTypeSort = computed(() => (a, b) =>
 			</template>
 
 			<template #thead>
-				<th class="ri_sortable" @click="setSort('singular')">Singular{{ sortArrow('singular') }}</th>
-				<th class="ri_sortable" @click="setSort('plural')">Plural{{ sortArrow('plural') }}</th>
+				<th class="ri_sortable" @click="setSort('singular')">{{ $t('Commons.text.singular') }} {{ sortArrow('singular') }}</th>
+				<th class="ri_sortable" @click="setSort('plural')">{{ $t('Commons.text.plural') }} {{ sortArrow('plural') }}</th>
 			</template>
 			<template #tbody="{ record }">
 				<td>{{ record.singular }}</td>
@@ -92,11 +92,11 @@ const packageTypeSort = computed(() => (a, b) =>
 			<template #default="{ record, editing }">
 				<div class="ri_formtable">
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Singular:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.singular_2', {}) }}</div>
 						<TextInput v-model="record.singular" placeholder="e.g. Case" required autofocus :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Plural:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.plural_2', {}) }}</div>
 						<TextInput v-model="record.plural" placeholder="e.g. Cases" required :enabled="editing" />
 					</div>
 				</div>

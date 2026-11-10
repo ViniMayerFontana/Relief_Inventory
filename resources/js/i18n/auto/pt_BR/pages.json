@@ -27,10 +27,14 @@
       "search_organizations": "Buscar organizações..."
     },
     "text": {
+      "add_package_type": "Adicionar tipo de embalagem",
       "approving_creates_links_a": "Aprovar cria/vincula um registro de pessoa com tag Parceiro",
       "ask_them_to_choose": "Pedir que escolham uma nova senha no primeiro login",
       "ask_them_to_choose_2": "Pedir que escolham uma nova senha no próximo login",
+      "could_not_look_up": "Não foi possível consultar esse endereço.",
+      "could_not_save_category": "Não foi possível salvar a categoria.",
       "could_not_save_please": "Não foi possível salvar. Tente novamente.",
+      "could_not_update_partner": "Não foi possível atualizar o status do parceiro.",
       "done": "Concluído.",
       "email_them_a_link": "Enviar por e-mail um link para definirem a própria senha",
       "never_logged_in": "Nunca fizeram login",

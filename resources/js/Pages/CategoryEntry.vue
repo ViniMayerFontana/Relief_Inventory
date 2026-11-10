@@ -44,7 +44,7 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
     <RIForm
       :title="$t('Pages.title.item_category_management')"
       datasource="/json/categories"
-	  newrecordcaption="Add Category"
+	  :newrecordcaption="$t('Commons.text.add_category')"
 	  :filter="categoryMatchesSearch"
 	  :sort="categorySort">
       <template #listactions>
@@ -56,7 +56,7 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
         />
       </template>
       <template #thead>
-        <th class="ri_sortable" @click="setSort()">Category Name{{ sortArrow() }}</th>
+        <th class="ri_sortable" @click="setSort()">{{ $t('Commons.text.category_name_2') }} {{ sortArrow() }}</th>
       </template>
       <template #tbody="{ record, index }">
         <td>{{ record.name }}</td>
