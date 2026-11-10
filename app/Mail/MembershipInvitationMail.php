@@ -19,6 +19,6 @@ class MembershipInvitationMail extends Mailable
 
     public function build()
     {
-        return $this->subject("You're invited to {$this->warehouse->display_name}")->view('emails.membership-invitation');
+        return $this->subject(trans('mail.invitation_subject', ['warehouse' => $this->warehouse->display_name]))->view('emails.membership-invitation');
     }
 }

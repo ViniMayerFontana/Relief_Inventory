@@ -101,9 +101,8 @@ class MailSettingsController extends Controller
 
         try {
             Mail::raw(
-                'This is a test message from Relief Inventory at '.config('app.url').".\n\n"
-                .'If you can read this, outgoing email is working.',
-                fn ($message) => $message->to($data['to'])->subject('Relief Inventory test email')
+                trans('mail.test_body', ['url' => config('app.url')]),
+                fn ($message) => $message->to($data['to'])->subject(trans('mail.test_subject'))
             );
         } catch (\Throwable $e) {
             Log::warning('Test email failed: '.$e->getMessage());

@@ -1,29 +1,33 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 @php
-    $labels = ['seen' => 'Acknowledged', 'in_development' => 'In Development', 'resolved' => 'Resolved'];
+    $labels = [
+        'seen' => __('mail.feedback_status_seen'),
+        'in_development' => __('mail.feedback_status_in_development'),
+        'resolved' => __('mail.feedback_status_resolved'),
+    ];
     $report = $log->feedbackReport;
+    $type = $report->type === 'bug' ? __('mail.type_bug') : __('mail.type_feature');
 @endphp
 
-<p>Hi {{ $report->reporterFullName() }},</p>
+<p>{{ __('mail.account_greeting', ['name' => $report->reporterFullName()]) }}</p>
 
 @if ($isTransition)
 <p>
-    Your {{ $report->type === 'bug' ? 'bug report' : 'feature request' }}
-    "{{ \Illuminate\Support\Str::limit($report->message, 80) }}" is now
+    {{ __('mail.status_transition_body', ['type' => $type, 'message' => \Illuminate\Support\Str::limit($report->message, 80)]) }}
     <strong>{{ $labels[$log->status] ?? $log->status }}</strong>.
 </p>
 @else
 <p>
-    A new comment was added to your {{ $report->type === 'bug' ? 'bug report' : 'feature request' }}
+    {{ __('mail.status_comment_body', ['type' => $type]) }}
     "{{ \Illuminate\Support\Str::limit($report->message, 80) }}"
-    (currently <strong>{{ $labels[$log->status] ?? $log->status }}</strong>):
+    ({{ __('mail.currently') }} <strong>{{ $labels[$log->status] ?? $log->status }}</strong>):
 </p>
 @endif
 
 @if ($log->comment)
-<p><strong>Note from the developer:</strong></p>
+<p><strong>{{ __('mail.note_from_developer') }}</strong></p>
 <p>{{ $log->comment }}</p>
 @endif
 
-<p>Thanks for helping improve Relief Inventory.</p>
+<p>{{ __('mail.thanks_helping') }}</p>

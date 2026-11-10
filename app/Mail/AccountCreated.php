@@ -23,7 +23,7 @@ class AccountCreated extends Mailable
 
     public function build()
     {
-        return $this->subject('Your '.config('app.name').' account')
+        return $this->subject(trans('mail.account_created_subject', ['app' => config('app.name')]))
             ->view('emails.account-created');
     }
 }
