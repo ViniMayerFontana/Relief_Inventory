@@ -29,7 +29,7 @@ Route::get('/help', function () {
     return Inertia::render('Help/Index', [
         'breadcrumb' => MenuItem::getBreadcrumb('/help'),
         'guides' => collect(HelpReportController::GUIDES)
-            ->map(fn ($title, $slug) => ['slug' => $slug, 'title' => $title])->values(),
+            ->map(fn ($title, $slug) => ['slug' => $slug, 'title' => HelpReportController::title($slug)])->values(),
         // Training Mode's team activity sheets (TrainingAdminController::teamSheetsBuilder).
         'trainingTeams' => TrainingMode::TEAMS,
     ]);
@@ -42,12 +42,12 @@ Route::get('/help/{guide}', function (string $guide) {
     return Inertia::render('Help/Guide', [
         'guide' => $guide,
         // The page heading drops the PDF title's " Guide" ("Receiving Guide" -> "Receiving").
-        'title' => Str::beforeLast(HelpReportController::GUIDES[$guide], ' Guide'),
+        'title' => Str::beforeLast(HelpReportController::title($guide), ' Guide'),
         'intro' => $source->intro,
         'sections' => $source->sections,
         'breadcrumb' => [
             ...MenuItem::getBreadcrumb('/help'),
-            ['href' => '/help/'.$guide, 'title' => HelpReportController::GUIDES[$guide]],
+            ['href' => '/help/'.$guide, 'title' => HelpReportController::title($guide)],
         ],
     ]);
 })->whereIn('guide', array_keys(HelpReportController::GUIDES))->middleware(['auth']);

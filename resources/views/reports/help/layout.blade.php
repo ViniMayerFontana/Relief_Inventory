@@ -2,7 +2,7 @@
      Each guide's own view only supplies its title and content sections, so
      styling and the header/footer stay identical across guides. --}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <title>@yield('title')</title>
@@ -83,8 +83,7 @@
 @yield('content')
 
     <div class="footer">
-        Questions or something not working the way this guide describes? Use Report an Issue from the
-        profile menu in the app.
+        {{ __('help.footer') }}
     </div>
 </body>
 </html>
