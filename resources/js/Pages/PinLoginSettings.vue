@@ -17,6 +17,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	breadcrumb: { type: Array },
@@ -45,7 +46,7 @@ async function fetchSettings() {
 		const response = await axios.get('/json/pin-login-settings');
 		Object.assign(form, response.data.settings);
 	} catch (error) {
-		settingsError.value = 'Could not load PIN login settings.';
+		settingsError.value = t('Pages.text.could_not_load_pin');
 	} finally {
 		settingsLoading.value = false;
 	}
@@ -61,7 +62,7 @@ async function saveSettings() {
 	} catch (error) {
 		settingsError.value = error.response?.data?.message
 			|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-			|| 'Could not save settings.';
+			|| t('Pages.text.could_not_save_settings');
 	} finally {
 		settingsSaving.value = false;
 	}
@@ -88,7 +89,7 @@ async function fetchDevices() {
 		devices.value = response.data.records;
 		devices.value.forEach((d) => { labelDrafts[d.id] = d.label || ''; });
 	} catch (error) {
-		devicesError.value = 'Could not load trusted devices.';
+		devicesError.value = t('Pages.text.could_not_load_trusted');
 	} finally {
 		devicesLoading.value = false;
 	}
@@ -102,7 +103,7 @@ async function approveDevice(device) {
 		});
 		Object.assign(device, response.data.record);
 	} catch (error) {
-		devicesError.value = 'Could not approve device.';
+		devicesError.value = t('Pages.text.could_not_approve_device');
 	}
 }
 
@@ -112,12 +113,12 @@ async function denyDevice(device) {
 		const response = await axios.post(`/json/trusted-devices/${device.id}/deny`);
 		Object.assign(device, response.data.record);
 	} catch (error) {
-		devicesError.value = 'Could not deny that request.';
+		devicesError.value = t('Pages.text.could_not_deny_that');
 	}
 }
 
 function describe(device) {
-	return [device.browser, device.os].filter(Boolean).join(' on ') || 'Unknown browser';
+	return [device.browser, device.os].filter(Boolean).join(' on ') || t('Commons.text.unknown_browser');
 }
 
 async function saveLabel(device) {
@@ -128,7 +129,7 @@ async function saveLabel(device) {
 		});
 		Object.assign(device, response.data.record);
 	} catch (error) {
-		devicesError.value = 'Could not save label.';
+		devicesError.value = t('Pages.text.could_not_save_label');
 	}
 }
 
@@ -143,7 +144,7 @@ async function revokeDevice(device) {
 		const response = await axios.post(`/json/trusted-devices/${device.id}/revoke`);
 		Object.assign(device, response.data.record);
 	} catch (error) {
-		devicesError.value = 'Could not revoke device.';
+		devicesError.value = t('Pages.text.could_not_revoke_device');
 	}
 }
 
@@ -163,50 +164,49 @@ onMounted(() => {
 </script>
 
 <template>
-	<Head title="PIN Login" />
+	<Head :title="$t('Commons.title.pin_login')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">PIN Login</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Commons.heading.pin_login', {}) }}</h1>
 
 			<p v-if="!canManageSettings && !canManageDevices" class="text-gray-500">
-				You don't have permission to manage PIN login settings or trusted devices.
+				{{ $t('Pages.text.you_don_t_have_2', {}) }}
 			</p>
 
 			<!-- ======================= SETTINGS ======================= -->
 			<section v-if="canManageSettings" class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Settings</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.settings', {}) }}</h2>
 				<p class="text-sm text-gray-600">
-					A shared-terminal quick unlock for people who've already done a real email+password
-					login on this specific device. Off by default; approved devices are managed separately below.
+					{{ $t('Pages.text.a_shared_terminal_quick', {}) }}
 				</p>
 
 				<div v-if="settingsError" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ settingsError }}</div>
-				<p v-if="settingsLoading" class="text-gray-500">Loading settings…</p>
+				<p v-if="settingsLoading" class="text-gray-500">{{ $t('Commons.text.loading_settings', {}) }}</p>
 
 				<template v-else>
 					<label class="flex items-center gap-2">
 						<input type="checkbox" v-model="form.enabled" />
-						<span class="text-gray-700 font-medium">Enable PIN login</span>
+						<span class="text-gray-700 font-medium">{{ $t('Pages.text.enable_pin_login', {}) }}</span>
 					</label>
 
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<label class="block">
-							<span class="text-gray-700">Trust expires</span>
+							<span class="text-gray-700">{{ $t('Commons.text.trust_expires', {}) }}</span>
 							<select v-model="form.trust_mode" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-								<option value="session_duration">After a fixed duration from login</option>
-								<option value="time_of_day">At a fixed time of day (daily reset)</option>
-								<option value="indefinite">Never (until explicit logout)</option>
+								<option value="session_duration">{{ $t('Pages.text.after_a_fixed_duration', {}) }}</option>
+								<option value="time_of_day">{{ $t('Pages.text.at_a_fixed_time', {}) }}</option>
+								<option value="indefinite">{{ $t('Pages.text.never_until_explicit_logout', {}) }}</option>
 							</select>
 						</label>
 
 						<label v-if="form.trust_mode === 'session_duration'" class="block">
-							<span class="text-gray-700">Duration (minutes)</span>
+							<span class="text-gray-700">{{ $t('Commons.text.duration_minutes', {}) }}</span>
 							<input type="number" min="1" max="10080" v-model.number="form.trust_session_minutes"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 
 						<label v-if="form.trust_mode === 'time_of_day'" class="block">
-							<span class="text-gray-700">Time of day</span>
+							<span class="text-gray-700">{{ $t('Pages.text.time_of_day', {}) }}</span>
 							<input type="time" v-model="form.trust_time_of_day"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
@@ -214,7 +214,7 @@ onMounted(() => {
 
 					<label class="flex items-center gap-2">
 						<input type="checkbox" v-model="form.badge_login_enabled" @change="form.badge_login_enabled || (form.require_badge_and_pin = false)" />
-						<span class="text-gray-700 font-medium">Offer badge scanning on the unlock screen</span>
+						<span class="text-gray-700 font-medium">{{ $t('Pages.text.offer_badge_scanning_on', {}) }}</span>
 					</label>
 					<p class="text-xs text-gray-500">
 						Off by default until badges are actually issued — with this off, the unlock screen only
@@ -223,35 +223,33 @@ onMounted(() => {
 
 					<label class="flex items-center gap-2">
 						<input type="checkbox" v-model="form.require_badge_and_pin" :disabled="!form.badge_login_enabled" />
-						<span class="text-gray-700" :class="{ 'opacity-50': !form.badge_login_enabled }">Require a badge scan in addition to the PIN (two-factor)</span>
+						<span class="text-gray-700" :class="{ 'opacity-50': !form.badge_login_enabled }">{{ $t('Pages.text.require_a_badge_scan', {}) }}</span>
 					</label>
 					<p class="text-xs text-gray-500">
-						When on, tapping a name tile is no longer enough — unlocking requires scanning that
-						person's badge first, then their PIN. Requires badge scanning to be offered above.
+						{{ $t('Pages.text.when_on_tapping_a', {}) }}
 					</p>
 
 					<div class="flex items-center gap-3">
 						<PrimaryButton :disabled="settingsSaving" @click="saveSettings">
-							{{ settingsSaving ? 'Saving…' : 'Save Settings' }}
+							{{ settingsSaving ? $t('Commons.button.saving') : $t('Commons.button.save_settings') }}
 						</PrimaryButton>
-						<span v-if="settingsSavedAt" class="text-sm text-gray-500">Saved {{ settingsSavedAt }}</span>
+						<span v-if="settingsSavedAt" class="text-sm text-gray-500">{{ $t('Commons.text.saved') }} {{ settingsSavedAt }}</span>
 					</div>
 				</template>
 			</section>
 
 			<!-- ======================= TRUSTED DEVICES ======================= -->
 			<section v-if="canManageDevices" class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Devices</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.devices', {}) }}</h2>
 				<p class="text-sm text-gray-600">
 					PIN login is only offered on a device approved here. A device is added when someone
-					logged in on it asks for PIN login there (profile menu &gt; <strong>PIN Login on This
-					Device</strong>): you can approve your own device on the spot from that page, and anyone
+					logged in on it asks for PIN login there (profile menu &gt; <strong>{{ $t('Pages.heading.pin_login_on_this', {}) }}</strong>): you can approve your own device on the spot from that page, and anyone
 					else's request waits here.
-					<Link href="/this-device" class="text-blue-600 underline">Approve the device you're on</Link>
+					<Link href="/this-device" class="text-blue-600 underline">{{ $t('Pages.link.approve_the_device_you', {}) }}</Link>
 				</p>
 
 				<div v-if="devicesError" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ devicesError }}</div>
-				<p v-if="devicesLoading" class="text-gray-500">Loading devices…</p>
+				<p v-if="devicesLoading" class="text-gray-500">{{ $t('Commons.text.loading_devices', {}) }}</p>
 
 				<template v-else>
 					<div v-for="group in [
@@ -276,22 +274,22 @@ onMounted(() => {
 							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
 								<div class="space-y-1">
 									<label class="block">
-										<span class="text-gray-700">Station name</span>
-										<input type="text" v-model="labelDrafts[device.id]" placeholder="e.g. Sorting Station 1"
+										<span class="text-gray-700">{{ $t('Commons.text.station_name', {}) }}</span>
+										<input type="text" v-model="labelDrafts[device.id]" :placeholder="$t('Pages.placeholder.e_g_sorting_station')"
 											class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 									</label>
-									<p v-if="device.request_reason" class="text-gray-700"><span class="text-gray-500">Reason:</span> {{ device.request_reason }}</p>
+									<p v-if="device.request_reason" class="text-gray-700"><span class="text-gray-500">{{ $t('Commons.text.reason_2', {}) }}</span> {{ device.request_reason }}</p>
 								</div>
 								<div class="text-xs text-gray-600 space-y-0.5">
 									<div>{{ describe(device) }}</div>
-									<div>IP address: <span class="font-mono">{{ device.ip_address || '—' }}</span>
+									<div>{{ $t('Commons.text.ip_address', {}) }} <span class="font-mono">{{ device.ip_address || '—' }}</span>
 										<template v-if="device.last_ip_address && device.last_ip_address !== device.ip_address">
 											(last seen from <span class="font-mono">{{ device.last_ip_address }}</span>)</template>
 									</div>
-									<div>Requested {{ new Date(device.requested_at).toLocaleString() }}<template v-if="device.requester"> by {{ device.requester.full_name }}</template></div>
-									<div v-if="device.last_seen_at">Last seen: {{ new Date(device.last_seen_at).toLocaleString() }}</div>
-									<div v-if="device.approver && device.status === 'approved'">Approved by {{ device.approver.full_name }}</div>
-									<div v-if="device.kiosk_mode" class="text-amber-700">In kiosk mode</div>
+									<div>{{ $t('Commons.text.requested') }} {{ new Date(device.requested_at).toLocaleString() }}<template v-if="device.requester"> by {{ device.requester.full_name }}</template></div>
+									<div v-if="device.last_seen_at">{{ $t('Commons.text.last_seen') }} {{ new Date(device.last_seen_at).toLocaleString() }}</div>
+									<div v-if="device.approver && device.status === 'approved'">{{ $t('Commons.text.approved_by') }} {{ device.approver.full_name }}</div>
+									<div v-if="device.kiosk_mode" class="text-amber-700">{{ $t('Pages.text.in_kiosk_mode', {}) }}</div>
 									<div class="truncate text-gray-400" :title="device.user_agent">{{ device.user_agent }}</div>
 								</div>
 							</div>
@@ -300,25 +298,25 @@ onMounted(() => {
 								<template v-if="device.status === 'pending'">
 									<button @click="approveDevice(device)"
 										class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-green-600 hover:bg-green-500">
-										Approve
+										{{ $t('Commons.button.approve', {}) }}
 									</button>
 									<button @click="denyDevice(device)"
 										class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-gray-600 hover:bg-gray-500">
-										Deny
+										{{ $t('Commons.button.deny', {}) }}
 									</button>
 								</template>
 								<template v-else>
 									<button @click="saveLabel(device)"
 										class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-gray-600 hover:bg-gray-500">
-										Save Name
+										{{ $t('Commons.button.save_name', {}) }}
 									</button>
 									<button @click="revokeDevice(device)"
 										class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white"
 										:class="confirmingRevoke === device.id ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500'">
-										{{ confirmingRevoke === device.id ? 'Confirm — signs everyone out of PIN login here' : 'Revoke' }}
+										{{ confirmingRevoke === device.id ? $t('Pages.button.confirm_signs_everyone_out') : $t('Commons.button.revoke') }}
 									</button>
 									<button v-if="confirmingRevoke === device.id" @click="confirmingRevoke = null"
-										class="text-sm text-gray-500 underline">Cancel</button>
+										class="text-sm text-gray-500 underline">{{ $t('Commons.button.cancel', {}) }}</button>
 								</template>
 							</div>
 						</div>
@@ -326,7 +324,7 @@ onMounted(() => {
 
 					<div v-if="closedDevices.length" class="space-y-2">
 						<button type="button" class="text-sm underline text-gray-600" @click="showClosed = !showClosed">
-							{{ showClosed ? 'Hide' : 'Show' }} denied and revoked ({{ closedDevices.length }})
+							{{ showClosed ? $t('Commons.button.hide') : $t('Commons.button.show') }} denied and revoked ({{ closedDevices.length }})
 						</button>
 						<div v-if="showClosed" class="space-y-2">
 							<div v-for="device in closedDevices" :key="device.id" class="border rounded p-3 text-sm flex flex-wrap items-center justify-between gap-2">
@@ -338,16 +336,14 @@ onMounted(() => {
 										— {{ describe(device) }}, <span class="font-mono">{{ device.ip_address || '—' }}</span><template v-if="device.requester">, asked by {{ device.requester.full_name }}</template>
 									</span>
 								</div>
-								<button @click="approveDevice(device)" class="text-sm underline text-green-700">Approve after all</button>
+								<button @click="approveDevice(device)" class="text-sm underline text-green-700">{{ $t('Pages.button.approve_after_all', {}) }}</button>
 							</div>
 						</div>
 					</div>
 				</template>
 
 				<p class="text-xs text-gray-500">
-					Revoking a device immediately clears anyone's active PIN-login trust on it — PIN login
-					stops there for everyone until it's approved again. Denied and revoked devices stay listed
-					as a record of who asked from where.
+					{{ $t('Pages.text.revoking_a_device_immediately', {}) }}
 				</p>
 			</section>
 		</div>

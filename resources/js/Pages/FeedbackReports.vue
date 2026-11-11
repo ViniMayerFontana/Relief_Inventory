@@ -48,6 +48,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import FeedbackReportCard from '@/Components/FeedbackReportCard.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	breadcrumb: { type: Array },
@@ -99,7 +100,7 @@ async function saveAggregationSettings() {
 		aggregationSaved.value = true;
 		if (response.data.settings.instance_role === 'remote' && response.data.settings.feedback_trust_id) await testConnection();
 	} catch (e) {
-		aggregationError.value = e.response?.data?.message || 'Could not save these settings.';
+		aggregationError.value = e.response?.data?.message || t('Pages.text.could_not_save_these');
 	} finally {
 		aggregationSaving.value = false;
 	}
@@ -115,7 +116,7 @@ async function testConnection() {
 		const response = await axios.post('/json/feedback-aggregation-settings/test');
 		connectionTest.value = response.data;
 	} catch (e) {
-		connectionTest.value = { ok: false, message: e.response?.data?.message || 'Could not run the test.' };
+		connectionTest.value = { ok: false, message: e.response?.data?.message || t('Pages.text.could_not_run_the') };
 	} finally {
 		testingConnection.value = false;
 	}
@@ -203,11 +204,11 @@ const resolvedReports = computed(() =>
 // labels are shown) — kept here too since the Status filter dropdown below
 // needs it and prop-drilling a label map for one <select> isn't worth it.
 const statusLabels = {
-	new: 'New',
-	seen: 'Acknowledged',
-	in_development: 'In Development',
-	review: 'Review',
-	resolved: 'Resolved',
+	new: t('Commons.text.new'),
+	seen: t('Commons.text.acknowledged'),
+	in_development: t('Commons.text.in_development'),
+	review: t('Commons.button.review'),
+	resolved: t('Commons.text.resolved'),
 };
 
 async function fetchReports() {
@@ -233,15 +234,15 @@ async function sendUnsentReports() {
 		const response = await axios.post('/json/feedback-reports/send-unsent');
 		const { attempted, total, sent, error: pushError } = response.data;
 		if (!attempted) {
-			sendUnsentMessage.value = 'Central push isn\'t configured on this instance.';
+			sendUnsentMessage.value = t('Pages.text.central_push_isn_t');
 		} else if (total === 0) {
-			sendUnsentMessage.value = 'Nothing to send — every report is already submitted.';
+			sendUnsentMessage.value = t('Pages.text.nothing_to_send_every');
 		} else {
 			sendUnsentMessage.value = `Sent ${sent} of ${total} report${total === 1 ? '' : 's'}.` + (pushError ? ` ${pushError}` : '');
 		}
 		await fetchReports();
 	} catch (e) {
-		sendUnsentMessage.value = e.response?.data?.message || 'Could not reach central — try again later.';
+		sendUnsentMessage.value = e.response?.data?.message || t('Pages.text.could_not_reach_central');
 	} finally {
 		sendingUnsent.value = false;
 	}
@@ -278,7 +279,7 @@ async function confirmCompose() {
 	const { reportId, status, isNote, reopening } = composing.value;
 
 	if ((isNote || status === 'review' || status === 'resolved' || reopening) && !comment.value.trim()) {
-		error.value = isNote ? 'Enter a note to add.' : reopening ? 'Enter why this is being reopened.' : 'A note is required.';
+		error.value = isNote ? t('Pages.text.enter_a_note_to') : reopening ? t('Pages.text.enter_why_this_is') : t('Pages.text.a_note_is_required');
 		return;
 	}
 
@@ -291,55 +292,52 @@ async function confirmCompose() {
 		comment.value = '';
 		await fetchReports();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not update status.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_update_status');
 	}
 }
 
 </script>
 
 <template>
-	<Head title="Feedback & Bug Reports" />
+	<Head :title="$t('Pages.title.feedback_bug_reports')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Feedback & Bug Reports</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Pages.heading.feedback_bug_reports', {}) }}</h1>
 
 			<details class="bg-white shadow rounded-lg p-6">
-				<summary class="cursor-pointer text-lg font-semibold select-none">Centralized Aggregation Settings</summary>
+				<summary class="cursor-pointer text-lg font-semibold select-none">{{ $t('Pages.text.centralized_aggregation_settings', {}) }}</summary>
 
 				<div class="mt-4 space-y-4">
 					<p class="text-sm text-gray-500">
-						Every instance's own feedback flow works standalone regardless of these — only set
-						these up if this instance should send its own reports to a central triage instance,
-						or should <em>be</em> that central instance.
+						{{ $t('Pages.text.every_instance_s_own', {}) }} <em>be</em> {{ $t('Pages.text.that_central_instance', {}) }}
 					</p>
 
-					<p v-if="aggregationLoading" class="text-gray-500 text-sm">Loading settings…</p>
+					<p v-if="aggregationLoading" class="text-gray-500 text-sm">{{ $t('Commons.text.loading_settings', {}) }}</p>
 
 					<form v-else class="space-y-4" @submit.prevent="saveAggregationSettings">
 						<label class="block text-sm">
-							<span class="text-gray-700">Role</span>
+							<span class="text-gray-700">{{ $t('Commons.text.role', {}) }}</span>
 							<select v-model="aggregationForm.instance_role" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-								<option value="remote">Remote — sends its reports to a central instance</option>
-								<option value="central">Central — receives reports from remote instances</option>
+								<option value="remote">{{ $t('Pages.text.remote_sends_its_reports', {}) }}</option>
+								<option value="central">{{ $t('Pages.text.central_receives_reports_from', {}) }}</option>
 							</select>
 						</label>
 
 						<p v-if="aggregationForm.instance_role === 'central'" class="text-sm text-gray-600">
-							Remote instances connect to this one from the <a href="/setup/trust" class="underline text-blue-700">Trust Console</a>:
-							create a connection code there that allows "Sending feedback", and give it to the remote's administrator.
+							{{ $t('Pages.text.remote_instances_connect_to', {}) }} <a href="/setup/trust" class="underline text-blue-700">{{ $t('Commons.link.trust_console', {}) }}</a>{{ $t('Pages.text.create_a_connection_code', {}) }}
 						</p>
 
 						<div v-if="aggregationForm.instance_role === 'remote'" class="rounded-md border border-gray-200 bg-gray-50 p-4 space-y-2 text-sm">
 							<label class="block">
-								<span class="font-medium text-gray-700">Send reports to</span>
+								<span class="font-medium text-gray-700">{{ $t('Pages.text.send_reports_to', {}) }}</span>
 								<select v-model="aggregationForm.feedback_trust_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-									<option value="">Choose an instance…</option>
-									<option v-for="t in peerTrusts" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_url }}){{ t.may_send_feedback ? '' : ' — has not allowed feedback yet' }}</option>
+									<option value="">{{ $t('Pages.text.choose_an_instance', {}) }}</option>
+									<option v-for="t in peerTrusts" :key="t.id" :value="t.id">{{ t.name }} ({{ t.base_url }}){{ t.may_send_feedback ? '' : $t('Pages.text.has_not_allowed_feedback') }}</option>
 								</select>
 							</label>
 							<p class="text-gray-500">
-								Only instances this one is paired with appear here. Pair with the central instance in the
-								<a href="/setup/trust" class="underline text-blue-700">Trust Console</a> by pasting the connection code its administrator gives you.
+								{{ $t('Pages.text.only_instances_this_one', {}) }}
+								<a href="/setup/trust" class="underline text-blue-700">{{ $t('Commons.link.trust_console', {}) }}</a> {{ $t('Pages.text.by_pasting_the_connection', {}) }}
 							</p>
 						</div>
 
@@ -349,7 +347,7 @@ async function confirmCompose() {
 								class="px-4 py-2 bg-blue-600 text-white text-sm rounded-md disabled:bg-gray-400"
 								:disabled="aggregationSaving"
 							>
-								{{ aggregationSaving ? 'Saving…' : 'Save Settings' }}
+								{{ aggregationSaving ? $t('Commons.button.saving') : $t('Commons.button.save_settings') }}
 							</button>
 							<button
 								v-if="aggregationSettings?.instance_role === 'remote' && aggregationSettings?.feedback_trust_id"
@@ -358,9 +356,9 @@ async function confirmCompose() {
 								:disabled="testingConnection"
 								@click="testConnection"
 							>
-								{{ testingConnection ? 'Testing…' : 'Test Connection' }}
+								{{ testingConnection ? $t('Commons.button.testing') : $t('Commons.button.test_connection') }}
 							</button>
-							<span v-if="aggregationSaved" class="text-sm text-green-600">Saved.</span>
+							<span v-if="aggregationSaved" class="text-sm text-green-600">{{ $t('Pages.text.saved', {}) }}</span>
 							<span v-if="aggregationError" class="text-sm text-red-600">{{ aggregationError }}</span>
 						</div>
 						<p v-if="connectionTest" class="text-sm" :class="connectionTest.ok ? 'text-green-700' : 'text-red-600'">
@@ -372,14 +370,14 @@ async function confirmCompose() {
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<div class="flex items-center justify-between gap-4 flex-wrap">
-					<h2 class="text-lg font-semibold">Reports</h2>
+					<h2 class="text-lg font-semibold">{{ $t('Commons.heading.reports', {}) }}</h2>
 					<div v-if="currentInstanceRole === 'remote'" class="flex items-center gap-3">
 						<button
 							class="text-xs font-medium text-blue-600 underline disabled:text-gray-400 disabled:no-underline"
 							:disabled="sendingUnsent"
 							@click="sendUnsentReports"
 						>
-							{{ sendingUnsent ? 'Sending…' : 'Send Unsent Reports' }}
+							{{ sendingUnsent ? $t('Commons.button.sending') : $t('Pages.button.send_unsent_reports') }}
 						</button>
 						<span v-if="sendUnsentMessage" class="text-xs text-gray-500">{{ sendUnsentMessage }}</span>
 					</div>
@@ -387,55 +385,55 @@ async function confirmCompose() {
 
 				<div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm items-end">
 					<label class="block">
-						<span class="text-gray-700">Type</span>
+						<span class="text-gray-700">{{ $t('Commons.text.type_2', {}) }}</span>
 						<select v-model="filterType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">All</option>
-							<option value="bug">Bug</option>
-							<option value="feature">Feature</option>
+							<option value="">{{ $t('Commons.text.all', {}) }}</option>
+							<option value="bug">{{ $t('Commons.text.bug', {}) }}</option>
+							<option value="feature">{{ $t('Commons.text.feature', {}) }}</option>
 						</select>
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Status</span>
+						<span class="text-gray-700">{{ $t('Commons.button.status', {}) }}</span>
 						<select v-model="filterStatus" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">All</option>
+							<option value="">{{ $t('Commons.text.all', {}) }}</option>
 							<option v-for="(label, key) in statusLabels" :key="key" :value="key">{{ label }}</option>
 						</select>
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Reported by</span>
+						<span class="text-gray-700">{{ $t('Commons.text.reported_by', {}) }}</span>
 						<select v-model="filterReporter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">All</option>
+							<option value="">{{ $t('Commons.text.all', {}) }}</option>
 							<option v-for="person in reporterOptions" :key="person.id" :value="String(person.id)">{{ person.full_name }}</option>
 						</select>
 					</label>
 					<label class="block">
 						<span class="text-gray-700">Page</span>
 						<select v-model="filterPage" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">All</option>
+							<option value="">{{ $t('Commons.text.all', {}) }}</option>
 							<option v-for="pageLabel in pageOptions" :key="pageLabel" :value="pageLabel">{{ pageLabel }}</option>
 						</select>
 					</label>
 				</div>
 
 				<label class="block text-sm">
-					<span class="text-gray-700">Search</span>
+					<span class="text-gray-700">{{ $t('Commons.text.search', {}) }}</span>
 					<input
 						type="text"
 						v-model="searchText"
 						class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-						placeholder="Search message, comments, page, reporter, or #number..."
+						:placeholder="$t('Pages.placeholder.search_message_comments_page')"
 					/>
 				</label>
 
 				<button v-if="hasActiveFilters" class="text-xs text-blue-600 underline" @click="clearFilters">
-					Clear filters
+					{{ $t('Commons.button.clear_filters', {}) }}
 				</button>
 
-				<p v-if="loading" class="text-gray-500">Loading reports…</p>
+				<p v-if="loading" class="text-gray-500">{{ $t('Commons.text.loading_reports', {}) }}</p>
 
-				<div v-else-if="!reports.length" class="text-gray-400">No reports yet.</div>
+				<div v-else-if="!reports.length" class="text-gray-400">{{ $t('Pages.text.no_reports_yet', {}) }}</div>
 
-				<div v-else-if="!filteredReports.length" class="text-gray-400">No reports match these filters.</div>
+				<div v-else-if="!filteredReports.length" class="text-gray-400">{{ $t('Pages.text.no_reports_match_these', {}) }}</div>
 
 				<div v-else class="space-y-4">
 					<FeedbackReportCard

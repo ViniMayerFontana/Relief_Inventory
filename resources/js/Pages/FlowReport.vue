@@ -17,6 +17,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import ChartCanvas from '@/Components/ChartCanvas.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 const BLUE = '#2a78d6';
 const ORANGE = '#eb6834';
@@ -78,12 +79,12 @@ export default {
 					labels: this.labels,
 					datasets: [
 						{ label: 'Received', data: b.map((x) => x.received), backgroundColor: BLUE, borderRadius: 4 },
-						{ label: 'Picked', data: b.map((x) => x.picked), backgroundColor: ORANGE, borderRadius: 4 },
+						{ label: t('Commons.text.picked'), data: b.map((x) => x.picked), backgroundColor: ORANGE, borderRadius: 4 },
 					],
 				},
 				options: {
 					scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' } }, x: { grid: { display: false } } },
-					plugins: { legend: { position: 'top', align: 'start' } },
+					plugins: { legend: { position: 'top', align: t('Commons.text.start') } },
 				},
 			};
 		},
@@ -94,14 +95,14 @@ export default {
 				data: {
 					labels: this.labels,
 					datasets: [{
-						label: 'On hand (end of period)', data: b.map((x) => x.on_hand),
+						label: t('Pages.text.on_hand_end_of'), data: b.map((x) => x.on_hand),
 						borderColor: BLUE, backgroundColor: BLUE, borderWidth: 2, pointRadius: b.length > 60 ? 0 : 4,
 						pointBorderColor: '#fff', pointBorderWidth: 2, tension: 0,
 					}],
 				},
 				options: {
 					scales: { y: { grid: { color: 'rgba(0,0,0,0.06)' } }, x: { grid: { display: false } } },
-					plugins: { legend: { position: 'top', align: 'start' } },
+					plugins: { legend: { position: 'top', align: t('Commons.text.start') } },
 				},
 			};
 		},
@@ -124,8 +125,8 @@ export default {
 				this.to = this.report.filters.to;
 			} catch (error) {
 				this.error = error.response?.status === 422
-					? (error.response.data?.message || 'Check the dates: the "to" date can\'t be before the "from" date.')
-					: 'Could not load the inventory flow report.';
+					? (error.response.data?.message || t('Pages.text.check_the_dates_the'))
+					: t('Pages.text.could_not_load_the_11');
 			} finally {
 				this.loading = false;
 			}
@@ -153,62 +154,61 @@ export default {
 </script>
 
 <template>
-	<Head title="Inventory Flow Report" />
+	<Head :title="$t('Pages.title.inventory_flow_report')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="flr_container">
 			<h2 class="ri_datatable_head flr_head">
-				Inventory Flow Report
+				{{ $t('Pages.heading.inventory_flow_report', {}) }}
 				<span class="flr_exports">
-					<a :href="$withWarehouse('/report/flow.csv' + query)" class="ri_defaultbutton">Download CSV</a>
+					<a :href="$withWarehouse('/report/flow.csv' + query)" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
 					<PrintMenu document-key="inventory-flow" media="report" label="Print / PDF"
 						:params="appliedParams" :download-href="'/report/flow.pdf' + query" />
 				</span>
 			</h2>
 
 			<p class="flr_intro">
-				Usable goods in, out and lost over time. Outdated, trashed and diverted goods aren't stock, so
-				they're shown separately and never change what's on hand.
+				{{ $t('Pages.text.usable_goods_in_out', {}) }}
 			</p>
 
 			<form class="flr_toolbar" @submit.prevent="fetchReport">
-				<label>From <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>{{ $t('Commons.label.from', {}) }} <input type="date" v-model="from" class="ri_forminput" /></label>
 				<label>to <input type="date" v-model="to" class="ri_forminput" /></label>
-				<label>By
+				<label>{{ $t('Commons.heading.by', {}) }}
 					<select v-model="bucket" class="ri_forminput" @change="fetchReport">
-						<option value="day">Day</option>
-						<option value="week">Week</option>
-						<option value="month">Month</option>
+						<option value="day">{{ $t('Commons.text.day', {}) }}</option>
+						<option value="week">{{ $t('Commons.text.week', {}) }}</option>
+						<option value="month">{{ $t('Commons.text.month', {}) }}</option>
 					</select>
 				</label>
-				<label>Category
+				<label>{{ $t('Commons.label.category_2', {}) }}
 					<select v-model="categoryId" class="ri_forminput" @change="onCategoryChange">
-						<option value="">All</option>
+						<option value="">{{ $t('Commons.text.all', {}) }}</option>
 						<option v-for="c in report?.options?.categories || []" :key="c.id" :value="c.id">{{ c.name }}</option>
 					</select>
 				</label>
-				<label>Item type
+				<label>{{ $t('Commons.label.item_type_2', {}) }}
 					<select v-model="itemtypeId" class="ri_forminput" @change="fetchReport">
-						<option value="">All</option>
+						<option value="">{{ $t('Commons.text.all', {}) }}</option>
 						<option v-for="t in itemtypeOptions" :key="t.id" :value="t.id">{{ t.name }}</option>
 					</select>
 				</label>
-				<button type="submit" class="ri_defaultbutton">Apply</button>
+				<button type="submit" class="ri_defaultbutton">{{ $t('Commons.button.apply', {}) }}</button>
 			</form>
 
 			<p v-if="error" class="flr_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 
 			<template v-if="report && !loading">
 				<div class="flr_cards">
-					<div class="flr_card"><span>Opening on hand</span><strong>{{ n(totals.opening) }}</strong></div>
+					<div class="flr_card"><span>{{ $t('Pages.text.opening_on_hand', {}) }}</span><strong>{{ n(totals.opening) }}</strong></div>
 					<div class="flr_card"><span>Received</span><strong>{{ n(totals.received) }}</strong></div>
-					<div class="flr_card"><span>Picked</span><strong>{{ n(totals.picked) }}</strong></div>
-					<div class="flr_card"><span>Adjustments</span><strong>{{ signed(totals.adjustments) }}</strong></div>
-					<div class="flr_card"><span>Closing on hand</span><strong>{{ n(totals.closing) }}</strong></div>
+					<div class="flr_card"><span>{{ $t('Commons.text.picked', {}) }}</span><strong>{{ n(totals.picked) }}</strong></div>
+					<div class="flr_card"><span>{{ $t('Commons.text.adjustments', {}) }}</span><strong>{{ signed(totals.adjustments) }}</strong></div>
+					<div class="flr_card"><span>{{ $t('Pages.text.closing_on_hand', {}) }}</span><strong>{{ n(totals.closing) }}</strong></div>
 					<div class="flr_card flr_card_lost">
-						<span>Lost at sorting</span>
+						<span>{{ $t('Pages.text.lost_at_sorting', {}) }}</span>
 						<strong>{{ n(totals.outdated + totals.trashed + totals.diverted) }}</strong>
 						<small>{{ n(totals.outdated) }} outdated · {{ n(totals.trashed) }} trashed · {{ n(totals.diverted) }} diverted</small>
 					</div>
@@ -216,21 +216,21 @@ export default {
 
 				<div class="flr_charts">
 					<div class="flr_chartbox">
-						<h3>Received vs. picked</h3>
-						<ChartCanvas :config="flowChart" label="Units received and picked per period" />
+						<h3>{{ $t('Pages.heading.received_vs_picked', {}) }}</h3>
+						<ChartCanvas :config="flowChart" :label="$t('Pages.label.units_received_and_picked')" />
 					</div>
 					<div class="flr_chartbox">
-						<h3>On hand</h3>
-						<ChartCanvas :config="onHandChart" label="Units on hand at the end of each period" />
+						<h3>{{ $t('Commons.heading.on_hand', {}) }}</h3>
+						<ChartCanvas :config="onHandChart" :label="$t('Pages.label.units_on_hand_at')" />
 					</div>
 				</div>
 
-				<h3>By {{ report.filters.bucket }}</h3>
+				<h3>{{ $t('Commons.heading.by') }} {{ report.filters.bucket }}</h3>
 				<div class="flr_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
 						<tr>
-							<th>Period starting</th><th>Received</th><th>Picked</th><th>Adjustments</th>
-							<th>On hand (end)</th><th>Outdated</th><th>Trashed</th><th>Diverted</th>
+							<th>{{ $t('Commons.text.period_starting', {}) }}</th><th>Received</th><th>{{ $t('Commons.text.picked', {}) }}</th><th>{{ $t('Commons.text.adjustments', {}) }}</th>
+							<th>{{ $t('Pages.text.on_hand_end', {}) }}</th><th>{{ $t('Commons.text.outdated', {}) }}</th><th>{{ $t('Commons.text.trashed', {}) }}</th><th>{{ $t('Commons.text.diverted', {}) }}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -248,9 +248,9 @@ export default {
 				</table></div>
 
 				<template v-if="report.adjustment_reasons.length">
-					<h3>Adjustments by reason</h3>
+					<h3>{{ $t('Pages.heading.adjustments_by_reason', {}) }}</h3>
 					<div class="flr_tablewrap flr_narrow"><table class="ri_datatable" border="1">
-						<thead><tr><th>Reason</th><th>Added</th><th>Removed</th></tr></thead>
+						<thead><tr><th>{{ $t('Commons.text.reason', {}) }}</th><th>{{ $t('Commons.text.added', {}) }}</th><th>{{ $t('Commons.text.removed', {}) }}</th></tr></thead>
 						<tbody>
 							<tr v-for="r in report.adjustment_reasons" :key="r.reason">
 								<td>{{ r.label }}</td>
@@ -261,14 +261,14 @@ export default {
 					</table></div>
 				</template>
 
-				<h3>By item</h3>
+				<h3>{{ $t('Commons.heading.by_item', {}) }}</h3>
 				<input type="text" v-model="search" class="ri_forminput flr_search"
-					placeholder="Search item, item # or category..." />
+					:placeholder="$t('Pages.placeholder.search_item_item_or')" />
 				<div class="flr_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
 						<tr>
-							<th>Item #</th><th>Item</th><th>Unit</th><th>Opening</th><th>Received</th><th>Picked</th>
-							<th>Adjustments</th><th>Closing</th><th>Outdated</th><th>Trashed</th><th>Diverted</th>
+							<th>{{ $t('Commons.text.item', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.unit', {}) }}</th><th>{{ $t('Commons.text.opening', {}) }}</th><th>Received</th><th>{{ $t('Commons.text.picked', {}) }}</th>
+							<th>{{ $t('Commons.text.adjustments', {}) }}</th><th>{{ $t('Commons.text.closing', {}) }}</th><th>{{ $t('Commons.text.outdated', {}) }}</th><th>{{ $t('Commons.text.trashed', {}) }}</th><th>{{ $t('Commons.text.diverted', {}) }}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -285,12 +285,11 @@ export default {
 							<td class="flr_num">{{ n(i.trashed) }}</td>
 							<td class="flr_num">{{ n(i.diverted) }}</td>
 						</tr>
-						<tr v-if="!items.length"><td colspan="11" class="flr_empty">No item movement in this range.</td></tr>
+						<tr v-if="!items.length"><td colspan="11" class="flr_empty">{{ $t('Pages.text.no_item_movement_in', {}) }}</td></tr>
 					</tbody>
 				</table></div>
 				<p class="flr_note">
-					Quantities are in each item's own unit, so totals across items mix units. Moving a pallet
-					changes where stock is, not how much, so it isn't shown here.
+					{{ $t('Pages.text.quantities_are_in_each', {}) }}
 				</p>
 			</template>
 		</div>

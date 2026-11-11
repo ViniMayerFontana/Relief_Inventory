@@ -17,6 +17,7 @@ import { Head } from '@inertiajs/vue3';
 import { ref, reactive, computed, onMounted } from 'vue';
 import axios from 'axios';
 import demos from '@/DesignPolls/index.js';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	poll: { type: Object, required: true },
@@ -76,11 +77,11 @@ async function sendIdea() {
 	ideaErrors.value = {};
 	ideaMessage.value = null;
 	if (!idea.text.trim()) {
-		ideaMessage.value = 'Type your idea first.';
+		ideaMessage.value = t('Pages.text.type_your_idea_first');
 		return;
 	}
 	if (idea.ok_to_contact && !idea.email.trim()) {
-		ideaErrors.value = { email: ['Add your email so we can contact you, or untick the box.'] };
+		ideaErrors.value = { email: [t('Pages.text.add_your_email_so')] };
 		return;
 	}
 	ideaSending.value = true;
@@ -98,8 +99,8 @@ async function sendIdea() {
 	} catch (e) {
 		ideaErrors.value = e.response?.data?.errors || {};
 		ideaMessage.value = e.response?.status === 422
-			? (ideaErrors.value.idea?.[0] || (ideaErrors.value.email ? null : 'Please check your idea and try again.'))
-			: (e.response?.data?.message || 'Something went wrong — please try again.');
+			? (ideaErrors.value.idea?.[0] || (ideaErrors.value.email ? null : t('Pages.text.please_check_your_idea')))
+			: (e.response?.data?.message || t('Pages.text.something_went_wrong_please'));
 	} finally {
 		resetTurnstile(ideaWidget.value);
 		ideaSending.value = false;
@@ -129,7 +130,7 @@ async function submit() {
 	errors.value = {};
 	message.value = null;
 	if (!chosen.value.length) {
-		message.value = 'Tap "I like this" or "Not for me" on at least one design first.';
+		message.value = t('Pages.text.tap_i_like_this');
 		return;
 	}
 	submitting.value = true;
@@ -152,8 +153,8 @@ async function submit() {
 	} catch (e) {
 		errors.value = e.response?.data?.errors || {};
 		message.value = e.response?.status === 422
-			? (Object.values(errors.value)[0]?.[0] || 'Please check what you entered.')
-			: (e.response?.data?.message || 'Something went wrong — please try again.');
+			? (Object.values(errors.value)[0]?.[0] || t('Pages.text.please_check_what_you'))
+			: (e.response?.data?.message || t('Pages.text.something_went_wrong_please'));
 		resetTurnstile(voteWidget.value);
 	} finally {
 		submitting.value = false;
@@ -171,29 +172,27 @@ function changeVote() {
 	<div class="min-h-screen bg-gray-100 py-6 px-4">
 		<div class="max-w-2xl mx-auto space-y-5">
 			<div class="bg-white shadow rounded-lg p-5 space-y-3">
-				<p class="text-xs text-gray-500 uppercase font-semibold">Design vote</p>
+				<p class="text-xs text-gray-500 uppercase font-semibold">{{ $t('Commons.text.design_vote', {}) }}</p>
 				<h1 class="text-2xl font-bold text-gray-800">{{ poll.question }}</h1>
 				<p class="text-gray-700">{{ poll.intro }}</p>
 
 				<p v-if="open && changing" class="text-sm text-gray-800 bg-blue-50 border border-blue-200 rounded px-4 py-3">
-					Try each design, then tap <strong>👍 I like this</strong> or <strong>👎 Not for me</strong> on any of them
-					and tell us why if you like. Skip the ones you have no opinion on — you only need to rate one, and it's
-					fine if you don't like any.
+					{{ $t('Pages.text.try_each_design_then', {}) }} <strong>{{ $t('Pages.button.i_like_this', {}) }}</strong> or <strong>{{ $t('Pages.button.not_for_me', {}) }}</strong> {{ $t('Pages.text.on_any_of_them', {}) }}
 				</p>
 				<p v-if="!open" class="rounded bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 text-sm">
 					Voting has closed. Here is how people voted ({{ results?.voters || 0 }} {{ results?.voters === 1 ? 'person' : 'people' }}).
 				</p>
 				<div v-else-if="voted && !changing" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3 text-sm space-y-1">
-					<p>Thank you! Your vote is in. Results are shown once voting closes.</p>
-					<p v-if="liked.length">You like: <strong>{{ liked.join(', ') }}</strong></p>
-					<p v-if="disliked.length">Not for you: <strong>{{ disliked.join(', ') }}</strong></p>
-					<button type="button" class="underline" @click="changeVote">Change my vote</button>
+					<p>{{ $t('Pages.text.thank_you_your_vote', {}) }}</p>
+					<p v-if="liked.length">{{ $t('Commons.text.you_like', {}) }} <strong>{{ liked.join(', ') }}</strong></p>
+					<p v-if="disliked.length">{{ $t('Pages.text.not_for_you', {}) }} <strong>{{ disliked.join(', ') }}</strong></p>
+					<button type="button" class="underline" @click="changeVote">{{ $t('Pages.button.change_my_vote', {}) }}</button>
 				</div>
 			</div>
 
 			<!-- ======================= RESULTS (closed) ======================= -->
 			<div v-if="!open && ranked.length" class="bg-white shadow rounded-lg p-5 space-y-3">
-				<h2 class="text-lg font-semibold">Results</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.results', {}) }}</h2>
 				<div v-for="row in ranked" :key="row.key" class="space-y-1">
 					<div class="flex justify-between text-sm gap-3">
 						<span class="font-medium">{{ labelFor(row.key) }}</span>
@@ -221,25 +220,25 @@ function changeVote() {
 					</span>
 					<span v-else-if="voted && !changing && reactions[option.key].reaction" class="text-sm whitespace-nowrap"
 						:class="reactions[option.key].reaction === 'like' ? 'text-green-700' : 'text-red-700'">
-						{{ reactions[option.key].reaction === 'like' ? '👍 You like this' : '👎 Not for you' }}
+						{{ reactions[option.key].reaction === 'like' ? $t('Pages.text.you_like_this') : $t('Pages.text.not_for_you_2') }}
 					</span>
 				</div>
-				<p class="text-xs text-gray-500">Try it:</p>
+				<p class="text-xs text-gray-500">{{ $t('Commons.text.try_it', {}) }}</p>
 				<component :is="demoFor(option.key)" v-if="demoFor(option.key)" />
 				<div v-if="open && changing" class="space-y-2">
 					<div class="grid grid-cols-2 gap-2">
 						<button type="button" :aria-pressed="reactions[option.key].reaction === 'like'"
 							class="py-2 px-3 rounded-md border font-medium"
 							:class="reactions[option.key].reaction === 'like' ? 'bg-green-600 border-green-600 text-white' : 'bg-white border-gray-300 text-gray-800 hover:bg-green-50'"
-							@click="react(option.key, 'like')">👍 I like this</button>
+							@click="react(option.key, 'like')">{{ $t('Pages.button.i_like_this', {}) }}</button>
 						<button type="button" :aria-pressed="reactions[option.key].reaction === 'dislike'"
 							class="py-2 px-3 rounded-md border font-medium"
 							:class="reactions[option.key].reaction === 'dislike' ? 'bg-red-600 border-red-600 text-white' : 'bg-white border-gray-300 text-gray-800 hover:bg-red-50'"
-							@click="react(option.key, 'dislike')">👎 Not for me</button>
+							@click="react(option.key, 'dislike')">{{ $t('Pages.button.not_for_me', {}) }}</button>
 					</div>
 					<label v-if="reactions[option.key].reaction" class="block">
 						<span class="text-sm text-gray-700">
-							{{ reactions[option.key].reaction === 'like' ? 'What do you like about it? Any ideas to make it better?' : 'What don\'t you like? How would you change it?' }}
+							{{ reactions[option.key].reaction === 'like' ? $t('Pages.text.what_do_you_like') : 'What don\'t you like? How would you change it?' }}
 							<span class="text-gray-400">(optional)</span>
 						</span>
 						<textarea v-model="reactions[option.key].comment" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base"></textarea>
@@ -251,56 +250,55 @@ function changeVote() {
 			<!-- v-show, not v-if: Turnstile only draws into elements present when its script loads -->
 			<form v-if="open" v-show="changing" class="bg-white shadow rounded-lg p-5 space-y-4" @submit.prevent="submit">
 				<div class="text-sm text-gray-800 space-y-1">
-					<p v-if="!chosen.length" class="text-gray-500">Nothing rated yet — tap 👍 or 👎 on at least one design above.</p>
-					<p v-if="liked.length">👍 You like: <strong>{{ liked.join(', ') }}</strong></p>
-					<p v-if="disliked.length">👎 Not for you: <strong>{{ disliked.join(', ') }}</strong></p>
+					<p v-if="!chosen.length" class="text-gray-500">{{ $t('Pages.text.nothing_rated_yet_tap', {}) }}</p>
+					<p v-if="liked.length">{{ $t('Pages.text.you_like', {}) }} <strong>{{ liked.join(', ') }}</strong></p>
+					<p v-if="disliked.length">{{ $t('Pages.text.not_for_you_3', {}) }} <strong>{{ disliked.join(', ') }}</strong></p>
 				</div>
 
 				<label class="block">
-					<span class="text-sm text-gray-700">Your name <span class="text-gray-400">(optional)</span></span>
+					<span class="text-sm text-gray-700">{{ $t('Commons.text.your_name', {}) }} <span class="text-gray-400">(optional)</span></span>
 					<input v-model="form.voter_name" autocomplete="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 				</label>
 
 				<div v-if="turnstile_enabled" ref="voteWidget" class="cf-turnstile" :data-sitekey="turnstile_site_key"></div>
 				<p v-if="turnstile_unavailable" class="text-sm text-amber-900 bg-amber-50 border border-amber-300 rounded p-3">
-					Voting can't accept entries right now because its spam protection isn't set up on this server.
+					{{ $t('Pages.text.voting_can_t_accept', {}) }}
 				</p>
 				<p v-if="message" class="text-sm text-red-600">{{ message }}</p>
 
 				<button type="submit" :disabled="submitting || turnstile_unavailable"
 					class="w-full py-3 bg-blue-600 text-white rounded-md font-semibold text-lg hover:bg-blue-700 disabled:opacity-50">
-					{{ submitting ? 'Sending…' : (voted ? 'Save My Changes' : 'Send My Vote') }}
+					{{ submitting ? $t('Commons.button.sending') : (voted ? $t('Pages.button.save_my_changes') : $t('Pages.button.send_my_vote')) }}
 				</button>
 			</form>
 
 			<!-- ======================= ANOTHER IDEA ======================= -->
 			<form class="bg-white shadow rounded-lg p-5 space-y-3" @submit.prevent="sendIdea">
-				<h2 class="text-lg font-semibold text-gray-800">Have another idea?</h2>
+				<h2 class="text-lg font-semibold text-gray-800">{{ $t('Pages.heading.have_another_idea', {}) }}</h2>
 				<p class="text-sm text-gray-600">
-					A different way to do this, or something else entirely — anything that would make the system better.
-					You don't have to vote to send one, and you can send as many as you like.
+					{{ $t('Pages.text.a_different_way_to', {}) }}
 				</p>
 				<textarea v-model="idea.text" rows="3" class="block w-full border-gray-300 rounded-md shadow-sm text-base"></textarea>
 				<label v-if="!open || !changing" class="block">
-					<span class="text-sm text-gray-700">Your name (optional)</span>
+					<span class="text-sm text-gray-700">{{ $t('Pages.text.your_name_optional', {}) }}</span>
 					<input v-model="idea.voter_name" autocomplete="name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 				</label>
 				<label class="block">
-					<span class="text-sm text-gray-700">Your email ({{ idea.ok_to_contact ? 'needed so we can contact you' : 'optional' }})</span>
+					<span class="text-sm text-gray-700">Your email ({{ idea.ok_to_contact ? $t('Pages.text.needed_so_we_can') : 'optional' }})</span>
 					<input v-model="idea.email" type="email" autocomplete="email"
 						class="mt-1 block w-full border-gray-300 rounded-md shadow-sm text-base" />
 					<span v-if="ideaErrors.email" class="text-sm text-red-600">{{ ideaErrors.email[0] }}</span>
 				</label>
 				<label class="flex items-center gap-2">
 					<input v-model="idea.ok_to_contact" type="checkbox" class="rounded border-gray-300" />
-					<span class="text-sm text-gray-700">OK to contact me about this idea</span>
+					<span class="text-sm text-gray-700">{{ $t('Pages.text.ok_to_contact_me', {}) }}</span>
 				</label>
 				<div v-if="turnstile_enabled" ref="ideaWidget" class="cf-turnstile" :data-sitekey="turnstile_site_key"></div>
 				<p v-if="ideasSent" class="text-sm text-green-700">Thank you — got it.{{ ideasSent > 1 ? ` (${ideasSent} sent)` : '' }} Send another any time.</p>
 				<p v-if="ideaMessage" class="text-sm text-red-600">{{ ideaMessage }}</p>
 				<button type="submit" :disabled="ideaSending || turnstile_unavailable"
 					class="px-4 py-2 bg-gray-700 text-white rounded-md font-semibold hover:bg-gray-800 disabled:opacity-50">
-					{{ ideaSending ? 'Sending…' : 'Send Idea' }}
+					{{ ideaSending ? $t('Commons.button.sending') : $t('Commons.button.send_idea') }}
 				</button>
 			</form>
 		</div>

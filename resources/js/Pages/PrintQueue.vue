@@ -20,6 +20,7 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { onPrintEvent, realtime, startQueueRealtime } from '@/realtime';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: {
@@ -67,7 +68,7 @@ async function load() {
 		if (expanded.value) await loadHistory(expanded.value);
 	} catch (e) {
 		// A failed refresh shouldn't wipe the screen or nag every 5 seconds.
-		if (!loaded.value) error.value = e.response?.data?.message || 'Could not load the print queue.';
+		if (!loaded.value) error.value = e.response?.data?.message || t('Pages.text.could_not_load_the_7');
 	} finally {
 		loaded.value = true;
 	}
@@ -92,7 +93,7 @@ function divertTargets(job) {
 }
 
 function canCancel(job) {
-	return ['queued', 'claimed', 'failed'].includes(job.status);
+	return ['queued', 'claimed', t('Commons.heading.failed')].includes(job.status);
 }
 
 function canDivert(job) {
@@ -107,7 +108,7 @@ async function mutate(job, request, done) {
 		notice.value = done;
 		await load();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'That change could not be made.';
+		error.value = e.response?.data?.message || t('Pages.text.that_change_could_not');
 	} finally {
 		busyId.value = null;
 	}
@@ -119,11 +120,11 @@ async function cancelJob(job) {
 		return;
 	}
 	confirmingCancel.value = null;
-	await mutate(job, () => axios.post(`/json/print-jobs/${job.id}/cancel`), `Cancelled “${job.title}”.`);
+	await mutate(job, () => axios.post(`/json/print-jobs/${job.id}/cancel`), t('Pages.text.cancelled_p0', { p0: job.title }));
 }
 
 async function retryJob(job) {
-	await mutate(job, () => axios.post(`/json/print-jobs/${job.id}/retry`), `“${job.title}” is queued again.`);
+	await mutate(job, () => axios.post(`/json/print-jobs/${job.id}/retry`), t('Pages.text.p0_is_queued_again', { p0: job.title }));
 }
 
 async function divertJob(job, printerId) {
@@ -145,10 +146,10 @@ async function clearPrinter(printer) {
 	resetFeedback();
 	try {
 		const { data } = await axios.post('/json/print-jobs/clear', { printer_id: printer.id });
-		notice.value = `Cleared ${data.cleared} job${data.cleared === 1 ? '' : 's'} from ${printer.name}.`;
+		notice.value = t('Pages.text.cleared_p0_job_p1', { p0: data.cleared, p1: data.cleared === 1 ? '' : 's', p2: printer.name });
 		await load();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not clear that printer.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_clear_that_2');
 	}
 }
 
@@ -171,7 +172,7 @@ async function loadHistory(id) {
 }
 
 // ---- display helpers ----
-const STATUS_LABELS = { queued: 'Waiting', claimed: 'Printing', failed: 'Failed', printed: 'Printed', cancelled: 'Cancelled' };
+const STATUS_LABELS = { queued: t('Commons.text.waiting'), claimed: t('Commons.text.printing'), failed: t('Commons.text.failed_4'), printed: t('Commons.text.printed'), cancelled: t('Commons.text.cancelled') };
 const STATUS_CLASSES = {
 	queued: 'bg-blue-100 text-blue-800',
 	claimed: 'bg-indigo-100 text-indigo-800',
@@ -191,7 +192,7 @@ function dotClass(printer) {
 }
 
 function printerStateText(printer) {
-	if (printer.status === 'idle') return 'ready';
+	if (printer.status === 'idle') return t('Commons.text.ready');
 	if (printer.status === 'printing') return 'printing';
 	if (printer.status === 'unavailable') return printer.status_message || 'offline';
 	return printer.status_message ? `${printer.status}: ${printer.status_message}` : printer.status;
@@ -202,7 +203,7 @@ function waitingNote(job) {
 	if (job.status !== 'queued') return '';
 	const printer = printerById.value[job.printer_id];
 	if (!printer || printer.ready) return '';
-	return `Waiting — printer is ${printer.status === 'unavailable' ? 'offline' : printer.status}`;
+	return t('Pages.text.waiting_printer_is_p0', { p0: printer.status === 'unavailable' ? 'offline' : printer.status });
 }
 
 function formatTime(iso) {
@@ -212,9 +213,9 @@ function formatTime(iso) {
 function age(iso) {
 	if (!iso) return '';
 	const seconds = Math.max(0, Math.floor((Date.now() - new Date(iso).getTime()) / 1000));
-	if (seconds < 60) return 'just now';
+	if (seconds < 60) return t('Commons.text.just_now');
 	const minutes = Math.floor(seconds / 60);
-	if (minutes < 60) return `${minutes} min ago`;
+	if (minutes < 60) return t('Pages.text.p0_min_ago', { p0: minutes });
 	const hours = Math.floor(minutes / 60);
 	if (hours < 24) return `${hours} h ago`;
 	return `${Math.floor(hours / 24)} d ago`;
@@ -246,22 +247,22 @@ onUnmounted(() => {
 </script>
 
 <template>
-	<Head title="Print Queue" />
+	<Head :title="$t('Commons.title.print_queue')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Print Queue</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Commons.heading.print_queue', {}) }}</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
 
-			<p v-if="!loaded" class="text-gray-500">Loading print queue…</p>
+			<p v-if="!loaded" class="text-gray-500">{{ $t('Pages.text.loading_print_queue', {}) }}</p>
 
 			<template v-else>
 				<!-- Printers -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Printers</h2>
+					<h2 class="text-lg font-semibold">{{ $t('Commons.heading.printers', {}) }}</h2>
 					<p v-if="!printers.length" class="text-sm text-gray-400">
-						No printers are set up yet. An administrator can add them under R Station Devices.
+						{{ $t('Pages.text.no_printers_are_set', {}) }}
 					</p>
 					<div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<div v-for="printer in printers" :key="printer.id" class="border rounded p-3 space-y-1">
@@ -282,36 +283,35 @@ onUnmounted(() => {
 										:class="confirmingClear === printer.id ? 'text-red-700 font-semibold' : 'text-gray-600'"
 										@click="clearPrinter(printer)"
 									>
-										{{ confirmingClear === printer.id ? 'Confirm — cancel waiting and failed jobs' : 'Clear queue' }}
+										{{ confirmingClear === printer.id ? $t('Pages.button.confirm_cancel_waiting_and') : $t('Commons.button.clear_queue') }}
 									</button>
-									<button v-if="confirmingClear === printer.id" type="button" class="text-xs text-gray-600 underline" @click="confirmingClear = null">Cancel</button>
+									<button v-if="confirmingClear === printer.id" type="button" class="text-xs text-gray-600 underline" @click="confirmingClear = null">{{ $t('Commons.button.cancel', {}) }}</button>
 								</template>
 							</div>
 						</div>
 					</div>
 					<p class="text-xs text-gray-500">
-						A printer's status comes from its print server's last check-in. A job sent to an offline
-						printer waits here and prints when the server is back.
+						{{ $t('Pages.text.a_printer_s_status', {}) }}
 					</p>
 				</section>
 
 				<!-- Jobs -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
 					<div class="flex flex-wrap items-center gap-3">
-						<h2 class="text-lg font-semibold mr-auto">{{ canManage ? 'Jobs' : 'My jobs' }}</h2>
+						<h2 class="text-lg font-semibold mr-auto">{{ canManage ? $t('Commons.heading.jobs') : $t('Commons.heading.my_jobs') }}</h2>
 						<div class="inline-flex rounded-md shadow-sm text-sm" role="group">
 							<button
 								type="button"
 								class="px-3 py-1 border border-gray-300 rounded-l-md"
 								:class="view === 'active' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'"
 								@click="setView('active')"
-							>Active</button>
+							>{{ $t('Commons.button.active', {}) }}</button>
 							<button
 								type="button"
 								class="px-3 py-1 border border-gray-300 rounded-r-md -ml-px"
 								:class="view === 'history' ? 'bg-gray-800 text-white' : 'bg-white text-gray-700'"
 								@click="setView('history')"
-							>History</button>
+							>{{ $t('Commons.button.history', {}) }}</button>
 						</div>
 						<select
 							v-if="printers.length > 1"
@@ -319,24 +319,24 @@ onUnmounted(() => {
 							class="border-gray-300 rounded-md shadow-sm text-sm"
 							@change="load"
 						>
-							<option value="">All printers</option>
+							<option value="">{{ $t('Commons.link.all_printers', {}) }}</option>
 							<option v-for="printer in printers" :key="printer.id" :value="printer.id">{{ printer.name }}</option>
 						</select>
 					</div>
 
 					<p v-if="!jobs.length" class="text-sm text-gray-400">
-						{{ view === 'active' ? 'Nothing is waiting to print.' : 'No finished jobs yet.' }}
+						{{ view === 'active' ? $t('Pages.text.nothing_is_waiting_to') : $t('Pages.text.no_finished_jobs_yet') }}
 					</p>
 
 					<div v-else class="overflow-x-auto">
 						<table class="w-full text-sm">
 							<thead>
 								<tr class="text-left text-gray-600">
-									<th class="py-1 pr-3">Document</th>
-									<th class="pr-3">Printer</th>
-									<th v-if="canManage" class="pr-3">By</th>
-									<th class="pr-3">Sent</th>
-									<th class="pr-3">Status</th>
+									<th class="py-1 pr-3">{{ $t('Commons.text.document', {}) }}</th>
+									<th class="pr-3">{{ $t('Commons.text.printer', {}) }}</th>
+									<th v-if="canManage" class="pr-3">{{ $t('Commons.heading.by', {}) }}</th>
+									<th class="pr-3">{{ $t('Commons.text.sent', {}) }}</th>
+									<th class="pr-3">{{ $t('Commons.button.status', {}) }}</th>
 									<th v-if="canManage"></th>
 								</tr>
 							</thead>
@@ -363,12 +363,12 @@ onUnmounted(() => {
 											<div v-if="waitingNote(job)" class="text-xs text-amber-700 mt-1">{{ waitingNote(job) }}</div>
 											<div v-if="job.error_message" class="text-xs text-red-700 mt-1">{{ job.error_message }}</div>
 											<div v-if="job.status === 'failed' && !job.has_file" class="text-xs text-gray-500 mt-1">
-												File cleaned up — print the document again.
+												{{ $t('Pages.text.file_cleaned_up_print', {}) }}
 											</div>
 										</td>
 										<td v-if="canManage" class="whitespace-nowrap space-y-1">
 											<div v-if="job.status === 'failed' && job.has_file">
-												<button type="button" class="text-xs text-blue-700 underline" :disabled="busyId === job.id" @click="retryJob(job)">Retry</button>
+												<button type="button" class="text-xs text-blue-700 underline" :disabled="busyId === job.id" @click="retryJob(job)">{{ $t('Commons.button.retry', {}) }}</button>
 											</div>
 											<div v-if="canDivert(job)">
 												<select
@@ -376,7 +376,7 @@ onUnmounted(() => {
 													:disabled="busyId === job.id"
 													@change="divertJob(job, Number($event.target.value)); $event.target.value = ''"
 												>
-													<option value="">Move to…</option>
+													<option value="">{{ $t('Commons.text.move_to', {}) }}</option>
 													<option v-for="target in divertTargets(job)" :key="target.id" :value="target.id">
 														{{ target.name }}{{ target.ready ? '' : ' (' + (target.status === 'unavailable' ? 'offline' : target.status) + ')' }}
 													</option>
@@ -390,9 +390,9 @@ onUnmounted(() => {
 													:disabled="busyId === job.id"
 													@click="cancelJob(job)"
 												>
-													{{ confirmingCancel === job.id ? 'Confirm cancel' : 'Cancel' }}
+													{{ confirmingCancel === job.id ? $t('Commons.button.confirm_cancel') : $t('Commons.button.cancel') }}
 												</button>
-												<button v-if="confirmingCancel === job.id" type="button" class="text-xs text-gray-600 underline ml-2" @click="confirmingCancel = null">Keep</button>
+												<button v-if="confirmingCancel === job.id" type="button" class="text-xs text-gray-600 underline ml-2" @click="confirmingCancel = null">{{ $t('Commons.button.keep', {}) }}</button>
 											</div>
 										</td>
 									</tr>
@@ -405,7 +405,7 @@ onUnmounted(() => {
 													<span v-if="entry.by"> by {{ entry.by }}</span>
 													<span v-if="entry.notes" class="text-gray-500"> · {{ entry.notes }}</span>
 												</li>
-												<li v-if="!history.length" class="text-gray-400">No history recorded.</li>
+												<li v-if="!history.length" class="text-gray-400">{{ $t('Pages.text.no_history_recorded', {}) }}</li>
 											</ul>
 										</td>
 									</tr>
@@ -415,9 +415,9 @@ onUnmounted(() => {
 					</div>
 
 					<p class="text-xs text-gray-500">
-						<template v-if="updatedAt">Updated {{ updatedAt.toLocaleTimeString() }}. </template>
-						{{ realtime.connected ? 'Updating live.' : 'This page refreshes every few seconds.' }}
-						<template v-if="canManage">Cancelling a job that is already printing doesn't stop paper that has started.</template>
+						<template v-if="updatedAt">{{ $t('Commons.text.updated') }} {{ updatedAt.toLocaleTimeString() }}. </template>
+						{{ realtime.connected ? $t('Pages.text.updating_live') : $t('Pages.text.this_page_refreshes_every') }}
+						<template v-if="canManage">{{ $t('Pages.text.cancelling_a_job_that', {}) }}</template>
 						Finished jobs' files are removed after a couple of weeks; the record stays.
 					</p>
 				</section>

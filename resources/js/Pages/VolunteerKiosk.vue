@@ -74,7 +74,7 @@ defineProps({
 </script>
 
 <template>
-	<Head title="Sign-in Kiosk" />
+	<Head :title="$t('Commons.title.sign_in_kiosk')" />
 	<!-- Guest kiosk mode (nobody logged in on this device, see
 	     EnsureKioskAccess) skips AuthenticatedLayout entirely — that layout
 	     assumes $page.props.auth.user exists (nav, profile menu), which is
@@ -83,22 +83,22 @@ defineProps({
 	<component :is="isAuthenticated ? AuthenticatedLayout : 'div'" :breadcrumb="isAuthenticated ? breadcrumb : undefined">
 		<div class="vk_page" :class="{ vk_page_bare: !isAuthenticated }">
 			<div v-if="!isAuthenticated" class="vk_stafflogin">
-				<a href="/login">Staff Login</a>
+				<a href="/login">{{ $t('Commons.link.staff_login', {}) }}</a>
 			</div>
 
 			<div class="vk_shell">
 				<header v-if="view === 'grid'" class="vk_header">
 					<img src="/img/welcome.webp" alt="" class="vk_header_badge" />
-					<h1 class="vk_header_title">Facility Sign-In/Sign-Out</h1>
+					<h1 class="vk_header_title">{{ $t('Pages.heading.facility_sign_in_sign', {}) }}</h1>
 					<p v-if="kioskLocationName" class="vk_header_location">{{ kioskLocationName }}</p>
 					<p v-if="kioskWelcomeMessage" class="vk_header_tagline">{{ kioskWelcomeMessage }}</p>
 				</header>
 
 				<div v-if="isAuthenticated && view === 'grid'" class="vk_kioskmode_bar">
 					<button type="button" class="ri_formbutton" @click="showKioskConfirmModal = true">
-						Enable Kiosk Mode
+						{{ $t('Pages.button.enable_kiosk_mode', {}) }}
 					</button>
-					<span class="vk_hint vk_hint_inline">Locks this device to sign-in only, no login required, until someone logs in again.</span>
+					<span class="vk_hint vk_hint_inline">{{ $t('Pages.text.locks_this_device_to', {}) }}</span>
 				</div>
 
 				<!-- ---------------- default (type-ahead) view ---------------- -->
@@ -109,15 +109,15 @@ defineProps({
 						:class="{ vk_firsttimebtn_open: showFirstTimeOptions }"
 						@click="showFirstTimeOptions = !showFirstTimeOptions"
 					>
-						First Time Here?
+						{{ $t('Pages.button.first_time_here', {}) }}
 						<span class="vk_firsttimebtn_chevron" :class="{ vk_firsttimebtn_chevron_open: showFirstTimeOptions }" aria-hidden="true">▾</span>
 					</button>
 					<div v-if="showFirstTimeOptions" class="vk_secondarybar">
-						<button type="button" class="ri_formbutton vk_secondarybtn" @click="openGuest">Guest</button>
-						<button type="button" class="ri_formbutton vk_secondarybtn" @click="openAddNew">New Volunteer</button>
+						<button type="button" class="ri_formbutton vk_secondarybtn" @click="openGuest">{{ $t('Commons.button.guest', {}) }}</button>
+						<button type="button" class="ri_formbutton vk_secondarybtn" @click="openAddNew">{{ $t('Commons.button.new_volunteer', {}) }}</button>
 					</div>
 
-					<p class="vk_instruction">If you've been here before, start typing your name and select your name when it appears</p>
+					<p class="vk_instruction">{{ $t('Pages.text.if_you_ve_been', {}) }}</p>
 					<div class="vk_searchbar">
 						<span class="vk_searchicon" aria-hidden="true">🔍</span>
 						<!-- This is the only free-text field on the kiosk's front
@@ -138,7 +138,7 @@ defineProps({
 							type="search"
 							name="vk-lookup-not-a-login-field"
 							class="ri_forminput vk_searchinput"
-							placeholder="Start typing your name"
+							:placeholder="$t('Pages.placeholder.start_typing_your_name')"
 							autocomplete="off"
 							autocapitalize="words"
 							autocorrect="off"
@@ -169,15 +169,15 @@ defineProps({
 							<span class="vk_tile_name">{{ personName(person) }}</span>
 							<span v-if="person.current_sign_in" class="vk_tile_status vk_tile_status_in">
 								<span class="vk_tile_dot" aria-hidden="true"></span>
-								Signed in since {{ formatTime(person.current_sign_in.signed_in_at) }}
+								{{ $t('Pages.text.signed_in_since') }} {{ formatTime(person.current_sign_in.signed_in_at) }}
 							</span>
 							<span v-else-if="person.forgotten_sign_in" class="vk_tile_status vk_tile_status_forgotten">
-								Tap to record when you left
+								{{ $t('Pages.text.tap_to_record_when', {}) }}
 							</span>
 							<span v-else-if="person.last_sign_in" class="vk_tile_status">
-								{{ [person.last_sign_in.agency, person.last_sign_in.description_of_work].filter(Boolean).join(' — ') || 'Tap to sign in' }}
+								{{ [person.last_sign_in.agency, person.last_sign_in.description_of_work].filter(Boolean).join(' — ') || $t('Pages.text.tap_to_sign_in') }}
 							</span>
-							<span v-else class="vk_tile_status">Tap to sign in</span>
+							<span v-else class="vk_tile_status">{{ $t('Pages.text.tap_to_sign_in', {}) }}</span>
 						</button>
 					</div>
 				</template>
@@ -185,8 +185,8 @@ defineProps({
 			<!-- ---------------- new volunteer (first-time) ---------------- -->
 			<template v-else-if="view === 'add-new'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">New Volunteer</h2>
-					<p class="vk_hint">First time here? Enter your name below to sign in.</p>
+					<h2 class="vk_confirm_title">{{ $t('Commons.button.new_volunteer', {}) }}</h2>
+					<p class="vk_hint">{{ $t('Pages.text.first_time_here_enter', {}) }}</p>
 
 					<div class="ri_formcontrol">
 						<InputLabel value="First Name" />
@@ -199,8 +199,8 @@ defineProps({
 					<p v-if="addPersonError" class="vk_error">{{ addPersonError }}</p>
 
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" :disabled="addingPerson" @click="submitAddNew">Sign In</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						<button class="ri_defaultbutton" :disabled="addingPerson" @click="submitAddNew">{{ $t('Commons.button.sign_in', {}) }}</button>
+						<button class="ri_formbutton" @click="cancelConfirm">{{ $t('Commons.button.cancel', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -208,10 +208,10 @@ defineProps({
 			<!-- ---------------- new volunteer thank-you ---------------- -->
 			<template v-else-if="view === 'new-volunteer-thanks'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Thanks for coming, {{ personName(selected) }}!</h2>
-					<p class="vk_hint">You're signed in. Please check in at the office to complete your first-time sign-in.</p>
+					<h2 class="vk_confirm_title">{{ $t('Pages.heading.thanks_for_coming') }} {{ personName(selected) }}!</h2>
+					<p class="vk_hint">{{ $t('Pages.text.you_re_signed_in', {}) }}</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="cancelConfirm">Done</button>
+						<button class="ri_defaultbutton" @click="cancelConfirm">{{ $t('Commons.button.done', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -219,10 +219,10 @@ defineProps({
 			<!-- ---------------- sign-in thank-you (existing person) ---------------- -->
 			<template v-else-if="view === 'signin-thanks'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Thank you, {{ greetingName(selected) }}!</h2>
-					<p class="vk_hint">Please remember to sign out! Have a great day!</p>
+					<h2 class="vk_confirm_title">{{ $t('Commons.heading.thank_you') }} {{ greetingName(selected) }}!</h2>
+					<p class="vk_hint">{{ $t('Pages.text.please_remember_to_sign', {}) }}</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="cancelConfirm">Done</button>
+						<button class="ri_defaultbutton" @click="cancelConfirm">{{ $t('Commons.button.done', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -230,8 +230,8 @@ defineProps({
 			<!-- ---------------- guest ---------------- -->
 			<template v-else-if="view === 'guest'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Guest Sign-In</h2>
-					<p class="vk_hint">For visitors, inspectors, and other one-off guests.</p>
+					<h2 class="vk_confirm_title">{{ $t('Commons.heading.guest_sign_in', {}) }}</h2>
+					<p class="vk_hint">{{ $t('Pages.text.for_visitors_inspectors_and', {}) }}</p>
 
 					<div class="ri_formcontrol">
 						<InputLabel value="First Name" />
@@ -244,19 +244,19 @@ defineProps({
 					<div class="ri_formcontrol">
 						<InputLabel value="Guest Type" />
 						<select v-model="newGuest.other_category_id" class="ri_forminput">
-							<option :value="null">— Choose or type below —</option>
+							<option :value="null">{{ $t('Pages.text.choose_or_type_below', {}) }}</option>
 							<option v-for="cat in otherCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
 						</select>
 					</div>
 					<div class="ri_formcontrol">
 						<InputLabel value="Or describe (free text)" />
-						<TextInput v-model="newGuest.other_category_text" placeholder="e.g. State Representative" />
+						<TextInput v-model="newGuest.other_category_text" :placeholder="$t('Pages.placeholder.e_g_state_representative')" />
 					</div>
 					<p v-if="guestError" class="vk_error">{{ guestError }}</p>
 
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" :disabled="addingGuest" @click="submitGuest">Sign In</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						<button class="ri_defaultbutton" :disabled="addingGuest" @click="submitGuest">{{ $t('Commons.button.sign_in', {}) }}</button>
+						<button class="ri_formbutton" @click="cancelConfirm">{{ $t('Commons.button.cancel', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -264,10 +264,10 @@ defineProps({
 			<!-- ---------------- guest thank-you ---------------- -->
 			<template v-else-if="view === 'guest-thanks'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Thanks, {{ personName(selected) }}!</h2>
-					<p class="vk_hint">You're signed in as a guest.</p>
+					<h2 class="vk_confirm_title">{{ $t('Commons.heading.thanks') }} {{ personName(selected) }}!</h2>
+					<p class="vk_hint">{{ $t('Pages.text.you_re_signed_in_2', {}) }}</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="cancelConfirm">Done</button>
+						<button class="ri_defaultbutton" @click="cancelConfirm">{{ $t('Commons.button.done', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -275,7 +275,7 @@ defineProps({
 			<!-- ---------------- sign-in confirm ---------------- -->
 			<template v-else-if="view === 'confirm-in'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Sign In — {{ personName(selected) }}</h2>
+					<h2 class="vk_confirm_title">{{ $t('Pages.heading.sign_in') }} {{ personName(selected) }}</h2>
 
 					<div class="ri_formcontrol">
 						<InputLabel value="Category" />
@@ -285,13 +285,13 @@ defineProps({
 								class="ri_formbutton"
 								:class="{ vk_choice_active: form.category === 'volunteer' }"
 								@click="form.category = 'volunteer'"
-							>Volunteer</button>
+							>{{ $t('Commons.button.volunteer', {}) }}</button>
 							<button
 								type="button"
 								class="ri_formbutton"
 								:class="{ vk_choice_active: form.category === 'other' }"
 								@click="form.category = 'other'"
-							>Other</button>
+							>{{ $t('Commons.button.other', {}) }}</button>
 						</div>
 					</div>
 
@@ -299,19 +299,19 @@ defineProps({
 						<div class="ri_formcontrol">
 							<InputLabel value="Other category" />
 							<select v-model="form.other_category_id" class="ri_forminput">
-								<option :value="null">— Choose or type below —</option>
+								<option :value="null">{{ $t('Pages.text.choose_or_type_below', {}) }}</option>
 								<option v-for="cat in otherCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
 							</select>
 						</div>
 						<div class="ri_formcontrol">
 							<InputLabel value="Or describe (free text)" />
-							<TextInput v-model="form.other_category_text" placeholder="e.g. State Representative" />
+							<TextInput v-model="form.other_category_text" :placeholder="$t('Pages.placeholder.e_g_state_representative')" />
 						</div>
 					</template>
 
 					<div class="ri_formcontrol">
 						<InputLabel value="Agency" />
-						<input v-model="form.agency" list="vk_agency_suggestions" class="ri_forminput" placeholder="e.g. American Red Cross" />
+						<input v-model="form.agency" list="vk_agency_suggestions" class="ri_forminput" :placeholder="$t('Pages.placeholder.e_g_american_red')" />
 						<datalist id="vk_agency_suggestions">
 							<option v-for="s in agencySuggestions" :key="s.id" :value="s.value" />
 						</datalist>
@@ -343,8 +343,8 @@ defineProps({
 					<p v-if="saveError" class="vk_error">{{ saveError }}</p>
 
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" :disabled="saving" @click="submitSignIn">Confirm Sign-In</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						<button class="ri_defaultbutton" :disabled="saving" @click="submitSignIn">{{ $t('Commons.button.confirm_sign_in', {}) }}</button>
+						<button class="ri_formbutton" @click="cancelConfirm">{{ $t('Commons.button.cancel', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -352,19 +352,19 @@ defineProps({
 			<!-- ---------------- sign-out confirm ---------------- -->
 			<template v-else-if="view === 'confirm-out'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Sign Out — {{ personName(selected) }}</h2>
+					<h2 class="vk_confirm_title">{{ $t('Pages.heading.sign_out') }} {{ personName(selected) }}</h2>
 					<p class="vk_hint">
-						Signed in since {{ formatTime(selected.current_sign_in.signed_in_at) }}
+						{{ $t('Pages.text.signed_in_since') }} {{ formatTime(selected.current_sign_in.signed_in_at) }}
 						<span v-if="selected.current_sign_in.status === 'pending_confirmation'">
-							— this looks like a forgotten sign-out from a previous day. Confirming below will close it out now.
+							{{ $t('Pages.text.this_looks_like_a', {}) }}
 						</span>
 					</p>
 
 					<p v-if="saveError" class="vk_error">{{ saveError }}</p>
 
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" :disabled="saving" @click="submitSignOut">Confirm Sign-Out</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						<button class="ri_defaultbutton" :disabled="saving" @click="submitSignOut">{{ $t('Commons.button.confirm_sign_out', {}) }}</button>
+						<button class="ri_formbutton" @click="cancelConfirm">{{ $t('Commons.button.cancel', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -372,10 +372,10 @@ defineProps({
 			<!-- ---------------- sign-out thank-you ---------------- -->
 			<template v-else-if="view === 'signout-thanks'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">See you next time, {{ greetingName(selected) }}!</h2>
-					<p class="vk_hint">You're signed out. Thanks for coming!</p>
+					<h2 class="vk_confirm_title">{{ $t('Pages.heading.see_you_next_time') }} {{ greetingName(selected) }}!</h2>
+					<p class="vk_hint">{{ $t('Pages.text.you_re_signed_out', {}) }}</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="cancelConfirm">Done</button>
+						<button class="ri_defaultbutton" @click="cancelConfirm">{{ $t('Commons.button.done', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -383,11 +383,10 @@ defineProps({
 			<!-- ---------------- forgotten sign-out (building was cleared) ---------------- -->
 			<template v-else-if="view === 'forgotten-sign-out'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Welcome back, {{ personName(selected) }}</h2>
+					<h2 class="vk_confirm_title">{{ $t('Commons.heading.welcome_back') }} {{ personName(selected) }}</h2>
 					<p class="vk_hint">
-						Looks like you forgot to sign out — you were signed in since
-						{{ formatTime(selected.forgotten_sign_in.signed_in_at) }}, and the building's been
-						confirmed empty since then. What time did you leave?
+						{{ $t('Pages.text.looks_like_you_forgot') }}
+						{{ formatTime(selected.forgotten_sign_in.signed_in_at) }}{{ $t('Pages.text.and_the_building_s') }}
 					</p>
 
 					<div class="ri_formcontrol">
@@ -402,8 +401,8 @@ defineProps({
 							class="ri_defaultbutton"
 							:disabled="saving || !forgottenSignOutAt"
 							@click="submitForgottenSignOut"
-						>Save &amp; Continue to Sign In</button>
-						<button class="ri_formbutton" @click="cancelConfirm">Cancel</button>
+						>{{ $t('Pages.button.save_continue_to_sign', {}) }}</button>
+						<button class="ri_formbutton" @click="cancelConfirm">{{ $t('Commons.button.cancel', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -412,14 +411,14 @@ defineProps({
 			<template v-else-if="view === 'emergency-list'">
 				<div class="vk_confirm">
 					<div class="ri_formactions" style="margin-bottom: 1em;">
-						<button class="ri_formbutton" @click="closeEmergencyList">Back</button>
+						<button class="ri_formbutton" @click="closeEmergencyList">{{ $t('Commons.button.back', {}) }}</button>
 					</div>
-					<h2 class="vk_confirm_title">Emergency Roster</h2>
-				<p class="vk_hint">Everyone currently signed in to the building, for use during an evacuation or emergency sweep.</p>
+					<h2 class="vk_confirm_title">{{ $t('Commons.button.emergency_roster', {}) }}</h2>
+				<p class="vk_hint">{{ $t('Pages.text.everyone_currently_signed_in', {}) }}</p>
 
-					<p v-if="emergencyListLoading" class="vk_hint">Loading…</p>
+					<p v-if="emergencyListLoading" class="vk_hint">{{ $t('Commons.text.loading', {}) }}</p>
 					<p v-else-if="emergencyListError" class="vk_error">{{ emergencyListError }}</p>
-					<p v-else-if="emergencyList.length === 0" class="vk_hint">Nobody is currently signed in.</p>
+					<p v-else-if="emergencyList.length === 0" class="vk_hint">{{ $t('Pages.text.nobody_is_currently_signed', {}) }}</p>
 					<ul v-else class="vk_emergencylist">
 						<li v-for="occupant in emergencyList" :key="occupant.id">
 							<strong>{{ occupant.name }}</strong>
@@ -427,12 +426,12 @@ defineProps({
 								class="vk_emergencylist_tag"
 								:class="occupant.category === 'volunteer' ? 'vk_emergencylist_tag_volunteer' : 'vk_emergencylist_tag_guest'"
 							>{{ occupant.why }}</span>
-							<span class="vk_hint"> — signed in {{ formatTime(occupant.signed_in_at) }}</span>
+							<span class="vk_hint"> {{ $t('Pages.text.signed_in') }} {{ formatTime(occupant.signed_in_at) }}</span>
 						</li>
 					</ul>
 
 					<div class="ri_formactions">
-						<button class="ri_formbutton" @click="closeEmergencyList">Back</button>
+						<button class="ri_formbutton" @click="closeEmergencyList">{{ $t('Commons.button.back', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -440,13 +439,13 @@ defineProps({
 			<!-- ---------------- end-of-day closeout: decision ---------------- -->
 			<template v-else-if="view === 'closeout-decision'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">Welcome Back</h2>
+					<h2 class="vk_confirm_title">{{ $t('Commons.heading.welcome_back_2', {}) }}</h2>
 					<p class="vk_hint">
-						This device was in kiosk mode. Is this an end-of-day closeout?
+						{{ $t('Pages.text.this_device_was_in', {}) }}
 					</p>
 					<div class="ri_formactions">
-						<button class="ri_defaultbutton" @click="openCloseoutReview">Yes — Walk Through Closeout</button>
-						<button class="ri_formbutton" @click="dismissCloseoutPrompt">Not Now</button>
+						<button class="ri_defaultbutton" @click="openCloseoutReview">{{ $t('Pages.button.yes_walk_through_closeout', {}) }}</button>
+						<button class="ri_formbutton" @click="dismissCloseoutPrompt">{{ $t('Commons.button.not_now', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -454,27 +453,26 @@ defineProps({
 			<!-- ---------------- end-of-day closeout: review ---------------- -->
 			<template v-else-if="view === 'closeout-review'">
 				<div class="vk_confirm">
-					<h2 class="vk_confirm_title">End-of-Day Closeout</h2>
+					<h2 class="vk_confirm_title">{{ $t('Commons.heading.end_of_day_closeout', {}) }}</h2>
 					<p class="vk_hint">
-						Everyone currently signed in — sign out anyone who's leaving now, then confirm the building is
-						empty whenever you're ready.
+						{{ $t('Pages.text.everyone_currently_signed_in_2', {}) }}
 					</p>
 
-					<p v-if="closeoutRosterLoading" class="vk_hint">Loading…</p>
+					<p v-if="closeoutRosterLoading" class="vk_hint">{{ $t('Commons.text.loading', {}) }}</p>
 					<p v-else-if="closeoutRosterError" class="vk_error">{{ closeoutRosterError }}</p>
-					<p v-else-if="closeoutRoster.length === 0" class="vk_hint">Nobody is currently signed in.</p>
+					<p v-else-if="closeoutRoster.length === 0" class="vk_hint">{{ $t('Pages.text.nobody_is_currently_signed', {}) }}</p>
 					<ul v-else class="vk_closeoutroster">
 						<li v-for="occupant in closeoutRoster" :key="occupant.id" class="vk_closeoutroster_row">
 							<div>
 								<strong>{{ occupant.name }}</strong>
-								<span class="vk_hint"> — signed in {{ formatTime(occupant.signed_in_at) }}</span>
+								<span class="vk_hint"> {{ $t('Pages.text.signed_in') }} {{ formatTime(occupant.signed_in_at) }}</span>
 							</div>
 							<button
 								type="button"
 								class="ri_formbutton"
 								:disabled="signingOutId === occupant.id"
 								@click="signOutFromCloseout(occupant)"
-							>{{ signingOutId === occupant.id ? 'Signing Out…' : 'Sign Out' }}</button>
+							>{{ signingOutId === occupant.id ? $t('Commons.button.signing_out') : $t('Commons.button.sign_out') }}</button>
 						</li>
 					</ul>
 
@@ -482,18 +480,16 @@ defineProps({
 					     or the person closing may already know better; the
 					     Confirm button below stays enabled either way. -->
 					<p v-if="!closeoutRosterLoading && closeoutRoster.length > 0" class="vk_closeout_warning">
-						{{ closeoutRoster.length }} {{ closeoutRoster.length === 1 ? 'person is' : 'people are' }} still
-						listed as in the building. Sign them out above, or confirm the building is empty anyway if
-						that's not accurate.
+						{{ closeoutRoster.length }} {{ closeoutRoster.length === 1 ? $t('Commons.text.person_is') : $t('Commons.text.people_are') }} {{ $t('Pages.text.still_listed_as_in') }}
 					</p>
 
 					<p v-if="closeoutConfirmError" class="vk_error">{{ closeoutConfirmError }}</p>
 
 					<div class="ri_formactions">
 						<button class="ri_defaultbutton" :disabled="closeoutConfirmSaving" @click="confirmBuildingEmpty">
-							{{ closeoutConfirmSaving ? 'Confirming…' : 'Confirm Building Empty' }}
+							{{ closeoutConfirmSaving ? $t('Commons.button.confirming') : $t('Pages.button.confirm_building_empty') }}
 						</button>
-						<button class="ri_formbutton" @click="view = 'grid'">Back</button>
+						<button class="ri_formbutton" @click="view = 'grid'">{{ $t('Commons.button.back', {}) }}</button>
 					</div>
 				</div>
 			</template>
@@ -511,13 +507,13 @@ defineProps({
 			<div v-if="view === 'grid'" class="vk_footerbar">
 				<span class="vk_footerbar_count">
 					<span class="vk_footerbar_dot" aria-hidden="true"></span>
-					{{ occupancyCount === null ? '…' : occupancyCount }} currently in the building
+					{{ occupancyCount === null ? '…' : occupancyCount }} {{ $t('Pages.text.currently_in_the_building') }}
 				</span>
 				<div class="vk_footerbar_actions">
 					<button type="button" class="ri_formbutton vk_footerbar_btn vk_footerbar_btn_emergency" @click="openEmergencyList">
-						Emergency Roster
+						{{ $t('Commons.button.emergency_roster', {}) }}
 					</button>
-					<button v-if="isAuthenticated" type="button" class="ri_formbutton vk_footerbar_btn" @click="openCloseoutReview">Confirm Building Empty</button>
+					<button v-if="isAuthenticated" type="button" class="ri_formbutton vk_footerbar_btn" @click="openCloseoutReview">{{ $t('Pages.button.confirm_building_empty', {}) }}</button>
 				</div>
 			</div>
 			</div>
@@ -536,6 +532,7 @@ defineProps({
 
 <script>
 import axios from 'axios';
+import { t } from '@/i18n';
 
 export default {
 	data() {
@@ -624,7 +621,7 @@ export default {
 		personName(person) {
 			if (!person) return '';
 			const name = [person.first_name, person.last_name].filter(Boolean).join(' ');
-			return name || person.organization || 'Unknown';
+			return name || person.organization || t('Commons.text.unknown');
 		},
 		// For the "Thank you, ___!" greeting — a first name reads friendlier
 		// than a full name, but falls back to personName() for an org-only
@@ -663,7 +660,7 @@ export default {
 			this.selected = person;
 			this.saveError = null;
 			if (person.current_sign_in) {
-				this.view = 'confirm-out';
+				this.view = t('Commons.text.confirm_out');
 				return;
 			}
 			if (person.forgotten_sign_in) {
@@ -680,7 +677,7 @@ export default {
 				this.form.work_site = person.last_sign_in.work_site || '';
 				this.form.description_of_work = person.last_sign_in.description_of_work || '';
 			}
-			this.view = 'confirm-in';
+			this.view = t('Commons.text.confirm_in');
 		},
 		cancelConfirm() {
 			clearTimeout(this.confirmationTimer);
@@ -699,7 +696,7 @@ export default {
 		openAddNew() {
 			this.newPerson = { first_name: '', last_name: '' };
 			this.addPersonError = null;
-			this.view = 'add-new';
+			this.view = t('Commons.text.add_new');
 		},
 		async submitAddNew() {
 			this.addingPerson = true;
@@ -714,7 +711,7 @@ export default {
 				this.loadOccupancyCount();
 				this.view = 'new-volunteer-thanks';
 			} catch (e) {
-				this.addPersonError = e.response?.data?.message || 'Could not sign in.';
+				this.addPersonError = e.response?.data?.message || t('Pages.text.could_not_sign_in');
 			} finally {
 				this.addingPerson = false;
 			}
@@ -733,17 +730,17 @@ export default {
 				this.selected = personResponse.data.record;
 				await axios.post('/json/volunteer-sign-ins', {
 					person_id: this.selected.id,
-					category: 'other',
+					category: t('Commons.text.other'),
 					other_category_id,
 					// Falls back to a plain "Guest" only if the visitor picked/typed
 					// nothing at all — keeps prior behavior when no guest types are
 					// configured yet for this location.
-					other_category_text: other_category_id || other_category_text ? other_category_text : 'Guest',
+					other_category_text: other_category_id || other_category_text ? other_category_text : t('Commons.button.guest'),
 				});
 				this.loadOccupancyCount();
 				this.view = 'guest-thanks';
 			} catch (e) {
-				this.guestError = e.response?.data?.message || 'Could not sign in.';
+				this.guestError = e.response?.data?.message || t('Pages.text.could_not_sign_in');
 			} finally {
 				this.addingGuest = false;
 			}
@@ -761,7 +758,7 @@ export default {
 				this.view = 'signin-thanks';
 				this.confirmationTimer = setTimeout(() => this.cancelConfirm(), 5000);
 			} catch (e) {
-				this.saveError = e.response?.data?.message || 'Could not sign in.';
+				this.saveError = e.response?.data?.message || t('Pages.text.could_not_sign_in');
 			} finally {
 				this.saving = false;
 			}
@@ -786,9 +783,9 @@ export default {
 					this.form.description_of_work = this.selected.last_sign_in.description_of_work || '';
 				}
 				this.saveError = null;
-				this.view = 'confirm-in';
+				this.view = t('Commons.text.confirm_in');
 			} catch (e) {
-				this.saveError = e.response?.data?.message || 'Could not save.';
+				this.saveError = e.response?.data?.message || t('Pages.text.could_not_save');
 			} finally {
 				this.saving = false;
 			}
@@ -802,7 +799,7 @@ export default {
 				this.view = 'signout-thanks';
 				this.confirmationTimer = setTimeout(() => this.cancelConfirm(), 5000);
 			} catch (e) {
-				this.saveError = e.response?.data?.message || 'Could not sign out.';
+				this.saveError = e.response?.data?.message || t('Pages.text.could_not_sign_out');
 			} finally {
 				this.saving = false;
 			}
@@ -820,7 +817,7 @@ export default {
 				const response = await axios.get('/json/building-safety/emergency-occupancy-list');
 				this.emergencyList = response.data.records;
 			} catch (e) {
-				this.emergencyListError = 'Could not load the occupancy list.';
+				this.emergencyListError = t('Pages.text.could_not_load_the_10');
 			} finally {
 				this.emergencyListLoading = false;
 			}
@@ -844,7 +841,7 @@ export default {
 				await axios.post('/json/building-safety/closeout', {});
 				window.location.href = '/dashboard#setup';
 			} catch (e) {
-				this.closeoutConfirmError = e.response?.data?.message || 'Could not complete this action.';
+				this.closeoutConfirmError = e.response?.data?.message || t('Pages.text.could_not_complete_this');
 				this.closeoutConfirmSaving = false;
 			}
 		},
@@ -858,7 +855,7 @@ export default {
 		// closing (they may know the roster's stale, or be confirming
 		// deliberately with people still shown).
 		openCloseoutReview() {
-			this.view = 'closeout-review';
+			this.view = t('Commons.text.closeout_review');
 			this.loadCloseoutRoster();
 		},
 		dismissCloseoutPrompt() {
@@ -877,7 +874,7 @@ export default {
 				const response = await axios.get('/json/building-safety/emergency-occupancy-list');
 				this.closeoutRoster = response.data.records;
 			} catch (e) {
-				this.closeoutRosterError = 'Could not load who is currently in the building.';
+				this.closeoutRosterError = t('Pages.text.could_not_load_who');
 			} finally {
 				this.closeoutRosterLoading = false;
 			}
@@ -890,7 +887,7 @@ export default {
 				await this.loadCloseoutRoster();
 				this.loadOccupancyCount();
 			} catch (e) {
-				this.closeoutRosterError = e.response?.data?.message || 'Could not sign that person out.';
+				this.closeoutRosterError = e.response?.data?.message || t('Pages.text.could_not_sign_that');
 			} finally {
 				this.signingOutId = null;
 			}
@@ -919,7 +916,7 @@ export default {
 		// (?closeout=1) — open straight onto the decision screen instead of
 		// the plain grid, see openCloseoutReview()/dismissCloseoutPrompt().
 		if (this.showCloseoutPrompt && this.isAuthenticated) {
-			this.view = 'closeout-decision';
+			this.view = t('Commons.text.closeout_decision');
 		}
 
 		if (this.idleResetMinutes) {

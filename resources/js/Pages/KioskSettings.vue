@@ -18,6 +18,7 @@ import { Head } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import axios from 'axios';
 import { onMounted, reactive, ref } from 'vue';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: {
@@ -53,7 +54,7 @@ async function addLocation() {
 		newLocation.name = '';
 		newLocation.welcome_message = '';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not add that location.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_add_that');
 	} finally {
 		addingLocation.value = false;
 	}
@@ -67,7 +68,7 @@ async function saveLocation(location) {
 		Object.assign(location, response.data.record);
 		locationSavedAt[location.id] = new Date();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not save that location.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_save_that_3');
 	} finally {
 		savingLocationId.value = null;
 	}
@@ -100,7 +101,7 @@ async function addGuestType() {
 		guestTypes.value.push(response.data.record);
 		newGuestType.value = '';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not add that guest type.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_add_that_2');
 	} finally {
 		addingGuestType.value = false;
 	}
@@ -139,7 +140,7 @@ async function addSuggestion(kind) {
 			newTaskSuggestion.value = '';
 		}
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not add that suggestion.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_add_that_3');
 	} finally {
 		addingFlag.value = false;
 	}
@@ -163,7 +164,7 @@ async function saveKioskSettings() {
 		Object.assign(kioskSettings, response.data.settings);
 		behaviorSavedAt.value = new Date();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not save kiosk behavior settings.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_save_kiosk');
 	} finally {
 		savingBehavior.value = false;
 	}
@@ -176,141 +177,137 @@ onMounted(async () => {
 		await fetchSuggestions();
 		await fetchKioskSettings();
 	} catch (e) {
-		error.value = 'Could not load kiosk settings.';
+		error.value = t('Pages.text.could_not_load_kiosk');
 	}
 });
 </script>
 
 <template>
-	<Head title="Kiosk Settings" />
+	<Head :title="$t('Commons.title.kiosk_settings')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Kiosk Settings</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Commons.heading.kiosk_settings', {}) }}</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
 
 			<!-- Locations -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Locations</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.button.locations', {}) }}</h2>
 				<div v-for="location in locations" :key="location.id" class="border rounded p-3 space-y-2">
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<label class="block">
-							<span class="text-gray-700">Location name</span>
+							<span class="text-gray-700">{{ $t('Commons.text.location_name', {}) }}</span>
 							<input type="text" maxlength="255" v-model="location.name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Welcome message (optional)</span>
-							<input type="text" maxlength="255" v-model="location.welcome_message" placeholder="Shown only if filled in" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+							<span class="text-gray-700">{{ $t('Pages.text.welcome_message_optional', {}) }}</span>
+							<input type="text" maxlength="255" v-model="location.welcome_message" :placeholder="$t('Pages.placeholder.shown_only_if_filled')" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 					</div>
 					<label class="flex items-center gap-2 text-sm">
 						<input type="checkbox" v-model="location.active" />
-						<span class="text-gray-700">Active</span>
+						<span class="text-gray-700">{{ $t('Commons.button.active', {}) }}</span>
 					</label>
 					<div class="flex gap-3 items-center">
 						<PrimaryButton :disabled="savingLocationId === location.id" @click="saveLocation(location)">
-							{{ savingLocationId === location.id ? 'Saving…' : 'Save' }}
+							{{ savingLocationId === location.id ? $t('Commons.button.saving') : $t('Commons.button.save') }}
 						</PrimaryButton>
-						<span v-if="locationSavedAt[location.id]" class="text-sm text-green-700">Saved {{ locationSavedAt[location.id].toLocaleTimeString() }}</span>
+						<span v-if="locationSavedAt[location.id]" class="text-sm text-green-700">{{ $t('Commons.text.saved') }} {{ locationSavedAt[location.id].toLocaleTimeString() }}</span>
 					</div>
 				</div>
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 					<label class="block">
-						<span class="text-gray-700">New location name</span>
+						<span class="text-gray-700">{{ $t('Pages.text.new_location_name', {}) }}</span>
 						<input type="text" maxlength="255" v-model="newLocation.name" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Welcome message (optional)</span>
+						<span class="text-gray-700">{{ $t('Pages.text.welcome_message_optional', {}) }}</span>
 						<input type="text" maxlength="255" v-model="newLocation.welcome_message" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 				</div>
 				<PrimaryButton :disabled="addingLocation" @click="addLocation">
-					{{ addingLocation ? 'Adding…' : 'Add Location' }}
+					{{ addingLocation ? $t('Commons.button.adding') : $t('Commons.button.add_location') }}
 				</PrimaryButton>
 				<p class="text-xs text-gray-500">
-					Each kiosk device is assigned one location when kiosk mode is enabled on it, and shows
-					that location's name (and welcome message, if set) on its sign-in screen.
+					{{ $t('Pages.text.each_kiosk_device_is', {}) }}
 				</p>
 			</section>
 
 			<!-- Guest Types -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Guest Types</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.guest_types', {}) }}</h2>
 				<label v-if="locations.length > 1" class="block text-sm">
-					<span class="text-gray-700">Location</span>
+					<span class="text-gray-700">{{ $t('Commons.text.location', {}) }}</span>
 					<select v-model.number="selectedLocationId" @change="fetchGuestTypes" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
 						<option v-for="location in locations" :key="location.id" :value="location.id">{{ location.name }}</option>
 					</select>
 				</label>
 				<ul class="text-sm space-y-1">
 					<li v-for="type in guestTypes" :key="type.id" class="text-gray-700">{{ type.name }}</li>
-					<li v-if="!guestTypes.length" class="text-gray-400">none yet</li>
+					<li v-if="!guestTypes.length" class="text-gray-400">{{ $t('Commons.text.none_yet', {}) }}</li>
 				</ul>
 				<div class="flex gap-3 items-center">
-					<input type="text" maxlength="255" v-model="newGuestType" placeholder="e.g. Maintenance/Repair" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
+					<input type="text" maxlength="255" v-model="newGuestType" :placeholder="$t('Pages.placeholder.e_g_maintenance_repair')" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
 					<PrimaryButton :disabled="addingGuestType" @click="addGuestType">
-						{{ addingGuestType ? 'Adding…' : 'Add' }}
+						{{ addingGuestType ? $t('Commons.button.adding') : $t('Commons.button.add') }}
 					</PrimaryButton>
 				</div>
 				<p class="text-xs text-gray-500">
-					Always offered alongside a free-text "Other" on the kiosk's Guest sign-in screen — this
-					list is what's suggested first, per location.
+					{{ $t('Pages.text.always_offered_alongside_a', {}) }}
 				</p>
 			</section>
 
 			<!-- Suggestions -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Suggestions</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.suggestions', {}) }}</h2>
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
 					<div class="space-y-2">
-						<h3 class="font-medium text-sm">Agency</h3>
+						<h3 class="font-medium text-sm">{{ $t('Commons.heading.agency', {}) }}</h3>
 						<ul class="text-sm space-y-1">
 							<li v-for="s in agencySuggestions" :key="s.id" class="text-gray-700">{{ s.value }}</li>
-							<li v-if="!agencySuggestions.length" class="text-gray-400">none yet</li>
+							<li v-if="!agencySuggestions.length" class="text-gray-400">{{ $t('Commons.text.none_yet', {}) }}</li>
 						</ul>
 						<div class="flex gap-2 items-center">
-							<input type="text" maxlength="255" v-model="newAgencySuggestion" placeholder="e.g. American Red Cross" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
-							<PrimaryButton :disabled="addingAgencySuggestion" @click="addSuggestion('agency')">Add</PrimaryButton>
+							<input type="text" maxlength="255" v-model="newAgencySuggestion" :placeholder="$t('Pages.placeholder.e_g_american_red')" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
+							<PrimaryButton :disabled="addingAgencySuggestion" @click="addSuggestion('agency')">{{ $t('Commons.button.add', {}) }}</PrimaryButton>
 						</div>
 					</div>
 					<div class="space-y-2">
-						<h3 class="font-medium text-sm">Task</h3>
+						<h3 class="font-medium text-sm">{{ $t('Commons.heading.task', {}) }}</h3>
 						<ul class="text-sm space-y-1">
 							<li v-for="s in taskSuggestions" :key="s.id" class="text-gray-700">{{ s.value }}</li>
-							<li v-if="!taskSuggestions.length" class="text-gray-400">none yet</li>
+							<li v-if="!taskSuggestions.length" class="text-gray-400">{{ $t('Commons.text.none_yet', {}) }}</li>
 						</ul>
 						<div class="flex gap-2 items-center">
-							<input type="text" maxlength="255" v-model="newTaskSuggestion" placeholder="e.g. Forklift Operator" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
-							<PrimaryButton :disabled="addingTaskSuggestion" @click="addSuggestion('task')">Add</PrimaryButton>
+							<input type="text" maxlength="255" v-model="newTaskSuggestion" :placeholder="$t('Pages.placeholder.e_g_forklift_operator')" class="block w-full border-gray-300 rounded-md shadow-sm text-sm" />
+							<PrimaryButton :disabled="addingTaskSuggestion" @click="addSuggestion('task')">{{ $t('Commons.button.add', {}) }}</PrimaryButton>
 						</div>
 					</div>
 				</div>
 				<p class="text-xs text-gray-500">
-					Shown as type-ahead suggestions on the kiosk's Agency and Title/Function fields — both
-					stay free text underneath, this just speeds up common entries.
+					{{ $t('Pages.text.shown_as_type_ahead', {}) }}
 				</p>
 			</section>
 
 			<!-- Kiosk Behavior -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Kiosk Behavior</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.kiosk_behavior', {}) }}</h2>
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 					<label class="block">
-						<span class="text-gray-700">Idle reset (minutes)</span>
-						<input type="number" min="1" max="1440" v-model.number="kioskSettings.idle_reset_minutes" placeholder="Never" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+						<span class="text-gray-700">{{ $t('Pages.text.idle_reset_minutes', {}) }}</span>
+						<input type="number" min="1" max="1440" v-model.number="kioskSettings.idle_reset_minutes" :placeholder="$t('Commons.placeholder.never')" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 				</div>
 				<div class="flex gap-3 items-center">
 					<PrimaryButton :disabled="savingBehavior" @click="saveKioskSettings">
-						{{ savingBehavior ? 'Saving…' : 'Save' }}
+						{{ savingBehavior ? $t('Commons.button.saving') : $t('Commons.button.save') }}
 					</PrimaryButton>
-					<span v-if="behaviorSavedAt" class="text-sm text-green-700">Saved {{ behaviorSavedAt.toLocaleTimeString() }}</span>
+					<span v-if="behaviorSavedAt" class="text-sm text-green-700">{{ $t('Commons.text.saved') }} {{ behaviorSavedAt.toLocaleTimeString() }}</span>
 				</div>
 				<p class="text-xs text-gray-500">
-					How long the kiosk screen sits idle before it resets to the welcome/search view. Leave
-					blank to never auto-reset.
+					{{ $t('Pages.text.how_long_the_kiosk', {}) }}
 				</p>
 			</section>
 		</div>
