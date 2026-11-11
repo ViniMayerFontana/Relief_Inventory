@@ -65,7 +65,7 @@ tem:
 
 - **Plus Code** — um código curto (até 4 caracteres) que distingue as linhas.
 - **Descrição do item** — o que este produto específico é.
-- **Unid. emb.**, **Tamanho** e **Qtd. na caixa** — a embalagem (caixa, saco, caixa...), quantas unidades ela
+- **Unid. emb.**, **Tamanho** e **Qtd. por caixa** — a embalagem (caixa, saco, caixa...), quantas unidades ela
   contém e, se é uma caixa, quantas embalagens há nela. **Total** mostra o resultado (quantidade da caixa vezes
   tamanho).
 - **UPC** — o código de barras do fabricante naquele produto. Um UPC pertence a uma linha e não pode ser

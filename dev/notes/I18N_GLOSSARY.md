@@ -55,3 +55,57 @@ Tom: profissional, logístico, adequado a operações de defesa civil e governo.
   ambiental, não relacionado ao i18n.
 - As 5 limitações reportáveis têm issues redigidas em `Agents/UPSTREAM_ISSUES.md`
   (títulos e corpos em inglês, prontos para colar no GitHub).
+
+## Termos dos help guides (task-5, consolidado 2026-11-11)
+
+Fonte: `.i18n-queue/HELP_CANDIDATES.md` (i18n-help-ptbr), revisado e aprovado pelo lead.
+Estes termos NÃO estão na tabela principal acima — são o vocabulário dos guias
+(`resources/help/pt_BR/**`) e das telas Vue correspondentes (receiving/sorting/orders).
+O copiloto DEVE reutilizar exatamente estas escolhas nos lotes de telas.
+
+### Telas e fluxos
+
+Receiving→Recebimento · Order Filling→Atendimento de pedidos · Shipping→Expedição ·
+Inventory Movement→Movimentação de estoque · Pallet Management→Gerenciamento de pallets ·
+Driver Portal→Portal do motorista · Setup (menu)→Configurações · fill record→registro de atendimento.
+
+### Status de pedido (UI de orders/filling — alinhar com os guias)
+
+New Order→Novo pedido · Ready to Fill→Pronto para atendimento · Filling→Em atendimento ·
+Filled→Atendido · Ready to Ship→Pronto para expedição · Shipped→Expedido · Delivered→Entregue ·
+Completed→Concluído · Closed - Unfulfilled→Encerrado — não atendido ("encerrado" evita confundir
+com recusa de oferta) · Unfulfilled (verbo "close as Unfulfilled")→Não atendida.
+
+### Status de oferta (donation offers)
+
+Offered→Ofertada · Pending Arrival→Aguardando chegada · Received→Recebida · Refused→Recusada ·
+Diverted→Redirecionada · Cancelled→Cancelada · Match to Arrival→Vincular à chegada · overdue→atrasada.
+
+### Receiving/triagem/estoque
+
+Box→Caixa · Bag→Saco · Tote→Tote (mantido; evita colisão com Caixa) · Gaylord→Gaylord (mantido) ·
+Loose→Solto · Semi→Carreta · Box Truck→Caminhão baú · Personal Vehicle→Veículo próprio ·
+Trailer→Reboque · Delivery Truck→Caminhão de entrega · shipment→remessa · carrier→transportadora ·
+disposition→destinação (evita falso cognato) · Usable→Utilizável · Outdated→Vencido · Trash→Descarte ·
+Divert→Redirecionar · Hold (pallet kind H)→Retenção · Quarantine (Q)→Quarentena ·
+Warehouse (pallet kind W)→Armazenagem · condemned→inutilizado · seal/unseal/re-seal→lacrado/deslacr/relacrar ·
+stage→preparar · shrinkage→Quebra · ledger→ledger (mantido; alt. "kardex") · Expires→Validade ·
+Quick-Sort Candidate→Candidato à triagem rápida · sort hold→espera de numeração (sort hold) ·
+Donor Unknown/unknown donor (dado semeado)→mantido em inglês, explicação traduzida ("doador desconhecido") ·
+"GENERIC ITEM"→verbatim (linha semeada).
+
+### Pedidos/atendimento/expedição
+
+Start/Complete Filling→Iniciar/Concluir atendimento · Pick:→Separar: · Qty to Pick→Qtd. a separar ·
+Review Allocation→Revisar alocação · Need level: Critical/Moderate/Low→Nível de necessidade: Crítico/Moderado/Baixo ·
+Needed By Date→Data desejada · Any Day→Qualquer dia · Mark Shipped→Marcar como expedido ·
+Shipping Label→Etiqueta de expedição · Retry/Retry All→Repetir/Repetir todas.
+
+### Decisões do lead sobre as dúvidas dos candidatos
+
+1. **Box/Case → "caixa"** (colapso aceito): "Case Qty" → **"Qtd. por caixa"** (unificado com o attribute
+   `case_qty` do validation.php; o items.md foi ajustado de "Qtd. na caixa"). Se a operação distinguir
+   Case de Box, revisitar.
+2. **Stack → "Nível"**: nota de incerteza mantida (validar com a operação).
+3. **Títulos "Guia de X"** nos PDFs; heading da página sem sufixo (wiring já em 4618bda).
+4. **"Unknown Donor"** (registro semeado) → verbatim na UI, com texto explicativo traduzido ao redor.
