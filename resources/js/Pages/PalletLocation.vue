@@ -19,6 +19,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import SearchSelect from '@/Components/SearchSelect.vue';
 import ScanButton from '@/Components/ScanButton.vue';
 import { playScanError, playScanMatched, scanSoundsEnabled, setScanSoundsEnabled } from '@/scanSounds';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	breadcrumb: { type: Array },
@@ -36,7 +37,7 @@ async function loadSummary() {
 	try {
 		summary.value = (await axios.get('/json/palletstatus/summary')).data;
 	} catch (e) {
-		summaryError.value = e.response?.data?.message || 'Could not load locations.';
+		summaryError.value = e.response?.data?.message || t('Pages.text.could_not_load_locations');
 	}
 }
 
@@ -53,8 +54,8 @@ const statusColumns = computed(() => {
 const locationRows = computed(() => {
 	const rows = (summary.value?.locations || []).map((l) => ({ key: l.id, label: l.code, total: l.total, by_status: l.by_status || {}, zero: !l.total }));
 	const s = summary.value;
-	if (s?.no_location?.total) rows.push({ key: 'none', label: 'No location recorded', total: s.no_location.total, by_status: s.no_location.by_status || {}, special: true });
-	if (s?.other_locations?.total) rows.push({ key: 'other', label: 'Archived / other locations', total: s.other_locations.total, by_status: s.other_locations.by_status || {}, special: true });
+	if (s?.no_location?.total) rows.push({ key: 'none', label: t('Pages.text.no_location_recorded_2'), total: s.no_location.total, by_status: s.no_location.by_status || {}, special: true });
+	if (s?.other_locations?.total) rows.push({ key: 'other', label: t('Pages.text.archived_other_locations'), total: s.other_locations.total, by_status: s.other_locations.by_status || {}, special: true });
 	return rows;
 });
 
@@ -78,7 +79,7 @@ async function toggleLocation(key, label) {
 		const pallets = (await axios.get(`/json/palletstatus/location/${key}`)).data.records;
 		if (openLocation.value?.key === key) openLocation.value.pallets = pallets;
 	} catch (e) {
-		if (openLocation.value?.key === key) openLocation.value.error = e.response?.data?.message || 'Could not load pallets.';
+		if (openLocation.value?.key === key) openLocation.value.error = e.response?.data?.message || t('Pages.text.could_not_load_pallets');
 	}
 }
 
@@ -141,11 +142,11 @@ async function showPallet(tag) {
 		await applyPallet(pallet);
 		scannedLabelId.value = pallet.scanned_label?.id ?? null;
 		if (pallet.scanned_label) {
-			scanMessage.value = { ok: true, text: `Inventory label: ${pallet.scanned_label.name} (${pallet.scanned_label.qty} added) is on ${pallet.tag}.` };
+			scanMessage.value = { ok: true, text: t('Pages.text.inventory_label_p0_p1', { p0: pallet.scanned_label.name, p1: pallet.scanned_label.qty, p2: pallet.tag }) };
 		}
 		playScanMatched();
 	} catch (e) {
-		scanMessage.value = { ok: false, text: e.response?.data?.message || 'Could not look up that pallet.' };
+		scanMessage.value = { ok: false, text: e.response?.data?.message || t('Pages.text.could_not_look_up_4') };
 		playScanError();
 	}
 }
@@ -159,7 +160,7 @@ async function applyPallet(pallet) {
 	fill.value.locationCode = pallet.location?.code || '';
 	fill.value.expires = null;
 	if (!samePallet) {
-		mode.value = 'add';
+		mode.value = t('Commons.text.add');
 		adj.value = { rows: [], reason: '', notes: '' };
 	}
 	lastShownTag = pallet.tag;
@@ -175,7 +176,7 @@ function clearPallet() {
 	current.value = null;
 	scannedLabelId.value = null;
 	lastShownTag = null;
-	mode.value = 'add';
+	mode.value = t('Commons.text.add');
 	history.value = [];
 	fill.value.locationCode = '';
 	fill.value.expires = null;
@@ -194,7 +195,7 @@ const locationChanged = computed(() => {
 	if (!pallet) return false;
 	return (chosenLocation.value?.id ?? null) !== (pallet.location_id ?? null) && move.value.locationCode.trim() !== '';
 });
-const saveLabel = computed(() => (locationChanged.value ? 'Record Movement' : 'Record Status'));
+const saveLabel = computed(() => (locationChanged.value ? t('Commons.text.record_movement') : t('Commons.text.record_status')));
 
 async function postStatus(pallet, locationId, status, notes) {
 	await axios.post('/json/palletstatus', {
@@ -216,7 +217,7 @@ async function recordMovement() {
 	const pallet = current.value;
 	if (!pallet) return;
 	if (unknownLocationText.value) {
-		scanMessage.value = { ok: false, text: `"${move.value.locationCode}" is not a known active location.` };
+		scanMessage.value = { ok: false, text: t('Pages.text.p0_is_not_a', { p0: move.value.locationCode }) };
 		return;
 	}
 	saving.value = true;
@@ -226,7 +227,7 @@ async function recordMovement() {
 		scanMessage.value = { ok: true, text: `${pallet.tag}: ${locationChanged.value ? 'moved to ' + move.value.locationCode : 'status recorded as ' + move.value.status}.` };
 		await applyPallet(await lookupPallet(pallet.tag));
 	} catch (e) {
-		scanMessage.value = { ok: false, text: errorText(e, 'Could not save.') };
+		scanMessage.value = { ok: false, text: errorText(e, t('Pages.text.could_not_save')) };
 		playScanError();
 	} finally {
 		saving.value = false;
@@ -238,7 +239,7 @@ async function recordMovement() {
 async function quickMove(location) {
 	const pallet = current.value;
 	if (location.id === pallet.location_id) {
-		scanMessage.value = { ok: true, text: `${pallet.tag} is already at ${location.code}.` };
+		scanMessage.value = { ok: true, text: t('Pages.text.p0_is_already_at', { p0: pallet.tag, p1: location.code }) };
 		playScanMatched();
 		return;
 	}
@@ -248,7 +249,7 @@ async function quickMove(location) {
 		scanMessage.value = { ok: true, text: `${pallet.tag}: moved to ${location.code}.` };
 		await applyPallet(await lookupPallet(pallet.tag));
 	} catch (e) {
-		scanMessage.value = { ok: false, text: errorText(e, 'Could not save the move.') };
+		scanMessage.value = { ok: false, text: errorText(e, t('Pages.text.could_not_save_the_3')) };
 		playScanError();
 	}
 }
@@ -284,7 +285,7 @@ async function loadStaging() {
 		const [records] = await Promise.all([axios.get('/json/pallet-stock/staging').then((r) => r.data.records), loadItemTypes()]);
 		staging.value = records;
 	} catch (e) {
-		fillError.value = e.response?.data?.message || 'Could not load the sorting-area list.';
+		fillError.value = e.response?.data?.message || t('Pages.text.could_not_load_the_4');
 	}
 }
 
@@ -338,7 +339,7 @@ const fillTarget = computed(() => {
 // ---- sealed / open, and the two ways to change an open pallet (never both at once) ----
 const isWarehouse = computed(() => current.value?.kind === 'W');
 const canAdjust = computed(() => props.canAdjust && !!fillTarget.value && !!current.value.location_id); // permitted, open and already placed
-const mode = ref('add'); // 'add' (from the sorting area) | 'adjust' (correct what is on the pallet)
+const mode = ref(t('Commons.text.add')); // 'add' (from the sorting area) | 'adjust' (correct what is on the pallet)
 const adj = ref({ rows: [], reason: '', notes: '' });
 const adjError = ref(null);
 const adjusting = ref(false);
@@ -380,7 +381,7 @@ async function sealOrUnseal(action) {
 		playScanMatched();
 		await applyPallet(await lookupPallet(pallet.tag));
 	} catch (e) {
-		scanMessage.value = { ok: false, text: errorText(e, 'Could not change the seal.') };
+		scanMessage.value = { ok: false, text: errorText(e, t('Pages.text.could_not_change_the')) };
 		playScanError();
 	} finally {
 		sealing.value = false;
@@ -391,15 +392,15 @@ async function sealOrUnseal(action) {
 async function submitAdjust() {
 	adjError.value = null;
 	if (!adjChanges.value.length) {
-		adjError.value = 'Enter at least one change (use a minus sign to remove).';
+		adjError.value = t('Pages.text.enter_at_least_one');
 		return;
 	}
 	if (!adj.value.reason) {
-		adjError.value = 'Choose a reason.';
+		adjError.value = t('Pages.text.choose_a_reason_2');
 		return;
 	}
 	if (adj.value.reason === 'other' && !adj.value.notes.trim()) {
-		adjError.value = 'Say what the reason is in the notes.';
+		adjError.value = t('Pages.text.say_what_the_reason');
 		return;
 	}
 	adjusting.value = true;
@@ -410,12 +411,12 @@ async function submitAdjust() {
 			notes: adj.value.notes || null,
 			lines: adjChanges.value.map((r) => ({ item_id: r.item_id, qty: r.n })),
 		});
-		scanMessage.value = { ok: true, text: `${pallet.tag}: inventory adjusted.` };
+		scanMessage.value = { ok: true, text: t('Pages.text.p0_inventory_adjusted', { p0: pallet.tag }) };
 		playScanMatched();
 		await applyPallet(await lookupPallet(pallet.tag));
 		resetAdjust();
 	} catch (e) {
-		adjError.value = errorText(e, 'Could not save the adjustment.');
+		adjError.value = errorText(e, t('Pages.text.could_not_save_the_4'));
 		playScanError();
 	} finally {
 		adjusting.value = false;
@@ -435,11 +436,11 @@ async function submitFill() {
 	fillError.value = null;
 	fillResult.value = null;
 	if (!fill.value.lines.length) {
-		fillError.value = 'Add at least one item.';
+		fillError.value = t('Pages.text.add_at_least_one');
 		return;
 	}
 	if (fill.value.locationCode.trim() && !fillLocation.value) {
-		fillError.value = `"${fill.value.locationCode}" is not a known active location.`;
+		fillError.value = t('Pages.text.p0_is_not_a', { p0: fill.value.locationCode });
 		return;
 	}
 	filling.value = true;
@@ -464,7 +465,7 @@ async function submitFill() {
 		nextTick(() => fillResultBox.value?.scrollIntoView({ behavior: 'smooth', block: 'center' }));
 	} catch (e) {
 		const errors = e.response?.data?.errors;
-		fillError.value = (errors && Object.values(errors).flat().join(' ')) || e.response?.data?.message || 'Could not save.';
+		fillError.value = (errors && Object.values(errors).flat().join(' ')) || e.response?.data?.message || t('Pages.text.could_not_save');
 		playScanError();
 	} finally {
 		filling.value = false;
@@ -520,17 +521,17 @@ onMounted(() => {
 </script>
 
 <template>
-	<Head title="Inventory Movement" />
+	<Head :title="$t('Commons.title.inventory_movement')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="pm_page">
-			<h2 class="pm_title">Inventory Movement <HelpLink guide="inventory-movement">Inventory Movement Guide</HelpLink></h2>
+			<h2 class="pm_title">{{ $t('Commons.heading.inventory_movement', {}) }} <HelpLink guide="inventory-movement">{{ $t('Pages.text.inventory_movement_guide', {}) }}</HelpLink></h2>
 
 			<div class="pm_tabs">
 				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'pallet' }]" @click="show('pallet')">Pallets</button>
-				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'locations' }]" @click="show('locations')">Locations</button>
-				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'recent' }]" @click="show('recent')">Recent Movements</button>
+				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'locations' }]" @click="show('locations')">{{ $t('Commons.button.locations', {}) }}</button>
+				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'recent' }]" @click="show('recent')">{{ $t('Commons.button.recent_movements', {}) }}</button>
 			</div>
 
 			<datalist id="pm_locations">
@@ -540,12 +541,12 @@ onMounted(() => {
 			<!-- Locations -->
 			<div v-if="tab === 'locations'">
 				<p v-if="summaryError" class="ri_error">{{ summaryError }}</p>
-				<p v-else-if="!summary">Loading…</p>
+				<p v-else-if="!summary">{{ $t('Commons.text.loading', {}) }}</p>
 				<div v-else class="pm_tablewrap">
 					<table class="ri_datatable" border="1">
 						<thead>
 							<tr>
-								<th>Location</th>
+								<th>{{ $t('Commons.text.location', {}) }}</th>
 								<th>Pallets</th>
 								<th v-for="s in statusColumns" :key="s" class="pm_status_head">{{ s }}</th>
 							</tr>
@@ -560,10 +561,10 @@ onMounted(() => {
 								<tr v-if="openLocation?.key === r.key" class="pm_drillrow">
 									<td :colspan="2 + statusColumns.length">
 										<p v-if="openLocation.error" class="ri_error">{{ openLocation.error }}</p>
-										<p v-else-if="!openLocation.pallets">Loading…</p>
+										<p v-else-if="!openLocation.pallets">{{ $t('Commons.text.loading', {}) }}</p>
 										<table v-else class="ri_datatable" border="1">
 											<thead>
-												<tr><th>Pallet</th><th>Type</th><th>Status</th><th>Last moved</th></tr>
+												<tr><th>Pallet</th><th>{{ $t('Commons.text.type_2', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.last_moved', {}) }}</th></tr>
 											</thead>
 											<tbody>
 												<tr v-for="p in openLocation.pallets" :key="p.id">
@@ -572,14 +573,14 @@ onMounted(() => {
 													<td>{{ p.status }}</td>
 													<td>{{ formatDate(p.last_moved_at) }}</td>
 												</tr>
-												<tr v-if="!openLocation.pallets.length"><td colspan="4">No live pallets here.</td></tr>
+												<tr v-if="!openLocation.pallets.length"><td colspan="4">{{ $t('Pages.text.no_live_pallets_here', {}) }}</td></tr>
 											</tbody>
 										</table>
 									</td>
 								</tr>
 							</template>
 							<tr v-if="!summary.locations.length">
-								<td :colspan="2 + statusColumns.length">No active locations are set up yet.</td>
+								<td :colspan="2 + statusColumns.length">{{ $t('Pages.text.no_active_locations_are', {}) }}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -599,7 +600,7 @@ onMounted(() => {
 						:placeholder="current ? 'Scan another pallet — or a location to move ' + current.tag + ' there' : 'Scan a pallet barcode'"
 						@keydown.enter.prevent="submitScan"
 					/>
-					<button type="button" class="ri_defaultbutton" @click="submitScan">Find</button>
+					<button type="button" class="ri_defaultbutton" @click="submitScan">{{ $t('Commons.button.find', {}) }}</button>
 					<ScanButton :target="() => scanInput" />
 					<button type="button" class="pm_sound" @click="toggleSounds"
 						:title="sounds ? 'Scan sounds on. Click to mute.' : 'Scan sounds off. Click to turn on.'">{{ sounds ? '🔊' : '🔇' }}</button>
@@ -609,7 +610,7 @@ onMounted(() => {
 				<div v-if="fillResult" ref="fillResultBox" class="pm_current">
 					<strong>{{ fillResult.tag }}</strong> sealed<span v-if="fillResult.location"> at <strong>{{ fillResult.location.code }}</strong></span>:
 					<span v-for="(c, i) in fillResult.contents" :key="c.item_id">{{ c.qty }} × {{ c.name }}<span v-if="i < fillResult.contents.length - 1">, </span></span>.
-					<PrintMenu v-if="fillResult.isNew" document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="form" label="Print Pallet Label"
+					<PrintMenu v-if="fillResult.isNew" document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="form" :label="$t('Pages.label.print_pallet_label')"
 						:params="{ id: fillResult.id }" :download-href="'/report/pallet/' + fillResult.id" />
 					<PrintMenu v-if="fillResult.assignmentIds?.length" document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="form"
 						:label="'Print Item Labels (' + fillResult.assignmentIds.length + ')'"
@@ -620,92 +621,91 @@ onMounted(() => {
 				<div v-if="current" class="pm_card">
 					<p class="pm_current">
 						<strong class="pm_mono">{{ current.tag }}</strong> ({{ current.kind_label }}) —
-						<strong>{{ current.location ? 'at ' + current.location.code : 'no location recorded' }}</strong>,
-						status <strong>{{ current.status }}</strong><span v-if="current.last_moved_at">, last updated {{ formatDate(current.last_moved_at) }}</span><span v-if="current.expires_on">, earliest expiration <strong>{{ current.expires_on }}</strong></span>.
-						<button type="button" class="ri_linkbutton" @click="clearPallet">Clear / new pallet</button>
+						<strong>{{ current.location ? 'at ' + current.location.code : $t('Pages.text.no_location_recorded') }}</strong>{{ $t('Commons.text.status_4', {}) }} <strong>{{ current.status }}</strong><span v-if="current.last_moved_at">{{ $t('Pages.text.last_updated') }} {{ formatDate(current.last_moved_at) }}</span><span v-if="current.expires_on">{{ $t('Pages.text.earliest_expiration', {}) }} <strong>{{ current.expires_on }}</strong></span>.
+						<button type="button" class="ri_linkbutton" @click="clearPallet">{{ $t('Pages.button.clear_new_pallet', {}) }}</button>
 					</p>
 
 					<div class="pm_fillrow">
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Location:</span>
-							<input v-model="move.locationCode" class="ri_forminput" list="pm_locations" placeholder="Unknown — scan or type a location" />
+							<span class="ri_fieldlabel">{{ $t('Commons.text.location_2', {}) }}</span>
+							<input v-model="move.locationCode" class="ri_forminput" list="pm_locations" :placeholder="$t('Pages.placeholder.unknown_scan_or_type')" />
 						</label>
 						<label v-if="!isWarehouse" class="pm_fillfield">
-							<span class="ri_fieldlabel">Status:</span>
+							<span class="ri_fieldlabel">{{ $t('Commons.text.status_3', {}) }}</span>
 							<select v-model="move.status" class="ri_forminput">
 								<option v-for="st in current.statuses" :key="st.id" :value="st.id">{{ st.name }}</option>
 							</select>
 						</label>
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Notes:</span>
+							<span class="ri_fieldlabel">{{ $t('Commons.text.notes_2', {}) }}</span>
 							<input v-model="move.notes" class="ri_forminput" />
 						</label>
 						<button type="button" class="ri_defaultbutton" :disabled="saving" @click="recordMovement">{{ saveLabel }}</button>
-						<button v-if="isWarehouse && current.status === 'sealed'" type="button" class="ri_formbutton" :disabled="sealing" @click="sealOrUnseal('open')">Unseal</button>
+						<button v-if="isWarehouse && current.status === 'sealed'" type="button" class="ri_formbutton" :disabled="sealing" @click="sealOrUnseal('open')">{{ $t('Commons.button.unseal', {}) }}</button>
 						<button v-if="isWarehouse && current.status === 'open'" type="button" class="ri_formbutton" :disabled="sealing" @click="sealOrUnseal('seal')">Re-seal</button>
 					</div>
-					<p v-if="isWarehouse && current.status === 'sealed'" class="ri_hint">This pallet is sealed. Unseal it to add items or adjust what is on it.</p>
+					<p v-if="isWarehouse && current.status === 'sealed'" class="ri_hint">{{ $t('Pages.text.this_pallet_is_sealed', {}) }}</p>
 
-					<h3 class="pm_sub">Pallet Contents</h3>
+					<h3 class="pm_sub">{{ $t('Commons.heading.pallet_contents', {}) }}</h3>
 					<template v-if="current.contents">
-						<p v-if="!current.contents.length" class="ri_hint">Nothing is recorded as being on this pallet.</p>
+						<p v-if="!current.contents.length" class="ri_hint">{{ $t('Pages.text.nothing_is_recorded_as', {}) }}</p>
 						<div v-else class="pm_tablewrap">
 							<table class="ri_datatable" border="1">
-								<thead><tr><th>Item</th><th>Quantity</th></tr></thead>
+								<thead><tr><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.quantity', {}) }}</th></tr></thead>
 								<tbody>
 									<tr v-for="c in current.contents" :key="c.item_id"><td>{{ c.name }}</td><td>{{ c.qty }}</td></tr>
 								</tbody>
 							</table>
 						</div>
 						<template v-if="current.labels?.length">
-							<h3 class="pm_sub">Inventory Labels</h3>
-							<p class="ri_hint">One label for each set of items put on this pallet, as it was added (picks and corrections since aren't reflected). Reprint any of them here.</p>
+							<h3 class="pm_sub">{{ $t('Commons.heading.inventory_labels', {}) }}</h3>
+							<p class="ri_hint">{{ $t('Pages.text.one_label_for_each', {}) }}</p>
 							<div class="pm_tablewrap">
 								<table class="ri_datatable" border="1">
-									<thead><tr><th>Item</th><th>Added</th><th>Expires</th><th></th></tr></thead>
+									<thead><tr><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.added', {}) }}</th><th>{{ $t('Commons.text.expires', {}) }}</th><th></th></tr></thead>
 									<tbody>
 										<tr v-for="l in current.labels" :key="l.id" :style="l.id === scannedLabelId ? 'background: #fff3b0' : null">
 											<td>{{ l.name }}</td><td>{{ l.qty }}</td><td>{{ l.expires_on || '' }}</td>
-											<td><PrintMenu document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="link" label="Print"
+											<td><PrintMenu document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="link" :label="$t('Commons.label.print')"
 												:params="{ ids: [l.id] }" :download-href="'/report/inventory-labels?ids=' + l.id" /></td>
 										</tr>
 									</tbody>
 								</table>
 							</div>
-							<PrintMenu document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="form" label="Print All Item Labels"
+							<PrintMenu document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="form" :label="$t('Pages.label.print_all_item_labels')"
 								:params="{ ids: current.labels.map((l) => l.id) }" :download-href="'/report/inventory-labels?ids=' + current.labels.map((l) => l.id).join(',')" />
 						</template>
 					</template>
 					<template v-else-if="current.sorted_from">
-						<p class="ri_hint">Receiving pallets aren't tracked item by item; this is what sorting recorded coming off it.</p>
-						<p v-if="!current.sorted_from.length" class="ri_hint">Nothing sorted from this pallet yet.</p>
+						<p class="ri_hint">{{ $t('Pages.text.receiving_pallets_aren_t', {}) }}</p>
+						<p v-if="!current.sorted_from.length" class="ri_hint">{{ $t('Pages.text.nothing_sorted_from_this', {}) }}</p>
 						<div v-else class="pm_tablewrap">
 							<table class="ri_datatable" border="1">
-								<thead><tr><th>Item</th><th>Disposition</th><th>Quantity</th></tr></thead>
+								<thead><tr><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.disposition', {}) }}</th><th>{{ $t('Commons.text.quantity', {}) }}</th></tr></thead>
 								<tbody>
 									<tr v-for="(c, i) in current.sorted_from" :key="i"><td>{{ c.name }}</td><td>{{ c.disposition }}</td><td>{{ c.qty }}</td></tr>
 								</tbody>
 							</table>
 						</div>
 					</template>
-					<p v-else class="ri_hint">Contents aren't tracked for this kind of pallet.</p>
+					<p v-else class="ri_hint">{{ $t('Pages.text.contents_aren_t_tracked', {}) }}</p>
 				</div>
-				<p v-else class="ri_hint">Scan a pallet to see where it is, what is on it and move it — or build a new Warehouse pallet below.</p>
+				<p v-else class="ri_hint">{{ $t('Pages.text.scan_a_pallet_to', {}) }}</p>
 
 				<!-- put stock from the sorting area onto this (or a new) Warehouse pallet -->
 				<div v-if="canAdjust" class="pm_modes">
-					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'add' }]" :disabled="adjPending" :title="adjPending ? 'Finish or clear the adjustment first' : ''" @click="setMode('add')">Add from sorting area</button>
+					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'add' }]" :disabled="adjPending" :title="adjPending ? 'Finish or clear the adjustment first' : ''" @click="setMode('add')">{{ $t('Pages.button.add_from_sorting_area', {}) }}</button>
 					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'adjust' }]" :disabled="fill.lines.length > 0" :title="fill.lines.length ? 'Finish or clear the items staged to add first' : ''" @click="setMode('adjust')">Adjust inventory</button>
 				</div>
 
 				<!-- adjust what is on an unsealed, placed pallet -->
 				<div v-if="canAdjust && mode === 'adjust'">
-					<h3 class="pm_sub">Adjust inventory on {{ current.tag }}</h3>
-					<p class="ri_hint">Correct what is on this pallet. Use a minus sign to remove (-3), a plain number to add. This is logged as an inventory adjustment, separate from adding stock from the sorting area.</p>
+					<h3 class="pm_sub">{{ $t('Pages.heading.adjust_inventory_on') }} {{ current.tag }}</h3>
+					<p class="ri_hint">{{ $t('Pages.text.correct_what_is_on', {}) }}</p>
 					<p v-if="adjError" class="ri_error">{{ adjError }}</p>
 					<div class="pm_tablewrap">
 						<table class="ri_datatable" border="1">
-							<thead><tr><th>Item</th><th>Now</th><th>Change</th><th>After</th></tr></thead>
+							<thead><tr><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.now', {}) }}</th><th>{{ $t('Commons.text.change', {}) }}</th><th>{{ $t('Commons.text.after', {}) }}</th></tr></thead>
 							<tbody>
 								<tr v-for="r in adj.rows" :key="r.item_id">
 									<td>{{ r.name }}</td>
@@ -713,99 +713,99 @@ onMounted(() => {
 									<td><input v-model="r.delta" type="text" inputmode="numeric" autocomplete="off" class="ri_forminput pm_qty" placeholder="0" @focus="$event.target.select()" /></td>
 									<td>{{ Number.isInteger(parseInt(r.delta, 10)) ? r.qty + parseInt(r.delta, 10) : r.qty }}</td>
 								</tr>
-								<tr v-if="!adj.rows.length"><td colspan="4">Nothing is recorded on this pallet — add an item below.</td></tr>
+								<tr v-if="!adj.rows.length"><td colspan="4">{{ $t('Pages.text.nothing_is_recorded_on', {}) }}</td></tr>
 							</tbody>
 						</table>
 					</div>
 					<div class="pm_fillrow">
 						<span class="pm_fillfield">
-							<span class="ri_fieldlabel">Another item:</span>
+							<span class="ri_fieldlabel">{{ $t('Commons.text.another_item', {}) }}</span>
 							<SearchSelect v-model="adjPick" optionsource="/json/items" display="name" :searchfields="['name', 'upc', 'description']"
-								placeholder="Search items..." :smartOpen="true" :debounce="150" :openOnFocus="false" @selected="addAdjustItem" />
+								:placeholder="$t('Pages.placeholder.search_items')" :smartOpen="true" :debounce="150" :openOnFocus="false" @selected="addAdjustItem" />
 						</span>
 					</div>
 					<div class="pm_fillrow">
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Reason:</span>
+							<span class="ri_fieldlabel">{{ $t('Commons.text.reason_2', {}) }}</span>
 							<select v-model="adj.reason" class="ri_forminput">
-								<option value="" disabled>Choose a reason…</option>
+								<option value="" disabled>{{ $t('Pages.text.choose_a_reason', {}) }}</option>
 								<option v-for="[key, label] in ADJUST_REASONS" :key="key" :value="key">{{ label }}</option>
 							</select>
 						</label>
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Notes<span v-if="adj.reason === 'other'"> (required)</span>:</span>
+							<span class="ri_fieldlabel">{{ $t('Commons.text.notes', {}) }}<span v-if="adj.reason === 'other'"> (required)</span>:</span>
 							<input v-model="adj.notes" class="ri_forminput" />
 						</label>
 						<button type="button" class="ri_defaultbutton" :disabled="adjusting || !adjChanges.length" @click="submitAdjust">Record Adjustment ({{ adjChanges.length }})</button>
-						<button type="button" class="ri_formbutton" :disabled="!adjPending" @click="resetAdjust">Clear</button>
+						<button type="button" class="ri_formbutton" :disabled="!adjPending" @click="resetAdjust">{{ $t('Commons.button.clear', {}) }}</button>
 					</div>
 				</div>
 
 				<div v-if="!current || (fillTarget && mode === 'add')">
-					<h3 class="pm_sub">{{ fillTarget ? 'Add items to ' + fillTarget.tag : 'Build a new Warehouse pallet' }}</h3>
-					<p v-if="!fillTarget" class="ri_hint">Tap items in the sorting area below, set where it is going, then Seal &amp; Place. Scan an existing Warehouse pallet instead to add to that one.</p>
+					<h3 class="pm_sub">{{ fillTarget ? $t('Pages.heading.add_items_to') + fillTarget.tag : $t('Pages.heading.build_a_new_warehouse') }}</h3>
+					<p v-if="!fillTarget" class="ri_hint">{{ $t('Pages.text.tap_items_in_the', {}) }}</p>
 
 					<div class="pm_tablewrap" v-if="fill.lines.length">
 						<table class="ri_datatable" border="1">
-							<thead><tr><th>Item</th><th>Quantity</th><th>Expires</th><th></th></tr></thead>
+							<thead><tr><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.quantity', {}) }}</th><th>{{ $t('Commons.text.expires', {}) }}</th><th></th></tr></thead>
 							<tbody>
 								<tr v-for="(l, i) in fill.lines" :key="l.item_id">
 									<td>{{ l.name }}</td>
 									<td><input type="text" inputmode="numeric" autocomplete="off" :value="l.qty" class="ri_forminput pm_qty" @focus="$event.target.select()" @change="setLineQty(l, $event)" /></td>
-									<td><input type="date" class="ri_forminput" v-model="l.expires_on" title="Earliest expiration of this quantity — printed on its inventory label" /></td>
-									<td><button type="button" class="ri_linkbutton" @click="fill.lines.splice(i, 1)">Remove</button></td>
+									<td><input type="date" class="ri_forminput" v-model="l.expires_on" :title="$t('Pages.title.earliest_expiration_of_this')" /></td>
+									<td><button type="button" class="ri_linkbutton" @click="fill.lines.splice(i, 1)">{{ $t('Commons.button.remove', {}) }}</button></td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
-					<p v-else class="ri_hint">Tap items below to put them on this pallet.</p>
+					<p v-else class="ri_hint">{{ $t('Pages.text.tap_items_below_to', {}) }}</p>
 
 					<div class="pm_fillrow">
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Location:</span>
+							<span class="ri_fieldlabel">{{ $t('Commons.text.location_2', {}) }}</span>
 							<input v-model="fill.locationCode" class="ri_forminput" list="pm_locations" placeholder="Where it's going" />
 						</label>
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Expires:</span>
-							<input type="date" class="ri_forminput" :value="fillExpiry" title="Earliest expiration date of anything on this pallet"
+							<span class="ri_fieldlabel">{{ $t('Commons.text.expires_2', {}) }}</span>
+							<input type="date" class="ri_forminput" :value="fillExpiry" :title="$t('Pages.title.earliest_expiration_date_of')"
 								@input="fill.expires = $event.target.value" />
-							<button v-if="fill.expires !== null" type="button" class="ri_linkbutton" title="Go back to the earliest date of the items" @click="fill.expires = null">Auto</button>
+							<button v-if="fill.expires !== null" type="button" class="ri_linkbutton" :title="$t('Pages.title.go_back_to_the')" @click="fill.expires = null">{{ $t('Commons.button.auto', {}) }}</button>
 						</label>
 						<label class="pm_fillfield">
-							<span class="ri_fieldlabel">Notes:</span>
+							<span class="ri_fieldlabel">{{ $t('Commons.text.notes_2', {}) }}</span>
 							<input v-model="fill.notes" class="ri_forminput" />
 						</label>
 						<button type="button" class="ri_defaultbutton" :disabled="filling || !fill.lines.length" @click="submitFill">
-							{{ fillTarget ? 'Add to pallet' : 'Seal & Place' }} ({{ fillTotal }})
+							{{ fillTarget ? $t('Pages.button.add_to_pallet') : $t('Pages.button.seal_place') }} ({{ fillTotal }})
 						</button>
 					</div>
 
-					<h3 class="pm_sub">In the sorting area</h3>
-					<p v-if="!staging">Loading…</p>
-					<p v-else-if="!stagingLeft.length" class="ri_hint">Nothing waiting — everything sorted is already on a pallet.</p>
+					<h3 class="pm_sub">{{ $t('Pages.heading.in_the_sorting_area', {}) }}</h3>
+					<p v-if="!staging">{{ $t('Commons.text.loading', {}) }}</p>
+					<p v-else-if="!stagingLeft.length" class="ri_hint">{{ $t('Pages.text.nothing_waiting_everything_sorted', {}) }}</p>
 					<div v-else class="pm_tablewrap">
 						<table class="ri_datatable" border="1">
-							<thead><tr><th>Item</th><th>Waiting</th><th>Expires</th><th></th></tr></thead>
+							<thead><tr><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.waiting', {}) }}</th><th>{{ $t('Commons.text.expires', {}) }}</th><th></th></tr></thead>
 							<tbody>
 								<template v-for="g in stagingGroups" :key="g.key">
 									<tr v-if="g.rows.length === 1">
-										<td>{{ g.type?.number ? 'ACS #' + g.type.number + ' ' : '' }}{{ g.rows[0].name }}</td>
+										<td>{{ g.type?.number ? $t('Commons.text.acs') + g.type.number + ' ' : '' }}{{ g.rows[0].name }}</td>
 										<td>{{ g.left }}</td>
 										<td>{{ g.expires }}</td>
-										<td><button type="button" class="ri_formbutton" @click="addFillLine(g.rows[0])">Put all {{ g.left }} on pallet</button></td>
+										<td><button type="button" class="ri_formbutton" @click="addFillLine(g.rows[0])">{{ $t('Commons.button.put_all') }} {{ g.left }} {{ $t('Commons.button.on_pallet') }}</button></td>
 									</tr>
 									<template v-else>
 										<tr class="pm_group pm_clickable" @click="toggleGroup(g.key)">
-											<td>{{ expandedGroups.has(g.key) ? '▾' : '▸' }} ACS #{{ g.type.number }} ({{ g.type.name }}) — {{ g.rows.length }} items</td>
+											<td>{{ expandedGroups.has(g.key) ? '▾' : '▸' }} {{ $t('Commons.text.acs') }}{{ g.type.number }} ({{ g.type.name }}) — {{ g.rows.length }} items</td>
 											<td>{{ g.left }}</td>
 											<td>{{ g.expires }}</td>
-											<td><button type="button" class="ri_formbutton" @click.stop="addGroup(g)">Put all {{ g.left }} on pallet</button></td>
+											<td><button type="button" class="ri_formbutton" @click.stop="addGroup(g)">{{ $t('Commons.button.put_all') }} {{ g.left }} {{ $t('Commons.button.on_pallet') }}</button></td>
 										</tr>
 										<tr v-for="row in expandedGroups.has(g.key) ? g.rows : []" :key="row.item_id" class="pm_sku">
 											<td>{{ row.name }}</td>
 											<td>{{ row.left }}</td>
 											<td>{{ row.expires_on || '' }}</td>
-											<td><button type="button" class="ri_formbutton" @click="addFillLine(row)">Put all {{ row.left }} on pallet</button></td>
+											<td><button type="button" class="ri_formbutton" @click="addFillLine(row)">{{ $t('Commons.button.put_all') }} {{ row.left }} {{ $t('Commons.button.on_pallet') }}</button></td>
 										</tr>
 									</template>
 								</template>
@@ -813,17 +813,17 @@ onMounted(() => {
 						</table>
 					</div>
 				</div>
-				<p v-else-if="fill.lines.length && !(fillTarget && mode === 'adjust')" class="ri_hint">{{ fill.lines.length }} item line(s) are staged for a Warehouse pallet — use Clear / new pallet to go back to them.</p>
+				<p v-else-if="fill.lines.length && !(fillTarget && mode === 'adjust')" class="ri_hint">{{ fill.lines.length }} {{ $t('Pages.text.item_line_s_are') }}</p>
 
 				<div v-if="current" class="pm_history">
-					<h3 class="pm_sub">Movement History</h3>
+					<h3 class="pm_sub">{{ $t('Commons.heading.movement_history', {}) }}</h3>
 					<div class="pm_tablewrap">
 						<table class="ri_datatable" border="1">
-							<thead><tr><th>Date</th><th>Location</th><th>Status</th><th>Notes</th></tr></thead>
+							<thead><tr><th>{{ $t('Commons.text.date', {}) }}</th><th>{{ $t('Commons.text.location', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.notes', {}) }}</th></tr></thead>
 							<tbody>
 								<tr v-for="h in history" :key="h.id">
 									<td>{{ formatDate(h.created_at) }}</td>
-									<td>{{ h.location ? h.location.code : 'Unknown' }}</td>
+									<td>{{ h.location ? h.location.code : $t('Commons.text.unknown') }}</td>
 									<td>{{ h.status }}</td>
 									<td>{{ h.notes }}</td>
 								</tr>
@@ -835,23 +835,23 @@ onMounted(() => {
 
 			<!-- Recent movements -->
 			<div v-else-if="tab === 'recent'">
-				<p v-if="!recent">Loading…</p>
+				<p v-if="!recent">{{ $t('Commons.text.loading', {}) }}</p>
 				<div v-else class="pm_tablewrap">
 					<table class="ri_datatable" border="1">
-						<thead><tr><th>Date</th><th>Pallet</th><th>Location</th><th>Status</th><th>Notes</th></tr></thead>
+						<thead><tr><th>{{ $t('Commons.text.date', {}) }}</th><th>Pallet</th><th>{{ $t('Commons.text.location', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.notes', {}) }}</th></tr></thead>
 						<tbody>
 							<tr v-for="r in recent" :key="r.id">
 								<td>{{ formatDate(r.created_at) }}</td>
 								<td class="pm_mono">{{ r.pallet ? r.pallet.tag : r.pallet_id }}</td>
-								<td>{{ r.location ? r.location.code : 'Unknown' }}</td>
+								<td>{{ r.location ? r.location.code : $t('Commons.text.unknown') }}</td>
 								<td>{{ r.status }}</td>
 								<td>{{ r.notes }}</td>
 							</tr>
-							<tr v-if="!recent.length"><td colspan="5">No movements recorded yet.</td></tr>
+							<tr v-if="!recent.length"><td colspan="5">{{ $t('Pages.text.no_movements_recorded_yet', {}) }}</td></tr>
 						</tbody>
 					</table>
 				</div>
-				<p class="ri_hint">Showing the 100 most recent entries.</p>
+				<p class="ri_hint">{{ $t('Pages.text.showing_the_100_most', {}) }}</p>
 			</div>
 		</div>
 	</AuthenticatedLayout>

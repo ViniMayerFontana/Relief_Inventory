@@ -41,14 +41,15 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import axios from 'axios';
 import { playScanCarton, playScanError, playScanMatched, playScanUnknown, scanSoundsEnabled, setScanSoundsEnabled } from '@/scanSounds';
+import { t } from '@/i18n';
 
 // One button per choice. New and Usable are both disposition 'usable' (both
 // count into inventory) and differ only in item_condition, which exists so
 // new goods can be reported separately.
 const DISPOSITIONS = [
 	{ key: 'new',      value: 'usable',   condition: 'new',  label: 'New',      hint: 'Unused, in original packaging - counted into inventory' },
-	{ key: 'usable',   value: 'usable',   condition: 'used', label: 'Usable',   hint: 'Used or opened, in good condition - counted into inventory' },
-	{ key: 'outdated', value: 'outdated', condition: null,   label: 'Outdated', hint: 'Expired on arrival - discarded' },
+	{ key: 'usable',   value: 'usable',   condition: 'used', label: t('Commons.text.usable'),   hint: 'Used or opened, in good condition - counted into inventory' },
+	{ key: 'outdated', value: 'outdated', condition: null,   label: t('Commons.text.outdated'), hint: 'Expired on arrival - discarded' },
 	{ key: 'trashed',  value: 'trashed',  condition: null,   label: 'Trash',    hint: 'Damaged or unusable - discarded' },
 	{ key: 'diverted', value: 'diverted', condition: null,   label: 'Divert',   hint: 'Usable, but passed to another organization' },
 ];
@@ -179,7 +180,7 @@ export default {
 				const response = await axios.get('/json/sorting-sessions');
 				this.sessions = response.data;
 			} catch (error) {
-				this.listError = 'Could not load sorting sessions.';
+				this.listError = t('Pages.text.could_not_load_sorting');
 			} finally {
 				this.listLoading = false;
 			}
@@ -190,7 +191,7 @@ export default {
 				const response = await axios.post('/json/sorting-sessions', donationId ? { donation_id: donationId } : {});
 				this.openSession(response.data.record);
 			} catch (error) {
-				this.listError = donationId ? 'Could not pick up that donation.' : 'Could not start a new sorting session.';
+				this.listError = donationId ? t('Pages.text.could_not_pick_up') : t('Pages.text.could_not_start_a');
 			}
 		},
 		async resumeSession(id) {
@@ -199,7 +200,7 @@ export default {
 				const response = await axios.get('/json/sorting-sessions/' + id);
 				this.openSession(response.data.record);
 			} catch (error) {
-				this.listError = 'Could not open that session.';
+				this.listError = t('Pages.text.could_not_open_that_3');
 			}
 		},
 		openSession(record) {
@@ -224,7 +225,7 @@ export default {
 			if (!this.readonly) {
 				if (!(await this.flushPendingWork())) return;
 				if (this.pendingCount > 0 && !window.confirm(
-					this.pendingCount + ' line(s) have not finished saving and will be lost. Leave anyway?')) return;
+					this.pendingCount + t('Pages.text.line_s_have_not'))) return;
 			}
 			await this.closeSession();
 		},
@@ -239,7 +240,7 @@ export default {
 			return { lines: ledgers.length, total };
 		},
 		personLabel(person) {
-			if (!person) return '(no donor recorded)';
+			if (!person) return t('Pages.text.no_donor_recorded');
 			const name = [person.first_name, person.last_name].filter(Boolean).join(' ');
 			return person.organization ? person.organization + (name ? ' - ' + name : '') : name || '(unnamed)';
 		},
@@ -272,7 +273,7 @@ export default {
 				const record = response.data.record;
 				this.session = { ...record, item_ledgers: undefined };
 			} catch (error) {
-				this.headerError = 'Could not save session details.';
+				this.headerError = t('Pages.text.could_not_save_session');
 			} finally {
 				this.headerSaving = false;
 			}
@@ -304,7 +305,7 @@ export default {
 			const hasName = this.newDonor.first_name.trim() && this.newDonor.last_name.trim();
 			const hasOrg = (this.newDonor.organization || '').trim();
 			if (!hasName && !hasOrg) {
-				this.donorError = 'Enter a name (first and last) or an organization.';
+				this.donorError = t('Pages.text.enter_a_name_first');
 				return;
 			}
 			this.donorSaving = true;
@@ -315,7 +316,7 @@ export default {
 				this.creatingDonor = false;
 				this.donorSelected(response.data.record);
 			} catch (error) {
-				this.donorError = error.response?.data?.message || 'Could not save donor.';
+				this.donorError = error.response?.data?.message || t('Pages.text.could_not_save_donor');
 			} finally {
 				this.donorSaving = false;
 			}
@@ -326,7 +327,7 @@ export default {
 			if (this.entry.item_id) {
 				const raw = String(this.entry.qty ?? '').trim();
 				if (!/^\d{1,7}$/.test(raw) || parseInt(raw, 10) < 1) {
-					this.lineError = 'Enter a quantity for the selected item (or clear it) before completing.';
+					this.lineError = t('Pages.text.enter_a_quantity_for');
 					this.$refs.qtyInput?.focus();
 					return false;
 				}
@@ -353,7 +354,7 @@ export default {
 		},
 		// ---------- leaving the page with unsaved work ----------
 		leaveMessage() {
-			return 'This sorting session has an item that is not saved yet (or lines still saving). Leave anyway?';
+			return t('Pages.text.this_sorting_session_has');
 		},
 		// Menu / link navigation (Inertia visits): returning false cancels the visit.
 		onInertiaBefore() {
@@ -405,10 +406,10 @@ export default {
 				this.lines = [...unsaved, ...(response.data.record.item_ledgers || []).map((line) => ({ ...line, status: 'saved' }))];
 				const merged = response.data.merged;
 				this.notice = merged
-					? 'Combined ' + merged + ' duplicate line' + (merged === 1 ? '' : 's') + '.'
-					: 'No duplicate lines to combine.';
+					? t('Pages.text.combined_placeholder_duplicate_line', { placeholder: merged }) + (merged === 1 ? '' : 's') + '.'
+					: t('Pages.text.no_duplicate_lines_to');
 			} catch (error) {
-				this.headerError = error.response?.data?.message || 'Could not combine the lines. Try again.';
+				this.headerError = error.response?.data?.message || t('Pages.text.could_not_combine_the');
 			} finally {
 				this.consolidating = false;
 			}
@@ -430,7 +431,7 @@ export default {
 				this.$refs.itemSelect?.focus();
 			} catch (error) {
 				this.pallet = null;
-				this.palletError = 'Unknown pallet tag "' + tag + '". Check the label, or continue without a pallet.';
+				this.palletError = t('Pages.text.unknown_pallet_tag_placeholder', { placeholder: tag });
 			}
 		},
 		clearPallet() {
@@ -445,6 +446,7 @@ export default {
 		 * as a note, transitions the pallet to empty (which rolls the donation
 		 * to Complete once its last pallet empties), and readies the next scan.
 		 */
+
 		async markPalletEmpty(observation) {
 			this.palletError = null;
 			const tag = this.palletTagStr(this.pallet.id);
@@ -453,14 +455,14 @@ export default {
 					'/json/sorting-sessions/pallet/' + encodeURIComponent(tag) + '/empty',
 					{ observation }
 				);
-				this.notice = 'Pallet ' + tag + ' marked empty'
-					+ (observation === 'damaged' ? ' and flagged for QC' : '')
+				this.notice = t('Pages.text.pallet_placeholder_marked_empty', { placeholder: tag })
+					+ (observation === 'damaged' ? t('Pages.text.and_flagged_for_qc') : '')
 					+ (response.data.donation_status === 'Complete'
-						? ' — that was the last pallet, donation is fully sorted!' : '.');
+						? t('Pages.text.that_was_the_last') : '.');
 				this.clearPallet();
 			} catch (error) {
 				this.emptyingPallet = false;
-				this.palletError = error.response?.data?.message || 'Could not mark the pallet empty.';
+				this.palletError = error.response?.data?.message || t('Pages.text.could_not_mark_the');
 			}
 		},
 		// Where the entry-row camera scan goes: the carton dialog's box if it is open, else Qty when an item is waiting
@@ -566,12 +568,12 @@ export default {
 			this.lineError = null;
 			this.confirmingLineKey = null;
 			if (!this.entry.item_id) {
-				this.lineError = 'Choose an item first.';
+				this.lineError = t('Pages.text.choose_an_item_first');
 				return;
 			}
 			const qty = parseInt(this.entry.qty, 10);
 			if (!qty || qty < 1) {
-				this.lineError = 'Enter a quantity of 1 or more.';
+				this.lineError = t('Pages.text.enter_a_quantity_of_2');
 				return;
 			}
 			const line = {
@@ -620,7 +622,7 @@ export default {
 				const idx = this.findLineIndex(line);
 				const errorMessage = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Network error';
+					|| t('Commons.text.network_error');
 				if (idx !== -1) {
 					this.lines.splice(idx, 1, { ...line, status: 'failed', errorMessage });
 				}
@@ -645,7 +647,7 @@ export default {
 				await axios.delete('/json/sorting-sessions/' + this.session.id + '/lines/' + line.id);
 				this.lines = this.lines.filter((entry) => entry !== line);
 			} catch (error) {
-				this.lineError = 'Could not delete the line. Try again.';
+				this.lineError = t('Pages.text.could_not_delete_the');
 			}
 		},
 		retryFailed() {
@@ -696,7 +698,7 @@ export default {
 				}
 			} catch (error) {
 				playScanError();
-				this.lineError = error.response?.data?.message || 'Could not look up that barcode. Search for the item instead.';
+				this.lineError = error.response?.data?.message || t('Pages.text.could_not_look_up_2');
 				this.$refs.itemSelect?.clearSelection();
 			} finally {
 				this.upcResolving = false;
@@ -838,7 +840,7 @@ export default {
 				}
 			} catch (error) {
 				playScanError();
-				d.error = error.response?.data?.message || 'Could not look up that barcode.';
+				d.error = error.response?.data?.message || t('Pages.text.could_not_look_up_3');
 				this.$refs.cartonItemSelect?.clearSelection();
 			}
 		},
@@ -846,11 +848,11 @@ export default {
 			const d = this.cartonDialog;
 			d.error = null;
 			if (!d.item_id) {
-				d.error = 'Choose (or scan) the item that is inside the carton.';
+				d.error = t('Pages.text.choose_or_scan_the');
 				return;
 			}
 			if (this.cartonTotal() < 1) {
-				d.error = 'Enter how many packs are in the carton and how many items are in each pack.';
+				d.error = t('Pages.text.enter_how_many_packs');
 				return;
 			}
 			d.saving = true;
@@ -867,7 +869,7 @@ export default {
 			} catch (error) {
 				d.error = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not save the carton.';
+					|| t('Pages.text.could_not_save_the_2');
 			} finally {
 				d.saving = false;
 			}
@@ -880,7 +882,7 @@ export default {
 		cartonIsSingle() {
 			const code = this.cartonDialog.code;
 			this.cartonDialog = null;
-			this.openItemModalForScan({ code, kind: 'each', online: 'pending', suggestion: null });
+			this.openItemModalForScan({ code, kind: 'each', online: t('Commons.text.pending'), suggestion: null });
 		},
 	},
 	created() {
@@ -906,26 +908,26 @@ export default {
 </script>
 
 <template>
-	<Head title="Donation Sorting" />
+	<Head :title="$t('Commons.title.donation_sorting')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<!-- ======================= SESSION LIST ======================= -->
 		<div v-if="view === 'list'" class="sort_container">
 			<h2 class="ri_datatable_head">
-				Donation Sorting
-				<HelpLink guide="sorting">Donation Sorting Guide</HelpLink>
-				<button @click="startSession()" class="ri_defaultbutton">Start Sorting (untagged)</button>
+				{{ $t('Commons.heading.donation_sorting', {}) }}
+				<HelpLink guide="sorting">{{ $t('Pages.text.donation_sorting_guide', {}) }}</HelpLink>
+				<button @click="startSession()" class="ri_defaultbutton">{{ $t('Pages.button.start_sorting_untagged', {}) }}</button>
 			</h2>
 
 			<p v-if="listError" class="sort_error">{{ listError }}</p>
-			<p v-if="listLoading">Loading sessions...</p>
+			<p v-if="listLoading">{{ $t('Pages.text.loading_sessions', {}) }}</p>
 
 			<div v-if="sessions.open.length" class="sort_section">
-				<h3>In Progress - tap to resume</h3>
+				<h3>{{ $t('Pages.heading.in_progress_tap_to', {}) }}</h3>
 				<div class="sort_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Date</th><th>Started By</th><th>Donor</th><th>Lines</th><th>Items</th></tr>
+						<tr><th>{{ $t('Commons.text.date', {}) }}</th><th>{{ $t('Commons.text.started_by', {}) }}</th><th>{{ $t('Commons.text.donor', {}) }}</th><th>{{ $t('Commons.text.lines', {}) }}</th><th>{{ $t('Commons.text.items', {}) }}</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in sessions.open" :key="record.id"
@@ -934,7 +936,7 @@ export default {
 							<td>{{ personLabel(record.entered_by) }}</td>
 							<td>
 							{{ personLabel(record.person) }}
-							<span v-if="record.donor_identification_pending" class="sort_badge_id">donor ID pending</span>
+							<span v-if="record.donor_identification_pending" class="sort_badge_id">{{ $t('Pages.text.donor_id_pending', {}) }}</span>
 						</td>
 							<td>{{ sessionSummary(record).lines }}</td>
 							<td>{{ sessionSummary(record).total }}</td>
@@ -944,10 +946,10 @@ export default {
 			</div>
 
 			<div v-if="sessions.receivable.length" class="sort_section">
-				<h3>Ready to Sort - tap to pick up</h3>
+				<h3>{{ $t('Pages.heading.ready_to_sort_tap', {}) }}</h3>
 				<div class="sort_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Date Received</th><th>Donor</th><th>Manifest</th></tr>
+						<tr><th>{{ $t('Commons.text.date_received', {}) }}</th><th>{{ $t('Commons.text.donor', {}) }}</th><th>Manifest</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in sessions.receivable" :key="record.id"
@@ -955,7 +957,7 @@ export default {
 							<td>{{ record.order_date }}</td>
 							<td>
 							{{ personLabel(record.person) }}
-							<span v-if="record.donor_identification_pending" class="sort_badge_id">donor ID pending</span>
+							<span v-if="record.donor_identification_pending" class="sort_badge_id">{{ $t('Pages.text.donor_id_pending', {}) }}</span>
 						</td>
 							<td>{{ record.manifest }}</td>
 						</tr>
@@ -964,11 +966,11 @@ export default {
 			</div>
 
 			<div class="sort_section">
-				<h3>Recently Completed</h3>
-				<p v-if="!sessions.recent.length && !listLoading">No completed sorting sessions yet.</p>
+				<h3>{{ $t('Commons.heading.recently_completed', {}) }}</h3>
+				<p v-if="!sessions.recent.length && !listLoading">{{ $t('Pages.text.no_completed_sorting_sessions', {}) }}</p>
 				<div v-else class="sort_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Completed</th><th>Completed By</th><th>Donor</th><th>Lines</th><th>Items</th></tr>
+						<tr><th>{{ $t('Commons.text.completed', {}) }}</th><th>{{ $t('Commons.text.completed_by', {}) }}</th><th>{{ $t('Commons.text.donor', {}) }}</th><th>{{ $t('Commons.text.lines', {}) }}</th><th>{{ $t('Commons.text.items', {}) }}</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in sessions.recent" :key="record.id"
@@ -977,7 +979,7 @@ export default {
 							<td>{{ completedByLabel(record) }}</td>
 							<td>
 							{{ personLabel(record.person) }}
-							<span v-if="record.donor_identification_pending" class="sort_badge_id">donor ID pending</span>
+							<span v-if="record.donor_identification_pending" class="sort_badge_id">{{ $t('Pages.text.donor_id_pending', {}) }}</span>
 						</td>
 							<td>{{ sessionSummary(record).lines }}</td>
 							<td>{{ sessionSummary(record).total }}</td>
@@ -992,32 +994,32 @@ export default {
 			<div class="sort_topbar">
 				<button @click="leaveSession" class="ri_formbutton">&larr; All Sessions</button>
 				<span class="sort_title">
-					Sorting Session &mdash; {{ session.order_date }}
-					<span v-if="readonly" class="sort_completed_badge">Completed</span>
+					{{ $t('Pages.text.sorting_session') }} {{ session.order_date }}
+					<span v-if="readonly" class="sort_completed_badge">{{ $t('Commons.text.completed', {}) }}</span>
 				</span>
 				<span class="sort_savestate" v-if="!readonly">
 					<span v-if="failedLines.length" class="sort_error_inline">
-						{{ failedLines.length }} line(s) failed to save
-						<button @click="retryFailed" class="ri_linkbutton">Retry All</button>
+						{{ failedLines.length }} {{ $t('Pages.text.line_s_failed_to') }}
+						<button @click="retryFailed" class="ri_linkbutton">{{ $t('Commons.button.retry_all', {}) }}</button>
 					</span>
 					<span v-else-if="headerSaving || pendingCount > 0">Saving...</span>
-					<span v-else class="sort_saved">All changes saved</span>
+					<span v-else class="sort_saved">{{ $t('Pages.text.all_changes_saved', {}) }}</span>
 				</span>
 				<template v-if="!readonly">
-					<button v-if="confirmingConsolidate" @click="confirmingConsolidate = false" class="ri_linkbutton">Cancel</button>
+					<button v-if="confirmingConsolidate" @click="confirmingConsolidate = false" class="ri_linkbutton">{{ $t('Commons.button.cancel', {}) }}</button>
 					<button v-if="mergeableCount > 0 || confirmingConsolidate" @click="consolidateLines"
 						:disabled="consolidating || pendingCount > 0"
 						:class="confirmingConsolidate ? 'ri_deletebutton' : 'ri_formbutton'"
-						title="Add up identical lines (same item, pallet, disposition and condition) into one">
+						:title="$t('Pages.title.add_up_identical_lines')">
 						{{ confirmingConsolidate
-							? 'Combine ' + mergeableCount + ' duplicate line(s)? Cannot be undone'
-							: 'Combine duplicate lines' }}
+							? $t('Commons.button.combine') + mergeableCount + $t('Pages.button.duplicate_line_s_cannot')
+							: $t('Pages.button.combine_duplicate_lines') }}
 					</button>
-					<button v-if="confirmingComplete" @click="confirmingComplete = false" class="ri_linkbutton">Keep Sorting</button>
+					<button v-if="confirmingComplete" @click="confirmingComplete = false" class="ri_linkbutton">{{ $t('Commons.button.keep_sorting', {}) }}</button>
 					<button @click="completeSession" :class="confirmingComplete ? 'ri_deletebutton' : 'ri_defaultbutton'">
 						{{ confirmingComplete
-							? 'Complete with ' + pendingCount + ' unsaved line(s)' + (failedLines.length ? ' (' + failedLines.length + ' failed)' : '') + '?'
-							: 'Complete Session' }}
+							? $t('Commons.button.complete_with') + pendingCount + $t('Commons.button.unsaved_line_s') + (failedLines.length ? ' (' + failedLines.length + ' failed)' : '') + '?'
+							: $t('Commons.button.complete_session') }}
 					</button>
 					<button type="button" @click="toggleScanSounds" class="sort_sound_toggle"
 						:aria-label="scanSounds ? 'Scan sounds on' : 'Scan sounds off'"
@@ -1025,7 +1027,7 @@ export default {
 						{{ scanSounds ? '🔊' : '🔇' }}
 					</button>
 				</template>
-				<button v-else @click="reopenSession" class="ri_defaultbutton">Reopen Session</button>
+				<button v-else @click="reopenSession" class="ri_defaultbutton">{{ $t('Commons.button.reopen_session', {}) }}</button>
 			</div>
 			<p v-if="headerError" class="sort_error">{{ headerError }}</p>
 			<p v-if="notice" class="sort_notice">{{ notice }}</p>
@@ -1036,13 +1038,13 @@ export default {
 			     sessions edit the donor directly. -->
 			<div class="sort_header">
 				<div class="sort_field sort_field_stacked sort_header_donor">
-					<label>Donor / Source:</label>
+					<label>{{ $t('Pages.label.donor_source', {}) }}</label>
 					<div v-if="readonly || (fromReceiving && !editingDonor)" class="sort_donor_read">
 						<span>
 							{{ personLabel(session.person) }}
-							<em v-if="fromReceiving" class="sort_donor_src">(recorded at receiving)</em>
+							<em v-if="fromReceiving" class="sort_donor_src">{{ $t('Pages.text.recorded_at_receiving', {}) }}</em>
 						</span>
-						<button v-if="!readonly" @click="editingDonor = true" class="ri_linkbutton">Edit</button>
+						<button v-if="!readonly" @click="editingDonor = true" class="ri_linkbutton">{{ $t('Commons.button.edit', {}) }}</button>
 					</div>
 					<SearchSelect
 						v-else
@@ -1051,14 +1053,14 @@ export default {
 						optionsource="/json/people"
 						display="search_label"
 						:searchfields="['organization', 'first_name', 'last_name']"
-						placeholder="Search donors..."
+						:placeholder="$t('Pages.placeholder.search_donors')"
 						:allowcreate="true"
 						@selected="donorSelected"
 						@create="startNewDonor"
 					/>
 					<Modal :show="creatingDonor" @close="creatingDonor = false" max-width="sm">
 						<div class="p-6 space-y-4">
-							<h2 class="text-lg font-semibold">New Donor</h2>
+							<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_donor', {}) }}</h2>
 							<div>
 								<InputLabel value="First Name" />
 								<TextInput v-model="newDonor.first_name" class="mt-1 block w-full" autofocus />
@@ -1073,14 +1075,14 @@ export default {
 							</div>
 							<p v-if="donorError" class="text-sm text-red-700">{{ donorError }}</p>
 							<div class="flex justify-end gap-3">
-								<SecondaryButton :disabled="donorSaving" @click="creatingDonor = false">Cancel</SecondaryButton>
-								<PrimaryButton :disabled="donorSaving" @click="saveNewDonor">Save Donor</PrimaryButton>
+								<SecondaryButton :disabled="donorSaving" @click="creatingDonor = false">{{ $t('Commons.button.cancel', {}) }}</SecondaryButton>
+								<PrimaryButton :disabled="donorSaving" @click="saveNewDonor">{{ $t('Commons.button.save_donor', {}) }}</PrimaryButton>
 							</div>
 						</div>
 					</Modal>
 				</div>
 				<div class="sort_field sort_field_stacked sort_header_comments">
-					<label>Comments:</label>
+					<label>{{ $t('Commons.label.comments', {}) }}</label>
 					<TextArea v-model="session.comments" :enabled="!readonly" @change="commentsChanged" />
 				</div>
 				<div class="sort_field sort_header_check">
@@ -1091,7 +1093,7 @@ export default {
 							:disabled="readonly"
 							@change="donorIdPendingChanged"
 						/>
-						Donor unidentified &mdash; flag for follow-up
+						{{ $t('Pages.label.donor_unidentified_flag_for', {}) }}
 					</label>
 				</div>
 			</div>
@@ -1099,38 +1101,38 @@ export default {
 			<!-- pallet context: scanned once, applied to every following line -->
 			<div v-if="!readonly" class="sort_pallet" :class="pallet ? 'sort_pallet_active' : ''">
 				<template v-if="!pallet">
-					<label>Pallet Tag:</label>
+					<label>{{ $t('Commons.label.pallet_tag', {}) }}</label>
 					<span class="sort_scangroup">
 						<input
 							ref="palletInput"
 							type="text"
 							v-model="palletTagInput"
 							class="ri_forminput"
-							placeholder="Scan or type pallet tag (e.g. R00000042)"
+							:placeholder="$t('Pages.placeholder.scan_or_type_pallet')"
 							@keydown.enter.prevent="resolvePallet"
 						/>
 						<ScanButton :target="() => $refs.palletInput" compact />
 					</span>
-					<button @click="resolvePallet" class="ri_formbutton">Set Pallet</button>
-					<span class="sort_pallet_hint">Lines entered without a pallet won't be source-traceable.</span>
+					<button @click="resolvePallet" class="ri_formbutton">{{ $t('Commons.button.set_pallet', {}) }}</button>
+					<span class="sort_pallet_hint">{{ $t('Pages.text.lines_entered_without_a', {}) }}</span>
 				</template>
 				<template v-else-if="!emptyingPallet">
 					<span class="sort_pallet_label">
-						Sorting from pallet <strong>{{ palletTagStr(pallet.id) }}</strong>
-						(packed {{ pallet.datepacked }}<span v-if="pallet.location">, at {{ pallet.location.code }}</span>)
+						{{ $t('Pages.text.sorting_from_pallet', {}) }} <strong>{{ palletTagStr(pallet.id) }}</strong>
+						(packed {{ pallet.datepacked }}<span v-if="pallet.location">{{ $t('Commons.text.at') }} {{ pallet.location.code }}</span>)
 						<span v-if="palletContents(pallet)" class="sort_pallet_contents">&mdash; {{ palletContents(pallet) }}</span>
 					</span>
-					<button @click="emptyingPallet = true" class="ri_defaultbutton">Pallet Empty</button>
+					<button @click="emptyingPallet = true" class="ri_defaultbutton">{{ $t('Commons.button.pallet_empty', {}) }}</button>
 					<button @click="clearPallet" class="ri_formbutton">Change Pallet</button>
 				</template>
 				<template v-else>
 					<!-- one optional observation tap; final QC stays with a supervisor -->
 					<span class="sort_pallet_label">
-						Pallet <strong>{{ palletTagStr(pallet.id) }}</strong> finished &mdash; how did it look?
+						Pallet <strong>{{ palletTagStr(pallet.id) }}</strong> {{ $t('Pages.text.finished_how_did_it', {}) }}
 					</span>
-					<button @click="markPalletEmpty('ok')" class="ri_defaultbutton">Pallet looks OK</button>
-					<button @click="markPalletEmpty('damaged')" class="ri_deletebutton">Set aside &mdash; damaged?</button>
-					<button @click="emptyingPallet = false" class="ri_linkbutton">Cancel</button>
+					<button @click="markPalletEmpty('ok')" class="ri_defaultbutton">{{ $t('Pages.button.pallet_looks_ok', {}) }}</button>
+					<button @click="markPalletEmpty('damaged')" class="ri_deletebutton">{{ $t('Pages.button.set_aside_damaged', {}) }}</button>
+					<button @click="emptyingPallet = false" class="ri_linkbutton">{{ $t('Commons.button.cancel', {}) }}</button>
 				</template>
 			</div>
 			<p v-if="palletError" class="sort_error">{{ palletError }}</p>
@@ -1145,7 +1147,7 @@ export default {
 						optionsource="/json/items"
 						display="name"
 						:searchfields="['name', 'upc', 'description']"
-						placeholder="Scan UPC or search items..."
+						:placeholder="$t('Pages.placeholder.scan_upc_or_search')"
 						:allowcreate="true"
 						:scanDigits="true"
 						:smartOpen="true"
@@ -1158,7 +1160,7 @@ export default {
 					/>
 					<ScanButton :target="itemScanTarget" compact />
 					</div>
-					<span v-if="upcResolving" class="sort_notice">Looking up barcode...</span>
+					<span v-if="upcResolving" class="sort_notice">{{ $t('Pages.text.looking_up_barcode', {}) }}</span>
 				</div>
 				<!-- type=text on purpose: a number input's v-model rewrites "012..." to 12...,
 				     which drops a scanned UPC's leading zero when a scan lands here -->
@@ -1169,8 +1171,8 @@ export default {
 					autocomplete="off"
 					v-model="entry.qty"
 					class="ri_forminput sort_qty"
-					placeholder="Qty"
-					title="Type a quantity and press Enter - or scan the next barcode to save this item as 1 and move on"
+					:placeholder="$t('Commons.placeholder.qty')"
+					:title="$t('Pages.title.type_a_quantity_and')"
 					@focus="$event.target.select()"
 					@keydown="onQtyKeydown"
 					@keydown.enter.prevent="onQtyEnter"
@@ -1185,7 +1187,7 @@ export default {
 					>&#128197;<span v-if="entry.expires_on" class="sort_exp_date">{{ entry.expires_on }}</span></button>
 					<div v-if="expOpen" class="sort_exp_pop">
 						<label class="sort_exp_label">
-							<span class="sort_exp_sub">Expiration Date</span>
+							<span class="sort_exp_sub">{{ $t('Commons.text.expiration_date', {}) }}</span>
 							<input
 								ref="expInput"
 								type="date"
@@ -1196,8 +1198,8 @@ export default {
 							/>
 						</label>
 						<div class="sort_exp_actions">
-							<button type="button" class="ri_formbutton" @click="entry.expires_on = null; expOpen = false">Clear</button>
-							<button type="button" class="ri_defaultbutton" @click="expOpen = false">Done</button>
+							<button type="button" class="ri_formbutton" @click="entry.expires_on = null; expOpen = false">{{ $t('Commons.button.clear', {}) }}</button>
+							<button type="button" class="ri_defaultbutton" @click="expOpen = false">{{ $t('Commons.button.done', {}) }}</button>
 						</div>
 					</div>
 				</span>
@@ -1206,11 +1208,11 @@ export default {
 					class="ri_forminput sort_disp_select"
 					:class="'sort_disp_' + entry.choice"
 					:title="dispositions.find((d) => d.key === entry.choice)?.hint"
-					aria-label="Condition / disposition"
+					:aria-label="$t('Pages.aria_label.condition_disposition')"
 				>
 					<option v-for="d in dispositions" :key="d.key" :value="d.key" :title="d.hint">{{ d.label }}</option>
 				</select>
-				<button @click="addLine" class="ri_defaultbutton">Add</button>
+				<button @click="addLine" class="ri_defaultbutton">{{ $t('Commons.button.add', {}) }}</button>
 			</div>
 			<p v-if="lineError" class="sort_error">{{ lineError }}</p>
 
@@ -1218,7 +1220,7 @@ export default {
 			<div class="sort_tablewrap"><table class="ri_datatable sort_lines" border="1">
 				<thead>
 					<tr>
-						<th>ACS #</th><th>Item</th><th>Qty</th><th>Expires</th><th>Disposition</th><th>Pallet</th><th></th>
+						<th>{{ $t('Commons.text.acs', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.placeholder.qty', {}) }}</th><th>{{ $t('Commons.text.expires', {}) }}</th><th>{{ $t('Commons.text.disposition', {}) }}</th><th>Pallet</th><th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -1233,53 +1235,53 @@ export default {
 						<td class="sort_line_actions">
 							<span v-if="line.status === 'saving'">saving...</span>
 							<template v-else-if="line.status === 'failed'">
-								<span :title="line.errorMessage">failed</span>
-								<button @click="saveLine(line)" class="ri_formbutton">Retry</button>
+								<span :title="line.errorMessage">{{ $t('Commons.text.failed', {}) }}</span>
+								<button @click="saveLine(line)" class="ri_formbutton">{{ $t('Commons.button.retry', {}) }}</button>
 							</template>
 							<template v-else-if="confirmingLineKey === lineKey(line)">
-								<button @click="deleteLine(line)" class="sort_confirm_delete">Delete?</button>
-								<button @click="confirmingLineKey = null" class="ri_linkbutton">Keep</button>
+								<button @click="deleteLine(line)" class="sort_confirm_delete">{{ $t('Pages.button.delete', {}) }}</button>
+								<button @click="confirmingLineKey = null" class="ri_linkbutton">{{ $t('Commons.button.keep', {}) }}</button>
 							</template>
 							<img v-else-if="!readonly" src="/img/delete-icon.webp" class="sort_delete" @click="deleteLine(line)" />
 						</td>
 					</tr>
 					<tr v-if="!lines.length">
-						<td colspan="7" class="sort_empty">No lines yet - scan a pallet tag, then start entering items.</td>
+						<td colspan="7" class="sort_empty">{{ $t('Pages.text.no_lines_yet_scan', {}) }}</td>
 					</tr>
 				</tbody>
 			</table></div>
 
 			<!-- running totals -->
 			<div class="sort_totals" v-if="lines.length">
-				<span>Usable: <strong>{{ totals.usable }}</strong></span>
-				<span>Outdated: <strong>{{ totals.outdated }}</strong></span>
-				<span>Trash: <strong>{{ totals.trashed }}</strong></span>
-				<span>Diverted: <strong>{{ totals.diverted }}</strong></span>
-				<span>Discard rate: <strong>{{ totals.trashPct }}%</strong></span>
+				<span>{{ $t('Commons.text.usable_2', {}) }} <strong>{{ totals.usable }}</strong></span>
+				<span>{{ $t('Commons.text.outdated_2', {}) }} <strong>{{ totals.outdated }}</strong></span>
+				<span>{{ $t('Commons.text.trash', {}) }} <strong>{{ totals.trashed }}</strong></span>
+				<span>{{ $t('Commons.text.diverted_2', {}) }} <strong>{{ totals.diverted }}</strong></span>
+				<span>{{ $t('Commons.text.discard_rate', {}) }} <strong>{{ totals.trashPct }}%</strong></span>
 			</div>
 		</div>
 
 		<!-- ======================= UNKNOWN CARTON MODAL ======================= -->
 		<div v-if="cartonDialog" class="sort_modal_overlay">
 			<div class="sort_modal">
-				<h3>New Carton Barcode {{ displayCode(cartonDialog.code) }}</h3>
+				<h3>{{ $t('Pages.heading.new_carton_barcode') }} {{ displayCode(cartonDialog.code) }}</h3>
 				<p v-if="cartonDialog.error" class="sort_error">{{ cartonDialog.error }}</p>
 				<p class="sort_upc_note" v-if="cartonDialog.guessItem">
-					This carton's number matches <strong>{{ cartonDialog.guessItem.name }}</strong>. Check that, then enter how many are inside.
+					{{ $t('Pages.text.this_carton_s_number', {}) }} <strong>{{ cartonDialog.guessItem.name }}</strong>. Check that, then enter how many are inside.
 				</p>
 				<p class="sort_upc_note" v-else>
-					We haven't seen this carton before. <strong>Scan one of the single items inside it</strong> (or search for it) so every future scan of this carton counts the items for you.
+					{{ $t('Pages.text.we_haven_t_seen', {}) }} <strong>{{ $t('Pages.text.scan_one_of_the', {}) }}</strong> {{ $t('Pages.text.or_search_for_it', {}) }}
 				</p>
 
 				<div class="sort_field sort_field_stacked">
-					<label>Item inside the carton:</label>
+					<label>{{ $t('Pages.label.item_inside_the_carton', {}) }}</label>
 					<SearchSelect
 						ref="cartonItemSelect"
 						v-model="cartonDialog.item_id"
 						optionsource="/json/items"
 						display="name"
 						:searchfields="['name', 'upc', 'description']"
-						placeholder="Scan a single item, or search..."
+						:placeholder="$t('Pages.placeholder.scan_a_single_item')"
 						:allowcreate="true"
 						:scanDigits="true"
 						:smartOpen="true"
@@ -1290,28 +1292,28 @@ export default {
 					/>
 				</div>
 				<div class="sort_field" v-if="cartonDialog.candidates.length && !cartonDialog.item_id">
-					<label>Same manufacturer:</label>
+					<label>{{ $t('Commons.label.same_manufacturer', {}) }}</label>
 					<button v-for="candidate in cartonDialog.candidates" :key="candidate.id" type="button"
 						class="ri_formbutton" @click="cartonDialog.item_id = candidate.id">{{ candidate.name }}</button>
 				</div>
 				<div class="sort_field">
-					<label>Packs in the carton:</label>
+					<label>{{ $t('Pages.label.packs_in_the_carton', {}) }}</label>
 					<input type="text" inputmode="numeric" v-model="cartonDialog.packs" class="ri_forminput sort_qty" />
-					<label>Items in each pack:</label>
+					<label>{{ $t('Pages.label.items_in_each_pack', {}) }}</label>
 					<input ref="cartonPerPack" type="text" inputmode="numeric" v-model="cartonDialog.per_pack" class="ri_forminput sort_qty"
 						@keydown.enter.prevent="saveCartonDialog" />
 				</div>
 				<p class="sort_upc_note">
-					= <strong>{{ cartonTotal() }}</strong> items per carton
-					<span class="sort_donor_src">(loose items with no inner packs: leave Packs at 1 and put the count in Items in each pack)</span>
+					= <strong>{{ cartonTotal() }}</strong> {{ $t('Pages.text.items_per_carton_2', {}) }}
+					<span class="sort_donor_src">{{ $t('Pages.text.loose_items_with_no', {}) }}</span>
 				</p>
 
 				<div class="sort_modal_buttons">
 					<button @click="saveCartonDialog" class="ri_defaultbutton" :disabled="cartonDialog.saving">
-						{{ cartonDialog.saving ? 'Saving...' : 'Confirm & Use' }}
+						{{ cartonDialog.saving ? $t('Pages.button.saving') : $t('Pages.button.confirm_use') }}
 					</button>
-					<button @click="cancelCartonDialog" class="ri_formbutton">Cancel</button>
-					<button @click="cartonIsSingle" class="ri_linkbutton">This is a single item, not a carton</button>
+					<button @click="cancelCartonDialog" class="ri_formbutton">{{ $t('Commons.button.cancel', {}) }}</button>
+					<button @click="cartonIsSingle" class="ri_linkbutton">{{ $t('Pages.button.this_is_a_single', {}) }}</button>
 				</div>
 			</div>
 		</div>

@@ -7,6 +7,7 @@ import ComboBox from '@/Components/ComboBox.vue';
 import RIForm from '@/Components/RIForm.vue';
 import RISubform from '@/Components/RISubform.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
+import { t } from '@/i18n';
 
 defineProps({
     breadcrumb: {
@@ -24,10 +25,10 @@ const kindOptions = [
 
 // Mirrors App\Support\PalletKind::LIFECYCLES (+ 'missing'); the server still validates.
 const statusesByKind = {
-	R: ['received', 'sorting', 'empty'],
-	W: ['sealed', 'open', 'empty'],
-	S: ['building', 'ready', 'shipped'],
-	H: ['filling', 'ready', 'collected'],
+	R: ['received', t('Commons.text.sorting'), 'empty'],
+	W: ['sealed', t('Commons.text.open'), 'empty'],
+	S: ['building', t('Commons.text.ready'), 'shipped'],
+	H: ['filling', t('Commons.text.ready'), 'collected'],
 	Q: ['held', 'released', 'condemned'],
 };
 const statusOptions = (kind) =>
@@ -35,10 +36,10 @@ const statusOptions = (kind) =>
 
 const containerTypeOptions = [
 	{ id: 'pallet', name: 'Pallet' },
-	{ id: 'gaylord', name: 'Gaylord' },
-	{ id: 'box', name: 'Box' },
+	{ id: 'gaylord', name: t('Commons.text.gaylord') },
+	{ id: 'box', name: t('Commons.text.box') },
 	{ id: 'bag', name: 'Bag' },
-	{ id: 'tote', name: 'Tote' },
+	{ id: 'tote', name: t('Commons.text.tote') },
 ];
 </script>
 
@@ -51,15 +52,15 @@ const containerTypeOptions = [
 	  :precreate="false"
 	  >
       <template #listactions>
-        <HelpLink guide="inventory-movement">Inventory Movement Guide</HelpLink>
+        <HelpLink guide="inventory-movement">{{ $t('Pages.text.inventory_movement_guide', {}) }}</HelpLink>
       </template>
 
       <template #thead>
-		<th>Tag</th>
-        <th>Kind</th>
-        <th>Packed Date</th>
-        <th>Location</th>
-        <th>Status</th>
+		<th>{{ $t('Commons.text.tag', {}) }}</th>
+        <th>{{ $t('Commons.text.kind', {}) }}</th>
+        <th>{{ $t('Commons.text.packed_date', {}) }}</th>
+        <th>{{ $t('Commons.text.location', {}) }}</th>
+        <th>{{ $t('Commons.button.status', {}) }}</th>
       </template>
 
       <template #tbody="{ record, index }">
@@ -67,7 +68,7 @@ const containerTypeOptions = [
         <td>{{ record.kind }}</td>
         <td>{{ record.datepacked }}</td>
         <td v-if="record.location">{{ record.location.code }}</td>
-        <td v-else>Unknown</td>
+        <td v-else>{{ $t('Commons.text.unknown', {}) }}</td>
         <td>{{ record.status }}</td>
       </template>
 
@@ -75,20 +76,20 @@ const containerTypeOptions = [
 
 		<div class="ri_formtable">
 		  <div class="ri_fieldset" v-if="record.id">
-		    <div class="ri_fieldlabel"> Pallet Tag </div>
+		    <div class="ri_fieldlabel"> {{ $t('Commons.text.pallet_tag', {}) }} </div>
 		    <span style="font-weight: bold; font-size: 14pt;"> {{ record.kind }}{{ record.id.toString().padStart(8, "0") }}</span>
 		  </div>
 		</div>
 		  <div class="ri_fieldset" v-if="record.id">
 			<div class="ri_fieldlabel">  </div>
 			<p>
-			<PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" label="Print Pallet Label"
+			<PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" :label="$t('Pages.label.print_pallet_label')"
 				:params="{ id: record.id }" :download-href="'/report/pallet/' + record.id" />
 			</p>
 		  </div>
 		  <div class="ri_formtable">
 		    <div class="ri_fieldset">
-		      <div class="ri_fieldlabel">Kind:</div>
+		      <div class="ri_fieldlabel">{{ $t('Commons.text.kind_2', {}) }}</div>
 			  <!-- Fixed forever once labeled (new-label-per-trip rule) -->
 			  <ComboBox
 			  	v-model:keyValue="record.kind"
@@ -98,7 +99,7 @@ const containerTypeOptions = [
 		    </div>
 
 		    <div class="ri_fieldset">
-		      <div class="ri_fieldlabel">Date Packed:</div>
+		      <div class="ri_fieldlabel">{{ $t('Commons.text.date_packed_2', {}) }}</div>
 		      <TextInput
 		        id="datepacked"
 		        type="date"
@@ -110,7 +111,7 @@ const containerTypeOptions = [
 		    </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Location:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.location_2', {}) }}</div>
             <ComboBox
               v-model:keyValue="record.location_id"
               v-model:updates="record.location"
@@ -121,7 +122,7 @@ const containerTypeOptions = [
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Status:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.status_3', {}) }}</div>
             <ComboBox
               v-model:keyValue="record.status"
               :options="statusOptions(record.kind)"
@@ -130,7 +131,7 @@ const containerTypeOptions = [
           </div>
 
 		  <div class="ri_fieldset">
-			<div class="ri_fieldlabel">Container Type:</div>
+			<div class="ri_fieldlabel">{{ $t('Commons.text.container_type', {}) }}</div>
 			<ComboBox
 			  v-model:keyValue="record.container_type"
 			  :options="containerTypeOptions"
@@ -139,7 +140,7 @@ const containerTypeOptions = [
 		  </div>
 
 		  <div class="ri_fieldset" v-if="record.kind === 'R'">
-			<div class="ri_fieldlabel">Donor:</div>
+			<div class="ri_fieldlabel">{{ $t('Commons.text.donor_2', {}) }}</div>
 			<ComboBox
 			  v-model:keyValue="record.donor_person_id"
 			  v-model:updates="record.donor"
@@ -150,7 +151,7 @@ const containerTypeOptions = [
 		  </div>
 
 		  <div class="ri_fieldset" v-if="record.kind === 'H'">
-			<div class="ri_fieldlabel">Destination:</div>
+			<div class="ri_fieldlabel">{{ $t('Commons.text.destination', {}) }}</div>
 			<ComboBox
 			  v-model:keyValue="record.destination_person_id"
 			  v-model:updates="record.destination"
@@ -161,7 +162,7 @@ const containerTypeOptions = [
 		  </div>
 
 		  <div class="ri_fieldset" v-if="record.kind === 'W'">
-			<div class="ri_fieldlabel">Earliest Expiry:</div>
+			<div class="ri_fieldlabel">{{ $t('Commons.text.earliest_expiry', {}) }}</div>
 			<TextInput
 			  type="date"
 			  v-model="record.earliest_expiry"
@@ -170,26 +171,26 @@ const containerTypeOptions = [
 		  </div>
 
 		  <div class="ri_fieldset" v-if="record.condition">
-			<div class="ri_fieldlabel">Condition:</div>
+			<div class="ri_fieldlabel">{{ $t('Commons.text.condition', {}) }}</div>
 			<ComboBox
 			  v-model:keyValue="record.condition"
-			  :options="[{ id: 'pending', name: 'Pending QC' }, { id: 'good', name: 'Good' }, { id: 'condemned', name: 'Condemned' }]"
+			  :options="[{ id: $t('Commons.text.pending'), name: $t('Commons.text.pending_qc') }, { id: 'good', name: $t('Commons.text.good') }, { id: 'condemned', name: $t('Commons.text.condemned') }]"
 			  :enabled="editing"
 			/>
 		  </div>
         </div>
 
         <RISubform
-          title="Pallet Status History"
+          :title="$t('Pages.title.pallet_status_history')"
           v-model:records="record.statuses"
           :template="[]"
           :enabled="false">
 
           <template #thead>
-            <th>Date</th>
-            <th>Location</th>
-            <th>Status</th>
-			<th>Notes</th>
+            <th>{{ $t('Commons.text.date', {}) }}</th>
+            <th>{{ $t('Commons.text.location', {}) }}</th>
+            <th>{{ $t('Commons.button.status', {}) }}</th>
+			<th>{{ $t('Commons.text.notes', {}) }}</th>
           </template>
 
           <template #tbody="{ subrecord, index }">

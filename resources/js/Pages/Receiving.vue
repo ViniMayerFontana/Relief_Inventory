@@ -30,6 +30,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import WebcamCapture from '@/Components/WebcamCapture.vue';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: {
@@ -41,23 +42,23 @@ defineProps({
 // (never distributed to partners/recipients, unlike Donation) — the
 // distinction between the two is easy to miss, hence the hover tooltip.
 const categoryOptions = [
-	{ id: 'donation', name: 'Donation' },
+	{ id: 'donation', name: t('Commons.text.donation') },
 	{
 		id: 'equipment',
-		name: 'Equipment',
-		title: 'Durable items the warehouse itself uses long-term (shelving, pallet jacks, tools, computers) — not for distribution.',
+		name: t('Commons.text.equipment'),
+		title: t('Pages.text.durable_items_the_warehouse'),
 	},
 	{
 		id: 'supplies',
-		name: 'Supplies',
-		title: 'Consumables the warehouse itself uses up (packing tape, gloves, cleaning supplies, printer paper) — not for distribution.',
+		name: t('Commons.text.supplies'),
+		title: t('Pages.text.consumables_the_warehouse_itself'),
 	},
-	{ id: 'other', name: 'Other' },
+	{ id: 'other', name: t('Commons.text.other_2') },
 ];
 
 const yesNoOptions = [
-	{ value: true, label: 'Yes' },
-	{ value: false, label: 'No' },
+	{ value: true, label: t('Commons.text.yes') },
+	{ value: false, label: t('Commons.text.no') },
 ];
 
 // Pallets is a single, exclusive choice; Other reveals a multi-select
@@ -65,14 +66,14 @@ const yesNoOptions = [
 // AND/OR loose all at once.
 const arrivalModeOptions = [
 	{ value: 'pallet', label: 'Pallets' },
-	{ value: 'other', label: 'Other' },
+	{ value: 'other', label: t('Commons.text.other_2') },
 ];
 
 const otherContainerTypeOptions = [
-	{ value: 'box', label: 'Boxes' },
+	{ value: 'box', label: t('Commons.text.boxes') },
 	{ value: 'bag', label: 'Bags' },
-	{ value: 'tote', label: 'Totes' },
-	{ value: 'loose', label: 'Loose' },
+	{ value: 'tote', label: t('Commons.text.totes') },
+	{ value: 'loose', label: t('Commons.text.loose') },
 ];
 
 // Icon paths point at public/img/ files in the same style as the
@@ -81,20 +82,20 @@ const otherContainerTypeOptions = [
 // names. TileSelect falls back to plain text/emoji for any icon value
 // that isn't a path, so this degrades gracefully if a file is missing.
 const arrivalMethodOptions = [
-	{ value: 'semi', label: 'Semi', icon: '/img/truck-semi-icon.webp' },
-	{ value: 'box_truck', label: 'Box Truck', icon: '/img/truck-box-icon.webp' },
-	{ value: 'personal_vehicle', label: 'Personal Vehicle', icon: '/img/truck-personal-icon.webp' },
-	{ value: 'trailer', label: 'Trailer', icon: '/img/truck-trailer-icon.webp' },
-	{ value: 'delivery_truck', label: 'Delivery Truck', icon: '/img/truck-delivery-icon.webp' },
-	{ value: 'other', label: 'Other', icon: '/img/truck-other-icon.webp' },
+	{ value: 'semi', label: t('Commons.text.semi'), icon: '/img/truck-semi-icon.webp' },
+	{ value: 'box_truck', label: t('Commons.text.box_truck'), icon: '/img/truck-box-icon.webp' },
+	{ value: 'personal_vehicle', label: t('Commons.text.personal_vehicle'), icon: '/img/truck-personal-icon.webp' },
+	{ value: 'trailer', label: t('Commons.text.trailer'), icon: '/img/truck-trailer-icon.webp' },
+	{ value: 'delivery_truck', label: t('Commons.text.delivery_truck'), icon: '/img/truck-delivery-icon.webp' },
+	{ value: 'other', label: t('Commons.text.other_2'), icon: '/img/truck-other-icon.webp' },
 ];
 
 const containerTypeOptions = [
 	{ value: 'pallet', label: 'Pallet' },
-	{ value: 'gaylord', label: 'Gaylord' },
-	{ value: 'box', label: 'Box' },
+	{ value: 'gaylord', label: t('Commons.text.gaylord') },
+	{ value: 'box', label: t('Commons.text.box') },
 	{ value: 'bag', label: 'Bag' },
-	{ value: 'tote', label: 'Tote' },
+	{ value: 'tote', label: t('Commons.text.tote') },
 ];
 </script>
 
@@ -105,21 +106,20 @@ const containerTypeOptions = [
 			ref="riform"
 			title="Receiving"
 			datasource="/json/receiving"
-			newrecordcaption="Record an Intake"
+			:newrecordcaption="$t('Pages.text.record_an_intake')"
 			:filter="receivingFilter"
 			@select="onOpenRecord"
 			@new="onOpenRecord"
 		>
 			<template #titleactions>
-				<button type="button" class="ri_defaultbutton" @click="preprintOpen = true">Pre-print Labels</button>
-				<Link href="/receiving/offers" class="ri_defaultbutton">Donation Offers</Link>
+				<button type="button" class="ri_defaultbutton" @click="preprintOpen = true">{{ $t('Commons.button.pre_print_labels', {}) }}</button>
+				<Link href="/receiving/offers" class="ri_defaultbutton">{{ $t('Commons.link.donation_offers', {}) }}</Link>
 
 				<Modal :show="preprintOpen" @close="preprintOpen = false" max-width="sm">
 					<div class="p-6 space-y-4">
-						<h2 class="text-lg font-semibold">Pre-print Labels</h2>
+						<h2 class="text-lg font-semibold">{{ $t('Commons.button.pre_print_labels', {}) }}</h2>
 						<p class="text-sm text-gray-600">
-							Print a batch of blank R labels now, before any donation is entered — attach them to
-							pallets as goods arrive, then key in the label numbers used when you record the intake.
+							{{ $t('Pages.text.print_a_batch_of', {}) }}
 						</p>
 						<div>
 							<InputLabel value="How many?" />
@@ -131,9 +131,9 @@ const containerTypeOptions = [
 						</div>
 						<p v-if="preprintError" class="text-sm text-red-700">{{ preprintError }}</p>
 						<div class="flex justify-end gap-3">
-							<SecondaryButton :disabled="preprintSaving" @click="preprintOpen = false">Cancel</SecondaryButton>
+							<SecondaryButton :disabled="preprintSaving" @click="preprintOpen = false">{{ $t('Commons.button.cancel', {}) }}</SecondaryButton>
 							<PrintMenu
-								document-key="preprint-pallet-labels" :media="$page.props.printing.palletLabelMedia" label="Print Labels" placement="up"
+								document-key="preprint-pallet-labels" :media="$page.props.printing.palletLabelMedia" :label="$t('Commons.label.print_labels')" placement="up"
 								:prepare="preparePreprint" :disabled="preprintSaving"
 								@sent="onPreprintDone" @downloaded="onPreprintDone"
 							/>
@@ -147,32 +147,32 @@ const containerTypeOptions = [
 					type="text"
 					v-model="donorSearch"
 					class="ri_forminput recv_search"
-					placeholder="Search by donor name or organization..."
+					:placeholder="$t('Pages.placeholder.search_by_donor_name')"
 				/>
 				<label class="recv_checkbox">
 					<input type="checkbox" v-model="flaggedOnly" />
-					Flagged for donor ID only
+					{{ $t('Pages.label.flagged_for_donor_id', {}) }}
 				</label>
-				<HelpLink guide="receiving">Receiving Guide</HelpLink>
+				<HelpLink guide="receiving">{{ $t('Commons.text.receiving_guide', {}) }}</HelpLink>
 			</template>
 
 			<template #thead>
-				<th>Donor</th>
-				<th>Category</th>
-				<th>Status</th>
-				<th>Container Est.</th>
+				<th>{{ $t('Commons.text.donor', {}) }}</th>
+				<th>{{ $t('Commons.text.category_2', {}) }}</th>
+				<th>{{ $t('Commons.button.status', {}) }}</th>
+				<th>{{ $t('Pages.text.container_est', {}) }}</th>
 				<th>Pallets</th>
 			</template>
 
 			<template #tbody="{ record, index }">
 				<td>
 					{{ donorName(record) }}
-					<span v-if="record.donor_identification_pending" class="recv_badge recv_badge_id">donor ID pending</span>
+					<span v-if="record.donor_identification_pending" class="recv_badge recv_badge_id">{{ $t('Pages.text.donor_id_pending', {}) }}</span>
 				</td>
-				<td>{{ record.category === 'other' && record.category_other ? record.category_other : record.category }}</td>
+				<td>{{ record.category === $t('Commons.text.other') && record.category_other ? record.category_other : record.category }}</td>
 				<td>
 					{{ record.status ? record.status.name : '' }}
-					<span v-if="record.is_close_out_candidate" class="recv_badge">ready to close out</span>
+					<span v-if="record.is_close_out_candidate" class="recv_badge">{{ $t('Pages.text.ready_to_close_out', {}) }}</span>
 				</td>
 				<td>{{ record.container_count }}</td>
 				<td>{{ (record.pallets || []).length }}</td>
@@ -180,10 +180,10 @@ const containerTypeOptions = [
 
 			<template #default="{ record, editing, templates }">
 				<template v-if="wizardStep === 'details'">
-					<div class="recv_helplink_form"><HelpLink guide="receiving">Receiving Guide</HelpLink></div>
+					<div class="recv_helplink_form"><HelpLink guide="receiving">{{ $t('Commons.text.receiving_guide', {}) }}</HelpLink></div>
 					<div class="ri_formtable">
 						<div class="ri_fieldset" v-if="!record.id">
-							<div class="ri_fieldlabel">Does this match a phoned-in offer?</div>
+							<div class="ri_fieldlabel">{{ $t('Pages.text.does_this_match_a', {}) }}</div>
 							<div v-if="pendingOffers.length" class="recv_offerlist">
 								<div
 									v-for="offer in pendingOffers"
@@ -192,16 +192,16 @@ const containerTypeOptions = [
 									:class="{ recv_offercard_selected: matchedOfferId === offer.id }"
 									@click="editing && toggleOfferMatch(record, offer)"
 								>
-									<div class="recv_offerdonor">{{ offer.person?.full_name || 'Unknown donor' }}</div>
+									<div class="recv_offerdonor">{{ offer.person?.full_name || $t('Commons.text.unknown_donor') }}</div>
 									<div v-if="offer.description" class="recv_offerdesc">{{ offer.description }}</div>
-									<div v-if="offer.eta_start" class="recv_offereta">ETA {{ formatEtaRange(offer.eta_start, offer.eta_end) }}</div>
+									<div v-if="offer.eta_start" class="recv_offereta">{{ $t('Commons.text.eta') }} {{ formatEtaRange(offer.eta_start, offer.eta_end) }}</div>
 								</div>
 							</div>
-							<div v-else class="ri_hint">No pending offers on file — this arrival wasn't phoned in ahead, or none of the current offers match.</div>
+							<div v-else class="ri_hint">{{ $t('Pages.text.no_pending_offers_on', {}) }}</div>
 						</div>
 
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Date:</div>
+							<div class="ri_fieldlabel">{{ $t('Commons.text.date_2', {}) }}</div>
 							<div class="ri_formcontrol">
 								<input
 								type="date"
@@ -214,7 +214,7 @@ const containerTypeOptions = [
 						</div>
 
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Category:</div>
+							<div class="ri_fieldlabel">{{ $t('Commons.text.category', {}) }}</div>
 							<ChipSelect
 								v-model="record.category"
 								:options="categoryOptions.map((o) => ({ value: o.id, label: o.name, title: o.title }))"
@@ -222,21 +222,21 @@ const containerTypeOptions = [
 							/>
 						</div>
 						<div class="ri_fieldset" v-if="record.category === 'other'">
-							<div class="ri_fieldlabel">Describe:</div>
-							<TextInput v-model="record.category_other" placeholder="What is this?" :enabled="editing" />
+							<div class="ri_fieldlabel">{{ $t('Commons.text.describe', {}) }}</div>
+							<TextInput v-model="record.category_other" :placeholder="$t('Pages.placeholder.what_is_this')" :enabled="editing" />
 						</div>
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Truck Size:</div>
+							<div class="ri_fieldlabel">{{ $t('Commons.text.truck_size', {}) }}</div>
 							<TileSelect v-model="record.arrival_method" :options="arrivalMethodOptions" :enabled="editing" />
 						</div>
 
 						<div class="ri_fieldset" v-if="record.arrival_method === 'other'">
-							<div class="ri_fieldlabel">Describe:</div>
-							<TextInput v-model="record.arrival_method_other" placeholder="How did it arrive?" :enabled="editing" />
+							<div class="ri_fieldlabel">{{ $t('Commons.text.describe', {}) }}</div>
+							<TextInput v-model="record.arrival_method_other" :placeholder="$t('Pages.placeholder.how_did_it_arrive')" :enabled="editing" />
 						</div>
 
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Driver:</div>
+							<div class="ri_fieldlabel">{{ $t('Commons.text.driver_2', {}) }}</div>
 							<SearchSelect
 								ref="driverSelect"
 								v-model="record.driver_id"
@@ -244,7 +244,7 @@ const containerTypeOptions = [
 								display="name"
 								secondary="carrier"
 								:searchfields="['name', 'phone', 'carrier']"
-								placeholder="Search drivers..."
+								:placeholder="$t('Pages.placeholder.search_drivers')"
 								:allowcreate="true"
 								:enabled="editing"
 								@selected="(d) => onDriverSelected(record, d)"
@@ -253,7 +253,7 @@ const containerTypeOptions = [
 						</div>
 						<Modal :show="creatingDriver" @close="creatingDriver = false" max-width="sm">
 							<div class="p-6 space-y-4">
-								<h2 class="text-lg font-semibold">New Driver</h2>
+								<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_driver', {}) }}</h2>
 								<div>
 									<InputLabel value="Name" />
 									<TextInput v-model="newDriver.name" class="mt-1 block w-full" autofocus />
@@ -268,18 +268,18 @@ const containerTypeOptions = [
 								</div>
 								<p v-if="driverError" class="text-sm text-red-700">{{ driverError }}</p>
 								<div class="flex justify-end gap-3">
-									<SecondaryButton :disabled="driverSaving" @click="creatingDriver = false">Cancel</SecondaryButton>
-									<PrimaryButton :disabled="driverSaving" @click="saveNewDriver(record)">Save Driver</PrimaryButton>
+									<SecondaryButton :disabled="driverSaving" @click="creatingDriver = false">{{ $t('Commons.button.cancel', {}) }}</SecondaryButton>
+									<PrimaryButton :disabled="driverSaving" @click="saveNewDriver(record)">{{ $t('Commons.button.save_driver', {}) }}</PrimaryButton>
 								</div>
 							</div>
 						</Modal>
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Carrier:</div>
-							<TextInput v-model="record.carrier" placeholder="Trucking company, or UPS/FedEx/Amazon, etc." :enabled="editing" />
+							<div class="ri_fieldlabel">{{ $t('Commons.text.carrier', {}) }}</div>
+							<TextInput v-model="record.carrier" :placeholder="$t('Pages.placeholder.trucking_company_or_ups')" :enabled="editing" />
 						</div>
 
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">How did this arrive?</div>
+							<div class="ri_fieldlabel">{{ $t('Pages.text.how_did_this_arrive', {}) }}</div>
 							<ChipSelect
 								:modelValue="arrivalMode"
 								:options="arrivalModeOptions"
@@ -289,7 +289,7 @@ const containerTypeOptions = [
 						</div>
 
 						<div class="ri_fieldset" v-if="arrivalMode === 'other'">
-							<div class="ri_fieldlabel">Which kind(s)?</div>
+							<div class="ri_fieldlabel">{{ $t('Pages.text.which_kind_s', {}) }}</div>
 							<ChipSelect
 								v-model="record.container_types"
 								:options="otherContainerTypeOptions"
@@ -299,7 +299,7 @@ const containerTypeOptions = [
 						</div>
 
 						<div class="ri_fieldset" v-if="arrivalMode === 'pallet'">
-							<div class="ri_fieldlabel">Number of Pallets:</div>
+							<div class="ri_fieldlabel">{{ $t('Pages.text.number_of_pallets', {}) }}</div>
 							<TextInput v-model="record.container_type_counts.pallet" type="number" :enabled="editing" />
 						</div>
 						<div
@@ -307,19 +307,19 @@ const containerTypeOptions = [
 							v-for="type in otherContainerTypeOptions.filter((o) => o.value !== 'loose' && (record.container_types || []).includes(o.value))"
 							:key="type.value"
 						>
-							<div class="ri_fieldlabel">Number of {{ type.label }}:</div>
+							<div class="ri_fieldlabel">{{ $t('Commons.text.number_of') }} {{ type.label }}:</div>
 							<TextInput v-model="record.container_type_counts[type.value]" type="number" :enabled="editing" />
 						</div>
 
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Donor / Source:</div>
+							<div class="ri_fieldlabel">{{ $t('Pages.label.donor_source', {}) }}</div>
 							<SearchSelect
 								ref="donorSelect"
 								v-model="record.person_id"
 								optionsource="/json/people"
 								display="search_label"
 								:searchfields="['organization', 'first_name', 'last_name']"
-								placeholder="Search donors..."
+								:placeholder="$t('Pages.placeholder.search_donors')"
 								:allowcreate="true"
 								:enabled="editing"
 								@selected="(p) => { creatingDonor = false; record.person = p; record.contact_person_id = null; }"
@@ -328,14 +328,14 @@ const containerTypeOptions = [
 							<!-- A warning only: standing never blocks receiving (set from the Donor Report). -->
 							<p v-if="['watch', 'decline'].includes(record.person?.donor_standing)"
 								:class="['recv_standing', 'recv_standing_' + record.person.donor_standing]">
-								<strong>{{ record.person.donor_standing === 'decline' ? 'Decline list' : 'On watch' }}:</strong>
-								this donor's past donations have had a high share of unusable goods.
+								<strong>{{ record.person.donor_standing === 'decline' ? $t('Commons.text.decline_list') : $t('Commons.text.on_watch') }}:</strong>
+								{{ $t('Pages.text.this_donor_s_past', {}) }}
 								<span v-if="record.person.donor_standing_note">{{ record.person.donor_standing_note }}</span>
 							</p>
 						</div>
 						<Modal :show="creatingDonor" @close="creatingDonor = false" max-width="sm">
 							<div class="p-6 space-y-4">
-								<h2 class="text-lg font-semibold">New Donor</h2>
+								<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_donor', {}) }}</h2>
 								<div>
 									<InputLabel value="First Name" />
 									<TextInput v-model="newDonor.first_name" class="mt-1 block w-full" autofocus />
@@ -350,8 +350,8 @@ const containerTypeOptions = [
 								</div>
 								<p v-if="donorError" class="text-sm text-red-700">{{ donorError }}</p>
 								<div class="flex justify-end gap-3">
-									<SecondaryButton :disabled="donorSaving" @click="creatingDonor = false">Cancel</SecondaryButton>
-									<PrimaryButton :disabled="donorSaving" @click="saveNewDonor(record)">Save Donor</PrimaryButton>
+									<SecondaryButton :disabled="donorSaving" @click="creatingDonor = false">{{ $t('Commons.button.cancel', {}) }}</SecondaryButton>
+									<PrimaryButton :disabled="donorSaving" @click="saveNewDonor(record)">{{ $t('Commons.button.save_donor', {}) }}</PrimaryButton>
 								</div>
 							</div>
 						</Modal>
@@ -362,19 +362,19 @@ const containerTypeOptions = [
 							:disabled="donorSaving"
 							class="ri_linkbutton"
 						>
-							This driver is also the donor
+							{{ $t('Pages.button.this_driver_is_also', {}) }}
 						</button>
 
 						<template v-if="record.person_id && record.person?.is_organization">
 							<div class="ri_fieldset">
-								<div class="ri_fieldlabel">Contact Person for this shipment:</div>
+								<div class="ri_fieldlabel">{{ $t('Pages.text.contact_person_for_this', {}) }}</div>
 								<SearchSelect
 									ref="contactSelect"
 									v-model="record.contact_person_id"
 									:optionsource="`/json/people?parent_person_id=${record.person_id}`"
 									display="full_name"
 									:searchfields="['first_name', 'last_name']"
-									placeholder="Search contacts at this org..."
+									:placeholder="$t('Pages.placeholder.search_contacts_at_this')"
 									:allowcreate="true"
 									:enabled="editing"
 									@create="startNewContact"
@@ -382,7 +382,7 @@ const containerTypeOptions = [
 							</div>
 							<Modal :show="creatingContact" @close="creatingContact = false" max-width="sm">
 								<div class="p-6 space-y-4">
-									<h2 class="text-lg font-semibold">New Contact</h2>
+									<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_contact', {}) }}</h2>
 									<div>
 										<InputLabel value="First Name" />
 										<TextInput v-model="newContact.first_name" class="mt-1 block w-full" autofocus />
@@ -397,8 +397,8 @@ const containerTypeOptions = [
 									</div>
 									<p v-if="contactError" class="text-sm text-red-700">{{ contactError }}</p>
 									<div class="flex justify-end gap-3">
-										<SecondaryButton :disabled="contactSaving" @click="creatingContact = false">Cancel</SecondaryButton>
-										<PrimaryButton :disabled="contactSaving" @click="saveNewContact(record)">Save Contact</PrimaryButton>
+										<SecondaryButton :disabled="contactSaving" @click="creatingContact = false">{{ $t('Commons.button.cancel', {}) }}</SecondaryButton>
+										<PrimaryButton :disabled="contactSaving" @click="saveNewContact(record)">{{ $t('Commons.button.save_contact', {}) }}</PrimaryButton>
 									</div>
 								</div>
 							</Modal>
@@ -409,53 +409,53 @@ const containerTypeOptions = [
 							<div class="ri_formcontrol">
 								<label class="recv_checkbox">
 									<input type="checkbox" v-model="record.donor_identification_pending" :disabled="!editing" />
-									Donor Unknown
+									{{ $t('Commons.label.donor_unknown', {}) }}
 								</label>
 							</div>
 						</div>
 
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Record address where this donation was picked up:</div>
-							<TextInput v-model="record.source_address" placeholder="Street address" :enabled="editing" />
+							<div class="ri_fieldlabel">{{ $t('Pages.text.record_address_where_this', {}) }}</div>
+							<TextInput v-model="record.source_address" :placeholder="$t('Commons.placeholder.street_address')" :enabled="editing" />
 						</div>
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">City / State / Zip:</div>
+							<div class="ri_fieldlabel">{{ $t('Pages.text.city_state_zip', {}) }}</div>
 							<div class="ri_formcontrol recv_addressline">
-								<TextInput v-model="record.source_city" placeholder="City" :enabled="editing" />
-								<TextInput v-model="record.source_state" placeholder="State" :enabled="editing" />
-								<TextInput v-model="record.source_zip" placeholder="Zip" :enabled="editing" />
+								<TextInput v-model="record.source_city" :placeholder="$t('Commons.placeholder.city')" :enabled="editing" />
+								<TextInput v-model="record.source_state" :placeholder="$t('Commons.placeholder.state')" :enabled="editing" />
+								<TextInput v-model="record.source_zip" :placeholder="$t('Commons.placeholder.zip')" :enabled="editing" />
 							</div>
 						</div>
 
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Summary of Items:</div>
+							<div class="ri_fieldlabel">{{ $t('Pages.text.summary_of_items', {}) }}</div>
 							<TextArea v-model="record.manifest" :enabled="editing" />
 						</div>
 
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Quick-Sort Candidate?</div>
+							<div class="ri_fieldlabel">{{ $t('Pages.text.quick_sort_candidate', {}) }}</div>
 							<ChipSelect v-model="record.quick_sort_candidate" :options="yesNoOptions" :enabled="editing" />
 						</div>
 
 						<div class="ri_fieldset">
-							<div class="ri_fieldlabel">Notes:</div>
+							<div class="ri_fieldlabel">{{ $t('Commons.text.notes_2', {}) }}</div>
 							<TextArea v-model="record.comments" :enabled="editing" />
 						</div>
 					</div>
 
 					<template v-if="record.id && (record.pallets || []).length">
-						<h3 class="recv_subhead">Intake Labels</h3>
+						<h3 class="recv_subhead">{{ $t('Commons.heading.intake_labels', {}) }}</h3>
 						<div class="recv_tablewrap">
 							<table class="ri_datatable" border="1">
 								<thead>
-									<tr><th>Tag</th><th>Type</th><th>Status</th><th></th></tr>
+									<tr><th>{{ $t('Commons.text.tag', {}) }}</th><th>{{ $t('Commons.text.type_2', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th></th></tr>
 								</thead>
 								<tbody>
 									<tr v-for="pallet in record.pallets" :key="pallet.id">
 										<td class="recv_mono">{{ pallet.tag }}</td>
 										<td>{{ pallet.container_type }}</td>
 										<td>{{ pallet.status }}</td>
-										<td><PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="link" label="Reprint"
+										<td><PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="link" :label="$t('Commons.label.reprint')"
 											:params="{ id: pallet.id }" :download-href="'/report/pallet/' + pallet.id" /></td>
 									</tr>
 								</tbody>
@@ -467,21 +467,21 @@ const containerTypeOptions = [
 					</template>
 
 					<template v-if="record.id && record.photo_path">
-						<h3 class="recv_subhead">Photo of the Shipment</h3>
+						<h3 class="recv_subhead">{{ $t('Pages.heading.photo_of_the_shipment', {}) }}</h3>
 						<a :href="$withWarehouse(photoUrl(record))" target="_blank">
-							<img :src="photoUrl(record)" alt="Photo of the shipment" class="recv_photo" />
+							<img :src="photoUrl(record)" :alt="$t('Pages.alt.photo_of_the_shipment')" class="recv_photo" />
 						</a>
 					</template>
 
 					<template v-if="record.id && record.is_close_out_candidate">
-						<h3 class="recv_subhead">Daily Close-Out</h3>
-						<button @click="closeOut(record)" class="ri_defaultbutton">Close Out</button>
+						<h3 class="recv_subhead">{{ $t('Commons.heading.daily_close_out', {}) }}</h3>
+						<button @click="closeOut(record)" class="ri_defaultbutton">{{ $t('Commons.button.close_out', {}) }}</button>
 						<p v-if="closeOutError" class="ri_error">{{ closeOutError }}</p>
 					</template>
 				</template>
 
 				<template v-else-if="wizardStep === 'photo'">
-					<h3 class="recv_subhead">Photo of the Shipment</h3>
+					<h3 class="recv_subhead">{{ $t('Pages.heading.photo_of_the_shipment', {}) }}</h3>
 					<div class="recv_photobuttons">
 						<input
 							ref="cameraInput"
@@ -498,8 +498,8 @@ const containerTypeOptions = [
 							class="recv_hidden_input"
 							@change="onPhotoSelected($event, record)"
 						/>
-						<button type="button" class="ri_formbutton" v-if="canTakePhoto" @click="takePhoto">📷 Take Photo</button>
-						<button type="button" class="ri_formbutton" @click="$refs.fileInput.click()">Choose File</button>
+						<button type="button" class="ri_formbutton" v-if="canTakePhoto" @click="takePhoto">{{ $t('Pages.button.take_photo', {}) }}</button>
+						<button type="button" class="ri_formbutton" @click="$refs.fileInput.click()">{{ $t('Commons.button.choose_file', {}) }}</button>
 					</div>
 					<WebcamCapture
 						v-if="webcamOpen"
@@ -507,13 +507,13 @@ const containerTypeOptions = [
 						@close="webcamOpen = false"
 					/>
 					<a v-if="record.photo_path" :href="$withWarehouse(photoUrl(record))" target="_blank">
-						<img :src="photoUrl(record)" alt="Photo of the shipment" class="recv_photo" />
+						<img :src="photoUrl(record)" :alt="$t('Pages.alt.photo_of_the_shipment')" class="recv_photo" />
 					</a>
 					<p v-if="photoError" class="ri_error">{{ photoError }}</p>
 				</template>
 
 				<template v-else>
-					<h3 class="recv_subhead">Print Labels</h3>
+					<h3 class="recv_subhead">{{ $t('Commons.heading.print_labels', {}) }}</h3>
 					<p class="recv_hint">
 						{{ record.container_count ? `${(record.pallets || []).length} of ${record.container_count} labeled.` : `${(record.pallets || []).length} labeled so far.` }}
 					</p>
@@ -522,17 +522,17 @@ const containerTypeOptions = [
 							v-model.number="palletCount"
 							type="number"
 							min="1"
-							placeholder="Qty"
+							:placeholder="$t('Commons.placeholder.qty')"
 							class="recv_pallet_count"
 						/>
 						<ChipSelect v-model="palletContainerType" :options="containerTypeOptions" />
 						<button @click="createPallets(record)" :disabled="palletSaving" class="ri_formbutton">
-							Add Label(s)
+							{{ $t('Commons.button.add_label_s', {}) }}
 						</button>
 					</div>
 					<p v-if="palletError" class="ri_error">{{ palletError }}</p>
 
-					<p class="recv_hint">Already have pre-printed labels on the containers? Enter or scan the numbers used:</p>
+					<p class="recv_hint">{{ $t('Pages.text.already_have_pre_printed', {}) }}</p>
 					<div class="recv_palletline">
 						<TextInput
 							v-model="attachTagsInput"
@@ -541,7 +541,7 @@ const containerTypeOptions = [
 							@keyup.enter="attachPreprintedPallets(record)"
 						/>
 						<button @click="attachPreprintedPallets(record)" :disabled="attachSaving" class="ri_formbutton">
-							Link Label(s)
+							{{ $t('Commons.button.link_label_s', {}) }}
 						</button>
 					</div>
 					<p v-if="attachError" class="ri_error">{{ attachError }}</p>
@@ -551,14 +551,14 @@ const containerTypeOptions = [
 						<div class="recv_tablewrap">
 							<table class="ri_datatable" border="1">
 								<thead>
-									<tr><th>Tag</th><th>Type</th><th>Status</th><th></th></tr>
+									<tr><th>{{ $t('Commons.text.tag', {}) }}</th><th>{{ $t('Commons.text.type_2', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th></th></tr>
 								</thead>
 								<tbody>
 									<tr v-for="pallet in record.pallets" :key="pallet.id">
 										<td class="recv_mono">{{ pallet.tag }}</td>
 										<td>{{ pallet.container_type }}</td>
 										<td>{{ pallet.status }}</td>
-										<td><PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="link" label="Label"
+										<td><PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="link" :label="$t('Commons.label.label')"
 											:params="{ id: pallet.id }" :download-href="'/report/pallet/' + pallet.id" /></td>
 									</tr>
 								</tbody>
@@ -568,13 +568,13 @@ const containerTypeOptions = [
 							:label="'Print All Labels (' + (record.pallets || []).length + ')'"
 							:params="{ id: record.id }" :download-href="'/report/pallets/donation/' + record.id" />
 					</template>
-					<p v-else>No labels created for this intake yet.</p>
+					<p v-else>{{ $t('Pages.text.no_labels_created_for', {}) }}</p>
 				</template>
 			</template>
 
 			<template #actions="{ editing, record, confirmingDelete, save, cancel, delete: doDelete, keepRecord }">
 				<div class="ri_formactions" v-if="!editing">
-					<button @click="cancel()" class="ri_defaultbutton">Back to List</button>
+					<button @click="cancel()" class="ri_defaultbutton">{{ $t('Pages.button.back_to_list', {}) }}</button>
 				</div>
 				<template v-else-if="wizardStep === 'details'">
 					<div class="ri_formactions recv_actionsrow">
@@ -584,13 +584,13 @@ const containerTypeOptions = [
 								class="ri_formbutton"
 								:class="{ recv_cancel_confirming: confirmingCancel }"
 							>
-								{{ confirmingCancel ? 'Confirm Cancel — changes will be lost' : 'Cancel' }}
+								{{ confirmingCancel ? $t('Pages.button.confirm_cancel_changes_will') : $t('Commons.button.cancel') }}
 							</button>
 							<button v-if="confirmingCancel" @click="confirmingCancel = false" class="ri_linkbutton">
-								Keep Editing
+								{{ $t('Commons.button.keep_editing', {}) }}
 							</button>
 						</div>
-						<button @click="goToPhoto(record, save)" class="ri_defaultbutton">Continue</button>
+						<button @click="goToPhoto(record, save)" class="ri_defaultbutton">{{ $t('Commons.button.continue', {}) }}</button>
 					</div>
 					<div class="ri_formactions recv_dangerrow" v-if="record.id">
 						<a
@@ -599,20 +599,20 @@ const containerTypeOptions = [
 							class="ri_deletebutton"
 							:class="{ ri_confirming: confirmingDelete }"
 						>
-							{{ confirmingDelete ? 'Confirm Delete Intake — cannot be undone' : 'Delete Intake' }}
+							{{ confirmingDelete ? $t('Pages.link.confirm_delete_intake_cannot') : $t('Commons.link.delete_intake') }}
 						</a>
-						<button v-if="confirmingDelete" @click="keepRecord()" class="ri_linkbutton">Keep Record</button>
+						<button v-if="confirmingDelete" @click="keepRecord()" class="ri_linkbutton">{{ $t('Commons.button.keep_record', {}) }}</button>
 					</div>
 				</template>
 				<div class="ri_formactions recv_actionsrow" v-else-if="wizardStep === 'photo'">
-					<button @click="wizardStep = 'details'" class="ri_formbutton">Back to Details</button>
+					<button @click="wizardStep = 'details'" class="ri_formbutton">{{ $t('Pages.button.back_to_details', {}) }}</button>
 					<button @click="finishPhotoStep(record, cancel)" class="ri_defaultbutton">
 						{{ photoStepContinueLabel(record) }}
 					</button>
 				</div>
 				<div class="ri_formactions recv_actionsrow" v-else>
-					<button @click="wizardStep = 'details'" class="ri_formbutton">Back to Details</button>
-					<button @click="finishWizard(cancel)" class="ri_defaultbutton">Done</button>
+					<button @click="wizardStep = 'details'" class="ri_formbutton">{{ $t('Pages.button.back_to_details', {}) }}</button>
+					<button @click="finishWizard(cancel)" class="ri_defaultbutton">{{ $t('Commons.button.done', {}) }}</button>
 				</div>
 			</template>
 		</RIForm>
@@ -623,6 +623,7 @@ const containerTypeOptions = [
 import axios from 'axios';
 import { invalidateOptions } from '@/Components/SearchSelect.vue';
 import { webcamSupported } from '@/Components/WebcamCapture.vue';
+import { t } from '@/i18n';
 
 export default {
 	data() {
@@ -700,7 +701,7 @@ export default {
 	},
 	methods: {
 		donorName(record) {
-			return record.person?.full_name || '(no donor recorded)';
+			return record.person?.full_name || t('Pages.text.no_donor_recorded');
 		},
 		// Parses a "YYYY-MM-DD" string as a local calendar date, not UTC —
 		// see the identical helper in DonationOffers.vue.
@@ -752,7 +753,7 @@ export default {
 			this.selectedDriver = record?.driver || null;
 			if (record) record.container_type_counts = record.container_type_counts || {};
 			const types = record?.container_types || [];
-			this.arrivalMode = types.includes('pallet') ? 'pallet' : types.length ? 'other' : null;
+			this.arrivalMode = types.includes('pallet') ? 'pallet' : types.length ? t('Commons.text.other') : null;
 			this.matchedOfferId = record?.donation_offer_id || null;
 			if (!record?.id) this.loadPendingOffers();
 		},
@@ -809,8 +810,8 @@ export default {
 			this.wizardStep = 'photo';
 		},
 		photoStepContinueLabel(record) {
-			if (record.photo_path) return 'Continue';
-			return record.category === 'donation' ? 'Proceed to Labels' : 'Skip';
+			if (record.photo_path) return t('Commons.button.continue');
+			return record.category === 'donation' ? t('Pages.text.proceed_to_labels') : t('Commons.text.skip');
 		},
 		async finishPhotoStep(record, cancel) {
 			if (record.category === 'donation') {
@@ -850,7 +851,7 @@ export default {
 				this.palletCount = this.remainingContainers(record) || null;
 				this.$refs.riform?.fetchRecords();
 			} catch (error) {
-				this.palletError = error.response?.data?.message || 'Could not create labels.';
+				this.palletError = error.response?.data?.message || t('Pages.text.could_not_create_labels');
 			} finally {
 				this.palletSaving = false;
 			}
@@ -874,7 +875,7 @@ export default {
 			if (!hasName && !hasOrg) {
 				// A donation often arrives with less than a full contact — an
 				// organization alone (no known contact person) is fine.
-				this.donorError = 'Enter a name (first and last) or an organization.';
+				this.donorError = t('Pages.text.enter_a_name_first');
 				return;
 			}
 			this.donorSaving = true;
@@ -886,7 +887,7 @@ export default {
 				record.person = response.data.record;
 				this.creatingDonor = false;
 			} catch (error) {
-				this.donorError = error.response?.data?.message || 'Could not save donor.';
+				this.donorError = error.response?.data?.message || t('Pages.text.could_not_save_donor');
 			} finally {
 				this.donorSaving = false;
 			}
@@ -907,7 +908,7 @@ export default {
 		async saveNewDriver(record) {
 			this.driverError = null;
 			if (!this.newDriver.name.trim()) {
-				this.driverError = 'Enter the driver\'s name.';
+				this.driverError = t('Pages.text.enter_the_driver_s');
 				return;
 			}
 			this.driverSaving = true;
@@ -920,7 +921,7 @@ export default {
 				if (response.data.record.carrier) record.carrier = response.data.record.carrier;
 				this.creatingDriver = false;
 			} catch (error) {
-				this.driverError = error.response?.data?.message || 'Could not save driver.';
+				this.driverError = error.response?.data?.message || t('Pages.text.could_not_save_driver');
 			} finally {
 				this.driverSaving = false;
 			}
@@ -950,7 +951,7 @@ export default {
 				await this.$refs.donorSelect?.refresh(personId);
 				record.person_id = personId;
 			} catch (error) {
-				this.donorError = error.response?.data?.message || 'Could not link driver as donor.';
+				this.donorError = error.response?.data?.message || t('Pages.text.could_not_link_driver');
 			} finally {
 				this.donorSaving = false;
 			}
@@ -966,7 +967,7 @@ export default {
 		async saveNewContact(record) {
 			this.contactError = null;
 			if (!this.newContact.first_name.trim() && !this.newContact.last_name.trim()) {
-				this.contactError = 'Enter the contact\'s name.';
+				this.contactError = t('Pages.text.enter_the_contact_s');
 				return;
 			}
 			this.contactSaving = true;
@@ -977,7 +978,7 @@ export default {
 				record.contact_person_id = response.data.record.id;
 				this.creatingContact = false;
 			} catch (error) {
-				this.contactError = error.response?.data?.message || 'Could not save contact.';
+				this.contactError = error.response?.data?.message || t('Pages.text.could_not_save_contact');
 			} finally {
 				this.contactSaving = false;
 			}
@@ -988,7 +989,7 @@ export default {
 		// desktops get the in-app webcam preview, or no Take Photo button at all
 		// when there's no camera API (plain HTTP, old browser).
 		isTouchDevice() {
-			return window.matchMedia?.('(pointer: coarse)').matches ?? false;
+			return window.matchMedia?.(t('Commons.text.pointer_coarse')).matches ?? false;
 		},
 		takePhoto() {
 			if (this.isTouchDevice()) this.$refs.cameraInput.click();
@@ -1018,14 +1019,14 @@ export default {
 				record.photo_path = response.data.record.photo_path;
 				this.photoStamp++;
 			} catch (error) {
-				this.photoError = error.response?.data?.message || 'Could not upload photo.';
+				this.photoError = error.response?.data?.message || t('Pages.text.could_not_upload_photo');
 			}
 		},
 
 		// ---------- pallets for a donation ----------
 		async createPallets(record) {
 			if (!this.palletCount || this.palletCount < 1) {
-				this.palletError = 'Enter how many pallets to add.';
+				this.palletError = t('Pages.text.enter_how_many_pallets');
 				return;
 			}
 			this.palletSaving = true;
@@ -1040,7 +1041,7 @@ export default {
 				this.palletCount = remaining || null;
 				this.$refs.riform?.fetchRecords();
 			} catch (error) {
-				this.palletError = error.response?.data?.message || 'Could not create pallets.';
+				this.palletError = error.response?.data?.message || t('Pages.text.could_not_create_pallets');
 			} finally {
 				this.palletSaving = false;
 			}
@@ -1050,7 +1051,7 @@ export default {
 		// batch of blank R pallets, then hands back their ids to render.
 		async preparePreprint() {
 			if (!this.preprintCount || this.preprintCount < 1) {
-				this.preprintError = 'Enter how many labels to print.';
+				this.preprintError = t('Pages.text.enter_how_many_labels');
 				return null;
 			}
 			this.preprintSaving = true;
@@ -1063,7 +1064,7 @@ export default {
 				const ids = response.data.records.map((p) => p.id);
 				return { params: { ids }, downloadHref: '/report/pallets/preprint?ids=' + ids.join(',') };
 			} catch (error) {
-				this.preprintError = error.response?.data?.message || 'Could not create the labels.';
+				this.preprintError = error.response?.data?.message || t('Pages.text.could_not_create_the');
 				return null;
 			} finally {
 				this.preprintSaving = false;
@@ -1078,7 +1079,7 @@ export default {
 		async attachPreprintedPallets(record) {
 			const tags = this.attachTagsInput.split(/[\s,]+/).map((t) => t.trim()).filter(Boolean);
 			if (!tags.length) {
-				this.attachError = 'Enter or scan at least one label number.';
+				this.attachError = t('Pages.text.enter_or_scan_at');
 				return;
 			}
 			this.attachSaving = true;
@@ -1093,7 +1094,7 @@ export default {
 				this.palletCount = remaining || null;
 				this.$refs.riform?.fetchRecords();
 			} catch (error) {
-				this.attachError = error.response?.data?.message || 'Could not link labels.';
+				this.attachError = error.response?.data?.message || t('Pages.text.could_not_link_labels');
 			} finally {
 				this.attachSaving = false;
 			}
@@ -1107,7 +1108,7 @@ export default {
 				Object.assign(record, response.data.record);
 				this.$refs.riform?.fetchRecords();
 			} catch (error) {
-				this.closeOutError = error.response?.data?.message || 'Could not close out that donation.';
+				this.closeOutError = error.response?.data?.message || t('Pages.text.could_not_close_out');
 			}
 		},
 
