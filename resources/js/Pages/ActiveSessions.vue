@@ -139,10 +139,10 @@ const sortedSessions = computed(() =>
 </script>
 
 <template>
-	<Head title="User Activity" />
+	<Head :title="$t('Commons.title.user_activity')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">User Activity</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Commons.heading.user_activity', {}) }}</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 
@@ -157,16 +157,16 @@ const sortedSessions = computed(() =>
 					</span>
 				</div>
 
-				<div v-if="loading" class="text-gray-500">Loading…</div>
-				<div v-else-if="sortedSessions.length === 0" class="text-gray-500">Nobody's currently active.</div>
+				<div v-if="loading" class="text-gray-500">{{ $t('Commons.text.loading', {}) }}</div>
+				<div v-else-if="sortedSessions.length === 0" class="text-gray-500">{{ $t('Pages.text.nobody_s_currently_active', {}) }}</div>
 
 				<table v-else class="min-w-full text-sm">
 					<thead>
 						<tr class="text-left text-gray-500 border-b">
-							<th class="py-2 pr-4">Name</th>
-							<th class="py-2 pr-4">Role</th>
-							<th class="py-2 pr-4">Last Page</th>
-							<th class="py-2 pr-4">Last Active</th>
+							<th class="py-2 pr-4">{{ $t('Commons.button.name', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.text.role', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.text.last_page', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.text.last_active', {}) }}</th>
 							<th class="py-2 pr-4">IP</th>
 						</tr>
 					</thead>
@@ -189,7 +189,7 @@ const sortedSessions = computed(() =>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<h2 class="text-lg font-semibold">
-					Login History
+					{{ $t('Commons.heading.login_history', {}) }}
 					<span class="text-gray-400 font-normal">({{ history.length }})</span>
 				</h2>
 
@@ -197,16 +197,16 @@ const sortedSessions = computed(() =>
 					{{ historyError }}
 				</div>
 
-				<div v-if="historyLoading" class="text-gray-500">Loading…</div>
-				<div v-else-if="history.length === 0" class="text-gray-500">No logins recorded yet.</div>
+				<div v-if="historyLoading" class="text-gray-500">{{ $t('Commons.text.loading', {}) }}</div>
+				<div v-else-if="history.length === 0" class="text-gray-500">{{ $t('Pages.text.no_logins_recorded_yet', {}) }}</div>
 
 				<table v-else class="min-w-full text-sm">
 					<thead>
 						<tr class="text-left text-gray-500 border-b">
-							<th class="py-2 pr-4">Name</th>
-							<th class="py-2 pr-4">Method</th>
-							<th class="py-2 pr-4">Last Login</th>
-							<th class="py-2 pr-4">Device / Browser</th>
+							<th class="py-2 pr-4">{{ $t('Commons.button.name', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.text.method', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.button.last_login', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Pages.text.device_browser', {}) }}</th>
 							<th class="py-2 pr-4">IP</th>
 						</tr>
 					</thead>
@@ -241,13 +241,13 @@ const sortedSessions = computed(() =>
 									<div v-if="personHistoryError" class="text-red-800 text-xs">
 										{{ personHistoryError }}
 									</div>
-									<div v-else-if="personHistoryLoading" class="text-gray-500 text-xs">Loading…</div>
+									<div v-else-if="personHistoryLoading" class="text-gray-500 text-xs">{{ $t('Commons.text.loading', {}) }}</div>
 									<table v-else class="min-w-full text-xs">
 										<thead>
 											<tr class="text-left text-gray-500 border-b">
-												<th class="py-1 pr-4">Method</th>
-												<th class="py-1 pr-4">Logged In</th>
-												<th class="py-1 pr-4">Device / Browser</th>
+												<th class="py-1 pr-4">{{ $t('Commons.text.method', {}) }}</th>
+												<th class="py-1 pr-4">{{ $t('Commons.text.logged_in', {}) }}</th>
+												<th class="py-1 pr-4">{{ $t('Pages.text.device_browser', {}) }}</th>
 												<th class="py-1 pr-4">IP</th>
 											</tr>
 										</thead>

@@ -174,7 +174,8 @@
       "volunteer": "Voluntário:",
       "weight": "Peso",
       "yes": "Sim",
-      "zip_code": "CEP:"
+      "zip_code": "CEP:",
+      "last_login_2": "Último login"
     },
     "title": {
       "carton_barcodes": "Códigos de caixa",
