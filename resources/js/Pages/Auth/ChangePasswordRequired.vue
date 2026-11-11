@@ -30,15 +30,14 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Choose a New Password" />
+        <Head :title="$t('Pages.Auth.title.choose_a_new_password')" />
 
         <div class="mb-4 text-lg font-medium text-gray-900">
-            Choose a new password
+            {{ $t('Pages.Auth.text.choose_a_new_password', {}) }}
         </div>
 
         <div class="mb-4 text-sm text-gray-600">
-            Your account was set up with a temporary password. Please choose your own
-            password before continuing.
+            {{ $t('Pages.Auth.text.your_account_was_set', {}) }}
         </div>
 
         <form @submit.prevent="submit">
@@ -85,13 +84,13 @@ const submit = () => {
                     method="post"
                     as="button"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                >Log Out</Link>
+                >{{ $t('Commons.link.log_out', {}) }}</Link>
 
                 <PrimaryButton
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Save Password
+                    {{ $t('Commons.button.save_password', {}) }}
                 </PrimaryButton>
             </div>
         </form>

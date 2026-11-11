@@ -23,6 +23,7 @@ import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import ScanButton from '@/Components/ScanButton.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	deviceApproved: { type: Boolean, required: true },
@@ -85,7 +86,7 @@ async function submitPin() {
 		});
 		window.location.href = response.data.redirect || '/dashboard';
 	} catch (error) {
-		pinError.value = error.response?.data?.message || 'Could not unlock. Please try again.';
+		pinError.value = error.response?.data?.message || t('Pages.Auth.text.could_not_unlock_please');
 		pinDigits.value = ['', '', '', '', ''];
 		nextTick(() => pinInputs.value[0]?.focus());
 	} finally {
@@ -102,7 +103,7 @@ async function submitBadge() {
 		const response = await axios.post('/unlock/badge', { badge_code: code });
 		selectPerson(response.data.person);
 	} catch (error) {
-		badgeError.value = error.response?.data?.message || 'Badge not recognized.';
+		badgeError.value = error.response?.data?.message || t('Pages.Auth.text.badge_not_recognized');
 	} finally {
 		badgeInput.value = '';
 		badgeScanning.value = false;
@@ -112,29 +113,27 @@ async function submitBadge() {
 </script>
 
 <template>
-	<Head title="Unlock" />
+	<Head :title="$t('Commons.title.unlock')" />
 	<GuestLayout>
 		<div class="text-center mb-4">
-			<h1 class="text-xl font-bold text-gray-800">Unlock</h1>
+			<h1 class="text-xl font-bold text-gray-800">{{ $t('Commons.heading.unlock', {}) }}</h1>
 		</div>
 
 		<!-- ======================= DEVICE NOT APPROVED ======================= -->
 		<div v-if="!deviceApproved" class="text-center space-y-4">
 			<p class="text-sm text-gray-600">
-				This device isn't set up for quick login yet. Log in with your email and password, then
-				choose <strong>PIN Login on This Device</strong> from your profile menu to approve it
-				(or ask an administrator to).
+				{{ $t('Pages.Auth.text.this_device_isn_t', {}) }} <strong>{{ $t('Pages.Auth.text.pin_login_on_this', {}) }}</strong> {{ $t('Pages.Auth.text.from_your_profile_menu', {}) }}
 			</p>
 			<Link :href="route('login', { email: 1 })"
 				class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700">
-				Log in with email
+				{{ $t('Pages.Auth.link.log_in_with_email', {}) }}
 			</Link>
 		</div>
 
 		<!-- ======================= APPROVED: PICK A PERSON ======================= -->
 		<div v-else-if="!selectedPerson" class="space-y-5">
 			<div v-if="(!requireBadgeAndPin || !badgeLoginEnabled) && people.length" class="space-y-2">
-				<p class="text-sm text-gray-600 text-center">Select user</p>
+				<p class="text-sm text-gray-600 text-center">{{ $t('Commons.text.select_user', {}) }}</p>
 				<div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
 					<button v-for="person in people" :key="person.id" @click="selectPerson(person)"
 						class="border rounded-lg py-3 px-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400">
@@ -145,7 +144,7 @@ async function submitBadge() {
 
 			<div v-if="badgeLoginEnabled" class="space-y-2">
 				<p class="text-sm text-gray-600 text-center">
-					{{ requireBadgeAndPin ? 'Scan your badge to continue' : 'Or scan your badge' }}
+					{{ requireBadgeAndPin ? $t('Pages.Auth.text.scan_your_badge_to') : $t('Pages.Auth.text.or_scan_your_badge') }}
 				</p>
 				<p v-if="badgeError" class="text-sm text-red-600 text-center">{{ badgeError }}</p>
 				<div class="flex gap-2">
@@ -154,7 +153,7 @@ async function submitBadge() {
 						type="text"
 						v-model="badgeInput"
 						:disabled="badgeScanning"
-						placeholder="Scan badge or type code..."
+						:placeholder="$t('Pages.Auth.placeholder.scan_badge_or_type')"
 						class="flex-1 border-gray-300 rounded-md shadow-sm"
 						@keydown.enter.prevent="submitBadge"
 					/>
@@ -164,7 +163,7 @@ async function submitBadge() {
 
 			<div v-if="!requireBadgeAndPin || !badgeLoginEnabled" class="text-center pt-2 border-t">
 				<Link :href="route('login', { email: 1 })" class="text-sm text-gray-500 underline">
-					Log in with email
+					{{ $t('Pages.Auth.link.log_in_with_email', {}) }}
 				</Link>
 			</div>
 		</div>
@@ -173,7 +172,7 @@ async function submitBadge() {
 		<div v-else class="space-y-4 text-center">
 			<button @click="cancelSelection" class="text-sm text-gray-500">&larr; Back</button>
 			<p class="text-sm text-gray-600">{{ selectedPerson.full_name }}</p>
-			<p class="text-xs text-gray-500">Enter your PIN</p>
+			<p class="text-xs text-gray-500">{{ $t('Pages.Auth.text.enter_your_pin', {}) }}</p>
 
 			<div class="flex justify-center gap-2">
 				<input
@@ -192,7 +191,7 @@ async function submitBadge() {
 			</div>
 
 			<p v-if="pinError" class="text-sm text-red-600">{{ pinError }}</p>
-			<p v-if="pinSubmitting" class="text-sm text-gray-500">Checking…</p>
+			<p v-if="pinSubmitting" class="text-sm text-gray-500">{{ $t('Commons.button.checking', {}) }}</p>
 		</div>
 	</GuestLayout>
 </template>

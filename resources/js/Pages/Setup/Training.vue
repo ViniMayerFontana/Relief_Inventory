@@ -15,6 +15,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: { type: Array },
@@ -47,7 +48,7 @@ async function load() {
 			trainer2_name: status.value.trainers[1].name || '',
 		};
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load the training warehouse settings.';
+		error.value = e.response?.data?.message || t('Pages.Setup.text.could_not_load_the_3');
 	}
 }
 
@@ -56,9 +57,9 @@ async function saveEvent() {
 	savingEvent.value = true;
 	try {
 		status.value = (await axios.put('/json/training/event', event.value)).data;
-		notice.value = 'Certificate details saved.';
+		notice.value = t('Pages.Setup.text.certificate_details_saved');
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not save the certificate details.';
+		error.value = e.response?.data?.message || t('Pages.Setup.text.could_not_save_the');
 	} finally {
 		savingEvent.value = false;
 	}
@@ -73,7 +74,7 @@ async function startReset() {
 		watchReset();
 	} catch (e) {
 		resetting.value = false;
-		error.value = e.response?.data?.message || 'Could not start the reset.';
+		error.value = e.response?.data?.message || t('Pages.Setup.text.could_not_start_the');
 	}
 }
 
@@ -87,8 +88,8 @@ function watchReset() {
 			clearInterval(timer);
 			resetting.value = false;
 			status.value = data;
-			if (data.reset_status?.state === 'failed') error.value = 'The reset failed: ' + data.reset_status.error;
-			else notice.value = 'The reset is done.';
+			if (data.reset_status?.state === 'failed') error.value = t('Pages.Setup.text.the_reset_failed_placeholder', { placeholder: data.reset_status.error });
+			else notice.value = t('Pages.Setup.text.the_reset_is_done');
 		} catch (e) {
 			const code = e.response?.status;
 			if (code === 401 || code === 419) {
@@ -114,11 +115,11 @@ async function prepare() {
 	preparing.value = true;
 	try {
 		const { data } = await axios.post('/json/training/prepare');
-		notice.value = 'Training data prepared. Print the setup packet and labels below.'
+		notice.value = t('Pages.Setup.text.training_data_prepared_print')
 			+ (data.warnings?.length ? ' ' + data.warnings.join(' ') : '');
 		await load();
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not prepare training data.';
+		error.value = e.response?.data?.message || t('Pages.Setup.text.could_not_prepare_training');
 	} finally {
 		preparing.value = false;
 	}
@@ -128,10 +129,10 @@ async function addTrainee() {
 	error.value = notice.value = null;
 	try {
 		status.value = (await axios.post('/json/training/trainees', newTrainee.value)).data;
-		notice.value = newTrainee.value.first_name + ' ' + newTrainee.value.last_name + ' added.';
+		notice.value = newTrainee.value.first_name + t('Pages.Setup.text.placeholder_added', { placeholder: newTrainee.value.last_name });
 		newTrainee.value = { first_name: '', last_name: '', team: newTrainee.value.team };
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not add that trainee.';
+		error.value = e.response?.data?.message || t('Pages.Setup.text.could_not_add_that_2');
 	}
 }
 
@@ -140,7 +141,7 @@ async function updateTrainee(trainee, changes) {
 	try {
 		status.value = (await axios.patch('/json/training/trainees/' + trainee.id, changes)).data;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not update that trainee.';
+		error.value = e.response?.data?.message || t('Pages.Setup.text.could_not_update_that');
 	}
 }
 
@@ -153,9 +154,9 @@ async function uploadSignature(slot, input) {
 		const form = new FormData();
 		form.append('signature', file);
 		status.value = (await axios.post('/json/training/signatures/' + slot, form)).data;
-		notice.value = 'Signature uploaded.';
+		notice.value = t('Pages.Setup.text.signature_uploaded');
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not upload that signature.';
+		error.value = e.response?.data?.message || t('Pages.Setup.text.could_not_upload_that');
 	} finally {
 		uploadingSlot.value = null;
 		input.value = '';
@@ -167,7 +168,7 @@ async function removeSignature(slot) {
 	try {
 		status.value = (await axios.delete('/json/training/signatures/' + slot)).data;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not remove that signature.';
+		error.value = e.response?.data?.message || t('Pages.Setup.text.could_not_remove_that_2');
 	}
 }
 
@@ -185,84 +186,77 @@ onMounted(async () => {
 </script>
 
 <template>
-	<Head title="Training Warehouse" />
+	<Head :title="$t('Commons.title.training_warehouse')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Training Warehouse</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Commons.heading.training_warehouse', {}) }}</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
-			<p v-if="!status && !error" class="text-gray-500">Loading…</p>
+			<p v-if="!status && !error" class="text-gray-500">{{ $t('Commons.button.loading', {}) }}</p>
 
 			<template v-if="status">
 				<!-- ======================= THIS WAREHOUSE ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">This is a training warehouse</h2>
+					<h2 class="text-lg font-semibold">{{ $t('Pages.Setup.heading.this_is_a_training', {}) }}</h2>
 					<p class="text-sm text-gray-700">
-						Everything entered here is practice data and never mixes with a real warehouse. An approved device shows a
+						{{ $t('Pages.Setup.text.everything_entered_here_is', {}) }}
 						<strong>tap-your-name</strong> login for trainees &mdash; no password &mdash; and a trainee can do what the Trainee
 						role grants (station work and reports; nothing in Setup). To close this warehouse after the class, ask the person who runs the
-						instance to turn it off (<span class="font-mono">php artisan warehouse:training disable</span>); its data is kept until it is reset.
+						instance to turn it off (<span class="font-mono">{{ $t('Pages.Setup.text.php_artisan_warehouse_training', {}) }}</span>); its data is kept until it is reset.
 					</p>
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<div class="border rounded p-3">
-							<div class="text-gray-500">Approved devices</div>
+							<div class="text-gray-500">{{ $t('Commons.text.approved_devices', {}) }}</div>
 							<div class="text-lg font-semibold">{{ status.approved_devices }}</div>
 						</div>
 						<div class="border rounded p-3">
-							<div class="text-gray-500">Trainees on the list</div>
+							<div class="text-gray-500">{{ $t('Pages.Setup.text.trainees_on_the_list', {}) }}</div>
 							<div class="text-lg font-semibold">{{ status.trainees.filter((t) => t.active).length }}</div>
 						</div>
 					</div>
 					<div v-if="resetting" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 text-sm">
-						Resetting this warehouse… It is unavailable for a minute or two, and everyone is logged out when it finishes.
-						This page goes to the login screen by itself.
+						{{ $t('Pages.Setup.text.resetting_this_warehouse_it', {}) }}
 					</div>
 					<div v-else class="space-y-3">
 						<button v-if="!confirmingReset" type="button"
 							class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-red-600 hover:bg-red-500"
-							@click="confirmingReset = true; resetText = ''">Reset this warehouse…</button>
+							@click="confirmingReset = true; resetText = ''">{{ $t('Pages.Setup.button.reset_this_warehouse', {}) }}</button>
 						<div v-if="confirmingReset" class="border border-red-300 bg-red-50 rounded p-4 space-y-2 text-sm">
-							<p class="font-semibold text-red-800">This erases everything entered in this warehouse and starts it again from its seed.</p>
+							<p class="font-semibold text-red-800">{{ $t('Pages.Setup.text.this_erases_everything_entered', {}) }}</p>
 							<p>
-								Practice donations, orders, pallets and stock, trainees and sign-ups, report cards, items added to the Master Item
-								List, uploaded photos and approved devices are erased. <strong>Kept:</strong> the people who log in here (with their
-								roles), the certificate details and signatures, and the class archives. Nothing outside this warehouse is touched.
+								{{ $t('Pages.Setup.text.practice_donations_orders_pallets', {}) }} <strong>{{ $t('Commons.text.kept', {}) }}</strong> {{ $t('Pages.Setup.text.the_people_who_log', {}) }}
 							</p>
 							<p>
-								First, a <strong>class archive</strong> is saved: the sign-up follow-up list, report cards (PDF and CSV) and
-								certificates. Download it below afterwards.
+								{{ $t('Commons.text.first_a', {}) }} <strong>class archive</strong> {{ $t('Pages.Setup.text.is_saved_the_sign', {}) }}
 							</p>
-							<label class="block">Type <strong>RESET</strong> to confirm:
+							<label class="block">{{ $t('Commons.label.type', {}) }} <strong>{{ $t('Commons.text.reset', {}) }}</strong> {{ $t('Commons.label.to_confirm', {}) }}
 								<input v-model="resetText" class="ml-2 border-gray-300 rounded-md shadow-sm text-sm py-1 w-32" autocomplete="off" />
 							</label>
 							<div class="flex gap-3">
 								<button type="button" :disabled="resetText.trim() !== 'RESET'" @click="startReset"
 									class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-red-600 hover:bg-red-500 disabled:opacity-50">
-									Reset now</button>
-								<button type="button" class="text-sm underline" @click="confirmingReset = false">Cancel</button>
+									{{ $t('Commons.button.reset_now', {}) }}</button>
+								<button type="button" class="text-sm underline" @click="confirmingReset = false">{{ $t('Commons.button.cancel', {}) }}</button>
 							</div>
 						</div>
 					</div>
 					<div v-if="status.reset_status?.state === 'failed' && !resetting" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3 text-sm">
-						The last reset failed: {{ status.reset_status.error }}
+						{{ $t('Pages.Setup.text.the_last_reset_failed') }} {{ status.reset_status.error }}
 					</div>
 					<p class="text-xs text-gray-500">
-						To approve a tablet, log in on it and choose <strong>PIN Login on This Device</strong> from the
+						{{ $t('Pages.Setup.text.to_approve_a_tablet', {}) }} <strong>{{ $t('Pages.Setup.text.pin_login_on_this', {}) }}</strong> from the
 						profile menu (the same approval PIN unlock uses; requests from others wait on
-						<Link href="/setup/pin-login" class="underline">PIN Login</Link>). Staff can still log in on a training device with their
+						<Link href="/setup/pin-login" class="underline">{{ $t('Commons.heading.pin_login', {}) }}</Link>). Staff can still log in on a training device with their
 						PIN or email from the links under the name tiles.
 					</p>
 				</section>
 
 				<!-- ======================= SELF SIGN-UP ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Sign-up page</h2>
+					<h2 class="text-lg font-semibold">{{ $t('Commons.heading.sign_up_page', {}) }}</h2>
 					<p class="text-sm text-gray-700">
-						People sign themselves up on their own phones: name, and optionally email, phone, whether
-						they'd like project updates, how they'd like to help, and someone they'd recommend. Each
-						sign-up goes straight onto the trainee list. The page only accepts sign-ups while Training
-						Mode is on, and it never logs anyone in.
+						{{ $t('Pages.Setup.text.people_sign_themselves_up', {}) }}
 					</p>
 					<div class="flex flex-wrap items-center gap-6">
 						<div class="w-40 h-40 shrink-0 [&>svg]:w-full [&>svg]:h-full" v-html="status.signup.qr_svg"></div>
@@ -270,67 +264,60 @@ onMounted(async () => {
 							<div><a :href="status.signup.url" target="_blank" class="font-mono text-blue-600 underline break-all">{{ status.signup.url }}</a></div>
 							<div class="grid grid-cols-2 gap-4">
 								<div class="border rounded p-3">
-									<div class="text-gray-500">Signed up today</div>
+									<div class="text-gray-500">{{ $t('Pages.Setup.text.signed_up_today', {}) }}</div>
 									<div class="text-lg font-semibold">{{ status.signup.today }}</div>
 								</div>
 								<div class="border rounded p-3">
-									<div class="text-gray-500">All time</div>
+									<div class="text-gray-500">{{ $t('Commons.text.all_time', {}) }}</div>
 									<div class="text-lg font-semibold">{{ status.signup.total }}</div>
 								</div>
 							</div>
 							<div class="flex flex-wrap gap-2">
-								<PrintMenu document-key="training-signup-poster" media="report" variant="form" label="QR Poster"
+								<PrintMenu document-key="training-signup-poster" media="report" variant="form" :label="$t('Commons.label.qr_poster')"
 									download-href="/report/training/signup-poster.pdf" />
-								<a :href="$withWarehouse('/report/training/signups.csv')" class="ri_formbutton">Follow-up List (CSV)</a>
-								<button type="button" class="ri_formbutton" @click="load">Refresh</button>
+								<a :href="$withWarehouse('/report/training/signups.csv')" class="ri_formbutton">{{ $t('Pages.Setup.link.follow_up_list_csv', {}) }}</a>
+								<button type="button" class="ri_formbutton" @click="load">{{ $t('Commons.button.refresh', {}) }}</button>
 							</div>
 						</div>
 					</div>
 					<p class="text-xs text-gray-500">
-						Point your short link at the address above. The follow-up list has everyone's answers
-						(contact details, updates, how they'd help, recommendations).
+						{{ $t('Pages.Setup.text.point_your_short_link', {}) }}
 					</p>
 				</section>
 
 				<!-- ======================= PREPARE ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Prepare Training</h2>
+					<h2 class="text-lg font-semibold">{{ $t('Commons.button.prepare_training', {}) }}</h2>
 					<p class="text-sm text-gray-700">
-						Receiving and Sorting use your own goods, not scanned: put out boxes to receive, and the teams
-						sort what they bring in. Prepare Training adds offers for those deliveries to match. The goods
-						that start out already in the warehouse — the sorting area table, sealed trays at the table spots
-						with orders to pick, and picked orders to ship (Stations 3–5) — are the ones you scan first, so the
-						system knows exactly what is there. Each team also gets a driver. After its first station every
-						team works on the goods it handled one station earlier. The setup packet says which scanned goods
-						go at which spot or in which load, with a contents slip for each and a sign for each station.
+						{{ $t('Pages.Setup.text.receiving_and_sorting_use', {}) }}
 					</p>
 					<div class="flex flex-wrap items-center gap-4 border rounded p-3 text-sm">
-						<div><span class="text-lg font-semibold">{{ status.products.units }}</span> of {{ status.products.plan.target }} items scanned</div>
-						<div><span class="text-lg font-semibold">{{ status.products.distinct }}</span> of {{ status.products.plan.min_products }} different products</div>
-						<Link href="/setup/training/products" class="ri_defaultbutton">Scan Training Products</Link>
+						<div><span class="text-lg font-semibold">{{ status.products.units }}</span> of {{ status.products.plan.target }} {{ $t('Commons.text.items_scanned') }}</div>
+						<div><span class="text-lg font-semibold">{{ status.products.distinct }}</span> of {{ status.products.plan.min_products }} {{ $t('Commons.text.different_products') }}</div>
+						<Link href="/setup/training/products" class="ri_defaultbutton">{{ $t('Pages.Setup.heading.scan_training_products', {}) }}</Link>
 					</div>
-					<div v-if="preparing" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 text-sm">Preparing training data…</div>
+					<div v-if="preparing" class="rounded bg-blue-50 border border-blue-300 text-blue-800 px-4 py-3 text-sm">{{ $t('Pages.Setup.text.preparing_training_data', {}) }}</div>
 					<div class="flex flex-wrap items-center gap-3">
 						<button type="button" :disabled="preparing || status.products.units < status.products.plan.target" @click="prepare"
 							class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white disabled:opacity-50"
 							:class="confirmingPrepare ? 'bg-red-600 hover:bg-red-500' : 'bg-amber-600 hover:bg-amber-500'">
-							{{ confirmingPrepare ? 'Confirm — adds a full set of training records' : 'Prepare Training' }}
+							{{ confirmingPrepare ? $t('Pages.Setup.button.confirm_adds_a_full') : $t('Commons.button.prepare_training') }}
 						</button>
-						<button v-if="confirmingPrepare" type="button" class="text-sm underline" @click="confirmingPrepare = false">Cancel</button>
+						<button v-if="confirmingPrepare" type="button" class="text-sm underline" @click="confirmingPrepare = false">{{ $t('Commons.button.cancel', {}) }}</button>
 						<template v-if="status.prepared">
-							<PrintMenu document-key="training-setup-packet" media="report" variant="form" label="Setup Packet"
+							<PrintMenu document-key="training-setup-packet" media="report" variant="form" :label="$t('Commons.label.setup_packet')"
 								download-href="/report/training/setup-packet.pdf" />
 							<PrintMenu document-key="training-pallet-labels" :media="$page.props.printing.palletLabelMedia" variant="form"
-								label="Pallet Labels" download-href="/report/training/pallet-labels.pdf" />
+								:label="$t('Commons.label.pallet_labels_2')" download-href="/report/training/pallet-labels.pdf" />
 						</template>
 						<PrintMenu document-key="training-spot-labels" :media="$page.props.printing.palletLabelMedia" variant="form"
-							label="Table Spot Labels" download-href="/report/training/spot-labels.pdf" />
+							:label="$t('Pages.Setup.label.table_spot_labels')" download-href="/report/training/spot-labels.pdf" />
 					</div>
 					<p v-if="status.products.units < status.products.plan.target" class="text-sm text-gray-500">
-						Scan at least {{ status.products.plan.target }} items first ({{ status.products.plan.target - status.products.units }} more).
+						{{ $t('Pages.Setup.text.scan_at_least') }} {{ status.products.plan.target }} items first ({{ status.products.plan.target - status.products.units }} more).
 					</p>
 					<p class="text-xs text-gray-500">
-						Last prepared: <span class="font-mono">{{ status.prepared_at ? formatTime(status.prepared_at) : 'never' }}</span>.
+						{{ $t('Commons.text.last_prepared', {}) }} <span class="font-mono">{{ status.prepared_at ? formatTime(status.prepared_at) : 'never' }}</span>.
 						Running it again adds another full set from the same scanned goods (it never removes anything).
 						How many items each station gets is set in <span class="font-mono">config/training.php</span>.
 						The table spot labels (A-1 to C-4, with a barcode for Inventory Movement to scan) print on the
@@ -340,65 +327,64 @@ onMounted(async () => {
 
 				<!-- ======================= TEAM SHEETS & REPORT CARDS ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Team sheets and report cards</h2>
+					<h2 class="text-lg font-semibold">{{ $t('Pages.Setup.heading.team_sheets_and_report', {}) }}</h2>
 					<div class="flex flex-wrap items-center gap-3">
-						<PrintMenu document-key="training-all-teams" media="report" variant="form" label="All Team Sheets"
+						<PrintMenu document-key="training-all-teams" media="report" variant="form" :label="$t('Pages.Setup.label.all_team_sheets')"
 							download-href="/report/training/team-sheets.pdf" />
-						<Link href="/reports/training" class="ri_formbutton">Report Cards &amp; Certificates</Link>
+						<Link href="/reports/training" class="ri_formbutton">{{ $t('Pages.Setup.link.report_cards_certificates', {}) }}</Link>
 					</div>
-					<h3 class="font-semibold">Certificates</h3>
+					<h3 class="font-semibold">{{ $t('Commons.heading.certificates', {}) }}</h3>
 					<form class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm" @submit.prevent="saveEvent">
 						<label class="block">
-							<span class="text-gray-700">Training event title</span>
-							<input v-model="event.event_title" maxlength="150" placeholder="Hands-on Warehouse Training"
+							<span class="text-gray-700">{{ $t('Pages.Setup.text.training_event_title', {}) }}</span>
+							<input v-model="event.event_title" maxlength="150" :placeholder="$t('Pages.Setup.placeholder.hands_on_warehouse_training')"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Where the class was held</span>
-							<input v-model="event.event_location" maxlength="150" placeholder="e.g. Statesville Warehouse, Statesville, NC"
+							<span class="text-gray-700">{{ $t('Pages.Setup.text.where_the_class_was', {}) }}</span>
+							<input v-model="event.event_location" maxlength="150" :placeholder="$t('Pages.Setup.placeholder.e_g_statesville_warehouse')"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<div v-for="trainer in status.trainers" :key="trainer.slot" class="border rounded p-3 space-y-2">
 							<label class="block">
-								<span class="text-gray-700">{{ trainer.slot === 1 ? 'Left' : 'Right' }} signature — trainer's name</span>
-								<input v-model="event['trainer' + trainer.slot + '_name']" maxlength="100" placeholder="Trainer"
+								<span class="text-gray-700">{{ trainer.slot === 1 ? $t('Commons.text.left') : $t('Commons.text.right') }} {{ $t('Pages.Setup.text.signature_trainer_s_name') }}</span>
+								<input v-model="event['trainer' + trainer.slot + '_name']" maxlength="100" :placeholder="$t('Commons.placeholder.trainer')"
 									class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 							</label>
 							<div class="h-16 border border-dashed rounded flex items-center justify-center bg-gray-50">
 								<img v-if="trainer.has_signature" :src="'/json/training/signatures/' + trainer.slot + '?v=' + trainer.signature_version"
-									alt="Signature" class="max-h-14 max-w-full" />
-								<span v-else class="text-xs text-gray-400">No signature — the line prints blank to sign by hand</span>
+									:alt="$t('Commons.alt.signature')" class="max-h-14 max-w-full" />
+								<span v-else class="text-xs text-gray-400">{{ $t('Pages.Setup.text.no_signature_the_line', {}) }}</span>
 							</div>
 							<div class="flex flex-wrap items-center gap-3">
 								<label class="ri_formbutton cursor-pointer">
-									{{ uploadingSlot === trainer.slot ? 'Uploading…' : (trainer.has_signature ? 'Replace signature' : 'Upload signature') }}
+									{{ uploadingSlot === trainer.slot ? $t('Commons.label.uploading') : (trainer.has_signature ? $t('Commons.label.replace_signature') : $t('Commons.label.upload_signature')) }}
 									<input type="file" accept="image/png,image/jpeg" class="hidden" :disabled="uploadingSlot !== null"
 										@change="uploadSignature(trainer.slot, $event.target)" />
 								</label>
-								<button v-if="trainer.has_signature" type="button" class="text-sm underline" @click="removeSignature(trainer.slot)">Remove</button>
+								<button v-if="trainer.has_signature" type="button" class="text-sm underline" @click="removeSignature(trainer.slot)">{{ $t('Commons.button.remove', {}) }}</button>
 							</div>
 						</div>
-						<div class="sm:col-span-2"><PrimaryButton :disabled="savingEvent">{{ savingEvent ? 'Saving…' : 'Save certificate details' }}</PrimaryButton></div>
+						<div class="sm:col-span-2"><PrimaryButton :disabled="savingEvent">{{ savingEvent ? $t('Commons.button.saving') : $t('Pages.Setup.button.save_certificate_details') }}</PrimaryButton></div>
 					</form>
 					<p class="text-xs text-gray-500">
-						A certificate reads "has completed <em>title</em> held at <em>location</em> on <em>date</em>", with the two
+						A certificate reads "has completed <em>title</em> {{ $t('Commons.text.held_at', {}) }} <em>location</em> on <em>date</em>", with the two
 						trainers' signature lines at the bottom left and right. Left blank, the title is "Hands-on Warehouse
 						Training", the location is left out and each line is labelled "Trainer". Signatures are PNG or JPEG
 						(up to 2 MB) — a scan or photo of a signature on white paper cropped close works; a PNG with a
 						transparent background looks best. Uploading a signature takes effect right away; names need Save.
 					</p>
 					<p class="text-xs text-gray-500">
-						Each team's sheet can also be printed from the <Link href="/help" class="underline">Help</Link> page.
-						Print the team sheets after Prepare Training so they include each team's driver login.
+						{{ $t('Pages.Setup.text.each_team_s_sheet', {}) }} <Link href="/help" class="underline">{{ $t('Commons.link.help_2', {}) }}</Link> {{ $t('Pages.Setup.text.page_print_the_team', {}) }}
 					</p>
 				</section>
 
 				<!-- ======================= CLASS ARCHIVES ======================= -->
 				<section v-if="status.archives.length" class="bg-white shadow rounded-lg p-6 space-y-3">
-					<h2 class="text-lg font-semibold">Class archives</h2>
-					<p class="text-sm text-gray-700">Saved by each "reset to before training" just before the database was put back.</p>
+					<h2 class="text-lg font-semibold">{{ $t('Commons.heading.class_archives', {}) }}</h2>
+					<p class="text-sm text-gray-700">{{ $t('Pages.Setup.text.saved_by_each_reset', {}) }}</p>
 					<table class="ri_datatable w-full text-sm" border="1">
-						<thead><tr><th>Saved</th><th>Files</th></tr></thead>
+						<thead><tr><th>{{ $t('Commons.text.saved', {}) }}</th><th>{{ $t('Commons.text.files', {}) }}</th></tr></thead>
 						<tbody>
 							<tr v-for="a in status.archives" :key="a.stamp">
 								<td>{{ archiveTime(a.stamp) }}</td>
@@ -413,33 +399,33 @@ onMounted(async () => {
 
 				<!-- ======================= TRAINEES ======================= -->
 				<section class="bg-white shadow rounded-lg p-6 space-y-4">
-					<h2 class="text-lg font-semibold">Trainees</h2>
+					<h2 class="text-lg font-semibold">{{ $t('Commons.heading.trainees', {}) }}</h2>
 					<form class="grid grid-cols-1 sm:grid-cols-4 gap-4 text-sm items-end" @submit.prevent="addTrainee">
 						<label class="block">
-							<span class="text-gray-700">First name</span>
+							<span class="text-gray-700">{{ $t('Commons.placeholder.first_name', {}) }}</span>
 							<input v-model="newTrainee.first_name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Last name</span>
+							<span class="text-gray-700">{{ $t('Commons.placeholder.last_name', {}) }}</span>
 							<input v-model="newTrainee.last_name" required class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Team</span>
+							<span class="text-gray-700">{{ $t('Commons.text.team', {}) }}</span>
 							<select v-model="newTrainee.team" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-								<option :value="null">Choose at login</option>
-								<option v-for="n in status.teams" :key="n" :value="n">Team {{ n }}</option>
+								<option :value="null">{{ $t('Pages.Setup.text.choose_at_login', {}) }}</option>
+								<option v-for="n in status.teams" :key="n" :value="n">{{ $t('Commons.text.team') }} {{ n }}</option>
 							</select>
 						</label>
-						<div><PrimaryButton>Add Trainee</PrimaryButton></div>
+						<div><PrimaryButton>{{ $t('Commons.button.add_trainee', {}) }}</PrimaryButton></div>
 					</form>
 
 					<label class="text-sm flex items-center gap-2">
-						<input type="checkbox" v-model="showInactive" /> Show trainees taken off the list
+						<input type="checkbox" v-model="showInactive" /> {{ $t('Pages.Setup.label.show_trainees_taken_off', {}) }}
 					</label>
 
-					<p v-if="!trainees.length" class="text-sm text-gray-400">None yet — add them here, or with Add New on a training device.</p>
+					<p v-if="!trainees.length" class="text-sm text-gray-400">{{ $t('Pages.Setup.text.none_yet_add_them', {}) }}</p>
 					<table v-else class="ri_datatable w-full text-sm" border="1">
-						<thead><tr><th>Name</th><th>Team</th><th>Actions today</th><th></th></tr></thead>
+						<thead><tr><th>{{ $t('Commons.button.name', {}) }}</th><th>{{ $t('Commons.text.team', {}) }}</th><th>{{ $t('Commons.text.actions_today', {}) }}</th><th></th></tr></thead>
 						<tbody>
 							<tr v-for="t in trainees" :key="t.id" :class="{ 'text-gray-400': !t.active }">
 								<td>{{ t.full_name }}</td>
@@ -447,21 +433,20 @@ onMounted(async () => {
 									<select :value="t.team" class="border-gray-300 rounded-md shadow-sm text-sm py-1"
 										@change="updateTrainee(t, { team: $event.target.value ? Number($event.target.value) : null })">
 										<option value="">—</option>
-										<option v-for="n in status.teams" :key="n" :value="n">Team {{ n }}</option>
+										<option v-for="n in status.teams" :key="n" :value="n">{{ $t('Commons.text.team') }} {{ n }}</option>
 									</select>
 								</td>
 								<td>{{ t.actions_today }}</td>
 								<td>
 									<button type="button" class="text-sm underline" @click="updateTrainee(t, { active: !t.active })">
-										{{ t.active ? 'Take off the list' : 'Put back on the list' }}
+										{{ t.active ? $t('Pages.Setup.button.take_off_the_list') : $t('Pages.Setup.button.put_back_on_the') }}
 									</button>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 					<p class="text-xs text-gray-500">
-						Taking a trainee off the list removes their name tile and stops them logging in; their
-						activity and report card stay.
+						{{ $t('Pages.Setup.text.taking_a_trainee_off', {}) }}
 					</p>
 				</section>
 			</template>

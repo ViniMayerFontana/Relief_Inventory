@@ -34,11 +34,11 @@ const form = useForm({
     <section>
         <header>
             <h2 class="text-lg font-medium text-gray-900">
-                Profile Information
+                {{ $t('Commons.heading.profile_information', {}) }}
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                Update your account's profile information and email address.
+                {{ $t('Pages.Profile.Partials.text.update_your_account_s', {}) }}
             </p>
         </header>
 
@@ -93,7 +93,7 @@ const form = useForm({
 
             <div v-if="mustVerifyEmail && user.email_verified_at === null">
                 <p class="mt-2 text-sm text-gray-800">
-                    Your email address is unverified.
+                    {{ $t('Pages.Profile.Partials.text.your_email_address_is', {}) }}
                     <Link
                         :href="route('verification.send')"
                         method="post"
@@ -108,7 +108,7 @@ const form = useForm({
                     v-show="status === 'verification-link-sent'"
                     class="mt-2 text-sm font-medium text-green-600"
                 >
-                    A new verification link has been sent to your email address.
+                    {{ $t('Pages.Profile.Partials.text.a_new_verification_link', {}) }}
                 </div>
             </div>
 
@@ -191,7 +191,7 @@ const form = useForm({
 			            class="mt-1 block w-full"
 			            v-model="form.county_id"
 			            required
-			        />--> <i>Coming Soon...</i>
+			        />--> <i>{{ $t('Pages.Profile.Partials.text.coming_soon', {}) }}</i>
 			        <InputError class="mt-2" :message="form.errors.county_id" />
 			    </div> 
 
@@ -211,7 +211,7 @@ const form = useForm({
 			
 			
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <PrimaryButton :disabled="form.processing">{{ $t('Commons.button.save', {}) }}</PrimaryButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
@@ -223,7 +223,7 @@ const form = useForm({
                         v-if="form.recentlySuccessful"
                         class="text-sm text-gray-600"
                     >
-                        Saved.
+                        {{ $t('Pages.Profile.Partials.text.saved', {}) }}
                     </p>
                 </Transition>
             </div>

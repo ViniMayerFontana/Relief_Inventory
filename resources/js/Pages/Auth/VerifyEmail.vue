@@ -26,20 +26,17 @@ const verificationLinkSent = computed(
 
 <template>
     <GuestLayout>
-        <Head title="Email Verification" />
+        <Head :title="$t('Commons.title.email_verification')" />
 
         <div class="mb-4 text-sm text-gray-600">
-            Thanks for signing up! Before getting started, could you verify your
-            email address by clicking on the link we just emailed to you? If you
-            didn't receive the email, we will gladly send you another.
+            {{ $t('Pages.Auth.text.thanks_for_signing_up', {}) }}
         </div>
 
         <div
             class="mb-4 text-sm font-medium text-green-600"
             v-if="verificationLinkSent"
         >
-            A new verification link has been sent to the email address you
-            provided during registration.
+            {{ $t('Pages.Auth.text.a_new_verification_link', {}) }}
         </div>
 
         <div
@@ -47,12 +44,11 @@ const verificationLinkSent = computed(
             v-if="email_error"
         >
             <p class="font-medium">
-                We couldn't send the verification email.
+                {{ $t('Pages.Auth.text.we_couldn_t_send', {}) }}
             </p>
             <p class="mt-1">{{ email_error }}</p>
             <p class="mt-1">
-                Please try again in a few minutes, or contact an administrator
-                — they can activate your account without email verification.
+                {{ $t('Pages.Auth.text.please_try_again_in', {}) }}
             </p>
         </div>
 
@@ -62,7 +58,7 @@ const verificationLinkSent = computed(
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Resend Verification Email
+                    {{ $t('Pages.Auth.button.resend_verification_email', {}) }}
                 </PrimaryButton>
 
                 <Link
@@ -70,7 +66,7 @@ const verificationLinkSent = computed(
                     method="post"
                     as="button"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                    >Log Out</Link
+                    >{{ $t('Commons.link.log_out', {}) }}</Link
                 >
             </div>
         </form>

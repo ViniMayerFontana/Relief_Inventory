@@ -18,7 +18,7 @@ defineProps({
 		<div class="comingsoon_container">
 			<h2 class="ri_datatable_head">{{ feature }}</h2>
 			<p class="comingsoon_body">
-				This page is on the roadmap and not built yet.
+				{{ $t('Pages.text.this_page_is_on', {}) }}
 				<span v-if="note">{{ note }}</span>
 			</p>
 		</div>

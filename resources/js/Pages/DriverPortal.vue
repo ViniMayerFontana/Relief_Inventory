@@ -20,6 +20,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 export default {
 	components: { AuthenticatedLayout, Head },
@@ -103,7 +104,7 @@ export default {
 		deliveryWindow(order) {
 			if (order.fulfillment_method !== 'delivery') return null;
 			const days = order.delivery_days || [];
-			const dayLabel = days.length === 7 ? 'Any Day' : days.length ? days.join(', ') : null;
+			const dayLabel = days.length === 7 ? t('Commons.button.any_day') : days.length ? days.join(', ') : null;
 			return [dayLabel, order.preferred_time].filter(Boolean).join(' — ') || null;
 		},
 		async login() {
@@ -115,7 +116,7 @@ export default {
 				this.loginForm = { phone: '', pin: '' };
 				await this.fetchLoads();
 			} catch (e) {
-				this.loginError = e.response?.data?.message || 'Could not sign in.';
+				this.loginError = e.response?.data?.message || t('Pages.text.could_not_sign_in');
 			} finally {
 				this.loggingIn = false;
 			}
@@ -134,7 +135,7 @@ export default {
 				this.current = response.data.current || [];
 				this.delivered = response.data.delivered || [];
 			} catch (e) {
-				this.loadError = 'Could not load your assigned loads.';
+				this.loadError = t('Pages.text.could_not_load_your');
 			} finally {
 				this.loading = false;
 			}
@@ -157,7 +158,7 @@ export default {
 				await axios.post('/driver-portal/loads/' + order.id + '/bol', formData);
 				await this.fetchLoads();
 			} catch (e) {
-				this.uploadError = { ...this.uploadError, [order.id]: e.response?.data?.message || 'Could not upload that file.' };
+				this.uploadError = { ...this.uploadError, [order.id]: e.response?.data?.message || t('Pages.text.could_not_upload_that') };
 			} finally {
 				this.uploadingId = null;
 			}
@@ -170,21 +171,21 @@ export default {
 </script>
 
 <template>
-	<Head title="Driver Portal" />
+	<Head :title="$t('Commons.title.driver_portal')" />
 	<component :is="isAuthenticated ? 'AuthenticatedLayout' : 'div'" :breadcrumb="isAuthenticated ? breadcrumb : undefined">
 		<div class="dp_page" :class="{ dp_page_bare: !isAuthenticated, dp_page_login: !signedIn && !isAuthenticated }">
 			<a v-if="!signedIn && !isAuthenticated" href="/" class="dp_homelink">&larr; Home</a>
-			<div class="dp_brand" :class="{ dp_title_centered: !signedIn && !isAuthenticated }">Relief Inventory</div>
-			<h1 class="dp_title" :class="{ dp_title_centered: !signedIn && !isAuthenticated }">Driver Portal</h1>
+			<div class="dp_brand" :class="{ dp_title_centered: !signedIn && !isAuthenticated }">{{ $t('Commons.heading.relief_inventory', {}) }}</div>
+			<h1 class="dp_title" :class="{ dp_title_centered: !signedIn && !isAuthenticated }">{{ $t('Commons.heading.driver_portal', {}) }}</h1>
 
 			<template v-if="!signedIn">
 				<div class="dp_loginwrap">
-					<p class="dp_hint">Enter the phone number and PIN your warehouse contact gave you.</p>
+					<p class="dp_hint">{{ $t('Pages.text.enter_the_phone_number', {}) }}</p>
 					<div class="dp_loginform">
-						<input type="tel" v-model="loginForm.phone" placeholder="Phone Number" class="ri_forminput dp_input" />
-						<input type="password" inputmode="numeric" pattern="[0-9]*" v-model="loginForm.pin" placeholder="PIN" class="ri_forminput dp_input" maxlength="5" />
+						<input type="tel" v-model="loginForm.phone" :placeholder="$t('Commons.placeholder.phone_number')" class="ri_forminput dp_input" />
+						<input type="password" inputmode="numeric" pattern="[0-9]*" v-model="loginForm.pin" :placeholder="$t('Commons.placeholder.pin')" class="ri_forminput dp_input" maxlength="5" />
 						<button class="ri_defaultbutton dp_loginbutton" :disabled="loggingIn || !loginForm.phone || !loginForm.pin" @click="login">
-							{{ loggingIn ? 'Signing In...' : 'Sign In' }}
+							{{ loggingIn ? $t('Pages.button.signing_in') : $t('Commons.button.sign_in') }}
 						</button>
 						<p v-if="loginError" class="dp_error">{{ loginError }}</p>
 					</div>
@@ -193,52 +194,52 @@ export default {
 
 			<template v-else>
 				<p v-if="signedInAs" class="dp_hint">
-					Signed in as <strong>{{ signedInAs }}</strong>.
-					<button class="dp_logoutlink" @click="logout">Sign Out</button>
+					{{ $t('Pages.text.signed_in_as', {}) }} <strong>{{ signedInAs }}</strong>.
+					<button class="dp_logoutlink" @click="logout">{{ $t('Commons.button.sign_out', {}) }}</button>
 				</p>
-				<p v-else-if="isStaffViewer" class="dp_hint">Staff view — every load currently Ready to Ship, Shipped, or waiting on a re-uploaded BOL, across all drivers.</p>
+				<p v-else-if="isStaffViewer" class="dp_hint">{{ $t('Pages.text.staff_view_every_load', {}) }}</p>
 
 				<p v-if="loadError" class="dp_error">{{ loadError }}</p>
-				<p v-if="loading">Loading...</p>
+				<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 
 				<h2 class="dp_sectionhead">Current Loads ({{ current.length }})</h2>
 				<div v-for="order in current" :key="order.id" class="dp_card">
 					<div class="dp_cardhead">
-						<span class="dp_ordernum">Order #{{ order.id }}</span>
+						<span class="dp_ordernum">{{ $t('Commons.text.order') }} {{ order.id }}</span>
 						<span class="dp_status_badge">{{ order.status?.name }}</span>
 					</div>
-					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</p>
+					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || $t('Commons.text.no_partner') }}</p>
 					<p class="dp_meta">
-						{{ totals(order).lines }} line(s), {{ totals(order).qty }} item(s)<span v-if="order.pallet_count"> — {{ order.pallet_count }} pallet{{ order.pallet_count === 1 ? '' : 's' }}</span><span v-if="isStaffViewer && order.driver"> — driver: {{ order.driver.name }}</span>
+						{{ totals(order).lines }} line(s), {{ totals(order).qty }} item(s)<span v-if="order.pallet_count"> — {{ order.pallet_count }} pallet{{ order.pallet_count === 1 ? '' : 's' }}</span><span v-if="isStaffViewer && order.driver"> {{ $t('Commons.text.driver_3') }} {{ order.driver.name }}</span>
 					</p>
 					<p v-if="order.special_instructions" class="dp_instructions">{{ order.special_instructions }}</p>
 					<p v-if="order.bol_rejection_reason" class="dp_rejection">
-						<strong>The last upload was rejected:</strong> {{ order.bol_rejection_reason }}
+						<strong>{{ $t('Pages.text.the_last_upload_was', {}) }}</strong> {{ order.bol_rejection_reason }}
 					</p>
 
 					<div v-if="expandedIds[order.id]" class="dp_details">
 						<div v-if="deliveryAddress(order)" class="dp_detailrow">
-							<span class="dp_detaillabel">Address</span>
+							<span class="dp_detaillabel">{{ $t('Commons.text.address_3', {}) }}</span>
 							<a :href="mapsUrl(order)" target="_blank" rel="noopener" class="dp_addresslink">
 								<span v-for="(line, i) in deliveryAddress(order)" :key="i">{{ line }}<br v-if="i < deliveryAddress(order).length - 1" /></span>
 							</a>
-							<button class="dp_copybutton" @click="copyAddress(order)">{{ copiedId === order.id ? 'Copied!' : 'Copy' }}</button>
+							<button class="dp_copybutton" @click="copyAddress(order)">{{ copiedId === order.id ? $t('Pages.button.copied') : $t('Commons.button.copy') }}</button>
 						</div>
 						<div v-if="contactName(order) || contactPhone(order)" class="dp_detailrow">
-							<span class="dp_detaillabel">Contact</span>
+							<span class="dp_detaillabel">{{ $t('Commons.heading.contact', {}) }}</span>
 							<span>{{ contactName(order) }}</span>
 							<a v-if="contactPhone(order)" :href="'tel:' + contactPhone(order)" class="dp_phonelink">{{ contactPhone(order) }}</a>
 						</div>
 						<div v-if="deliveryWindow(order)" class="dp_detailrow">
-							<span class="dp_detaillabel">Window</span>
+							<span class="dp_detaillabel">{{ $t('Commons.text.window', {}) }}</span>
 							<span>{{ deliveryWindow(order) }}</span>
 						</div>
-						<p v-if="!deliveryAddress(order) && !contactName(order) && !contactPhone(order) && !deliveryWindow(order)" class="dp_hint">No delivery address or contact on file for this order.</p>
+						<p v-if="!deliveryAddress(order) && !contactName(order) && !contactPhone(order) && !deliveryWindow(order)" class="dp_hint">{{ $t('Pages.text.no_delivery_address_or', {}) }}</p>
 					</div>
 
 					<div class="dp_cardactions">
 						<button class="ri_formbutton dp_detailstoggle" @click="toggleDetails(order)">
-							{{ expandedIds[order.id] ? 'Hide Details ▲' : 'Delivery Details ▼' }}
+							{{ expandedIds[order.id] ? $t('Pages.button.hide_details') : $t('Pages.button.delivery_details') }}
 						</button>
 						<template v-if="!isStaffViewer">
 							<input
@@ -249,23 +250,23 @@ export default {
 								@change="onFileChosen(order, $event)"
 							/>
 							<button class="ri_defaultbutton" :disabled="uploadingId === order.id" @click="triggerUpload(order)">
-								{{ uploadingId === order.id ? 'Uploading...' : 'Upload Signed BOL' }}
+								{{ uploadingId === order.id ? $t('Pages.button.uploading') : $t('Pages.button.upload_signed_bol') }}
 							</button>
 						</template>
 					</div>
 					<p v-if="!isStaffViewer && uploadError[order.id]" class="dp_error">{{ uploadError[order.id] }}</p>
 				</div>
-				<p v-if="!current.length && !loading" class="dp_empty">No loads currently out.</p>
+				<p v-if="!current.length && !loading" class="dp_empty">{{ $t('Pages.text.no_loads_currently_out', {}) }}</p>
 
-				<h2 class="dp_sectionhead">Recently Delivered</h2>
+				<h2 class="dp_sectionhead">{{ $t('Commons.heading.recently_delivered', {}) }}</h2>
 				<div v-for="order in delivered" :key="order.id" class="dp_card dp_card_muted">
 					<div class="dp_cardhead">
-						<span class="dp_ordernum">Order #{{ order.id }}</span>
+						<span class="dp_ordernum">{{ $t('Commons.text.order') }} {{ order.id }}</span>
 						<span class="dp_status_badge dp_status_badge_done">Delivered</span>
 					</div>
-					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || '(no partner)' }}</p>
+					<p class="dp_partner">{{ order.person?.full_name || order.person?.organization || $t('Commons.text.no_partner') }}</p>
 				</div>
-				<p v-if="!delivered.length && !loading" class="dp_empty">Nothing delivered yet.</p>
+				<p v-if="!delivered.length && !loading" class="dp_empty">{{ $t('Pages.text.nothing_delivered_yet', {}) }}</p>
 			</template>
 		</div>
 	</component>

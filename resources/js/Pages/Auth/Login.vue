@@ -41,13 +41,13 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Log in" />
+        <Head :title="$t('Commons.title.log_in')" />
 
         <div v-if="$page.props.warehouse.multiple" class="mb-4 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
-            Signing in to <strong>{{ $page.props.warehouse.name }}</strong>
+            {{ $t('Pages.Auth.text.signing_in_to', {}) }} <strong>{{ $page.props.warehouse.name }}</strong>
             <template v-if="chooser">
                 &middot;
-                <button type="button" class="underline text-blue-700" @click="choosing = !choosing">Not the right warehouse?</button>
+                <button type="button" class="underline text-blue-700" @click="choosing = !choosing">{{ $t('Pages.Auth.button.not_the_right_warehouse', {}) }}</button>
             </template>
         </div>
 
@@ -59,10 +59,10 @@ const submit = () => {
             </ul>
             <form class="mt-2 flex items-start gap-2" @submit.prevent="chooseByCode">
                 <div class="flex-1">
-                    <TextInput type="text" class="block w-full font-mono uppercase" v-model="codeForm.code" placeholder="Or enter a warehouse code" autocomplete="off" />
+                    <TextInput type="text" class="block w-full font-mono uppercase" v-model="codeForm.code" :placeholder="$t('Pages.Auth.placeholder.or_enter_a_warehouse')" autocomplete="off" />
                     <InputError class="mt-1" :message="codeForm.errors.code" />
                 </div>
-                <PrimaryButton type="submit" :disabled="codeForm.processing || !codeForm.code">Go</PrimaryButton>
+                <PrimaryButton type="submit" :disabled="codeForm.processing || !codeForm.code">{{ $t('Commons.button.go', {}) }}</PrimaryButton>
             </form>
         </div>
 
@@ -106,7 +106,7 @@ const submit = () => {
                 <label class="flex items-center">
                     <Checkbox name="remember" v-model:checked="form.remember" />
                     <span class="ms-2 text-sm text-gray-600"
-                        >Remember me</span
+                        >{{ $t('Commons.text.remember_me', {}) }}</span
                     >
                 </label>
             </div>
@@ -117,7 +117,7 @@ const submit = () => {
                     :href="route('password.request')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    Forgot your password?
+                    {{ $t('Pages.Auth.link.forgot_your_password', {}) }}
                 </Link>
 
                 <PrimaryButton
@@ -125,7 +125,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Log in
+                    {{ $t('Commons.button.log_in', {}) }}
                 </PrimaryButton>
             </div>
         </form>

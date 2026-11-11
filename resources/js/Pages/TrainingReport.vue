@@ -14,6 +14,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import { Head } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: { type: Array },
@@ -39,7 +40,7 @@ async function load() {
 	try {
 		report.value = (await axios.get('/json/reports/training', { params: params.value })).data;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load the report cards.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_load_the_21');
 	} finally {
 		loading.value = false;
 	}
@@ -49,21 +50,20 @@ onMounted(load);
 </script>
 
 <template>
-	<Head title="Training Report Cards" />
+	<Head :title="$t('Pages.title.training_report_cards')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-6xl mx-auto p-4 space-y-6">
 			<div class="flex flex-wrap items-start justify-between gap-4">
 				<div>
-					<h1 class="text-2xl font-bold">Training Report Cards</h1>
+					<h1 class="text-2xl font-bold">{{ $t('Pages.heading.training_report_cards', {}) }}</h1>
 					<p class="text-gray-600 mt-1">
-						Which stations each trainee did real work at. A station counts once they've recorded at
-						least one action there.
+						{{ $t('Pages.text.which_stations_each_trainee', {}) }}
 					</p>
 				</div>
 				<div class="flex flex-wrap gap-2">
-					<PrintMenu document-key="training-report-cards" media="report" variant="form" label="Print Report Cards"
+					<PrintMenu document-key="training-report-cards" media="report" variant="form" :label="$t('Pages.label.print_report_cards')"
 						:params="params" :download-href="'/report/training/report-cards.pdf?' + query" />
-					<PrintMenu document-key="training-certificates" media="report" variant="form" label="Print All Certificates"
+					<PrintMenu document-key="training-certificates" media="report" variant="form" :label="$t('Pages.label.print_all_certificates')"
 						:params="params" :download-href="'/report/training/certificates.pdf?' + query" />
 					<a :href="$withWarehouse('/report/training/report-cards.csv?' + query)" class="ri_formbutton">CSV</a>
 				</div>
@@ -72,40 +72,40 @@ onMounted(load);
 			<section class="bg-white shadow rounded-lg p-4">
 				<form class="flex flex-wrap items-end gap-4 text-sm" @submit.prevent="load">
 					<label class="block">
-						<span class="text-gray-700">From</span>
+						<span class="text-gray-700">{{ $t('Commons.label.from', {}) }}</span>
 						<input type="date" v-model="filters.from" class="mt-1 block border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block">
-						<span class="text-gray-700">To</span>
+						<span class="text-gray-700">{{ $t('Commons.label.to', {}) }}</span>
 						<input type="date" v-model="filters.to" class="mt-1 block border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Team</span>
+						<span class="text-gray-700">{{ $t('Commons.text.team', {}) }}</span>
 						<select v-model="filters.team" class="mt-1 block border-gray-300 rounded-md shadow-sm">
-							<option value="">All teams</option>
-							<option v-for="n in [1, 2, 3, 4, 5]" :key="n" :value="n">Team {{ n }}</option>
+							<option value="">{{ $t('Commons.text.all_teams', {}) }}</option>
+							<option v-for="n in [1, 2, 3, 4, 5]" :key="n" :value="n">{{ $t('Commons.text.team') }} {{ n }}</option>
 						</select>
 					</label>
-					<button type="submit" class="ri_formbutton">Show</button>
+					<button type="submit" class="ri_formbutton">{{ $t('Commons.button.show', {}) }}</button>
 				</form>
 			</section>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
-			<p v-if="loading" class="text-gray-500">Loading…</p>
+			<p v-if="loading" class="text-gray-500">{{ $t('Commons.button.loading', {}) }}</p>
 
 			<section v-if="report" class="bg-white shadow rounded-lg p-4 space-y-3">
 				<p class="text-sm text-gray-700">
-					{{ report.totals.complete }} of {{ report.totals.trainees }} trainees completed all six stations.
+					{{ report.totals.complete }} of {{ report.totals.trainees }} {{ $t('Pages.text.trainees_completed_all_six') }}
 				</p>
-				<p v-if="!report.trainees.length" class="text-sm text-gray-400">No trainee activity in this range.</p>
+				<p v-if="!report.trainees.length" class="text-sm text-gray-400">{{ $t('Pages.text.no_trainee_activity_in', {}) }}</p>
 				<div v-else class="overflow-x-auto">
 					<table class="ri_datatable w-full text-sm" border="1">
 						<thead>
 							<tr>
-								<th>Trainee</th>
-								<th>Team</th>
+								<th>{{ $t('Commons.text.trainee', {}) }}</th>
+								<th>{{ $t('Commons.text.team', {}) }}</th>
 								<th v-for="(name, n) in report.stations" :key="n">{{ n }}. {{ name }}</th>
-								<th>Result</th>
+								<th>{{ $t('Commons.text.result', {}) }}</th>
 								<th></th>
 							</tr>
 						</thead>
@@ -118,10 +118,10 @@ onMounted(load);
 										<span v-if="s.done" class="text-green-700 font-bold">✓ {{ s.count }}</span>
 										<span v-else class="text-gray-400">—</span>
 									</td>
-									<td :class="t.complete ? 'text-green-700 font-semibold' : ''">{{ t.complete ? 'Complete' : t.done + ' of 6' }}</td>
+									<td :class="t.complete ? 'text-green-700 font-semibold' : ''">{{ t.complete ? $t('Commons.text.complete') : t.done + $t('Commons.text.of_6') }}</td>
 									<td @click.stop>
 										<PrintMenu v-if="t.complete" document-key="training-certificates" media="report" variant="link"
-											label="Certificate" :params="{ ...params, person_id: t.person_id }"
+											:label="$t('Commons.label.certificate')" :params="{ ...params, person_id: t.person_id }"
 											:download-href="'/report/training/certificates.pdf?' + query + '&person_id=' + t.person_id" />
 									</td>
 								</tr>
@@ -130,7 +130,7 @@ onMounted(load);
 										<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 py-2">
 											<div v-for="(s, n) in t.stations" :key="n">
 												<div class="font-semibold">{{ n }}. {{ s.name }}</div>
-												<div v-if="!s.actions.length" class="text-gray-400">Nothing yet</div>
+												<div v-if="!s.actions.length" class="text-gray-400">{{ $t('Commons.text.nothing_yet', {}) }}</div>
 												<div v-for="a in s.actions" :key="a.label" class="text-gray-700">{{ a.label }} × {{ a.count }}</div>
 											</div>
 										</div>
@@ -141,8 +141,7 @@ onMounted(load);
 					</table>
 				</div>
 				<p class="text-xs text-gray-500">
-					A Driver Portal delivery is logged against the team's driver, so it counts for everyone who
-					worked on that team. Tap a row for the details.
+					{{ $t('Pages.text.a_driver_portal_delivery', {}) }}
 				</p>
 			</section>
 		</div>

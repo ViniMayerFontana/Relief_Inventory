@@ -64,32 +64,32 @@ const submit = () => form.post(route('activate.setup'), { onFinish: () => form.r
 
 		<form v-if="!claimed" @submit.prevent="submitCode">
 			<p class="mt-1 text-sm text-gray-600">
-				This warehouse is ready to be set up. Enter the setup code you were given.
+				{{ $t('Pages.Setup.text.this_warehouse_is_ready', {}) }}
 			</p>
 			<div class="mt-4">
 				<InputLabel for="code" value="Setup code" />
 				<TextInput id="code" type="text" class="mt-1 block w-full font-mono uppercase" v-model="codeForm.code" autofocus autocomplete="off" placeholder="ABCDE-FGHJK" />
 				<InputError class="mt-2" :message="codeForm.errors.code" />
-				<p v-if="locked && !codeForm.errors.code" class="mt-2 text-xs text-amber-800">Too many wrong tries; this screen is paused for a few minutes.</p>
+				<p v-if="locked && !codeForm.errors.code" class="mt-2 text-xs text-amber-800">{{ $t('Pages.Setup.text.too_many_wrong_tries', {}) }}</p>
 			</div>
 			<div class="mt-6 flex justify-end">
-				<PrimaryButton :class="{ 'opacity-25': codeForm.processing }" :disabled="codeForm.processing">Continue</PrimaryButton>
+				<PrimaryButton :class="{ 'opacity-25': codeForm.processing }" :disabled="codeForm.processing">{{ $t('Commons.button.continue', {}) }}</PrimaryButton>
 			</div>
 		</form>
 
 		<form v-else @submit.prevent="mode === 'fresh' ? submit() : null">
 			<p class="mt-1 text-sm text-gray-600">
-				Code accepted. Who will run this warehouse? They become its Administrator and add everyone else from inside the app.
+				{{ $t('Pages.Setup.text.code_accepted_who_will', {}) }}
 			</p>
 
 			<div class="mt-3 flex gap-4 text-sm">
-				<label class="flex items-center gap-2"><input type="radio" value="fresh" v-model="mode" /> Start empty</label>
-				<label class="flex items-center gap-2"><input type="radio" value="restore" v-model="mode" /> Restore a backup into it</label>
+				<label class="flex items-center gap-2"><input type="radio" value="fresh" v-model="mode" /> {{ $t('Commons.label.start_empty', {}) }}</label>
+				<label class="flex items-center gap-2"><input type="radio" value="restore" v-model="mode" /> {{ $t('Pages.Setup.label.restore_a_backup_into', {}) }}</label>
 			</div>
 
 			<div class="mt-4 flex gap-4 text-sm">
-				<label class="flex items-center gap-2"><input type="radio" value="new" v-model="form.login" /> I need a new login</label>
-				<label class="flex items-center gap-2"><input type="radio" value="existing" v-model="form.login" /> I already have a login</label>
+				<label class="flex items-center gap-2"><input type="radio" value="new" v-model="form.login" /> {{ $t('Pages.Setup.label.i_need_a_new', {}) }}</label>
+				<label class="flex items-center gap-2"><input type="radio" value="existing" v-model="form.login" /> {{ $t('Pages.Setup.label.i_already_have_a', {}) }}</label>
 			</div>
 
 			<div class="mt-4 grid grid-cols-2 gap-3">
@@ -124,19 +124,19 @@ const submit = () => form.post(route('activate.setup'), { onFinish: () => form.r
 
 			<label v-if="mode === 'fresh'" class="mt-4 flex items-start gap-2 text-sm text-gray-700">
 				<input type="checkbox" class="mt-1" v-model="form.example_data" />
-				<span>Load example data (fictional donors, partners, stock and requests, for trying things out; it can't be removed later)</span>
+				<span>{{ $t('Pages.Setup.text.load_example_data_fictional', {}) }}</span>
 			</label>
 
 			<InputError class="mt-2" :message="form.errors.code" />
 
 			<div v-if="mode === 'fresh'" class="mt-6 flex justify-end">
 				<PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-					{{ form.processing ? 'Setting up…' : 'Finish setup' }}
+					{{ form.processing ? $t('Commons.button.setting_up') : $t('Commons.button.finish_setup') }}
 				</PrimaryButton>
 			</div>
 
 			<div v-else class="mt-6">
-				<p v-if="!identityReady" class="text-sm text-amber-800">Fill in who will run this warehouse above, then choose the backup.</p>
+				<p v-if="!identityReady" class="text-sm text-amber-800">{{ $t('Pages.Setup.text.fill_in_who_will', {}) }}</p>
 				<RestoreBackup v-else base="/activate/restore" :identity="identity" @back="mode = 'fresh'" />
 			</div>
 		</form>

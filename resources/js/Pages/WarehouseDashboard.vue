@@ -21,9 +21,10 @@ import { Head, Link } from '@inertiajs/vue3';
 import PeriodStatCard from '@/Components/Dashboard/PeriodStatCard.vue';
 import BarBreakdownCard from '@/Components/Dashboard/BarBreakdownCard.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
-const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: 'Sorting', Complete: 'Complete' };
-const ORDER_STAGE_LABELS = { 'New Order': 'New Order', Filling: 'Filling', Filled: 'Filled', Shipped: 'Shipped', 'Delivered - Waiting on BOL': 'Waiting on BOL' };
+const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') };
+const ORDER_STAGE_LABELS = { t('Commons.button.new_order'): t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped'), t('Pages.text.delivered_waiting_on_bol'): t('Pages.text.waiting_on_bol') };
 
 export default {
 	components: { AuthenticatedLayout, Head, Link, PeriodStatCard, BarBreakdownCard },
@@ -67,7 +68,7 @@ export default {
 				const response = await axios.get('/json/dashboard');
 				this.data = response.data;
 			} catch (error) {
-				this.error = 'Could not load the dashboard.';
+				this.error = t('Pages.text.could_not_load_the_24');
 			} finally {
 				this.loading = false;
 			}
@@ -80,43 +81,43 @@ export default {
 </script>
 
 <template>
-	<Head title="Warehouse Dashboard" />
+	<Head :title="$t('Commons.title.warehouse_dashboard')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="wd_container">
 			<div class="wd_topbar">
-				<h2 class="ri_datatable_head">Warehouse Dashboard</h2>
+				<h2 class="ri_datatable_head">{{ $t('Commons.heading.warehouse_dashboard', {}) }}</h2>
 				<span v-if="data" class="wd_generated">
-					Live as of {{ new Date(data.generated_at).toLocaleString() }}
-					<button @click="fetchDashboard" class="ri_linkbutton">Refresh</button>
+					{{ $t('Pages.text.live_as_of') }} {{ new Date(data.generated_at).toLocaleString() }}
+					<button @click="fetchDashboard" class="ri_linkbutton">{{ $t('Commons.button.refresh', {}) }}</button>
 				</span>
 			</div>
 
 			<p v-if="error" class="wd_error">{{ error }}</p>
-			<p v-if="loading && !data">Loading...</p>
+			<p v-if="loading && !data">{{ $t('Pages.text.loading', {}) }}</p>
 
 			<div v-if="data" class="wd_grid">
-				<PeriodStatCard title="Orders Fulfilled" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
-				<PeriodStatCard title="Donations Completed" :counts="data.donations_completed" :trend="data.donations_trend" />
+				<PeriodStatCard :title="$t('Commons.title.orders_fulfilled')" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
+				<PeriodStatCard :title="$t('Commons.title.donations_completed')" :counts="data.donations_completed" :trend="data.donations_trend" />
 
-				<BarBreakdownCard title="Donations in Progress" :rows="donationPipelineRows" />
-				<BarBreakdownCard title="Orders in Progress" :rows="orderPipelineRows" />
+				<BarBreakdownCard :title="$t('Pages.title.donations_in_progress')" :rows="donationPipelineRows" />
+				<BarBreakdownCard :title="$t('Pages.title.orders_in_progress')" :rows="orderPipelineRows" />
 
-				<BarBreakdownCard title="Orders by County" :rows="countyRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard title="Stock by Category" :rows="categoryRows" empty-text="No stock on hand yet." />
+				<BarBreakdownCard :title="$t('Pages.title.orders_by_county')" :rows="countyRows" empty-text="No orders placed yet." />
+				<BarBreakdownCard :title="$t('Pages.title.stock_by_category')" :rows="categoryRows" empty-text="No stock on hand yet." />
 
 				<div class="wd_card wd_inventory">
-					<h3>Inventory Summary</h3>
+					<h3>{{ $t('Commons.heading.inventory_summary', {}) }}</h3>
 					<div class="wd_inv_stats">
-						<div><span class="wd_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="wd_inv_label">Item types stocked</span></div>
-						<div><span class="wd_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="wd_inv_label">Total units on hand</span></div>
+						<div><span class="wd_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="wd_inv_label">{{ $t('Pages.text.item_types_stocked', {}) }}</span></div>
+						<div><span class="wd_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="wd_inv_label">{{ $t('Pages.text.total_units_on_hand', {}) }}</span></div>
 					</div>
 					<Link href="/reports/inventory" class="ri_linkbutton">View full Inventory Report &rarr;</Link>
 				</div>
 
 				<div class="wd_card wd_donorquality">
-					<h3>Donor Quality (last 30 days)</h3>
+					<h3>{{ $t('Pages.heading.donor_quality_last_30', {}) }}</h3>
 					<div class="wd_dq_stats">
 						<span class="wd_dq_usable">{{ data.donor_quality.usable }} usable</span>
 						<span class="wd_dq_loss">{{ data.donor_quality.outdated }} outdated</span>
@@ -124,16 +125,16 @@ export default {
 						<span class="wd_dq_diverted">{{ data.donor_quality.diverted }} diverted</span>
 					</div>
 					<p v-if="data.donor_quality.loss_rate_percent !== null" class="wd_dq_rate">
-						Loss rate: <strong>{{ data.donor_quality.loss_rate_percent }}%</strong>
+						{{ $t('Commons.text.loss_rate', {}) }} <strong>{{ data.donor_quality.loss_rate_percent }}%</strong>
 					</p>
 				</div>
 			</div>
 
 			<div v-if="data" class="wd_links">
-				<Link href="/order-entry" class="ri_formbutton">Order Entry</Link>
-				<Link href="/donation-sorting" class="ri_formbutton">Donation Sorting</Link>
+				<Link href="/order-entry" class="ri_formbutton">{{ $t('Commons.heading.order_entry', {}) }}</Link>
+				<Link href="/donation-sorting" class="ri_formbutton">{{ $t('Commons.heading.donation_sorting', {}) }}</Link>
 				<Link href="/receiving" class="ri_formbutton">Receiving</Link>
-				<Link href="/reports/inventory" class="ri_formbutton">Inventory Report</Link>
+				<Link href="/reports/inventory" class="ri_formbutton">{{ $t('Commons.heading.inventory_report', {}) }}</Link>
 				<Link href="/reports/sitrep" class="ri_formbutton">Situation Report &rarr;</Link>
 			</div>
 		</div>

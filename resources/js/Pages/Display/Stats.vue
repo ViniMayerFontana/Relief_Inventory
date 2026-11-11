@@ -7,13 +7,14 @@ import { Head } from '@inertiajs/vue3';
 import PeriodStatCard from '@/Components/Dashboard/PeriodStatCard.vue';
 import BarBreakdownCard from '@/Components/Dashboard/BarBreakdownCard.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 // An always-on stats sign for an R Station (or any screen): the Situation Report ('sitrep') or the
 // warehouse dashboard ('dashboard') with no menus, refreshing itself. Data comes from
 // /json/display/<mode>, open to a paired device with the matching Function — see EnsureDeviceAccess.
 const REFRESH_MS = 60 * 1000;
-const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: 'Sorting', Complete: 'Complete' };
-const ORDER_STAGE_LABELS = { 'New Order': 'New Order', Filling: 'Filling', Filled: 'Filled', Shipped: 'Shipped' };
+const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') };
+const ORDER_STAGE_LABELS = { t('Commons.button.new_order'): t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped') };
 
 export default {
 	components: { DisplayLayout, Head, PeriodStatCard, BarBreakdownCard },
@@ -25,7 +26,7 @@ export default {
 	},
 	computed: {
 		title() {
-			return this.mode === 'dashboard' ? 'Warehouse Stats' : 'Situation Report';
+			return this.mode === 'dashboard' ? t('Commons.text.warehouse_stats') : t('Commons.heading.situation_report');
 		},
 		donationPipelineRows() {
 			return Object.entries(DONATION_STAGE_LABELS).map(([key, label]) => ({ label, value: this.data.pipeline.donations[key] || 0 }));
@@ -50,8 +51,8 @@ export default {
 				// A 403 means the device's session ended (revoked, re-paired, Function changed): the
 				// launcher gets a fresh one on the next restart, so just report it.
 				this.error = e.response?.status === 403
-					? 'This screen is no longer authorised — restart the R Station or log in.'
-					: 'Can’t reach the server — retrying.';
+					? t('Pages.Display.text.this_screen_is_no')
+					: t('Pages.Display.text.cant_reach_the_server');
 			}
 		},
 	},
@@ -77,20 +78,20 @@ export default {
 			</div>
 
 			<p v-if="error" class="ds_error">{{ error }}</p>
-			<p v-if="!data && !error" class="ds_loading">Loading...</p>
+			<p v-if="!data && !error" class="ds_loading">{{ $t('Pages.Display.text.loading', {}) }}</p>
 
 			<div v-if="data" class="ds_grid">
-				<PeriodStatCard title="Orders Fulfilled" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
-				<PeriodStatCard title="Donations Completed" :counts="data.donations_completed" :trend="data.donations_trend" />
-				<BarBreakdownCard title="Donations in Progress" :rows="donationPipelineRows" />
-				<BarBreakdownCard title="Orders in Progress" :rows="orderPipelineRows" />
-				<BarBreakdownCard title="Orders by County" :rows="countyRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard title="Stock by Category" :rows="categoryRows" empty-text="No stock on hand yet." />
+				<PeriodStatCard :title="$t('Commons.title.orders_fulfilled')" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
+				<PeriodStatCard :title="$t('Commons.title.donations_completed')" :counts="data.donations_completed" :trend="data.donations_trend" />
+				<BarBreakdownCard :title="$t('Pages.Display.title.donations_in_progress')" :rows="donationPipelineRows" />
+				<BarBreakdownCard :title="$t('Pages.Display.title.orders_in_progress')" :rows="orderPipelineRows" />
+				<BarBreakdownCard :title="$t('Pages.Display.title.orders_by_county')" :rows="countyRows" empty-text="No orders placed yet." />
+				<BarBreakdownCard :title="$t('Pages.Display.title.stock_by_category')" :rows="categoryRows" empty-text="No stock on hand yet." />
 				<div class="ds_card">
-					<h3>Stock on Hand</h3>
+					<h3>{{ $t('Pages.Display.heading.stock_on_hand', {}) }}</h3>
 					<div class="ds_inv">
-						<div><span class="ds_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="ds_inv_label">Item types stocked</span></div>
-						<div><span class="ds_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="ds_inv_label">Total units on hand</span></div>
+						<div><span class="ds_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="ds_inv_label">{{ $t('Pages.Display.text.item_types_stocked', {}) }}</span></div>
+						<div><span class="ds_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="ds_inv_label">{{ $t('Pages.Display.text.total_units_on_hand', {}) }}</span></div>
 					</div>
 				</div>
 			</div>

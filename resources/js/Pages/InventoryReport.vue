@@ -20,6 +20,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu },
@@ -76,7 +77,7 @@ export default {
 				const response = await axios.get('/json/reports/inventory');
 				this.records = response.data.records;
 			} catch (error) {
-				this.error = 'Could not load the inventory report.';
+				this.error = t('Pages.text.could_not_load_the_13');
 			} finally {
 				this.loading = false;
 			}
@@ -92,39 +93,39 @@ export default {
 </script>
 
 <template>
-	<Head title="Inventory Report" />
+	<Head :title="$t('Commons.title.inventory_report')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="inv_container">
 			<h2 class="ri_datatable_head inv_head">
-				Inventory Report
-				<a :href="$withWarehouse('/report/inventory.csv')" class="ri_defaultbutton">Download CSV</a>
+				{{ $t('Commons.heading.inventory_report', {}) }}
+				<a :href="$withWarehouse('/report/inventory.csv')" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
 				<PrintMenu document-key="inventory-report" media="report" label="Print / PDF"
 					download-href="/report/inventory.pdf" />
 			</h2>
 
 			<p v-if="error" class="inv_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 
 			<div class="inv_toolbar">
 				<input
 					type="text"
 					v-model="search"
 					class="ri_forminput inv_search"
-					placeholder="Search by item # or name..."
+					:placeholder="$t('Pages.placeholder.search_by_item_or')"
 				/>
 				<select v-model="categoryFilter" class="ri_forminput">
-					<option value="">All categories</option>
+					<option value="">{{ $t('Commons.text.all_categories', {}) }}</option>
 					<option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
 				</select>
 				<label class="inv_toggle">
 					<input type="checkbox" v-model="showAll" />
-					Show full catalog (including items never received)
+					{{ $t('Pages.label.show_full_catalog_including', {}) }}
 				</label>
 				<label class="inv_toggle" title="Usable goods recorded as New at sorting (all-time — stock is pooled once sorted, so this isn't a count of new items still on the shelf)">
 					<input type="checkbox" v-model="newOnly" />
-					Only items received new
+					{{ $t('Pages.label.only_items_received_new', {}) }}
 				</label>
 			</div>
 
@@ -132,15 +133,15 @@ export default {
 				<thead>
 					<tr>
 						<th></th>
-						<th>Item #</th>
-						<th>Name</th>
-						<th>Category</th>
-						<th>Unit</th>
-						<th>On Hand</th>
-						<th title="Usable goods recorded as New at sorting, all-time">Received New</th>
-						<th>Outdated</th>
-						<th>Trashed</th>
-						<th>Diverted</th>
+						<th>{{ $t('Commons.text.item', {}) }}</th>
+						<th>{{ $t('Commons.button.name', {}) }}</th>
+						<th>{{ $t('Commons.label.category_2', {}) }}</th>
+						<th>{{ $t('Commons.text.unit', {}) }}</th>
+						<th>{{ $t('Commons.text.on_hand', {}) }}</th>
+						<th :title="$t('Pages.title.usable_goods_recorded_as_2')">{{ $t('Commons.text.received_new', {}) }}</th>
+						<th>{{ $t('Commons.text.outdated', {}) }}</th>
+						<th>{{ $t('Commons.text.trashed', {}) }}</th>
+						<th>{{ $t('Commons.text.diverted', {}) }}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -165,7 +166,7 @@ export default {
 							<td colspan="9">
 								<table class="inv_subtable" v-if="record.items.length">
 									<thead>
-										<tr><th>Item / SKU</th><th>UPC</th><th>On Hand</th><th>Received New</th><th>Outdated</th><th>Trashed</th><th>Diverted</th></tr>
+										<tr><th>{{ $t('Pages.text.item_sku', {}) }}</th><th>{{ $t('Commons.placeholder.upc', {}) }}</th><th>{{ $t('Commons.text.on_hand', {}) }}</th><th>{{ $t('Commons.text.received_new', {}) }}</th><th>{{ $t('Commons.text.outdated', {}) }}</th><th>{{ $t('Commons.text.trashed', {}) }}</th><th>{{ $t('Commons.text.diverted', {}) }}</th></tr>
 									</thead>
 									<tbody>
 										<tr v-for="item in record.items" :key="item.id">
@@ -179,21 +180,21 @@ export default {
 										</tr>
 									</tbody>
 								</table>
-								<p v-else class="inv_empty">No items defined under this item type.</p>
+								<p v-else class="inv_empty">{{ $t('Pages.text.no_items_defined_under', {}) }}</p>
 								<table class="inv_subtable inv_locations" v-if="record.locations && (record.locations.length || record.unassigned)">
 									<thead>
-										<tr><th>Location</th><th>Pallets</th><th>Quantity</th></tr>
+										<tr><th>{{ $t('Commons.text.location', {}) }}</th><th>{{ $t('Commons.text.pallets', {}) }}</th><th>{{ $t('Commons.text.quantity', {}) }}</th></tr>
 									</thead>
 									<tbody>
 										<tr v-for="loc in record.locations" :key="loc.location_id ?? 'none'">
-											<td>{{ loc.code || 'No location recorded' }}</td>
+											<td>{{ loc.code || $t('Pages.text.no_location_recorded_2') }}</td>
 											<td>
 												<span v-for="(p, i) in loc.pallets" :key="p.id" class="inv_pallet">{{ p.tag }} ({{ p.qty }}, {{ p.status }})<span v-if="i < loc.pallets.length - 1">, </span></span>
 											</td>
 											<td class="inv_num">{{ loc.qty }}</td>
 										</tr>
-										<tr v-if="record.unassigned" class="inv_unassigned" title="On hand but not recorded on a warehouse pallet: still in the sorting area, or stock from before pallet tracking.">
-											<td>Not yet on a pallet</td>
+										<tr v-if="record.unassigned" class="inv_unassigned" :title="$t('Pages.title.on_hand_but_not')">
+											<td>{{ $t('Pages.text.not_yet_on_a', {}) }}</td>
 											<td></td>
 											<td class="inv_num">{{ record.unassigned }}</td>
 										</tr>
@@ -203,7 +204,7 @@ export default {
 						</tr>
 					</template>
 					<tr v-if="!filtered.length && !loading">
-						<td colspan="10" class="inv_empty">No item types match.</td>
+						<td colspan="10" class="inv_empty">{{ $t('Pages.text.no_item_types_match', {}) }}</td>
 					</tr>
 				</tbody>
 				<tfoot v-if="filtered.length">

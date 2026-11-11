@@ -21,6 +21,7 @@ import TextInput from '@/Components/TextInput.vue';
 import RestoreBackup from './RestoreBackup.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { computed, onBeforeUnmount, ref } from 'vue';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	codeRequired: { type: Boolean, default: false },
@@ -47,12 +48,12 @@ const accountFields = ['first_name', 'last_name', 'email', 'password', 'password
 
 function validateAccount() {
 	const e = {};
-	if (!form.first_name.trim()) e.first_name = 'Please enter a first name.';
-	if (!form.last_name.trim()) e.last_name = 'Please enter a last name.';
-	if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = 'Please enter a valid email address.';
-	if (form.password.length < 8) e.password = 'Use at least 8 characters.';
-	if (form.password !== form.password_confirmation) e.password_confirmation = 'The passwords do not match.';
-	if (props.codeRequired && !form.setup_code.trim()) e.setup_code = 'Enter the setup code from your server configuration.';
+	if (!form.first_name.trim()) e.first_name = t('Pages.Setup.text.please_enter_a_first');
+	if (!form.last_name.trim()) e.last_name = t('Pages.Setup.text.please_enter_a_last');
+	if (!/^\S+@\S+\.\S+$/.test(form.email)) e.email = t('Pages.Setup.text.please_enter_a_valid');
+	if (form.password.length < 8) e.password = t('Pages.Setup.text.use_at_least_8');
+	if (form.password !== form.password_confirmation) e.password_confirmation = t('Pages.Setup.text.the_passwords_do_not');
+	if (props.codeRequired && !form.setup_code.trim()) e.setup_code = t('Pages.Setup.text.enter_the_setup_code');
 	localErrors.value = e;
 	return Object.keys(e).length === 0;
 }
@@ -89,36 +90,34 @@ const submit = () => {
 	});
 };
 
-const stepTitle = computed(() => (step.value === 1 ? 'Create the administrator account' : 'Starting data'));
+const stepTitle = computed(() => (step.value === 1 ? t('Pages.Setup.text.create_the_administrator_account') : t('Commons.text.starting_data')));
 </script>
 
 <template>
 	<GuestLayout>
-		<Head title="Set up Relief Inventory" />
+		<Head :title="$t('Pages.Setup.title.set_up_relief_inventory')" />
 
-		<h1 class="text-lg font-semibold text-gray-900">Welcome to Relief Inventory</h1>
+		<h1 class="text-lg font-semibold text-gray-900">{{ $t('Pages.Setup.heading.welcome_to_relief_inventory', {}) }}</h1>
 		<template v-if="mode === 'restore'">
-			<p class="mt-1 text-sm text-gray-600">Restore from a backup</p>
+			<p class="mt-1 text-sm text-gray-600">{{ $t('Pages.Setup.button.restore_from_a_backup', {}) }}</p>
 			<RestoreBackup :code-required="codeRequired" @back="mode = 'new'" />
 		</template>
 
 		<template v-else>
 		<p class="mt-1 text-sm text-gray-600">
-			This is a brand-new installation. Two quick steps and you're in.
-			Moving from another system?
-			<button type="button" class="underline text-blue-700" @click="mode = 'restore'">Restore from a backup</button>
+			{{ $t('Pages.Setup.text.this_is_a_brand', {}) }}
+			<button type="button" class="underline text-blue-700" @click="mode = 'restore'">{{ $t('Pages.Setup.button.restore_from_a_backup', {}) }}</button>
 		</p>
 
 		<p class="mt-4 text-xs font-semibold uppercase tracking-wide text-gray-500">
-			Step {{ step }} of 2 &middot; {{ stepTitle }}
+			{{ $t('Commons.text.step') }} {{ step }} of 2 &middot; {{ stepTitle }}
 		</p>
 
 		<form @submit.prevent="submit">
 			<!-- Step 1: administrator -->
 			<div v-show="step === 1" class="mt-3">
 				<p class="text-sm text-gray-600">
-					This person manages everything else — other users, permissions and settings are all
-					added from inside the app afterwards.
+					{{ $t('Pages.Setup.text.this_person_manages_everything', {}) }}
 				</p>
 
 				<div class="mt-4 grid grid-cols-2 gap-3">
@@ -155,37 +154,35 @@ const stepTitle = computed(() => (step.value === 1 ? 'Create the administrator a
 				<div v-if="codeRequired" class="mt-4">
 					<InputLabel for="setup_code" value="Setup code" />
 					<TextInput id="setup_code" type="password" class="mt-1 block w-full" v-model="form.setup_code" autocomplete="off" />
-					<p class="mt-1 text-xs text-gray-500">This server needs a setup code. On an R Station it is shown on the device under Settings &gt; Local server; with Docker it is RI_SETUP_CODE in your compose file.</p>
+					<p class="mt-1 text-xs text-gray-500">{{ $t('Pages.Setup.text.this_server_needs_a', {}) }}</p>
 					<InputError class="mt-2" :message="err('setup_code')" />
 				</div>
 
 				<div class="mt-6 flex justify-end">
-					<PrimaryButton type="button" @click="next">Next</PrimaryButton>
+					<PrimaryButton type="button" @click="next">{{ $t('Commons.button.next', {}) }}</PrimaryButton>
 				</div>
 			</div>
 
 			<!-- Step 2: starting data -->
 			<div v-show="step === 2" class="mt-3">
 				<p class="text-sm text-gray-600">
-					The standard categories, units and item catalog are always set up for you. Choose whether
-					to start with a clean slate or with sample data.
+					{{ $t('Pages.Setup.text.the_standard_categories_units', {}) }}
 				</p>
 
 				<label class="mt-4 flex cursor-pointer items-start gap-3 rounded border p-3" :class="form.starting_data === 'empty' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'">
 					<input type="radio" class="mt-1" value="empty" v-model="form.starting_data" />
 					<span>
-						<span class="block text-sm font-medium text-gray-900">Start empty <span class="text-xs font-normal text-blue-700">(recommended for real use)</span></span>
-						<span class="block text-xs text-gray-600">Nothing but the standard catalog. You enter your own donors, partners and stock.</span>
+						<span class="block text-sm font-medium text-gray-900">{{ $t('Commons.label.start_empty', {}) }} <span class="text-xs font-normal text-blue-700">{{ $t('Pages.Setup.text.recommended_for_real_use', {}) }}</span></span>
+						<span class="block text-xs text-gray-600">{{ $t('Pages.Setup.text.nothing_but_the_standard', {}) }}</span>
 					</span>
 				</label>
 
 				<label class="mt-3 flex cursor-pointer items-start gap-3 rounded border p-3" :class="form.starting_data === 'example' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'">
 					<input type="radio" class="mt-1" value="example" v-model="form.starting_data" />
 					<span>
-						<span class="block text-sm font-medium text-gray-900">Load example data</span>
+						<span class="block text-sm font-medium text-gray-900">{{ $t('Pages.Setup.text.load_example_data', {}) }}</span>
 						<span class="block text-xs text-gray-600">
-							Fictional donors and partner organizations, donations at every stage, stock on hand and
-							orders in every status — good for trying things out or training.
+							{{ $t('Pages.Setup.text.fictional_donors_and_partner', {}) }}
 						</span>
 					</span>
 				</label>
@@ -193,7 +190,7 @@ const stepTitle = computed(() => (step.value === 1 ? 'Create the administrator a
 				<label class="mt-3 flex cursor-pointer items-start gap-3 rounded border p-3" :class="form.starting_data === 'simulation' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'">
 					<input type="radio" class="mt-1" value="simulation" v-model="form.starting_data" />
 					<span>
-						<span class="block text-sm font-medium text-gray-900">Simulate a year of activity <span class="text-xs font-normal text-gray-600">(for testing)</span></span>
+						<span class="block text-sm font-medium text-gray-900">{{ $t('Pages.Setup.text.simulate_a_year_of', {}) }} <span class="text-xs font-normal text-gray-600">{{ $t('Commons.text.for_testing', {}) }}</span></span>
 						<span class="block text-xs text-gray-600">
 							Generates about a year of fictional donations, sorting, partner requests, shipments and stock
 							movement &mdash; roughly 1,000 requests and 10,000+ inventory movements. Meant for testing screens,
@@ -203,16 +200,15 @@ const stepTitle = computed(() => (step.value === 1 ? 'Create the administrator a
 				</label>
 
 				<p v-if="form.starting_data !== 'empty'" class="mt-3 rounded border border-amber-300 bg-amber-50 p-2 text-xs text-amber-900">
-					Example and simulated data can't be removed from inside the app. If you later want a clean instance,
-					you'll need to start over with a fresh database. Don't use this for a real operation.
+					{{ $t('Pages.Setup.text.example_and_simulated_data', {}) }}
 				</p>
 
 				<InputError class="mt-2" :message="form.errors.starting_data" />
 
 				<div class="mt-6 flex items-center justify-between">
-					<SecondaryButton type="button" @click="step = 1" :disabled="form.processing">Back</SecondaryButton>
+					<SecondaryButton type="button" @click="step = 1" :disabled="form.processing">{{ $t('Commons.button.back', {}) }}</SecondaryButton>
 					<PrimaryButton :class="{ 'opacity-25': form.processing || finishLocked }" :disabled="form.processing || finishLocked">
-						{{ form.processing ? (form.starting_data === 'example' ? 'Setting up (loading examples…)' : 'Setting up…') : 'Finish setup' }}
+						{{ form.processing ? (form.starting_data === 'example' ? $t('Pages.Setup.button.setting_up_loading_examples') : $t('Commons.button.setting_up')) : $t('Commons.button.finish_setup') }}
 					</PrimaryButton>
 				</div>
 			</div>

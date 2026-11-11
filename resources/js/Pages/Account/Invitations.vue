@@ -46,35 +46,35 @@ function decline(id) {
 </script>
 
 <template>
-	<Head title="Invitations" />
+	<Head :title="$t('Commons.title.invitations')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="mx-auto max-w-2xl space-y-4 p-4">
-			<h1 class="text-2xl font-bold">Invitations</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Commons.heading.invitations', {}) }}</h1>
 			<p v-if="joined" class="rounded border border-green-300 bg-green-50 p-3 text-sm text-green-900">
-				You joined {{ joined.name }}. <a :href="joined.url" class="underline">Open it</a> (you sign in there with the same login).
+				{{ $t('Commons.text.you_joined') }} {{ joined.name }}. <a :href="joined.url" class="underline">{{ $t('Commons.link.open_it', {}) }}</a> {{ $t('Pages.Account.text.you_sign_in_there', {}) }}
 			</p>
 
-			<p v-if="!invitations.length" class="text-sm text-gray-600">No warehouse has invited you right now.</p>
+			<p v-if="!invitations.length" class="text-sm text-gray-600">{{ $t('Pages.Account.text.no_warehouse_has_invited', {}) }}</p>
 
 			<div v-for="inv in invitations" :key="inv.id" class="rounded border border-gray-200 bg-white p-4">
 				<div class="font-medium text-gray-900">{{ inv.warehouse }}</div>
 				<p class="mt-1 text-sm text-gray-600">
-					You would join as <strong>{{ inv.person }}</strong><template v-if="inv.invited_by"> (invited by {{ inv.invited_by }})</template>.
+					{{ $t('Pages.Account.text.you_would_join_as', {}) }} <strong>{{ inv.person }}</strong><template v-if="inv.invited_by"> (invited by {{ inv.invited_by }})</template>.
 					That warehouse's administrators will be able to manage your access to it. Your password and your other warehouses stay yours.
-					<template v-if="inv.source === 'restore'">This invitation came from a backup restored there, not from a person: only accept it if you expect to be part of that warehouse.</template>
+					<template v-if="inv.source === 'restore'">{{ $t('Pages.Account.text.this_invitation_came_from', {}) }}</template>
 				</p>
 
 				<div v-if="open === inv.id" class="mt-3 flex items-start gap-2">
 					<div class="flex-1">
-						<TextInput type="password" class="block w-full" v-model="form.password" placeholder="Your password" autofocus autocomplete="current-password" @keyup.enter="accept(inv.id)" />
+						<TextInput type="password" class="block w-full" v-model="form.password" :placeholder="$t('Commons.placeholder.your_password')" autofocus autocomplete="current-password" @keyup.enter="accept(inv.id)" />
 						<InputError class="mt-1" :message="form.errors.password" />
 					</div>
-					<PrimaryButton :disabled="form.processing" @click="accept(inv.id)">Confirm</PrimaryButton>
-					<SecondaryButton @click="open = null">Cancel</SecondaryButton>
+					<PrimaryButton :disabled="form.processing" @click="accept(inv.id)">{{ $t('Commons.button.confirm', {}) }}</PrimaryButton>
+					<SecondaryButton @click="open = null">{{ $t('Commons.button.cancel', {}) }}</SecondaryButton>
 				</div>
 				<div v-else class="mt-3 flex gap-2">
-					<PrimaryButton @click="start(inv.id)">Accept</PrimaryButton>
-					<SecondaryButton @click="decline(inv.id)">Decline</SecondaryButton>
+					<PrimaryButton @click="start(inv.id)">{{ $t('Commons.button.accept', {}) }}</PrimaryButton>
+					<SecondaryButton @click="decline(inv.id)">{{ $t('Commons.button.decline', {}) }}</SecondaryButton>
 				</div>
 			</div>
 		</div>
