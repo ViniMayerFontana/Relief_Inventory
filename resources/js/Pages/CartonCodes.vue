@@ -14,6 +14,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, ref } from 'vue';
+import { t } from '@/i18n';
 
 defineProps({ breadcrumb: { type: Array } });
 
@@ -55,7 +56,7 @@ async function load() {
 		records.value = response.data.records;
 		total.value = response.data.total;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load the carton barcodes.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_load_the');
 	}
 }
 
@@ -71,9 +72,9 @@ async function remove(record) {
 		await axios.delete('/json/carton-codes/' + record.id);
 		records.value = records.value.filter((entry) => entry.id !== record.id);
 		total.value -= 1;
-		notice.value = 'Removed carton ' + displayCode(record.code) + '. Its next scan will ask what is inside.';
+		notice.value = t('Pages.text.removed_carton_placeholder_its', { placeholder: displayCode(record.code) });
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not remove that carton barcode.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_remove_that');
 	} finally {
 		busyId.value = null;
 		confirmingId.value = null;
@@ -100,7 +101,7 @@ onMounted(load);
 				<template v-else-if="records">
 					<label class="block text-sm">
 						<span class="text-gray-700">{{ $t('Commons.text.search', {}) }}</span>
-						<input v-model="search" type="text" placeholder="Barcode, item or who added it"
+						<input v-model="search" type="text" :placeholder="$t('Pages.placeholder.barcode_item_or_who')"
 							class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 
@@ -134,7 +135,7 @@ onMounted(load);
 										<template v-if="confirmingId === record.id">
 											<button type="button" :disabled="busyId === record.id" @click="remove(record)"
 												class="inline-flex items-center px-3 py-1.5 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-red-600 hover:bg-red-500">
-												{{ busyId === record.id ? 'Removing…' : $t('Commons.button.confirm_remove') }}
+												{{ busyId === record.id ? $t('Commons.button.removing') : $t('Commons.button.confirm_remove') }}
 											</button>
 											<button type="button" class="ml-2 text-xs underline text-gray-600" @click="confirmingId = null">{{ $t('Commons.button.cancel', {}) }}</button>
 										</template>

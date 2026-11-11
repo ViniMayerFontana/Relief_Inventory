@@ -29,6 +29,7 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { uaSummary } from '@/userAgent';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: {
@@ -61,7 +62,7 @@ async function fetchSessions() {
 		lastRefreshed.value = new Date();
 		error.value = '';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load active sessions.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_load_active');
 	} finally {
 		loading.value = false;
 	}
@@ -73,7 +74,7 @@ async function fetchHistory() {
 		history.value = response.data.history;
 		historyError.value = '';
 	} catch (e) {
-		historyError.value = e.response?.data?.message || 'Could not load login history.';
+		historyError.value = e.response?.data?.message || t('Pages.text.could_not_load_login');
 	} finally {
 		historyLoading.value = false;
 	}
@@ -81,9 +82,9 @@ async function fetchHistory() {
 
 function agoText(iso) {
 	const seconds = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
-	if (seconds < 60) return `${seconds}s ago`;
+	if (seconds < 60) return t('Commons.text.p0_s_ago', { p0: seconds });
 	const minutes = Math.round(seconds / 60);
-	return `${minutes}m ago`;
+	return t('Commons.text.p0_m_ago', { p0: minutes });
 }
 
 // Tap-to-expand for the raw user-agent string, keyed by login_history id —
@@ -98,7 +99,7 @@ function toggleUserAgent(id) {
 }
 
 function methodLabel(method) {
-	return method === 'pin' ? 'PIN unlock' : 'Password';
+	return method === 'pin' ? t('Commons.text.pin_unlock') : t('Commons.text.password');
 }
 
 async function toggleExpanded(entry) {
@@ -118,7 +119,7 @@ async function toggleExpanded(entry) {
 		});
 		personHistory.value = response.data.history;
 	} catch (e) {
-		personHistoryError.value = e.response?.data?.message || 'Could not load login history.';
+		personHistoryError.value = e.response?.data?.message || t('Pages.text.could_not_load_login');
 	} finally {
 		personHistoryLoading.value = false;
 	}
@@ -149,11 +150,11 @@ const sortedSessions = computed(() =>
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<div class="flex items-center justify-between">
 					<h2 class="text-lg font-semibold">
-						Active in the last {{ activeWindowMinutes }} minutes
+						{{ $t('Pages.heading.active_in_the_last') }} {{ activeWindowMinutes }} {{ $t('Commons.heading.minutes') }}
 						<span class="text-gray-400 font-normal">({{ sortedSessions.length }})</span>
 					</h2>
 					<span v-if="lastRefreshed" class="text-xs text-gray-400">
-						Updated {{ lastRefreshed.toLocaleTimeString() }}
+						{{ $t('Commons.text.updated') }} {{ lastRefreshed.toLocaleTimeString() }}
 					</span>
 				</div>
 
@@ -182,8 +183,7 @@ const sortedSessions = computed(() =>
 				</table>
 
 				<p class="text-xs text-gray-500">
-					Someone who logs out won't disappear from this list instantly — their session just stops
-					updating and ages out of the {{ activeWindowMinutes }}-minute window on its own.
+					{{ $t('Pages.text.someone_who_logs_out') }} {{ activeWindowMinutes }}{{ $t('Pages.text.minute_window_on_its') }}
 				</p>
 			</section>
 

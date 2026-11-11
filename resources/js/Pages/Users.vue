@@ -44,6 +44,7 @@ import Checkbox from '@/Components/Checkbox.vue';
 import UserInvitations from '@/Components/UserInvitations.vue';
 import axios from 'axios';
 import { withWarehouse } from '@/bootstrap';
+import { t } from '@/i18n';
 
 defineProps({
     breadcrumb: {
@@ -396,7 +397,7 @@ function cancelEdit() {
 function describeSaveError(err) {
     const errors = err.response?.data?.errors;
     if (errors) return Object.values(errors).flat().join(' ');
-    return err.response?.data?.message || 'Could not save. Please try again.';
+    return err.response?.data?.message || t('Pages.text.could_not_save_please');
 }
 
 function saveUser() {
@@ -416,7 +417,7 @@ function saveUser() {
 
     request
         .then((response) => {
-            notice.value = response.data.message || 'Saved.';
+            notice.value = response.data.message || t('Pages.text.saved');
             cancelEdit();
             fetchUsers();
         })
@@ -449,7 +450,7 @@ function runAccountAction(url, body = {}) {
     accountActionBusy.value = true;
     return axios.post(`/json/users/${selected.value.id}/${url}`, body)
         .then((response) => {
-            notice.value = response.data.message || 'Done.';
+            notice.value = response.data.message || t('Pages.text.done');
             refreshSelected();
         })
         .catch((err) => {
@@ -577,7 +578,7 @@ function setPasswordChangeRequired(required) {
           v-if="visibleCheckedIds.length"
           class="flex flex-wrap items-center gap-2 rounded bg-indigo-50 border border-indigo-200 px-3 py-2 text-sm"
         >
-          <span class="font-semibold">{{ visibleCheckedIds.length }} selected:</span>
+          <span class="font-semibold">{{ visibleCheckedIds.length }} {{ $t('Commons.text.selected') }}</span>
           <SecondaryButton :disabled="bulkBusy" @click="runBulk('approve')">{{ $t('Commons.button.approve', {}) }}</SecondaryButton>
           <SecondaryButton :disabled="bulkBusy" @click="runBulk('resend_invite')">{{ $t('Pages.button.send_invite_reset_email', {}) }}</SecondaryButton>
           <SecondaryButton :disabled="bulkBusy" @click="runBulk('require_password_change')">{{ $t('Pages.button.require_password_change', {}) }}</SecondaryButton>
@@ -646,7 +647,7 @@ function setPasswordChangeRequired(required) {
             </tbody>
           </table>
           <p v-if="filteredUsers.length" class="text-xs text-gray-500 mt-2">
-            Showing {{ filteredUsers.length }} {{ filteredUsers.length === 1 ? 'user' : 'users' }}.
+            {{ $t('Commons.text.showing') }} {{ filteredUsers.length }} {{ filteredUsers.length === 1 ? 'user' : 'users' }}.
           </p>
         </div>
       </section>
@@ -670,7 +671,7 @@ function setPasswordChangeRequired(required) {
           </label>
         </div>
         <div v-if="!selected.id" class="space-y-3 text-sm">
-          <span class="text-gray-700">Password</span>
+          <span class="text-gray-700">{{ $t('Commons.text.password', {}) }}</span>
           <label class="flex items-start gap-2">
             <input v-model="selected.password_mode" type="radio" value="invite" class="mt-1" />
             <span>{{ $t('Pages.text.email_them_a_link', {}) }}</span>
@@ -683,7 +684,7 @@ function setPasswordChangeRequired(required) {
           <div v-if="selected.password_mode === 'set'" class="ml-6 space-y-3">
             <div class="flex flex-wrap items-end gap-2">
               <label class="block flex-1 min-w-[12rem]">
-                <span class="text-gray-700">Password</span>
+                <span class="text-gray-700">{{ $t('Commons.text.password', {}) }}</span>
                 <input
                   v-model="selected.password"
                   :type="showPassword ? 'text' : 'password'"
@@ -700,7 +701,7 @@ function setPasswordChangeRequired(required) {
             </label>
             <label class="flex items-center gap-2">
               <input v-model="selected.send_login_email" type="checkbox" />
-              <span>Email them their login details (the login address and their email — not the password)</span>
+              <span>{{ $t('Pages.text.email_them_their_login', {}) }}</span>
             </label>
             <p class="text-xs text-gray-500">
               {{ $t('Pages.text.you_ll_need_to', {}) }}
@@ -714,7 +715,7 @@ function setPasswordChangeRequired(required) {
 
         <div class="ri_fieldset" style="display:flex; align-items:center; gap:0.5rem;">
           <Checkbox v-model="selected.is_volunteer" :enabled="true" />
-          <span class="text-sm text-gray-700">Volunteer (unpaid) — independent of their role below</span>
+          <span class="text-sm text-gray-700">{{ $t('Pages.text.volunteer_unpaid_independent_of', {}) }}</span>
         </div>
 
         <div>
@@ -779,7 +780,7 @@ function setPasswordChangeRequired(required) {
               <dd>
                 {{ formatDateTime(selected.created_at) || $t('Commons.text.unknown') }}
                 <span v-if="selected.created_by_name" class="text-gray-500">by {{ selected.created_by_name }}</span>
-                <span v-else-if="selected.created_at" class="text-gray-500">(self-registered or before this was recorded)</span>
+                <span v-else-if="selected.created_at" class="text-gray-500">{{ $t('Pages.text.self_registered_or_before', {}) }}</span>
               </dd>
             </div>
             <div>
@@ -855,8 +856,7 @@ function setPasswordChangeRequired(required) {
           <div v-if="passwordForm" class="rounded border border-gray-300 p-4 space-y-3 text-sm">
             <h4 class="font-semibold text-gray-700">{{ $t('Commons.button.set_password', {}) }}</h4>
             <p class="text-xs text-gray-500">
-              Replaces their current password straight away — for someone whose email isn't arriving.
-              You'll need to give it to them yourself.
+              {{ $t('Pages.text.replaces_their_current_password', {}) }}
             </p>
             <div class="flex flex-wrap items-end gap-2">
               <label class="block flex-1 min-w-[12rem]">
@@ -877,11 +877,11 @@ function setPasswordChangeRequired(required) {
             </label>
             <label class="flex items-center gap-2">
               <input v-model="passwordForm.send_login_email" type="checkbox" />
-              <span>Email them their login details (not the password)</span>
+              <span>{{ $t('Pages.text.email_them_their_login_2', {}) }}</span>
             </label>
             <div class="flex gap-2">
               <PrimaryButton :disabled="passwordSaving || !passwordForm.password" @click="savePassword">
-                {{ passwordSaving ? 'Saving…' : $t('Commons.button.save_password') }}
+                {{ passwordSaving ? $t('Commons.button.saving') : $t('Commons.button.save_password') }}
               </PrimaryButton>
               <button type="button" class="text-sm text-gray-500 underline" @click="passwordForm = null">{{ $t('Commons.button.cancel', {}) }}</button>
             </div>
@@ -889,7 +889,7 @@ function setPasswordChangeRequired(required) {
         </div>
 
         <div class="flex gap-2 pt-2">
-          <PrimaryButton :disabled="saving" @click="saveUser">{{ saving ? 'Saving…' : $t('Commons.button.save') }}</PrimaryButton>
+          <PrimaryButton :disabled="saving" @click="saveUser">{{ saving ? $t('Commons.button.saving') : $t('Commons.button.save') }}</PrimaryButton>
           <button type="button" class="text-sm text-gray-500 underline" @click="cancelEdit">{{ $t('Commons.button.cancel', {}) }}</button>
         </div>
       </section>

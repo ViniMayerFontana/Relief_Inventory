@@ -25,7 +25,7 @@ defineProps({
 	},
 });
 
-const MAILER_LABELS = { resend: 'Resend', smtp: 'SMTP server', log: 'Log only (no email is sent)' };
+const MAILER_LABELS = { resend: t('Commons.text.resend'), smtp: t('Commons.text.smtp_server'), log: t('Pages.text.log_only_no_email') };
 
 const error = ref('');
 const notice = ref('');
@@ -64,16 +64,16 @@ const activeMailer = computed(() => form.mailer || defaults.value.mailer);
 
 function placeholder(key) {
 	const value = defaults.value[key];
-	return value ? `Server default: ${value}` : 'Not set';
+	return value ? t('Pages.text.server_default_p0', { p0: value }) : t('Commons.text.not_set');
 }
 
 // Where the key/password in use comes from, for the status line under each secret field.
 function secretSource(key) {
 	const s = status.value?.settings ?? {};
-	if (form['clear_' + key]) return defaults.value[key + '_set'] ? 'Will use the one in the server .env' : 'Will be removed';
+	if (form['clear_' + key]) return defaults.value[key + '_set'] ? 'Will use the one in the server .env' : t('Pages.text.will_be_removed');
 	if (form[key]) return t('Pages.text.a_new_one_will');
 	if (s[key + '_set']) return t('Commons.text.saved_here');
-	if (defaults.value[key + '_set']) return 'Using the one in the server .env';
+	if (defaults.value[key + '_set']) return t('Pages.text.using_the_one_in');
 	return t('Commons.text.none_set');
 }
 
@@ -84,7 +84,7 @@ async function load() {
 		testTo.value = response.data.test_to ?? '';
 		loaded.value = true;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load the email settings.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_load_the_2');
 	}
 }
 
@@ -96,9 +96,9 @@ async function save() {
 		const payload = { ...form, smtp_port: form.smtp_port === '' ? null : Number(form.smtp_port) };
 		const response = await axios.put('/json/mail-settings', payload);
 		fill(response.data);
-		savedAt.value = 'Saved ' + new Date().toLocaleTimeString();
+		savedAt.value = t('Commons.text.saved_placeholder', { placeholder: new Date().toLocaleTimeString() });
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not save the email settings.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_save_the');
 	} finally {
 		saving.value = false;
 	}
@@ -112,7 +112,7 @@ async function sendTest() {
 		const response = await axios.post('/json/mail-settings/test', { to: testTo.value });
 		notice.value = response.data.message;
 	} catch (e) {
-		error.value = e.response?.data?.message || 'The test email could not be sent.';
+		error.value = e.response?.data?.message || t('Pages.text.the_test_email_could');
 	} finally {
 		testing.value = false;
 	}
@@ -186,7 +186,7 @@ onMounted(load);
 									class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 							</label>
 							<label class="block">
-								<span class="text-gray-700">Password</span>
+								<span class="text-gray-700">{{ $t('Commons.text.password', {}) }}</span>
 								<input v-model="form.smtp_password" type="password" autocomplete="new-password"
 									:placeholder="$t('Pages.placeholder.leave_blank_to_keep_2')" :disabled="form.clear_smtp_password"
 									class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
@@ -223,7 +223,7 @@ onMounted(load);
 				</section>
 
 				<div class="flex items-center gap-4">
-					<PrimaryButton :disabled="saving || !dirty" @click="save">{{ saving ? 'Saving…' : $t('Commons.button.save') }}</PrimaryButton>
+					<PrimaryButton :disabled="saving || !dirty" @click="save">{{ saving ? $t('Commons.button.saving') : $t('Commons.button.save') }}</PrimaryButton>
 					<span v-if="savedAt && !dirty" class="text-sm text-gray-600">{{ savedAt }}</span>
 					<span v-if="dirty" class="text-sm text-amber-700">{{ $t('Commons.text.unsaved_changes', {}) }}</span>
 				</div>
@@ -240,7 +240,7 @@ onMounted(load);
 						</PrimaryButton>
 					</div>
 					<p class="text-xs text-gray-500">
-						Uses the saved settings{{ dirty ? $t('Pages.text.save_your_changes_first') : '' }}. If the mail service refuses
+						{{ $t('Pages.text.uses_the_saved_settings') }}{{ dirty ? $t('Pages.text.save_your_changes_first') : '' }}. If the mail service refuses
 						the message, its own error is shown above.
 					</p>
 				</section>

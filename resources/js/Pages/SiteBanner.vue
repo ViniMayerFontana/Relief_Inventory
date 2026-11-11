@@ -16,6 +16,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: { type: Array },
@@ -58,9 +59,9 @@ watch([maintenanceStart, maintenanceEnd], ([start, end]) => {
 	const endText = formatForMessage(end);
 
 	if (startText && endText) {
-		bannerMessage.value = `Scheduled maintenance from ${startText} to ${endText}. The site may be briefly unavailable during this time.`;
+		bannerMessage.value = t('Pages.text.scheduled_maintenance_from_p0', { p0: startText, p1: endText });
 	} else if (startText) {
-		bannerMessage.value = `Scheduled maintenance starting ${startText}. The site may be briefly unavailable during this time.`;
+		bannerMessage.value = t('Pages.text.scheduled_maintenance_starting_p0', { p0: startText });
 	}
 });
 
@@ -74,7 +75,7 @@ async function saveBanner() {
 		});
 		bannerSavedAt.value = new Date().toLocaleTimeString();
 	} catch (e) {
-		bannerError.value = e.response?.data?.message || 'Could not save banner settings.';
+		bannerError.value = e.response?.data?.message || t('Pages.text.could_not_save_banner');
 	} finally {
 		bannerSaving.value = false;
 	}
@@ -89,8 +90,7 @@ async function saveBanner() {
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<p class="text-sm text-gray-600">
-					Only one banner shows at a time. Choose a kind, add a message if needed, and save —
-					every user sees it until they dismiss it or you change it again.
+					{{ $t('Pages.text.only_one_banner_shows', {}) }}
 				</p>
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
@@ -128,7 +128,7 @@ async function saveBanner() {
 
 				<div class="flex items-center gap-3">
 					<PrimaryButton :disabled="bannerSaving" @click="saveBanner">
-						{{ bannerSaving ? 'Saving…' : $t('Commons.button.save_banner') }}
+						{{ bannerSaving ? $t('Commons.button.saving') : $t('Commons.button.save_banner') }}
 					</PrimaryButton>
 					<span v-if="bannerSavedAt" class="text-xs text-gray-500">{{ $t('Commons.text.saved') }} {{ bannerSavedAt }}</span>
 				</div>

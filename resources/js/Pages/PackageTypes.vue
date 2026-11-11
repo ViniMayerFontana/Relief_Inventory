@@ -93,11 +93,11 @@ const packageTypeSort = computed(() => (a, b) =>
 				<div class="ri_formtable">
 					<div class="ri_fieldset">
 						<div class="ri_fieldlabel">{{ $t('Commons.text.singular_2', {}) }}</div>
-						<TextInput v-model="record.singular" placeholder="e.g. Case" required autofocus :enabled="editing" />
+						<TextInput v-model="record.singular" :placeholder="$t('Pages.placeholder.e_g_case')" required autofocus :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
 						<div class="ri_fieldlabel">{{ $t('Commons.text.plural_2', {}) }}</div>
-						<TextInput v-model="record.plural" placeholder="e.g. Cases" required :enabled="editing" />
+						<TextInput v-model="record.plural" :placeholder="$t('Pages.placeholder.e_g_cases')" required :enabled="editing" />
 					</div>
 				</div>
 			</template>

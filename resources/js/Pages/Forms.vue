@@ -41,9 +41,9 @@ const statusOptions = [
 ];
 
 const accessOptions = [
-	{ value: 'staff_only', label: 'Staff only (must be logged in)' },
-	{ value: 'public', label: 'Public link (no login required)' },
-	{ value: 'both', label: 'Both — public link, or staff filling it out for someone' },
+	{ value: 'staff_only', label: t('Pages.text.staff_only_must_be') },
+	{ value: 'public', label: t('Pages.text.public_link_no_login') },
+	{ value: 'both', label: t('Pages.text.both_public_link_or') },
 ];
 
 const approvalActionOptions = [
@@ -59,7 +59,7 @@ const typeOptions = [
 	{ value: 'yes_no', label: t('Pages.text.yes_no') },
 	{ value: 'single_choice', label: t('Commons.text.single_choice') },
 	{ value: 'multiple_choice', label: t('Commons.text.multiple_choice') },
-	{ value: 'section_header', label: 'Section Header (no answer)' },
+	{ value: 'section_header', label: t('Pages.text.section_header_no_answer') },
 ];
 
 const choiceTypes = ['single_choice', 'multiple_choice'];
@@ -146,7 +146,7 @@ async function saveEditQuestion(record, question) {
 }
 
 async function deleteQuestion(record, question) {
-	if (!confirm(`Remove "${question.label}"?`)) return;
+	if (!confirm(t('Pages.text.remove_p0', { p0: question.label }))) return;
 	await axios.delete(`/json/forms/${record.id}/questions/${question.id}`);
 	record.questions = record.questions.filter((q) => q.id !== question.id);
 }
@@ -260,7 +260,7 @@ async function moveQuestion(record, index, direction) {
 						<div v-for="(question, index) in record.questions" :key="question.id" class="border rounded p-2 text-sm">
 							<div v-if="editingQuestionId === question.id" class="space-y-2">
 								<TextInput v-model="editQuestionForm.label" :placeholder="$t('Commons.placeholder.question_label')" />
-								<TextInput v-model="editQuestionForm.help_text" placeholder="Help text (optional)" />
+								<TextInput v-model="editQuestionForm.help_text" :placeholder="$t('Pages.placeholder.help_text_optional')" />
 								<select v-model="editQuestionForm.type" class="rounded-md border-gray-300 shadow-sm text-sm">
 									<option v-for="o in typeOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
 								</select>
@@ -321,7 +321,7 @@ async function moveQuestion(record, index, direction) {
 					<div class="border rounded p-3 space-y-2">
 						<h4 class="font-medium text-sm">{{ $t('Pages.heading.add_a_custom_question', {}) }}</h4>
 						<TextInput v-model="newQuestion.label" :placeholder="$t('Commons.placeholder.question_label')" />
-						<TextInput v-model="newQuestion.help_text" placeholder="Help text (optional)" />
+						<TextInput v-model="newQuestion.help_text" :placeholder="$t('Pages.placeholder.help_text_optional')" />
 						<select v-model="newQuestion.type" class="rounded-md border-gray-300 shadow-sm text-sm">
 							<option v-for="o in typeOptions" :key="o.value" :value="o.value">{{ o.label }}</option>
 						</select>

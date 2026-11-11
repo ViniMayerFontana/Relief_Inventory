@@ -18,6 +18,7 @@ import ComboBox from '@/Components/ComboBox.vue';
 import RIForm from '@/Components/RIForm.vue';
 import RISubform from '@/Components/RISubform.vue';
 import Checkbox from '@/Components/Checkbox.vue';
+import { t } from '@/i18n';
 
 defineProps({
     breadcrumb: {
@@ -35,20 +36,20 @@ async function openMove(item) {
 	try {
 		move.value.impact = (await axios.get(`/json/items/${item.id}/move-impact`)).data;
 	} catch (e) {
-		move.value.error = e.response?.data?.message || 'Could not load what this item is linked to.';
+		move.value.error = e.response?.data?.message || t('Pages.text.could_not_load_what');
 	}
 }
 
 async function confirmMove() {
 	const m = move.value;
-	if (!m.itemtype_id) { m.error = 'Choose the ACS # to move this item to.'; return; }
+	if (!m.itemtype_id) { m.error = t('Pages.text.choose_the_acs_to'); return; }
 	m.busy = true;
 	m.error = '';
 	try {
 		await axios.post(`/json/items/${m.item.id}/move`, { itemtype_id: m.itemtype_id });
 		window.location.reload(); // the open Item Type record is stale now
 	} catch (e) {
-		m.error = e.response?.data?.message || e.response?.data?.errors?.itemtype_id?.[0] || 'The move failed.';
+		m.error = e.response?.data?.message || e.response?.data?.errors?.itemtype_id?.[0] || t('Pages.text.the_move_failed');
 		m.busy = false;
 	}
 }
@@ -158,16 +159,16 @@ const itemSort = computed(() => (a, b) => {
 		  		<div class="ri_fieldlabel">{{ $t('Commons.text.family', {}) }}</div>
 		  		<TextInput
 		  			    v-model="record.family"
-		  			    placeholder="e.g. 318"
+		  			    :placeholder="$t('Pages.placeholder.e_g_318')"
 		  			    autofocus
 		  				:enabled="editing"
 		  		  />
 		  	  </div>
 		  <div class="ri_fieldset">
-		  		<div class="ri_fieldlabel">Variant (optional)</div>
+		  		<div class="ri_fieldlabel">{{ $t('Commons.text.variant_optional', {}) }}</div>
 		  		<TextInput
 		  			    v-model="record.variant"
-		  			    placeholder="e.g. 90"
+		  			    :placeholder="$t('Pages.placeholder.e_g_90')"
 		  				:enabled="editing"
 		  		  />
 		  	  </div>
@@ -203,9 +204,9 @@ const itemSort = computed(() => (a, b) => {
 				<template #thead>
 					<th> {{ $t('Commons.placeholder.plus_code', {}) }} </th>
 					<th>{{ $t('Commons.text.item_description', {}) }}</th>
-					<th colspan="3">Package</th>
-					<th>Total {{ record.unit.abbreviation }}</th>
-					<th>UPC</th>
+					<th colspan="3">{{ $t('Commons.text.package', {}) }}</th>
+					<th>{{ $t('Commons.text.total') }} {{ record.unit.abbreviation }}</th>
+					<th>{{ $t('Commons.placeholder.upc', {}) }}</th>
 					<th v-if="canMove"></th>
 				</template>
 				<template #tbody="{ subrecord, index }">
@@ -263,7 +264,7 @@ const itemSort = computed(() => (a, b) => {
 				  <td>
 				  <TextInput
 				  	    v-model="subrecord.upc"
-						placeholder="UPC"
+						:placeholder="$t('Commons.placeholder.upc')"
 				  		:enabled="true"
 				    /> 
 				  </td>
@@ -277,7 +278,7 @@ const itemSort = computed(() => (a, b) => {
 	<Modal :show="move.open" max-width="lg" @close="move.open = false">
 		<div class="item_move">
 			<h3>{{ $t('Pages.heading.move_item_to_a', {}) }}</h3>
-			<p v-if="move.item"><strong>{{ move.item.description || '(no description)' }}</strong><span v-if="move.impact"> {{ $t('Pages.text.now_under') }} {{ move.impact.item.acs }} {{ move.impact.item.itemtype }}</span></p>
+			<p v-if="move.item"><strong>{{ move.item.description || $t('Commons.text.no_description') }}</strong><span v-if="move.impact"> {{ $t('Pages.text.now_under') }} {{ move.impact.item.acs }} {{ move.impact.item.itemtype }}</span></p>
 			<label>{{ $t('Pages.label.new_acs_item_type', {}) }}</label>
 			<SearchSelect
 				v-model="move.itemtype_id"
@@ -288,19 +289,18 @@ const itemSort = computed(() => (a, b) => {
 			/>
 			<div v-if="move.impact" class="item_move_warn">
 				<strong>{{ $t('Pages.text.this_changes_history_not', {}) }}</strong>
-				Everything recorded against this item moves to the new ACS #: its
+				{{ $t('Pages.text.everything_recorded_against_this') }}
 				{{ move.impact.ledger_rows }} sorting/fill ledger row(s) (so stock on hand and the inventory and flow reports change),
 				{{ move.impact.pallet_assignments }} pallet stock entr{{ move.impact.pallet_assignments === 1 ? 'y' : 'ies' }}
-				and any carton barcodes pointing at it.
+				{{ $t('Pages.text.and_any_carton_barcodes') }}
 				<span v-if="move.impact.order_fills">
-					{{ move.impact.order_fills }} of its ledger rows are fills for order lines; those lines still request the old item type,
-					so past orders will show goods of a different type than was requested. Orders themselves are not changed.
+					{{ move.impact.order_fills }} {{ $t('Pages.text.of_its_ledger_rows') }}
 				</span>
 				{{ $t('Pages.text.already_printed_inventory_labels', {}) }}
 			</div>
 			<p v-if="move.error" class="item_move_error">{{ move.error }}</p>
 			<div class="item_move_actions">
-				<button type="button" class="ri_defaultbutton" :disabled="move.busy || !move.impact" @click="confirmMove">{{ move.busy ? 'Moving...' : $t('Commons.button.move_item') }}</button>
+				<button type="button" class="ri_defaultbutton" :disabled="move.busy || !move.impact" @click="confirmMove">{{ move.busy ? $t('Pages.button.moving') : $t('Commons.button.move_item') }}</button>
 				<button type="button" class="ri_formbutton" @click="move.open = false">{{ $t('Commons.button.cancel', {}) }}</button>
 			</div>
 		</div>

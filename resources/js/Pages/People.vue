@@ -104,9 +104,7 @@ defineProps({
             />
           </div>
           <p class="ri_fieldhint">
-            Check this for the org's own record (e.g. "Macedonia SDA Church") so individual contacts at
-            that org can be linked to it below, instead of inferring org-vs-individual from which name
-            fields happen to be filled in.
+            {{ $t('Pages.text.check_this_for_the', {}) }}
           </p>
 
           <div class="ri_fieldset">
@@ -127,7 +125,7 @@ defineProps({
             <div class="ri_fieldlabel">{{ $t('Commons.text.contact_role', {}) }}</div>
             <TextInput
               v-model="record.contact_role"
-              placeholder="e.g. Primary, Delivery, Billing"
+              :placeholder="$t('Pages.placeholder.e_g_primary_delivery')"
               :enabled="canEditRecord(record, editing)"
             />
           </div>
@@ -139,7 +137,7 @@ defineProps({
               v-model="record.category_id"
               optionsource="/json/person-categories"
               display="name"
-              placeholder="e.g. Donor, Supplier, Warehouse Contact..."
+              :placeholder="$t('Pages.placeholder.e_g_donor_supplier')"
               :allowcreate="true"
               :enabled="canEditRecord(record, editing)"
               @create="createCategory"
@@ -147,8 +145,7 @@ defineProps({
           </div>
           <p v-if="categoryError" class="ri_error">{{ categoryError }}</p>
           <p class="ri_fieldhint">
-            An open-ended tag for filtering the People list (Donor, Supplier, Warehouse Contact, etc.) —
-            type a new one to add it. Not tied to permissions and not required.
+            {{ $t('Pages.text.an_open_ended_tag', {}) }}
           </p>
 
           <div class="ri_fieldset">
@@ -299,7 +296,7 @@ defineProps({
             </div>
             <div v-if="record.partner_status_logs?.length" class="mt-2 text-xs text-gray-500 space-y-1">
               <div v-for="log in record.partner_status_logs" :key="log.id">
-                {{ log.from_status || '(not tracked)' }} &rarr; {{ log.to_status }}
+                {{ log.from_status || $t('Commons.text.not_tracked_2') }} &rarr; {{ log.to_status }}
                 by {{ log.changed_by?.full_name }} &mdash; {{ new Date(log.created_at).toLocaleString() }}
                 <span v-if="log.notes">&mdash; {{ log.notes }}</span>
               </div>
@@ -314,8 +311,7 @@ defineProps({
             />
           </div>
           <p class="ri_fieldhint">
-            Whether this person is a volunteer is separate from their role &mdash; a volunteer
-            can be an office manager or an administrator too. Feeds volunteer hours tracking.
+            {{ $t('Pages.text.whether_this_person_is', {}) }}
           </p>
 
           <div class="ri_fieldset">
@@ -415,7 +411,7 @@ export default {
         invalidateOptions('/json/person-categories');
         await this.$refs.categorySelect?.refresh(response.data.record.id);
       } catch (error) {
-        this.categoryError = error.response?.data?.message || 'Could not save category.';
+        this.categoryError = error.response?.data?.message || t('Pages.text.could_not_save_category');
       }
     },
     // Looks up county/city/state/zip once there's enough to geocode —
@@ -486,7 +482,7 @@ export default {
         // API key configured) — also expected, not a fault; address entry
         // works fine without it either way.
         if (![422, 503].includes(error.response?.status)) {
-          this.countyLookupError = error.response?.data?.message || 'Could not look up that address.';
+          this.countyLookupError = error.response?.data?.message || t('Pages.text.could_not_look_up');
         }
       }
     },
@@ -550,7 +546,7 @@ export default {
           { to: 'approved', label: t('Commons.button.approve') },
         ],
         blocked: [
-          { to: 'approved', label: 'Unblock (Approve)' },
+          { to: 'approved', label: t('Commons.text.unblock_approve') },
           { to: 'denied', label: t('Commons.text.deny') },
         ],
       };
@@ -571,7 +567,7 @@ export default {
         record.partner_status_logs = response.data.record.partner_status_logs;
         this.composingPartnerStatus = null;
       } catch (error) {
-        this.partnerStatusError = error.response?.data?.message || 'Could not update partner status.';
+        this.partnerStatusError = error.response?.data?.message || t('Pages.text.could_not_update_partner');
       }
     },
   },

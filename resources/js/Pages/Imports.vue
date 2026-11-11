@@ -18,6 +18,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: { type: Array },
@@ -68,7 +69,7 @@ function onFileChange(event) {
 async function upload() {
 	uploadError.value = null;
 	if (!selectedFile.value || !selectedFileType.value) {
-		uploadError.value = 'Choose a file type and a file.';
+		uploadError.value = t('Pages.text.choose_a_file_type');
 		return;
 	}
 	uploading.value = true;
@@ -85,7 +86,7 @@ async function upload() {
 		previewDecisions.value = response.data.decisions || [];
 		await loadBatches();
 	} catch (error) {
-		uploadError.value = error.response?.data?.message || 'Could not upload/preview this file.';
+		uploadError.value = error.response?.data?.message || t('Pages.text.could_not_upload_preview');
 	} finally {
 		uploading.value = false;
 	}
@@ -102,7 +103,7 @@ async function commit(batchId) {
 		}
 		await loadBatches();
 	} catch (error) {
-		commitError.value = error.response?.data?.message || 'Commit failed.';
+		commitError.value = error.response?.data?.message || t('Pages.text.commit_failed');
 	} finally {
 		committing.value = false;
 	}
@@ -170,8 +171,7 @@ onMounted(() => {
 				<div v-if="selectedFileType === 'mailing_list'" class="rounded bg-blue-50 border border-blue-200 text-blue-900 px-4 py-3 text-sm space-y-1">
 					<p>
 						{{ $t('Pages.text.the_first_row_must', {}) }}
-						<strong>First Name, Last Name</strong> (or one <strong>{{ $t('Commons.button.name', {}) }}</strong> column), <strong>Organization,
-						Address, Address 2, City, State, Zip, Tags</strong>.
+						<strong>{{ $t('Pages.text.first_name_last_name', {}) }}</strong> (or one <strong>{{ $t('Commons.button.name', {}) }}</strong> column), <strong>{{ $t('Pages.text.organization_address_address_2', {}) }}</strong>.
 					</p>
 					<p>
 						<strong>{{ $t('Commons.text.tags', {}) }}</strong>{{ $t('Pages.text.donor_partner_volunteer_or', {}) }}
@@ -222,7 +222,7 @@ onMounted(() => {
 				<div v-if="commitError" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ commitError }}</div>
 
 				<PrimaryButton v-if="preview.status === 'previewed'" @click="commit(preview.id)" :disabled="committing">
-					{{ committing ? 'Committing…' : $t('Pages.button.commit_write_these_changes') }}
+					{{ committing ? $t('Commons.button.committing') : $t('Pages.button.commit_write_these_changes') }}
 				</PrimaryButton>
 				<p v-else-if="preview.status === 'completed'" class="text-sm text-green-700">{{ $t('Pages.text.committed', {}) }}</p>
 			</section>
