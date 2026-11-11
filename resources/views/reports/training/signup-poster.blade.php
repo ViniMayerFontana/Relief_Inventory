@@ -4,7 +4,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sign Up for Training</title>
+    <title>{{ __("Reports.Training.SignupPoster.text.sign_up_for_training") }}</title>
     <style>
         @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 0.75in; }
         body { font-family: Arial, sans-serif; color: #1e3a8a; margin: 0; text-align: center; }
@@ -17,8 +17,8 @@
     </style>
 </head>
 <body>
-    <h1>Sign up for training</h1>
-    <div class="lead">Scan with your phone camera — it takes less than a minute.</div>
+    <h1>{{ __("Reports.Training.SignupPoster.text.sign_up_for_training_2") }}</h1>
+    <div class="lead">{{ __("Reports.Training.SignupPoster.text.scan_with_your_phone") }}</div>
     <div class="qr">{!! $qr !!}</div>
     <div class="url">{{ $url }}</div>
     <div class="foot">{{ config('app.name') }}</div>

@@ -7,7 +7,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Inventory Flow Report</title>
+    <title>{{ __("Reports.Flow.text.inventory_flow_report") }}</title>
     <style>
         @page {
             size: {{ \App\Support\ReportPaper::size() }};
@@ -42,7 +42,7 @@
     </style>
 </head>
 <body>
-    <h1>Inventory Flow Report</h1>
+    <h1>{{ __("Reports.Flow.text.inventory_flow_report") }}</h1>
     <div class="subtitle">
         {{ config('app.name') }} &mdash; {{ $f->from }} to {{ $f->to }}, by {{ $f->bucket }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
@@ -60,8 +60,8 @@
     <h2>By {{ $f->bucket }}</h2>
     <table>
         <thead><tr>
-            <th>Period starting</th><th class="num">Received</th><th class="num">Picked</th><th class="num">Adjustments</th>
-            <th class="num">On hand (end)</th><th class="num">Outdated</th><th class="num">Trashed</th><th class="num">Diverted</th>
+            <th>{{ __("Commons.text.period_starting") }}</th><th class="num">Received</th><th class="num">{{ __("Commons.text.picked") }}</th><th class="num">{{ __("Commons.text.adjustments") }}</th>
+            <th class="num">{{ __("Reports.Flow.text.on_hand_end") }}</th><th class="num">{{ __("Commons.text.outdated") }}</th><th class="num">{{ __("Commons.text.trashed") }}</th><th class="num">{{ __("Commons.text.diverted") }}</th>
         </tr></thead>
         <tbody>
             @foreach($report['buckets'] as $b)
@@ -80,9 +80,9 @@
     </table>
 
     @if(count($report['adjustment_reasons']))
-        <h2>Adjustments by reason</h2>
+        <h2>{{ __("Reports.Flow.text.adjustments_by_reason") }}</h2>
         <table>
-            <thead><tr><th>Reason</th><th class="num">Added</th><th class="num">Removed</th></tr></thead>
+            <thead><tr><th>{{ __("Commons.text.reason") }}</th><th class="num">{{ __("Commons.text.added") }}</th><th class="num">{{ __("Commons.text.removed") }}</th></tr></thead>
             <tbody>
                 @foreach($report['adjustment_reasons'] as $r)
                     <tr><td>{{ $r['label'] }}</td><td class="num">{{ number_format($r['added']) }}</td><td class="num">{{ number_format($r['removed']) }}</td></tr>
@@ -91,12 +91,12 @@
         </table>
     @endif
 
-    <h2>By item</h2>
+    <h2>{{ __("Commons.text.by_item") }}</h2>
     <table>
         <thead><tr>
-            <th>Item #</th><th>Item</th><th>Unit</th><th class="num">Opening</th><th class="num">Received</th>
-            <th class="num">Picked</th><th class="num">Adjust.</th><th class="num">Closing</th>
-            <th class="num">Outdated</th><th class="num">Trashed</th><th class="num">Diverted</th>
+            <th>{{ __("Commons.text.item") }}</th><th>{{ __("Commons.text.item_2") }}</th><th>{{ __("Commons.text.unit") }}</th><th class="num">{{ __("Commons.text.opening") }}</th><th class="num">Received</th>
+            <th class="num">{{ __("Commons.text.picked") }}</th><th class="num">{{ __("Reports.Flow.text.adjust") }}</th><th class="num">{{ __("Commons.text.closing") }}</th>
+            <th class="num">{{ __("Commons.text.outdated") }}</th><th class="num">{{ __("Commons.text.trashed") }}</th><th class="num">{{ __("Commons.text.diverted") }}</th>
         </tr></thead>
         <tbody>
             @foreach($report['items'] as $i)

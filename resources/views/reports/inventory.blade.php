@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Inventory Report</title>
+    <title>{{ __("Commons.text.inventory_report") }}</title>
     <style>
         @page {
             size: {{ \App\Support\ReportPaper::size() }};
@@ -96,7 +96,7 @@
     </style>
 </head>
 <body>
-    <h1>Inventory Report</h1>
+    <h1>{{ __("Commons.text.inventory_report") }}</h1>
     <div class="subtitle">
         {{ config('app.name') }} &mdash; stock on hand, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
@@ -108,14 +108,14 @@
                     <th class="category-heading" colspan="8">{{ $category ?? 'Uncategorized' }}</th>
                 </tr>
                 <tr>
-                    <th>Item #</th>
-                    <th>Name</th>
-                    <th>Unit</th>
-                    <th class="num">On Hand</th>
-                    <th class="num">Received New</th>
-                    <th class="num">Outdated</th>
-                    <th class="num">Trashed</th>
-                    <th class="num">Diverted</th>
+                    <th>{{ __("Commons.text.item") }}</th>
+                    <th>{{ __("Commons.text.name") }}</th>
+                    <th>{{ __("Commons.text.unit") }}</th>
+                    <th class="num">{{ __("Commons.text.on_hand") }}</th>
+                    <th class="num">{{ __("Commons.text.received_new") }}</th>
+                    <th class="num">{{ __("Commons.text.outdated") }}</th>
+                    <th class="num">{{ __("Commons.text.trashed") }}</th>
+                    <th class="num">{{ __("Commons.text.diverted") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@
     @endforeach
 
     @if($records->isEmpty())
-        <p>No stock on hand yet.</p>
+        <p>{{ __("Reports.Inventory.text.no_stock_on_hand") }}</p>
     @else
         <table>
             <tbody>
@@ -153,8 +153,7 @@
     @endif
 
     <div class="disclaimer">
-        Generated at the moment of viewing from currently recorded ledger activity. Only item types with recorded
-        usable, outdated, trashed, or diverted quantity are listed; the full catalog is larger.
+        {{ __("Reports.Inventory.text.generated_at_the_moment") }}
     </div>
 </body>
 </html>

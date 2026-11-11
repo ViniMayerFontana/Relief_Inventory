@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Pick Sheets</title>
+    <title>{{ __("Commons.text.pick_sheets") }}</title>
     <style>
         @page {
             size: {{ \App\Support\ReportPaper::size() }};
@@ -110,12 +110,12 @@
         <table>
             <thead>
                 <tr>
-                    <th>Item #</th>
-                    <th>Name</th>
-                    <th>Unit</th>
-                    <th>Where</th>
-                    <th class="qty">Qty to Pick</th>
-                    <th class="picked">Picked</th>
+                    <th>{{ __("Commons.text.item") }}</th>
+                    <th>{{ __("Commons.text.name") }}</th>
+                    <th>{{ __("Commons.text.unit") }}</th>
+                    <th>{{ __("Commons.text.where") }}</th>
+                    <th class="qty">{{ __("Reports.PickSheets.text.qty_to_pick") }}</th>
+                    <th class="picked">{{ __("Commons.text.picked") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@
                                     @if($step['kind'] === 'pool')
                                         Sorting area &times;{{ $step['qty'] }}
                                     @else
-                                        <strong>{{ $step['location'] ?? 'no location' }}</strong> {{ $step['tag'] }} &times;{{ $step['qty'] }}@if(!empty($step['expires_on'])) (exp {{ $step['expires_on'] }})@endif @if(!empty($step['whole'])) <em>(take the whole pallet)</em>@elseif($step['needs_open']) <em>(open pallet first)</em>@endif
+                                        <strong>{{ $step['location'] ?? 'no location' }}</strong> {{ $step['tag'] }} &times;{{ $step['qty'] }}@if(!empty($step['expires_on'])) (exp {{ $step['expires_on'] }})@endif @if(!empty($step['whole'])) <em>{{ __("Reports.PickSheets.text.take_the_whole_pallet") }}</em>@elseif($step['needs_open']) <em>{{ __("Reports.PickSheets.text.open_pallet_first") }}</em>@endif
                                     @endif
                                 </div>
                             @endforeach
@@ -152,7 +152,7 @@
                         <td class="picked"></td>
                     </tr>
                 @empty
-                    <tr><td colspan="6">Nothing to pick on this order.</td></tr>
+                    <tr><td colspan="6">{{ __("Reports.PickSheets.text.nothing_to_pick_on") }}</td></tr>
                 @endforelse
             </tbody>
         </table>

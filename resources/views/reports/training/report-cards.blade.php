@@ -8,7 +8,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Training Report Cards</title>
+    <title>{{ __("Reports.Training.ReportCards.text.training_report_cards") }}</title>
     <style>
         @page { size: {{ \App\Support\ReportPaper::size() }} landscape; margin: 0.5in; }
         body { font-family: Arial, sans-serif; color: #222; margin: 0; font-size: 11px; }
@@ -24,24 +24,24 @@
     </style>
 </head>
 <body>
-    <h1>Training Report Cards</h1>
+    <h1>{{ __("Reports.Training.ReportCards.text.training_report_cards") }}</h1>
     <div class="subtitle">
         {{ config('app.name') }} — {{ $range }}{{ ! empty($f['team']) ? ', Team '.$f['team'] : '' }}
         — {{ $report['totals']['complete'] }} of {{ $report['totals']['trainees'] }} trainees completed all six stations
     </div>
 
     @if (count($report['trainees']) === 0)
-        <p>No trainee activity in this range.</p>
+        <p>{{ __("Reports.Training.ReportCards.text.no_trainee_activity_in") }}</p>
     @else
         <table>
             <thead>
                 <tr>
-                    <th>Trainee</th>
-                    <th>Team</th>
+                    <th>{{ __("Commons.text.trainee") }}</th>
+                    <th>{{ __("Commons.text.team") }}</th>
                     @foreach ($report['stations'] as $n => $name)
                         <th>{{ $n }}. {{ $name }}</th>
                     @endforeach
-                    <th>Result</th>
+                    <th>{{ __("Commons.text.result") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -63,7 +63,7 @@
                 @endforeach
             </tbody>
         </table>
-        <p style="color:#666; margin-top: 8px;">Each number is how many actions the trainee recorded at that station.</p>
+        <p style="color:#666; margin-top: 8px;">{{ __("Reports.Training.ReportCards.text.each_number_is_how") }}</p>
     @endif
 </body>
 </html>

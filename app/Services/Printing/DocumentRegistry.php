@@ -209,13 +209,13 @@ class DocumentRegistry
         foreach (HelpReportController::GUIDES as $slug => $title) {
             $documents['help-'.$slug] = [
                 'media' => 'report', 'permission' => null, 'rules' => [],
-                'title' => fn () => $title,
+                'title' => fn () => HelpReportController::title($slug),
                 'build' => fn () => app(HelpReportController::class)->builder($slug),
             ];
         }
         $documents['help-all'] = [
             'media' => 'report', 'permission' => null, 'rules' => [],
-            'title' => fn () => 'All Help Guides',
+            'title' => fn () => __('help.all_guides'),
             'build' => fn () => app(HelpReportController::class)->allBuilder(),
         ];
 
