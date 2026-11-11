@@ -50,17 +50,17 @@ function dismiss() {
 		<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-2 flex items-center gap-4">
 			<div class="flex-1 text-center">
 				<template v-if="banner.type === 'feedback'">
-					Found a bug or have a feature idea?
+					{{ $t('Components.text.found_a_bug_or', {}) }}
 					<button type="button" class="underline font-medium" @click="emit('open-feedback')">
-						Report it here
+						{{ $t('Components.button.report_it_here', {}) }}
 					</button>
-					— or anytime from your profile menu, even without this banner.
+					{{ $t('Components.text.or_anytime_from_your', {}) }}
 				</template>
 				<template v-else>
 					{{ banner.message }}
 				</template>
 			</div>
-			<button type="button" class="shrink-0 text-lg leading-none opacity-60 hover:opacity-100" title="Dismiss" @click="dismiss">
+			<button type="button" class="shrink-0 text-lg leading-none opacity-60 hover:opacity-100" :title="$t('Commons.title.dismiss')" @click="dismiss">
 				&times;
 			</button>
 		</div>

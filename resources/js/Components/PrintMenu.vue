@@ -52,6 +52,7 @@
 import Modal from '@/Components/Modal.vue';
 import { onPrintEvent } from '@/realtime';
 import { warehouseStorageKey, withWarehouse } from '@/bootstrap';
+import { t } from '@/i18n';
 
 // Printer lists are small and shared by every menu on a page, so cache them
 // briefly per media type rather than refetching on every open.
@@ -66,7 +67,7 @@ export default {
 		params: { type: Object, default: () => ({}) },
 		downloadHref: { type: String, default: null },
 		prepare: { type: Function, default: null },
-		label: { type: String, default: 'Print' },
+		label: { type: String, default: t('Commons.button.print') },
 		variant: { type: String, default: 'button' },
 		copies: { type: Number, default: 1 },
 		disabled: { type: Boolean, default: false },
@@ -317,16 +318,16 @@ export default {
 			:disabled="disabled || busy"
 			@click.stop="openDialog"
 		>
-			{{ busy ? 'Sending…' : label }}
+			{{ busy ? $t('Commons.button.sending') : label }}
 		</button>
 
 		<Modal :show="open" max-width="md" @close="close">
 			<div ref="dialogBody" class="pm_dialog" @keydown="onDialogKeydown" @click.stop>
 				<h2 class="pm_title">{{ label }}</h2>
 
-				<div v-if="loading" class="pm_hint">Loading printers…</div>
-				<div v-else-if="loadError && !hasDownload" class="pm_hint pm_hint_error">Couldn't load printers.</div>
-				<div v-else-if="!options.length" class="pm_hint">No printers are set up for this document.</div>
+				<div v-if="loading" class="pm_hint">{{ $t('Commons.text.loading_printers', {}) }}</div>
+				<div v-else-if="loadError && !hasDownload" class="pm_hint pm_hint_error">{{ $t('Components.text.couldn_t_load_printers', {}) }}</div>
+				<div v-else-if="!options.length" class="pm_hint">{{ $t('Components.text.no_printers_are_set', {}) }}</div>
 
 				<div v-if="options.length" role="radiogroup" :aria-label="'What to do with ' + label" class="pm_options">
 					<button
@@ -343,7 +344,7 @@ export default {
 					>
 						<span class="pm_radio" aria-hidden="true"></span>
 						<template v-if="!option.printer">
-							<span class="pm_name">Download PDF</span>
+							<span class="pm_name">{{ $t('Commons.text.download_pdf', {}) }}</span>
 						</template>
 						<template v-else>
 							<span class="pm_dot" :class="dotClass(option.printer)"></span>
@@ -354,10 +355,10 @@ export default {
 						</template>
 					</button>
 				</div>
-				<div v-if="loadError && hasDownload" class="pm_hint pm_hint_error">Couldn't load printers — you can still download.</div>
+				<div v-if="loadError && hasDownload" class="pm_hint pm_hint_error">{{ $t('Components.text.couldn_t_load_printers_2', {}) }}</div>
 
 				<div v-if="selectedPrinter" class="pm_copies">
-					<label for="pm_copies_input">Number of copies</label>
+					<label for="pm_copies_input">{{ $t('Components.label.number_of_copies', {}) }}</label>
 					<input
 						id="pm_copies_input"
 						v-model="copiesText"
@@ -371,13 +372,13 @@ export default {
 						:class="{ pm_invalid: copiesCount === null }"
 						@focus="$event.target.select()"
 					/>
-					<span v-if="copiesCount === null" class="pm_hint_error pm_copies_error">Enter a number from 1 to 99.</span>
+					<span v-if="copiesCount === null" class="pm_hint_error pm_copies_error">{{ $t('Components.text.enter_a_number_from', {}) }}</span>
 				</div>
 
 				<div class="pm_actions">
-					<button type="button" class="ri_formbutton" @click="close">Cancel</button>
+					<button type="button" class="ri_formbutton" @click="close">{{ $t('Commons.button.cancel', {}) }}</button>
 					<button type="button" class="ri_defaultbutton" :disabled="!canConfirm" @click="confirm">
-						{{ choice === 'download' ? 'Download' : 'Print' }}
+						{{ choice === 'download' ? $t('Commons.button.download') : $t('Commons.button.print') }}
 					</button>
 				</div>
 			</div>

@@ -76,6 +76,7 @@
 
 <script>
 import axios from "axios";
+import { t } from '@/i18n';
 
 // Module-level cache: one fetch per option source URL, shared by every
 // SearchSelect on every page until invalidated.
@@ -125,7 +126,7 @@ export default {
 		display: { type: String, default: "name" },
 		secondary: { type: String, default: null },
 		searchfields: { type: Array, default: null },
-		placeholder: { type: String, default: "Search..." },
+		placeholder: { type: String, default: t('Components.text.search') },
 		enabled: { type: Boolean, default: true },
 		allowcreate: { type: Boolean, default: false },
 		autofocus: { type: Boolean, default: false },
@@ -429,7 +430,7 @@ export default {
 				v-if="selectedOption"
 				type="button"
 				class="ss_clear"
-				aria-label="Clear selection"
+				:aria-label="$t('Commons.aria_label.clear_selection')"
 				@mousedown.prevent="clearSelection"
 			>&times;</button>
 			<ul v-if="isOpen && listAllowed && (filteredOptions.length > 0 || showCreateRow)"
@@ -444,7 +445,7 @@ export default {
 					<span class="ss_primary">{{ option[display] }}</span>
 					<span v-if="secondary" class="ss_secondary">{{ option[secondary] }}</span>
 				</li>
-				<li v-if="closeMatches.length" class="ss_didyoumean_label">Did you mean:</li>
+				<li v-if="closeMatches.length" class="ss_didyoumean_label">{{ $t('Components.text.did_you_mean', {}) }}</li>
 				<li
 					v-for="option in closeMatches"
 					:key="'dym-' + option.id"
@@ -464,8 +465,8 @@ export default {
 				</li>
 			</ul>
 			<div v-if="loadError" class="ss_error">
-				Could not load options.
-				<a href="#" @click.prevent="fetchOptions(true)">Retry</a>
+				{{ $t('Components.text.could_not_load_options', {}) }}
+				<a href="#" @click.prevent="fetchOptions(true)">{{ $t('Commons.button.retry', {}) }}</a>
 			</div>
 		</template>
 		<span v-else class="ir_disabled_input">{{ selectedOption ? selectedOption[display] : "" }}</span>

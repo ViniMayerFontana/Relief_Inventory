@@ -83,9 +83,9 @@ function close() {
 		<p v-if="error" class="ri_error">{{ error }}</p>
 		<div class="wc_actions">
 			<button v-if="!error" type="button" class="ri_defaultbutton" :disabled="!ready" @click="capture">
-				Capture
+				{{ $t('Commons.button.capture', {}) }}
 			</button>
-			<button type="button" class="ri_formbutton" @click="close">Cancel</button>
+			<button type="button" class="ri_formbutton" @click="close">{{ $t('Commons.button.cancel', {}) }}</button>
 		</div>
 	</div>
 </template>

@@ -79,13 +79,12 @@ async function confirm() {
 <template>
 	<Modal :show="show" @close="cancel">
 		<div class="kecm_body">
-			<h2 class="kecm_title">Enable Kiosk Mode?</h2>
+			<h2 class="kecm_title">{{ $t('Components.heading.enable_kiosk_mode', {}) }}</h2>
 			<p class="kecm_text">
-				This will log you out and lock this device to sign-in/sign-out only — no login required — until
-				someone logs back in.
+				{{ $t('Components.text.this_will_log_you', {}) }}
 			</p>
 			<label v-if="locations.length > 1" class="ri_formcontrol">
-				<span class="text-gray-700">Which location is this kiosk at?</span>
+				<span class="text-gray-700">{{ $t('Components.text.which_location_is_this', {}) }}</span>
 				<select v-model.number="locationId" class="ri_forminput">
 					<option :value="null">— Choose —</option>
 					<option v-for="location in locations" :key="location.id" :value="location.id">{{ location.name }}</option>
@@ -94,9 +93,9 @@ async function confirm() {
 			<p v-if="error" class="kecm_error">{{ error }}</p>
 			<div class="ri_formactions">
 				<button type="button" class="ri_defaultbutton" :disabled="enabling || (locations.length > 1 && !locationId)" @click="confirm">
-					{{ enabling ? 'Enabling…' : 'Enable Kiosk Mode' }}
+					{{ enabling ? $t('Commons.button.enabling') : $t('Components.button.enable_kiosk_mode') }}
 				</button>
-				<button type="button" class="ri_formbutton" :disabled="enabling" @click="cancel">Cancel</button>
+				<button type="button" class="ri_formbutton" :disabled="enabling" @click="cancel">{{ $t('Commons.button.cancel', {}) }}</button>
 			</div>
 		</div>
 	</Modal>

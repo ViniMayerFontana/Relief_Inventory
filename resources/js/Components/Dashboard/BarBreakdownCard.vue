@@ -6,13 +6,15 @@
      plain CSS bars are enough for this shape of data and keep the bundle
      lean. Shared by the Warehouse Dashboard and Situation Report. -->
 
-<script>
+<script>import { t } from '@/i18n';
+
+
 export default {
 	props: {
 		title: { type: String, required: true },
 		// [{ label, value }], already sorted by the caller
 		rows: { type: Array, required: true },
-		emptyText: { type: String, default: 'No data yet.' },
+		emptyText: { type: String, default: t('Components.Dashboard.text.no_data_yet') },
 	},
 	computed: {
 		max() {

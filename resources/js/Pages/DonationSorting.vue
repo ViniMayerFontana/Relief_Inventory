@@ -47,11 +47,11 @@ import { t } from '@/i18n';
 // count into inventory) and differ only in item_condition, which exists so
 // new goods can be reported separately.
 const DISPOSITIONS = [
-	{ key: 'new',      value: 'usable',   condition: 'new',  label: 'New',      hint: 'Unused, in original packaging - counted into inventory' },
-	{ key: 'usable',   value: 'usable',   condition: 'used', label: t('Commons.text.usable'),   hint: 'Used or opened, in good condition - counted into inventory' },
-	{ key: 'outdated', value: 'outdated', condition: null,   label: t('Commons.text.outdated'), hint: 'Expired on arrival - discarded' },
-	{ key: 'trashed',  value: 'trashed',  condition: null,   label: 'Trash',    hint: 'Damaged or unusable - discarded' },
-	{ key: 'diverted', value: 'diverted', condition: null,   label: 'Divert',   hint: 'Usable, but passed to another organization' },
+	{ key: 'new',      value: 'usable',   condition: 'new',  label: t('Commons.text.new'),      hint: t('Pages.text.unused_in_original_packaging') },
+	{ key: 'usable',   value: 'usable',   condition: 'used', label: t('Commons.text.usable'),   hint: t('Pages.text.used_or_opened_in') },
+	{ key: 'outdated', value: 'outdated', condition: null,   label: t('Commons.text.outdated'), hint: t('Pages.text.expired_on_arrival_discarded') },
+	{ key: 'trashed',  value: 'trashed',  condition: null,   label: t('Commons.text.trash_2'),    hint: t('Pages.text.damaged_or_unusable_discarded') },
+	{ key: 'diverted', value: 'diverted', condition: null,   label: t('Commons.text.divert'),   hint: t('Pages.text.usable_but_passed_to') },
 ];
 
 // The button a saved line corresponds to (lines sorted before item_condition
@@ -446,6 +446,8 @@ export default {
 		 * as a note, transitions the pallet to empty (which rolls the donation
 		 * to Complete once its last pallet empties), and readies the next scan.
 		 */
+
+
 
 		async markPalletEmpty(observation) {
 			this.palletError = null;

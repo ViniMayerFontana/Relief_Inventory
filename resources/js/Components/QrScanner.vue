@@ -4,6 +4,7 @@
 // don't wire a page-specific handler to this directly. Emits `error` with a readable message if the camera can't start.
 import { onBeforeUnmount, onMounted, ref } from 'vue';
 import { Html5Qrcode, Html5QrcodeSupportedFormats as F } from 'html5-qrcode';
+import { t } from '@/i18n';
 
 const emit = defineEmits(['scanned', 'error']);
 
@@ -30,9 +31,9 @@ async function stopScanner() {
 
 function cameraErrorMessage(e) {
   const text = String(e?.message || e || '');
-  if (/permission|denied|NotAllowed/i.test(text)) return 'Camera permission was denied. Allow camera access for this site and try again.';
-  if (/NotFound|no camera|requested device/i.test(text)) return 'No camera was found on this device.';
-  if (/NotReadable|in use/i.test(text)) return 'The camera is in use by another app.';
+  if (/permission|denied|NotAllowed/i.test(text)) return t('Components.text.camera_permission_was_denied');
+  if (/NotFound|no camera|requested device/i.test(text)) return t('Components.text.no_camera_was_found');
+  if (/NotReadable|in use/i.test(text)) return t('Components.text.the_camera_is_in');
   return 'Could not start the camera' + (text ? ': ' + text : '.');
 }
 
@@ -80,10 +81,10 @@ onBeforeUnmount(() => { unmounted = true; stopScanner(); });
 <template>
   <div class="qrs_wrap">
     <div :id="readerId" class="qrs_reader"></div>
-    <p v-if="starting" class="qrs_hint">Starting camera…</p>
-    <p v-else class="qrs_hint">Point the camera at the barcode.</p>
+    <p v-if="starting" class="qrs_hint">{{ $t('Commons.text.starting_camera', {}) }}</p>
+    <p v-else class="qrs_hint">{{ $t('Components.text.point_the_camera_at', {}) }}</p>
     <button v-if="torchAvailable" type="button" class="qrs_torch" @click="toggleTorch">
-      {{ torchOn ? 'Light off' : 'Light on' }}
+      {{ torchOn ? $t('Commons.button.light_off') : $t('Commons.button.light_on') }}
     </button>
   </div>
 </template>

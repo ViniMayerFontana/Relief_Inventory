@@ -1,0 +1,105 @@
+{
+  "Components": {
+    "Dashboard": {
+      "label": {
+        "vs_prior_week": "vs. prior week"
+      },
+      "text": {
+        "last_30_days": "Last 30 days",
+        "last_7_days": "Last 7 days",
+        "no_data_yet": "No data yet."
+      }
+    },
+    "aria_label": {
+      "ri_print_server": "RI Print Server"
+    },
+    "button": {
+      "add_note": "+ Add note",
+      "enable_kiosk_mode": "Enable Kiosk Mode",
+      "keep_as_typed": "Keep As Typed",
+      "pick_existing_instead": "Pick existing instead",
+      "report_it_here": "Report it here",
+      "saving": "Saving..."
+    },
+    "heading": {
+      "add_new_item": "Add New Item",
+      "enable_kiosk_mode": "Enable Kiosk Mode?",
+      "report_an_issue": "Report an Issue",
+      "waiting_for_an_answer": "Waiting for an answer"
+    },
+    "label": {
+      "a_case_of_items": "A case of items already in the list",
+      "new_item_type": "New Item Type:",
+      "number_of_copies": "Number of copies",
+      "print_these_instructions": "Print these instructions",
+      "this_barcode_is_on": "This barcode is on:",
+      "urgent_this_is_blocking": "Urgent — this is blocking work right now"
+    },
+    "placeholder": {
+      "search_categories": "Search categories...",
+      "search_item_types": "Search item types...",
+      "unit_e_g_each": "Unit (e.g. Each, Pound)...",
+      "what_happened_or_what": "What happened, or what would you like to see?"
+    },
+    "text": {
+      "a_description_is_required": "A description is required.",
+      "a_new_item_type": "A new item type needs a name, a unit, and a category.",
+      "attach_a_screenshot_of": "Attach a screenshot of this page",
+      "camera_access_was_blocked": "Camera access was blocked. Allow it in the browser address bar, or use Choose File.",
+      "camera_permission_was_denied": "Camera permission was denied. Allow camera access for this site and try again.",
+      "choose_an_item_type": "Choose an item type (or add a new one).",
+      "contains_language_matching_a": "⚠ Contains language matching a known prompt-injection/exfiltration pattern",
+      "could_not_capture_the": "Could not capture the photo.",
+      "could_not_enable_kiosk": "Could not enable kiosk mode.",
+      "could_not_load_options": "Could not load options.",
+      "could_not_prepare_the": "Could not prepare the document.",
+      "could_not_save_please": "Could not save. Please try again.",
+      "could_not_save_the": "Could not save the new item.",
+      "could_not_send_to": "Could not send to the printer.",
+      "could_not_start_the": "Could not start the camera. Use Choose File instead.",
+      "could_not_submit_your": "Could not submit your report — please try again.",
+      "couldn_t_load_printers": "Couldn't load printers.",
+      "couldn_t_load_printers_2": "Couldn't load printers — you can still download.",
+      "did_you_mean": "Did you mean:",
+      "enter_a_number_from": "Enter a number from 1 to 99.",
+      "found_a_bug_or": "Found a bug or have a feature idea?",
+      "from_the_profile_menu": "from the profile menu.",
+      "geocodio_found_a_different": "Geocodio found a different address — which is right?",
+      "looking_up_address": "Looking up address…",
+      "looking_up_product_details": "Looking up product details online...",
+      "moved_to_p0": "Moved to {p0}",
+      "no_camera_found_use": "No camera found. Use Choose File instead.",
+      "no_camera_was_found": "No camera was found on this device.",
+      "no_printers_are_set": "No printers are set up for this document.",
+      "not_found_in_open": "Not found in Open Food Facts or Open Products Facts - enter the details by hand.",
+      "offline_will_print_when": "offline — will print when back",
+      "online_lookup_is_off": "Online lookup is off - enter the details by hand.",
+      "or_anytime_from_your": "— or anytime from your profile menu, even without this banner.",
+      "please_describe_the_issue": "Please describe the issue or idea.",
+      "point_the_camera_at": "Point the camera at the barcode.",
+      "questions_or_something_not": "Questions or something not working the way this guide describes? Use",
+      "ready_for_review": "Ready for Review",
+      "record_created_successfully": "Record created successfully.",
+      "record_deleted_successfully": "Record deleted successfully.",
+      "record_saved_successfully": "Record saved successfully.",
+      "report_an_issue": "Report an Issue",
+      "review_carefully_before_acting": "— review carefully before acting on this report, especially before letting an AI assistant act on it unsupervised.",
+      "scanned_placeholder_but_there": "Scanned {placeholder}, but there is no scan field to put it in.",
+      "search": "Search...",
+      "select_an_option": "Select an option",
+      "suggested_by_placeholder_check": "Suggested by {placeholder} - check it against the product in front of you.",
+      "thanks_your_report_was": "Thanks — your report was submitted. We'll email you at",
+      "that_did_not_work": "That did not work.",
+      "the_camera_is_in": "The camera is in use by another app.",
+      "the_camera_only_works": "The camera only works over a secure (https) connection.",
+      "the_online_lookup_is": "The online lookup is not responding right now - enter the details by hand.",
+      "these_people_s_emails": "These people's emails already have a login in another warehouse, so they were invited instead of added. They cannot sign in here until the owner of that login accepts.",
+      "this_browser_has_no": "This browser has no camera access.",
+      "this_will_log_you": "This will log you out and lock this device to sign-in/sign-out only — no login required — until someone logs back in.",
+      "too_many_online_lookups": "Too many online lookups this minute - enter the details by hand.",
+      "when_there_s_an": "when there's an update.",
+      "which_location_is_this": "Which location is this kiosk at?",
+      "will_queue": "— will queue"
+    }
+  }
+}

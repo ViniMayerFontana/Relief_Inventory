@@ -48,7 +48,7 @@
           </tr>
         </tbody>
       </table>
-      <button v-if="enabled && allowAdd" @click="newLine()" class="ri_defaultbutton">New Line</button>
+      <button v-if="enabled && allowAdd" @click="newLine()" class="ri_defaultbutton">{{ $t('Commons.button.new_line', {}) }}</button>
     </div>
   </div>
 </template>

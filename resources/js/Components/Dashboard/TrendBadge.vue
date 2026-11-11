@@ -5,7 +5,9 @@
      Dashboard and Situation Report. Direction and (optional) percent are
      computed server-side (WarehouseMetrics::trend) — this just renders. -->
 
-<script>
+<script>import { t } from '@/i18n';
+
+
 export default {
 	props: {
 		direction: { type: String, required: true }, // 'up' | 'down' | 'static'
@@ -17,7 +19,7 @@ export default {
 			return { up: '▲', down: '▼', static: '▬' }[this.direction] || '';
 		},
 		text() {
-			if (this.percent === null) return this.direction === 'up' ? 'new activity' : 'no change';
+			if (this.percent === null) return this.direction === 'up' ? t('Commons.text.new_activity') : t('Commons.text.no_change');
 			return Math.abs(this.percent) + '%';
 		},
 	},

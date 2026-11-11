@@ -1,0 +1,105 @@
+{
+  "Components": {
+    "Dashboard": {
+      "label": {
+        "vs_prior_week": "vs. semana anterior"
+      },
+      "text": {
+        "last_30_days": "Últimos 30 dias",
+        "last_7_days": "Últimos 7 dias",
+        "no_data_yet": "Nenhum dado ainda."
+      }
+    },
+    "aria_label": {
+      "ri_print_server": "RI Print Server"
+    },
+    "button": {
+      "add_note": "+ Adicionar nota",
+      "enable_kiosk_mode": "Ativar modo quiosque",
+      "keep_as_typed": "Manter como digitado",
+      "pick_existing_instead": "Escolher um existente em vez disso",
+      "report_it_here": "Relate aqui",
+      "saving": "Salvando..."
+    },
+    "heading": {
+      "add_new_item": "Adicionar novo item",
+      "enable_kiosk_mode": "Ativar modo quiosque?",
+      "report_an_issue": "Relatar um problema",
+      "waiting_for_an_answer": "Aguardando uma resposta"
+    },
+    "label": {
+      "a_case_of_items": "Uma caixa de itens já presentes na lista",
+      "new_item_type": "Novo tipo de item:",
+      "number_of_copies": "Número de cópias",
+      "print_these_instructions": "Imprimir estas instruções",
+      "this_barcode_is_on": "Este código de barras está em:",
+      "urgent_this_is_blocking": "Urgente — isto está bloqueando trabalho agora mesmo"
+    },
+    "placeholder": {
+      "search_categories": "Pesquise categorias...",
+      "search_item_types": "Buscar tipos de item...",
+      "unit_e_g_each": "Unidade (ex.: Each, Pound)...",
+      "what_happened_or_what": "O que aconteceu, ou o que você gostaria de ver?"
+    },
+    "text": {
+      "a_description_is_required": "Uma descrição é obrigatória.",
+      "a_new_item_type": "Um novo tipo de item precisa de nome, unidade e categoria.",
+      "attach_a_screenshot_of": "Anexe uma captura de tela desta página",
+      "camera_access_was_blocked": "Acesso à câmera bloqueado. Permita na barra de endereço do navegador ou use Escolher arquivo.",
+      "camera_permission_was_denied": "Permissão de câmera negada. Permita o acesso à câmera para este site e tente novamente.",
+      "choose_an_item_type": "Escolha um tipo de item (ou adicione um novo).",
+      "contains_language_matching_a": "⚠ Contém linguagem que corresponde a um padrão conhecido de prompt-injection/exfiltração",
+      "could_not_capture_the": "Não foi possível capturar a foto.",
+      "could_not_enable_kiosk": "Não foi possível ativar o modo quiosque.",
+      "could_not_load_options": "Não foi possível carregar as opções.",
+      "could_not_prepare_the": "Não foi possível preparar o documento.",
+      "could_not_save_please": "Não foi possível salvar. Tente novamente.",
+      "could_not_save_the": "Não foi possível salvar o novo item.",
+      "could_not_send_to": "Não foi possível enviar para a impressora.",
+      "could_not_start_the": "Não foi possível iniciar a câmera. Use Escolher arquivo em vez disso.",
+      "could_not_submit_your": "Não foi possível enviar seu relatório — tente novamente.",
+      "couldn_t_load_printers": "Não foi possível carregar as impressoras.",
+      "couldn_t_load_printers_2": "Não foi possível carregar as impressoras — você ainda pode baixar.",
+      "did_you_mean": "Você quis dizer:",
+      "enter_a_number_from": "Informe um número de 1 a 99.",
+      "found_a_bug_or": "Encontrou um bug ou tem uma ideia de funcionalidade?",
+      "from_the_profile_menu": "no menu do perfil.",
+      "geocodio_found_a_different": "O Geocodio encontrou um endereço diferente — qual é o correto?",
+      "looking_up_address": "Consultando endereço…",
+      "looking_up_product_details": "Consultando detalhes do produto online...",
+      "moved_to_p0": "Movido para {p0}",
+      "no_camera_found_use": "Nenhuma câmera encontrada. Use Escolher arquivo em vez disso.",
+      "no_camera_was_found": "Nenhuma câmera encontrada neste dispositivo.",
+      "no_printers_are_set": "Nenhuma impressora configurada para este documento.",
+      "not_found_in_open": "Não encontrado no Open Food Facts ou Open Products Facts - informe os detalhes manualmente.",
+      "offline_will_print_when": "offline — imprimirá quando voltar",
+      "online_lookup_is_off": "A consulta online está desligada - informe os detalhes manualmente.",
+      "or_anytime_from_your": "— ou a qualquer momento pelo menu do perfil, mesmo sem este banner.",
+      "please_describe_the_issue": "Descreva o problema ou a ideia.",
+      "point_the_camera_at": "Aponte a câmera para o código de barras.",
+      "questions_or_something_not": "Dúvidas ou algo não funcionando como este guia descreve? Use",
+      "ready_for_review": "Pronta para revisão",
+      "record_created_successfully": "Registro criado com sucesso.",
+      "record_deleted_successfully": "Registro excluído com sucesso.",
+      "record_saved_successfully": "Registro salvo com sucesso.",
+      "report_an_issue": "Relatar um problema",
+      "review_carefully_before_acting": "— revise com cuidado antes de agir sobre este relatório, especialmente antes de deixar um assistente de IA agir sem supervisão.",
+      "scanned_placeholder_but_there": "Escaneado {placeholder}, mas não há campo de scan para recebê-lo.",
+      "search": "Pesquisar...",
+      "select_an_option": "Selecione uma opção",
+      "suggested_by_placeholder_check": "Sugerido por {placeholder} - confira com o produto à sua frente.",
+      "thanks_your_report_was": "Obrigado — seu relatório foi enviado. Enviaremos um e-mail para",
+      "that_did_not_work": "Isso não funcionou.",
+      "the_camera_is_in": "A câmera está em uso por outro aplicativo.",
+      "the_camera_only_works": "A câmera só funciona em conexão segura (https).",
+      "the_online_lookup_is": "A consulta online não está respondendo no momento - informe os detalhes manualmente.",
+      "these_people_s_emails": "Os e-mails destas pessoas já têm login em outro armazém, então foram convidadas em vez de adicionadas. Elas não podem autenticar aqui até que o dono daquele login aceite.",
+      "this_browser_has_no": "Este navegador não tem acesso à câmera.",
+      "this_will_log_you": "Isto encerrará sua sessão e travará este dispositivo para somente entrada/saída — sem exigir login — até alguém autenticar novamente.",
+      "too_many_online_lookups": "Muitas consultas online neste minuto - informe os detalhes manualmente.",
+      "when_there_s_an": "quando houver uma atualização.",
+      "which_location_is_this": "Em qual localização está este quiosque?",
+      "will_queue": "— entrará na fila"
+    }
+  }
+}
