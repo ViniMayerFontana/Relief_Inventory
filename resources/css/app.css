@@ -412,3 +412,121 @@ h2.text-xl {
                             left to align under. */
       }
 }
+
+/* ── Tema Planck Tech: tokens ──────────────────────────────────────────────
+   Identidade "Planck Tech" (deep-tech / climate-AI). Estes tokens são
+   INERTES: nenhuma regra fora do escopo `.planck-theme` abaixo os referencia,
+   então as telas sem a classe opt-in seguem com o visual padrão intacto.
+   Mecanismo, tokens oficiais e guardrails: Agents/PLANCK_UI_THEMER.md (§3, §4). */
+:root {
+  --bg-primary: #060B14;              /* Midnight Navy — canvas principal */
+  --bg-secondary: #0D1525;            /* Seções alternadas, headers de tabela */
+  --bg-surface: #121D33;              /* Cards, modais, painéis */
+  --bg-surface-hover: #182642;        /* Hover de cards e linhas */
+  --bg-glass: rgba(13, 21, 37, 0.78); /* Headers sticky translúcidos */
+  --brand-primary: #0EA5E9;           /* Tech Cyan — botões primários, links ativos, foco */
+  --brand-primary-hover: #0284C7;
+  --brand-secondary: #10B981;         /* Emerald — badges positivos */
+  --brand-gradient: linear-gradient(135deg, #0EA5E9 0%, #10B981 100%);
+  --text-primary: #F8FAFC;            /* Ice White — títulos e copy principal */
+  --text-secondary: #94A3B8;          /* Slate 400 — subtítulos, labels */
+  --text-muted: #64748B;              /* Slate 500 — placeholders, timestamps */
+  --text-on-brand: #FFFFFF;
+  --border-subtle: rgba(148, 163, 184, 0.14);
+  --border-focus: rgba(14, 165, 233, 0.55);
+  --ring-soft: rgba(14, 165, 233, 0.18); /* Anel de foco de inputs (3px) */
+  --status-success: #10B981;
+  --status-warning: #F59E0B;
+  --status-danger: #EF4444;
+  --status-info: #38BDF8;
+}
+
+/* ── Tema Planck Tech: escopo opt-in ───────────────────────────────────────
+   Telas-piloto adicionam class="planck-theme" na raiz do layout (fallthrough
+   de attrs do Vue) e SOMENTE aqui, dentro do escopo, os utilitários Tailwind
+   e as classes ri_* são re-mapeados — o seletor descendente (0,2,0) vence o
+   utilitário solto (0,1,0). Sem a classe, nada muda. */
+.planck-theme { background-color: var(--bg-primary); color: var(--text-secondary); font-family: 'Inter', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif; }
+.planck-theme h1, .planck-theme h2, .planck-theme h3 { letter-spacing: -0.025em; color: var(--text-primary); }
+.planck-theme .font-mono { font-family: 'JetBrains Mono', 'RI Emoji', monospace; }
+
+/* Superfícies/canvas */
+.planck-theme .bg-gray-100 { background-color: var(--bg-primary); }
+.planck-theme .bg-white { background-color: var(--bg-surface); }
+.planck-theme .bg-gray-50 { background-color: rgba(255, 255, 255, 0.04); }
+.planck-theme .bg-gray-500 { background-color: var(--bg-secondary); } /* backdrop do Modal */
+
+/* Textos */
+.planck-theme .text-gray-900, .planck-theme .text-gray-800 { color: var(--text-primary); }
+.planck-theme .text-gray-700, .planck-theme .text-gray-600, .planck-theme .text-gray-500 { color: var(--text-secondary); }
+.planck-theme .text-gray-400 { color: var(--text-muted); }
+.planck-theme .text-blue-600, .planck-theme .text-blue-700,
+.planck-theme .text-indigo-600, .planck-theme .text-indigo-700 { color: var(--brand-primary); }
+.planck-theme .text-green-600 { color: var(--status-success); }
+.planck-theme .hover\:text-gray-900:hover, .planck-theme .hover\:text-gray-700:hover,
+.planck-theme .focus\:text-gray-700:focus, .planck-theme .focus\:text-gray-800:focus,
+.planck-theme .hover\:text-gray-800:hover, .planck-theme .hover\:text-gray-500:hover { color: var(--text-primary); }
+.planck-theme .focus\:text-indigo-800:focus { color: var(--brand-primary); }
+
+/* Bordas */
+.planck-theme .border-gray-100, .planck-theme .border-gray-200,
+.planck-theme .border-gray-300 { border-color: var(--border-subtle); }
+.planck-theme .border-indigo-400 { border-color: var(--brand-primary); }
+.planck-theme .border-indigo-700 { border-color: var(--brand-primary-hover); }
+.planck-theme .hover\:border-gray-300:hover { border-color: var(--border-focus); }
+.planck-theme .focus\:border-gray-300:focus { border-color: var(--border-subtle); }
+.planck-theme .ring-black { --tw-ring-color: rgba(148, 163, 184, 0.14); }
+
+/* Estados de fundo (botões e superfícies interativas) */
+.planck-theme .bg-gray-800 { background-color: var(--brand-primary); } /* base do botão primário (PrimaryButton) */
+.planck-theme .hover\:bg-gray-700:hover, .planck-theme .focus\:bg-gray-700:focus,
+.planck-theme .active\:bg-gray-900:active { background-color: var(--brand-primary-hover); }
+.planck-theme .disabled\:hover\:bg-gray-800:disabled:hover { background-color: var(--brand-primary); } /* anula o hover em botão desabilitado */
+.planck-theme .bg-blue-600 { background-color: var(--brand-primary); }
+.planck-theme .hover\:bg-blue-700:hover { background-color: var(--brand-primary-hover); }
+.planck-theme .hover\:bg-gray-400:hover, .planck-theme .hover\:bg-gray-100:hover,
+.planck-theme .focus\:bg-gray-100:focus, .planck-theme .hover\:bg-gray-50:hover,
+.planck-theme .focus\:bg-gray-50:focus { background-color: var(--bg-surface-hover); }
+.planck-theme .focus\:ring-indigo-500:focus { --tw-ring-color: var(--ring-soft); }
+.planck-theme .focus\:ring-offset-2:focus { --tw-ring-offset-color: var(--bg-surface); }
+.planck-theme .focus\:border-indigo-500:focus { border-color: var(--border-focus); }
+
+/* Badges/banners semânticos (fundo a 12%, borda a 25%, texto sólido) */
+.planck-theme .bg-blue-50 { background-color: rgba(56, 189, 248, 0.12); }
+.planck-theme .border-blue-300 { border-color: rgba(56, 189, 248, 0.25); }
+.planck-theme .text-blue-900 { color: var(--status-info); }
+.planck-theme .bg-amber-50 { background-color: rgba(245, 158, 11, 0.12); }
+.planck-theme .border-amber-400 { border-color: rgba(245, 158, 11, 0.25); }
+.planck-theme .bg-amber-100 { background-color: rgba(245, 158, 11, 0.12); }
+.planck-theme .text-amber-900 { color: var(--status-warning); }
+.planck-theme .bg-red-100 { background-color: rgba(239, 68, 68, 0.12); }
+.planck-theme .text-red-900 { color: var(--status-danger); }
+.planck-theme .border-red-300 { border-color: rgba(239, 68, 68, 0.25); }
+
+/* Botões/classes ri_* dentro do escopo */
+.planck-theme button.ri_defaultbutton, .planck-theme a.ri_defaultbutton { background-color: var(--brand-primary); }
+.planck-theme button.ri_defaultbutton:hover, .planck-theme a.ri_defaultbutton:hover { background-color: var(--brand-primary-hover); }
+.planck-theme button.ri_defaultbutton:focus, .planck-theme a.ri_defaultbutton:focus { outline-color: rgba(14, 165, 233, 0.55); }
+.planck-theme button.ri_formbutton, .planck-theme a.ri_formbutton { background-color: rgba(255, 255, 255, 0.04); box-shadow: inset 0 0 0 1px var(--border-subtle); }
+.planck-theme button.ri_formbutton:hover, .planck-theme a.ri_formbutton:hover { background-color: var(--bg-surface-hover); }
+.planck-theme .ri_forminput { background-color: var(--bg-primary); border-color: var(--border-subtle); color: var(--text-primary); }
+.planck-theme .ri_forminput::placeholder { color: var(--text-muted); }
+.planck-theme .ri_forminput:focus { border-color: var(--border-focus); }
+.planck-theme button.ri_linkbutton { color: var(--text-secondary); }
+.planck-theme .ri_error { color: var(--status-danger); }
+.planck-theme .ri_success { color: var(--status-success); }
+.planck-theme .ri_fieldlabel { color: var(--text-secondary); }
+.planck-theme .ri_fieldhint { color: var(--text-muted); }
+
+/* Componentes do login (escopo) */
+.planck-theme .guest-box { background-color: var(--bg-surface); border: 1px solid var(--border-subtle); }
+/* Splash: classe triplicada para vencer o estilo scoped do GuestLayout. A
+   imagem clara do logo (gradiente desvanecendo para branco) é substituída por
+   fundo escuro — exceção de geometria registrada no perfil §6.1 (fundo, não
+   estrutura). */
+.planck-theme.guest-splash.guest-splash { background-color: var(--bg-primary); background-image: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(14, 165, 233, 0.18), transparent), radial-gradient(ellipse 60% 40% at 80% 110%, rgba(16, 185, 129, 0.10), transparent); background-repeat: no-repeat; background-position: center top; background-size: cover; padding-top: 4rem; }
+
+/* Modal kiosk (KioskEnableConfirmModal) */
+.planck-theme .kecm_body .kecm_title { color: var(--text-primary); }
+.planck-theme .kecm_body .kecm_text { color: var(--text-secondary); }
+.planck-theme .kecm_body .kecm_error { color: var(--status-danger); }

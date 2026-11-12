@@ -2,7 +2,7 @@
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 <template>
    <Head :title="$t('Commons.title.dashboard')" />
-   <AuthenticatedLayout :breadcrumb="breadcrumb">
+   <AuthenticatedLayout :breadcrumb="breadcrumb" class="planck-theme">
      <template #header></template>
 
      <div v-if="currentPage" class="menu-container">
@@ -188,10 +188,10 @@ export default {
 .menu-page {
   max-width: 1024px; /* Locks maximum width */
   width: 100%; /* Ensures it scales responsively */
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: var(--bg-surface);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center; /* Centers the text elements inside */
 }
@@ -199,11 +199,12 @@ export default {
 .menu-title {
   font-size: 1.5rem;
   margin-bottom: 10px;
+  color: var(--text-primary);
 }
 
 .menu-header {
   font-size: 1rem;
-  color: #555;
+  color: var(--text-secondary);
   margin-bottom: 20px;
 }
 
@@ -214,9 +215,9 @@ export default {
 .menu-group-title {
   font-size: 1.1rem;
   font-weight: bold;
-  color: #444;
+  color: var(--text-secondary);
   text-align: left;
-  border-bottom: 1px solid #ddd;
+  border-bottom: 1px solid var(--border-subtle);
   padding-bottom: 6px;
   margin-bottom: 14px;
 }
@@ -235,9 +236,9 @@ export default {
   cursor: pointer;
   text-align: center;
   padding: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-subtle);
   border-radius: 8px;
-  background-color: #fff;
+  background-color: var(--bg-surface-hover);
   width: 120px;
   transition: transform 0.2s, box-shadow 0.2s;
 }
@@ -245,6 +246,7 @@ export default {
 .menu-item:hover {
   transform: translateY(-5px);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  border-color: var(--border-focus);
 }
 
 .menu-icon {
@@ -256,7 +258,7 @@ export default {
 .menu-text {
   font-size: 0.9rem;
   font-weight: bold;
-  color: #333;
+  color: var(--text-primary);
 }
 
 @media (max-width: 768px) {

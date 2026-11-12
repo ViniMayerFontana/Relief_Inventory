@@ -40,7 +40,7 @@ const submit = () => {
 </script>
 
 <template>
-    <GuestLayout>
+    <GuestLayout class="planck-theme">
         <Head :title="$t('Commons.title.log_in')" />
 
         <div v-if="$page.props.warehouse.multiple" class="mb-4 rounded border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">

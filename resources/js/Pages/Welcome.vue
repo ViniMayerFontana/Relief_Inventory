@@ -37,35 +37,35 @@ function handleImageError() {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col">
+  <div class="planck-theme min-h-screen bg-planck-base flex flex-col">
     <!-- Header -->
-    <header class="bg-white shadow-md">
+    <header class="bg-planck-surface shadow-md">
       <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 class="text-xl sm:text-2xl font-bold text-blue-600 whitespace-nowrap">{{ $t('Commons.heading.relief_inventory', {}) }}</h1>
+        <h1 class="text-xl sm:text-2xl font-bold text-planck-brand whitespace-nowrap">{{ $t('Commons.heading.relief_inventory', {}) }}</h1>
         <nav class="whitespace-nowrap">
-          <a href="/login" class="text-gray-700 hover:text-blue-600">{{ $t('Commons.button.login', {}) }}</a>
+          <a href="/login" class="text-planck-text-secondary hover:text-planck-brand">{{ $t('Commons.button.login', {}) }}</a>
         </nav>
       </div>
     </header>
 
     <!-- Hero Section -->
-    <section class="flex-1 bg-blue-100">
+    <section class="flex-1 bg-planck-secondary">
       <div class="container mx-auto px-4 py-16 text-center md:text-left md:flex md:items-center">
         <div class="md:w-1/2">
-          <h2 class="text-4xl md:text-5xl font-bold text-gray-800 mb-6">
+          <h2 class="text-4xl md:text-5xl font-bold text-planck-text-primary mb-6">
             {{ $t('Pages.heading.welcome_to_relief_inventory', {}) }}
           </h2>
-          <p class="text-gray-600 text-lg mb-8">
+          <p class="text-planck-text-secondary text-lg mb-8">
             {{ $t('Pages.text.manage_and_track_donations', {}) }}
           </p>
           <div class="space-x-4">
 	    <a href="/login">
-	      <button class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700">
+	      <button class="bg-planck-brand text-white px-6 py-3 rounded-lg shadow hover:bg-planck-brand-hover">
                 {{ $t('Commons.button.login', {}) }}
               </button>
 	    </a>
 	    <a href="/register">
-              <button class="bg-gray-300 text-gray-800 px-6 py-3 rounded-lg shadow hover:bg-gray-400">
+              <button class="bg-white/5 text-planck-text-primary px-6 py-3 rounded-lg shadow ring-1 ring-planck-line hover:bg-planck-surface-hover">
                 {{ $t('Commons.button.register', {}) }}
               </button>
 	    </a>
@@ -82,8 +82,8 @@ function handleImageError() {
     </section>
 
     <!-- Footer -->
-    <footer class="bg-white border-t">
-      <div class="container mx-auto px-4 py-6 text-center text-gray-600">
+    <footer class="bg-planck-surface border-t border-planck-line">
+      <div class="container mx-auto px-4 py-6 text-center text-planck-text-secondary">
 	      &copy;  {{ new Date().getFullYear() }} {{ $t('Pages.text.inventory_relief_project') }} 
 	      <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">{{ $t('Pages.link.licensed_under_the_gnu', {}) }}</a>
 	      {{ $t('Commons.text.hosted_by', {}) }} <a :href="hostedLink" target="_blank">{{ hostedBy }}</a>
@@ -117,7 +117,7 @@ export default {
 	text-decoration: none;
 }
 .welcome_driverportal:hover {
-	background: rgba(255, 255, 255, 0.6);
+	background: rgba(255, 255, 255, 0.08);
 }
 .welcome_driverportal_icon {
 	width: 64px;
@@ -128,7 +128,7 @@ export default {
 .welcome_driverportal_label {
 	font-size: 0.9rem;
 	font-weight: bold;
-	color: #333;
+	color: var(--text-primary);
 }
 </style>
 
