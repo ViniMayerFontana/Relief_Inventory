@@ -109,3 +109,15 @@ Shipping Label→Etiqueta de expedição · Retry/Retry All→Repetir/Repetir to
 2. **Stack → "Nível"**: nota de incerteza mantida (validar com a operação).
 3. **Títulos "Guia de X"** nos PDFs; heading da página sem sufixo (wiring já em 4618bda).
 4. **"Unknown Donor"** (registro semeado) → verbatim na UI, com texto explicativo traduzido ao redor.
+
+## Consolidação final da fase (lotes 6-7 + final, 2026-11-11)
+
+Vocabulário dos últimos lotes (admin/kiosk/impressoras/orders/auth), revisado pelo lead:
+
+**Site (da impressora)→Local** (evita colisão com unidades de medida; o "site" do banner de manutenção é website e fica "site") · kiosk→quiosque · Withdraw→Retirar · Acknowledge→Ciente · Ready for Review→Pronta para revisão · Feature→Funcionalidade · warehouse→armazém · pairing→pareamento · recovery key→chave de recuperação · warehouse key→chave do armazém · Roll back→Reverter · Guest→Visitante · Emergency Roster→Lista de emergência · Needed But Not in Catalog→Necessitados fora do catálogo · Offline Order Form→Formulário de pedido offline · Close Out→Encerrar · Daily Close-Out→Fechamento diário · Seal & Place→Lacrar e posicionar · Unseal→Deslacrar · Set aside — damaged?→Apartar — danificado? · committing→Aplicando… · updated→Atualizado às · saved→Salvo às {placeholder} · Trainee→Treinando · Fill Rate→Taxa de atendimento · Cut at Allocation→Cortado na alocação · Bill of Lading (BOL)→Conhecimento de embarque (BOL) · Stock on Hand→Estoque disponível · Current Pipeline→Fluxo atual.
+
+Mantidos (produto/infra): Backup, recovery (contexto de backup), heartbeat, RI Launcher, provisioner, updater, R Station, RI Print Server, Geocodio, Open Food Facts.
+
+Status de pedido/oferta, receiving/triagem e termos de help: ver a seção "Termos dos help guides" acima (reutilizados nos lotes de telas).
+
+Dívidas documentadas da fase (todas não bloqueantes): relatório completo em `I18N_COVERAGE_REPORT.md` (raiz), seção "Dívidas conhecidas" — pluralização, nó com `>` em atributo, literais após chain, cleanup --apply proibido, statusLabels do UserAdminController, UpdateSender, errors/503 + expired-verification-link, incertezas Stack/Box-Case.

@@ -134,3 +134,16 @@ Custo extra aceito conscientemente: ensaios em cópia, revisões de diff do lead
 3. **Batch Blade**: títulos/corpos dos 28 relatórios.
 4. **Task-5**: help guides pt-BR + wiring do `HelpGuide` (edição Vue fora da CLI — acordo explícito).
 5. **Usuário**: fork para PRs upstream; decisão sobre default pt-BR no provisionamento; MariaDB (Docker) quando rodarmos a suíte de testes.
+
+---
+
+## Encerramento da fase (2026-11-11)
+
+**Internacionalização completa: 88/88 páginas Vue + 39 componentes + 37 Blade + help guides + locales Laravel, todos cobertos.**
+
+- **Locale JS: 372 → 2968 chaves** (pt_BR 97%; as "faltantes" do contador são 101 verbatims intencionais — roles, tokens, nomes de produto; **0 chaves de fato faltantes**).
+- **Commits da fase** (revisados linha a linha antes de cada commit): `eb7078b` piloto → `7bf4b99` → `3cdfc37` → `86b91d3`/`024b808`/`9ead3d2`/`fa97e0c` (task-4) → `879678b` → `dd89df1` → `e324e5a` → `59362e5` → `414007d` (lote final) + `4618bda`/`12f8d1f`/`5998a47` (help, agente i18n-help-ptbr) + `df3bc9d` (cura-pass) + `95524ab` (Blade).
+- **CLI @ai-localizer**: 4 rounds de patches locais (Issues 1–11 + 3.1a-e) com suítes de regressão próprias — patch cumulativo restaurável em `.i18n-cache/cli-patches/core-round3.patch` (203 KB). 5 issues submetidas? Não — redigidas em `Agents/UPSTREAM_ISSUES.md`, aguardando fork do usuário (task-6).
+- **Relatório de cobertura por arquivo**: `I18N_COVERAGE_REPORT.md` (88 páginas, 39 componentes, 37 Blade, dívidas conhecidas numeradas).
+- **Dívidas não bloqueantes** (próxima fase): pluralização vue-i18n, nó com `>` em atributo (CartonCodes — frase completa já existe traduzida), literais após chain (EmailSettings), `cleanup --apply` proibido (Issue 7), statusLabels do UserAdminController e UpdateSender (trans() server-side, padrão notifications.php), errors/503 + expired-verification-link, incertezas de glossário (Stack→Nível, Box/Case→caixa) a validar com a operação.
+- **Estratégia de execução**: lote pequeno → ensaio em cópia → auditoria de guardrails → diff revisado → commit; a CLI foi parcheada 4 vezes durante a fase, sempre com testes isolados antes de tocar no repo; 3 agentes se revezaram (contextos limpos por handoff documentado).
