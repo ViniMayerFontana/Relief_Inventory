@@ -32,22 +32,21 @@ import { Head } from '@inertiajs/vue3';
 	<Head title="Who's In The Building" />
 	<AuthenticatedLayout>
 		<div class="bs_page">
-			<h1 class="bs_title">Who's In The Building</h1>
+			<h1 class="bs_title">{{ $t('Pages.heading.who_s_in_the', {}) }}</h1>
 
-			<p v-if="loading" class="bs_hint">Loading…</p>
+			<p v-if="loading" class="bs_hint">{{ $t('Commons.button.loading', {}) }}</p>
 			<p v-else-if="error" class="bs_error">{{ error }}</p>
 
 			<template v-else-if="rollCall">
 				<div class="bs_rollcall_banner">
-					<strong>Active roll call</strong> — started {{ formatTime(rollCall.started_at) }}.
-					{{ rollCall.confirmed_count }} of {{ rollCall.total }} accounted for.
+					<strong>{{ $t('Pages.text.active_roll_call', {}) }}</strong> {{ $t('Commons.text.started') }} {{ formatTime(rollCall.started_at) }}.
+					{{ rollCall.confirmed_count }} of {{ rollCall.total }} {{ $t('Pages.text.accounted_for') }}
 				</div>
 				<p class="bs_hint">
-					As people respond, have them step over to the Safe group — that way you can see at a glance
-					that everyone in your group has responded. Tap each name below as they're confirmed.
+					{{ $t('Pages.text.as_people_respond_have', {}) }}
 				</p>
 
-				<button class="ri_formbutton" :disabled="refreshing" @click="load">Refresh</button>
+				<button class="ri_formbutton" :disabled="refreshing" @click="load">{{ $t('Commons.button.refresh', {}) }}</button>
 
 				<div class="bs_list">
 					<button
@@ -60,22 +59,22 @@ import { Head } from '@inertiajs/vue3';
 						@click="confirm(person)"
 					>
 						<span>{{ person.name }}</span>
-						<span v-if="person.confirmed" class="bs_row_badge">Safe</span>
-						<span v-else class="bs_row_hint">Tap when confirmed</span>
+						<span v-if="person.confirmed" class="bs_row_badge">{{ $t('Commons.text.safe', {}) }}</span>
+						<span v-else class="bs_row_hint">{{ $t('Pages.text.tap_when_confirmed', {}) }}</span>
 					</button>
 				</div>
 			</template>
 
 			<template v-else>
-				<p class="bs_hint">No active roll call — showing everyone currently signed in.</p>
+				<p class="bs_hint">{{ $t('Pages.text.no_active_roll_call', {}) }}</p>
 				<div class="bs_list">
 					<div v-for="person in occupants" :key="person.id" class="bs_row">
 						<span>{{ person.name }}</span>
 						<span class="bs_row_hint">
-							Since {{ formatTime(person.signed_in_at) }} — {{ person.why }}
+							{{ $t('Commons.text.since') }} {{ formatTime(person.signed_in_at) }} — {{ person.why }}
 						</span>
 					</div>
-					<p v-if="occupants.length === 0" class="bs_hint">Nobody is currently signed in.</p>
+					<p v-if="occupants.length === 0" class="bs_hint">{{ $t('Pages.text.nobody_is_currently_signed', {}) }}</p>
 				</div>
 			</template>
 		</div>
@@ -84,6 +83,7 @@ import { Head } from '@inertiajs/vue3';
 
 <script>
 import axios from 'axios';
+import { t } from '@/i18n';
 
 export default {
 	data() {
@@ -112,7 +112,7 @@ export default {
 					this.occupants = occupancyResponse.data.records;
 				}
 			} catch (e) {
-				this.error = 'Could not load building occupancy.';
+				this.error = t('Pages.text.could_not_load_building');
 			} finally {
 				this.loading = false;
 				this.refreshing = false;
@@ -126,7 +126,7 @@ export default {
 				);
 				this.rollCall = response.data.record;
 			} catch (e) {
-				this.error = 'Could not confirm this person.';
+				this.error = t('Pages.text.could_not_confirm_this');
 			} finally {
 				this.confirming = null;
 			}

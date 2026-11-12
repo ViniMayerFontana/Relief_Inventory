@@ -114,23 +114,22 @@ export default {
 </script>
 
 <template>
-	<Head title="Signs" />
+	<Head :title="$t('Commons.title.signs')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 		<div class="sg_container">
 			<h2 class="ri_datatable_head sg_head">
-				Signs
-				<PrintMenu document-key="sign" media="report" label="Print Sign" :disabled="!ready"
+				{{ $t('Commons.heading.signs', {}) }}
+				<PrintMenu document-key="sign" media="report" :label="$t('Commons.label.print_sign')" :disabled="!ready"
 					:params="params" :download-href="'/report/sign.pdf?' + query" />
 			</h2>
 			<p class="sg_intro">
-				Pick a ready-made sign or start a blank one, change anything you like, then print it on plain
-				8.5 x 11 paper. The text is sized to fill the sign.
+				{{ $t('Pages.text.pick_a_ready_made', {}) }}
 			</p>
 
 			<div class="sg_layout">
-				<section class="sg_templates" aria-label="Ready-made signs">
-					<button type="button" :class="['sg_chip', 'sg_blank', { sg_active: templateKey === null && !title }]" @click="startBlank">+ Blank sign</button>
+				<section class="sg_templates" :aria-label="$t('Commons.aria_label.ready_made_signs')">
+					<button type="button" :class="['sg_chip', 'sg_blank', { sg_active: templateKey === null && !title }]" @click="startBlank">{{ $t('Pages.button.blank_sign', {}) }}</button>
 					<div v-for="(signs, group) in groups" :key="group" class="sg_group">
 						<h3>{{ group }}</h3>
 						<div class="sg_chips">
@@ -142,34 +141,34 @@ export default {
 					</div>
 				</section>
 
-				<section class="sg_editor" aria-label="Sign">
-					<label class="sg_field">Title
-						<textarea ref="title" v-model="title" rows="2" maxlength="120" class="ri_forminput" placeholder="e.g. SORTING"></textarea>
+				<section class="sg_editor" :aria-label="$t('Commons.aria_label.sign')">
+					<label class="sg_field">{{ $t('Commons.label.title', {}) }}
+						<textarea ref="title" v-model="title" rows="2" maxlength="120" class="ri_forminput" :placeholder="$t('Pages.placeholder.e_g_sorting')"></textarea>
 					</label>
-					<label class="sg_field">Smaller text <span class="sg_optional">(optional)</span>
+					<label class="sg_field">{{ $t('Commons.label.smaller_text', {}) }} <span class="sg_optional">(optional)</span>
 						<textarea v-model="subtitle" rows="2" maxlength="400" class="ri_forminput"></textarea>
 					</label>
-					<p class="sg_note">Press Enter to start a new line where you want one; otherwise lines break on their own.</p>
+					<p class="sg_note">{{ $t('Pages.text.press_enter_to_start', {}) }}</p>
 
 					<div class="sg_row">
 						<label class="sg_field">Header
 							<select v-model="header" class="ri_forminput">
-								<option value="">None</option>
+								<option value="">{{ $t('Commons.text.none', {}) }}</option>
 								<option v-for="(label, key) in headers" :key="key" :value="key">{{ label }}</option>
 							</select>
 						</label>
 						<div class="sg_field">
-							<span>Paper</span>
-							<div class="sg_toggle" role="radiogroup" aria-label="Paper orientation">
+							<span>{{ $t('Commons.text.paper', {}) }}</span>
+							<div class="sg_toggle" role="radiogroup" :aria-label="$t('Commons.aria_label.paper_orientation')">
 								<button v-for="o in ['landscape', 'portrait']" :key="o" type="button" role="radio"
 									:aria-checked="orientation === o" :class="{ sg_active: orientation === o }"
-									@click="orientation = o">{{ o === 'landscape' ? 'Wide' : 'Tall' }}</button>
+									@click="orientation = o">{{ o === 'landscape' ? $t('Commons.button.wide') : $t('Commons.button.tall') }}</button>
 							</div>
 						</div>
 					</div>
 
 					<div class="sg_field">
-						<span>Arrows</span>
+						<span>{{ $t('Commons.text.arrows', {}) }}</span>
 						<div :class="['sg_arrows', 'sg_arrows_' + orientation]">
 							<template v-for="(cell, i) in arrowGrid" :key="i">
 								<label v-if="cell" :class="['sg_arrow', { sg_active: arrows.includes(cell[0]) }]" :title="cell[0].replace('-', ' ')">
@@ -182,13 +181,13 @@ export default {
 					</div>
 				</section>
 
-				<section class="sg_preview_col" aria-label="Preview">
+				<section class="sg_preview_col" :aria-label="$t('Commons.aria_label.preview')">
 					<div class="sg_preview" :style="previewBox.outer">
 						<iframe v-if="previewQuery" :src="'/setup/signs/preview?' + previewQuery" :style="previewBox.frame"
-							title="Sign preview" tabindex="-1"></iframe>
-						<p v-else class="sg_empty">Type a title to see the sign.</p>
+							:title="$t('Commons.title.sign_preview')" tabindex="-1"></iframe>
+						<p v-else class="sg_empty">{{ $t('Pages.text.type_a_title_to', {}) }}</p>
 					</div>
-					<p class="sg_note">Print at <strong>Actual size</strong> (100%). Color headers print gray on a black-and-white printer.</p>
+					<p class="sg_note">{{ $t('Commons.text.print_at', {}) }} <strong>{{ $t('Commons.text.actual_size', {}) }}</strong> {{ $t('Pages.text.100_color_headers_print', {}) }}</p>
 				</section>
 			</div>
 		</div>

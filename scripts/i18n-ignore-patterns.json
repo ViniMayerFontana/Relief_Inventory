@@ -1,0 +1,6 @@
+{
+  "exact": [
+    "download"
+  ],
+  "_comment": "Guard i18n do projeto (lido pelo @ai-localizer via scripts/i18n-ignore-patterns.json). 'download' (lowercase) é VALOR DE ESTADO interno do PrintMenu (this.choice = … ? 'download' : …, comparado com choice === 'download' no template) — nunca é texto de UI (o botão 'Download' capitalizado não é afetado pela comparação exata). Manter sincronizado com o glossário (.i18n-queue/GLOSSARY.md)."
+}

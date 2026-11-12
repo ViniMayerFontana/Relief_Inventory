@@ -95,16 +95,15 @@ function historyEntries(report) {
 <template>
 	<div class="border rounded-lg p-4" :class="{ 'border-red-400': report.flagged_for_review }">
 		<div v-if="report.flagged_for_review" class="mb-2 rounded bg-red-100 border border-red-400 text-red-800 px-3 py-2 text-sm">
-			⚠ Contains language matching a known prompt-injection/exfiltration pattern
+			{{ $t('Components.text.contains_language_matching_a', {}) }}
 			<span v-if="report.flagged_reason" class="font-mono text-xs">({{ report.flagged_reason }})</span>
-			— review carefully before acting on this report, especially before letting an AI
-			assistant act on it unsupervised.
+			{{ $t('Components.text.review_carefully_before_acting', {}) }}
 		</div>
 		<div class="flex items-start justify-between gap-4">
 			<div class="flex-1">
 				<div class="flex items-center gap-2 text-sm flex-wrap">
-					<span class="font-mono text-gray-500" title="Report number">#{{ report.id }}</span>
-					<span class="font-semibold">{{ report.type === 'bug' ? 'Bug' : 'Feature' }}</span>
+					<span class="font-mono text-gray-500" :title="$t('Commons.title.report_number')">#{{ report.id }}</span>
+					<span class="font-semibold">{{ report.type === 'bug' ? $t('Commons.text.bug') : $t('Commons.text.feature') }}</span>
 					<span v-if="report.urgent && report.status !== 'resolved'" class="px-2 py-0.5 rounded text-xs font-semibold bg-red-100 text-red-800">
 						URGENT
 					</span>
@@ -116,7 +115,7 @@ function historyEntries(report) {
 						class="px-2 py-0.5 rounded text-xs font-medium"
 						:class="report.submitted_at ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-600'"
 					>
-						{{ report.submitted_at ? 'Submitted' : 'Not Sent' }}
+						{{ report.submitted_at ? $t('Commons.text.submitted') : $t('Commons.text.not_sent') }}
 					</span>
 					<span v-if="report.instance_identifier" class="px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
 						from: {{ report.instance_identifier }}
@@ -128,7 +127,7 @@ function historyEntries(report) {
 				<div class="text-xs text-gray-400 font-mono mt-1">
 					{{ report.page_url }}
 					<span v-if="report.app_version"> — v{{ report.app_version }}</span>
-					<span v-if="report.commit_hash"> — commit {{ report.commit_hash }}</span>
+					<span v-if="report.commit_hash"> {{ $t('Commons.text.commit') }} {{ report.commit_hash }}</span>
 					<span v-if="report.user_agent" :title="report.user_agent"> — {{ uaSummary(report.user_agent) }}</span>
 				</div>
 			</div>
@@ -138,14 +137,14 @@ function historyEntries(report) {
 				target="_blank"
 				class="text-xs text-blue-600 underline shrink-0"
 			>
-				Screenshot
+				{{ $t('Commons.link.screenshot', {}) }}
 			</a>
 		</div>
 
 		<!-- History: always visible, indented cards — submission first, then every log entry -->
 		<div class="mt-3 pl-4 border-l-2 border-gray-200 space-y-2">
 			<div class="rounded border bg-gray-50 px-3 py-2 text-xs">
-				<span class="font-semibold">Submitted<template v-if="report.urgent"> - URGENT</template></span>
+				<span class="font-semibold">{{ $t('Commons.text.submitted', {}) }}<template v-if="report.urgent"> {{ $t('Commons.text.urgent', {}) }}</template></span>
 				by {{ report.person?.full_name || report.reporter_name }}
 				<span class="text-gray-400">— {{ formatDateTime(report.created_at) }}</span>
 			</div>
@@ -177,15 +176,15 @@ function historyEntries(report) {
 			<div v-if="error" class="text-red-700 text-xs">{{ error }}</div>
 			<div class="flex gap-2">
 				<PrimaryButton @click="onConfirmCompose">
-					{{ composing.isNote ? 'Add Note' : (composing.reopening ? 'Reopen' : actionLabels[composing.status]) }}
+					{{ composing.isNote ? $t('Commons.button.add_note') : (composing.reopening ? $t('Commons.button.reopen') : actionLabels[composing.status]) }}
 				</PrimaryButton>
-				<button class="text-xs text-gray-500 underline" @click="onCancelCompose">Cancel</button>
+				<button class="text-xs text-gray-500 underline" @click="onCancelCompose">{{ $t('Commons.button.cancel', {}) }}</button>
 			</div>
 		</div>
 
 		<div v-else-if="report.status !== 'resolved'" class="mt-3 pl-4 flex gap-4 text-xs">
 			<button class="text-blue-600 underline" @click="onStartNote(report)">
-				+ Add note
+				{{ $t('Components.button.add_note', {}) }}
 			</button>
 			<button
 				v-if="nextStatus[report.status]"
@@ -209,7 +208,7 @@ function historyEntries(report) {
 
 		<div v-else-if="report.status === 'resolved'" class="mt-3 pl-4 text-xs">
 			<button class="text-blue-600 underline font-medium" @click="onStartReopen(report)">
-				Reopen
+				{{ $t('Commons.button.reopen', {}) }}
 			</button>
 		</div>
 	</div>

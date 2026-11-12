@@ -24,7 +24,11 @@ class DatabaseTools
     public function find(array $names): string
     {
         foreach ($names as $name) {
-            $path = trim((string) shell_exec('command -v '.escapeshellarg($name)));
+            // `command -v` is a POSIX shell builtin; on Windows shell_exec runs
+            // cmd.exe, whose equivalent is `where` — otherwise this throws on a
+            // Windows host no matter what is on the PATH (tests run on one).
+            $lookup = PHP_OS_FAMILY === 'Windows' ? 'where ' : 'command -v ';
+            $path = trim((string) shell_exec($lookup.escapeshellarg($name)));
             if ($path !== '') {
                 return $path;
             }

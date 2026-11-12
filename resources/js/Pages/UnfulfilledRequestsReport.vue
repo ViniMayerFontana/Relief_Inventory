@@ -15,6 +15,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu },
@@ -70,8 +71,8 @@ export default {
 				this.expanded = {};
 			} catch (error) {
 				this.error = error.response?.status === 422
-					? 'Check the dates: the "to" date can\'t be before the "from" date.'
-					: 'Could not load the unfulfilled requests report.';
+					? t('Pages.text.check_the_dates_the')
+					: t('Pages.text.could_not_load_the_23');
 			} finally {
 				this.loading = false;
 			}
@@ -95,60 +96,59 @@ export default {
 </script>
 
 <template>
-	<Head title="Unfulfilled Requests Report" />
+	<Head :title="$t('Pages.title.unfulfilled_requests_report')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="urr_container">
 			<h2 class="ri_datatable_head urr_head">
-				Unfulfilled Requests Report
+				{{ $t('Pages.heading.unfulfilled_requests_report', {}) }}
 				<span class="urr_exports">
-					<a :href="$withWarehouse('/report/unfulfilled.csv' + query)" class="ri_defaultbutton">Download CSV</a>
+					<a :href="$withWarehouse('/report/unfulfilled.csv' + query)" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
 					<PrintMenu document-key="unfulfilled-requests" media="report" label="Print / PDF"
 						:params="appliedParams" :download-href="'/report/unfulfilled.pdf' + query" />
 				</span>
 			</h2>
 
 			<p class="urr_intro">
-				What partners asked for but didn't get, on requests whose filling is finished. Requests still
-				being entered or filled aren't counted yet.
+				{{ $t('Pages.text.what_partners_asked_for', {}) }}
 			</p>
 
 			<form class="urr_toolbar" @submit.prevent="fetchReport">
-				<label>Ordered from <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>{{ $t('Commons.label.ordered_from', {}) }} <input type="date" v-model="from" class="ri_forminput" /></label>
 				<label>to <input type="date" v-model="to" class="ri_forminput" /></label>
-				<button type="submit" class="ri_defaultbutton">Apply</button>
-				<button v-if="from || to" type="button" class="ri_defaultbutton" @click="clearDates">All dates</button>
+				<button type="submit" class="ri_defaultbutton">{{ $t('Commons.button.apply', {}) }}</button>
+				<button v-if="from || to" type="button" class="ri_defaultbutton" @click="clearDates">{{ $t('Commons.button.all_dates', {}) }}</button>
 				<input type="text" v-model="search" class="ri_forminput urr_search"
-					placeholder="Search item, item # or category..." />
+					:placeholder="$t('Pages.placeholder.search_item_item_or')" />
 			</form>
 
 			<p v-if="error" class="urr_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 
 			<template v-if="report && !loading">
 				<div class="urr_cards">
-					<div class="urr_card"><span>Item types short</span><strong>{{ n(totals.item_types) }}</strong></div>
-					<div class="urr_card"><span>Requests affected</span><strong>{{ n(totals.requests) }}</strong></div>
-					<div class="urr_card"><span>Requested</span><strong>{{ n(totals.requested) }}</strong></div>
-					<div class="urr_card"><span>Filled</span><strong>{{ n(totals.filled) }}</strong></div>
+					<div class="urr_card"><span>{{ $t('Pages.text.item_types_short', {}) }}</span><strong>{{ n(totals.item_types) }}</strong></div>
+					<div class="urr_card"><span>{{ $t('Commons.text.requests_affected', {}) }}</span><strong>{{ n(totals.requests) }}</strong></div>
+					<div class="urr_card"><span>{{ $t('Commons.text.requested', {}) }}</span><strong>{{ n(totals.requested) }}</strong></div>
+					<div class="urr_card"><span>{{ $t('Commons.text.filled', {}) }}</span><strong>{{ n(totals.filled) }}</strong></div>
 					<div class="urr_card urr_card_short">
-						<span>Not filled</span><strong>{{ n(totals.not_filled) }}</strong>
-						<small>{{ n(totals.cut_at_allocation) }} cut at allocation · {{ n(totals.short_at_picking) }} short at picking</small>
+						<span>{{ $t('Commons.text.not_filled_2', {}) }}</span><strong>{{ n(totals.not_filled) }}</strong>
+						<small>{{ n(totals.cut_at_allocation) }} cut at allocation · {{ n(totals.short_at_picking) }} {{ $t('Pages.text.short_at_picking') }}</small>
 					</div>
 				</div>
 
 				<p v-if="!report.items.length" class="urr_empty">
-					No unfulfilled requests{{ report.filters.from || report.filters.to ? ' in this date range' : '' }}.
+					{{ $t('Pages.text.no_unfulfilled_requests') }}{{ report.filters.from || report.filters.to ? $t('Pages.text.in_this_date_range') : '' }}.
 				</p>
 
 				<template v-else>
 					<div class="urr_places">
 						<div v-for="place in [['county', 'County'], ['zip', 'Zip']]" :key="place[0]" class="urr_tablewrap">
-							<h3>Not Filled by {{ place[1] }}</h3>
+							<h3>{{ $t('Pages.heading.not_filled_by') }} {{ place[1] }}</h3>
 							<table class="ri_datatable" border="1">
 								<thead>
-									<tr><th>{{ place[1] }}</th><th>Requests</th><th>Item Types</th><th>Not Filled</th></tr>
+									<tr><th>{{ place[1] }}</th><th>{{ $t('Commons.heading.requests', {}) }}</th><th>{{ $t('Commons.text.item_types', {}) }}</th><th>{{ $t('Commons.text.not_filled', {}) }}</th></tr>
 								</thead>
 								<tbody>
 									<tr v-for="row in report['by_' + place[0]]" :key="row[place[0]]">
@@ -162,20 +162,20 @@ export default {
 						</div>
 					</div>
 
-					<h3>Items Not Filled</h3>
+					<h3>{{ $t('Pages.heading.items_not_filled', {}) }}</h3>
 					<div class="urr_tablewrap"><table class="ri_datatable" border="1">
 						<thead>
 							<tr>
 								<th></th>
-								<th>Item #</th>
-								<th>Item</th>
-								<th>Unit</th>
-								<th>Requests</th>
-								<th>Requested</th>
-								<th>Filled</th>
-								<th>Not Filled</th>
-								<th title="Less approved than requested in Review Allocation">Cut at Allocation</th>
-								<th title="Approved but not picked">Short at Picking</th>
+								<th>{{ $t('Commons.text.item', {}) }}</th>
+								<th>{{ $t('Commons.text.item_2', {}) }}</th>
+								<th>{{ $t('Commons.text.unit', {}) }}</th>
+								<th>{{ $t('Commons.heading.requests', {}) }}</th>
+								<th>{{ $t('Commons.text.requested', {}) }}</th>
+								<th>{{ $t('Commons.text.filled', {}) }}</th>
+								<th>{{ $t('Commons.text.not_filled', {}) }}</th>
+								<th :title="$t('Pages.title.less_approved_than_requested')">{{ $t('Pages.text.cut_at_allocation', {}) }}</th>
+								<th :title="$t('Pages.title.approved_but_not_picked')">{{ $t('Pages.text.short_at_picking_2', {}) }}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -198,8 +198,8 @@ export default {
 										<table class="urr_subtable">
 											<thead>
 												<tr>
-													<th>County</th><th>Zip</th><th>Requests</th><th>Requested</th><th>Filled</th>
-													<th>Not Filled</th><th>Cut at Allocation</th><th>Short at Picking</th>
+													<th>{{ $t('Commons.label.county_2', {}) }}</th><th>{{ $t('Commons.placeholder.zip', {}) }}</th><th>{{ $t('Commons.heading.requests', {}) }}</th><th>{{ $t('Commons.text.requested', {}) }}</th><th>{{ $t('Commons.text.filled', {}) }}</th>
+													<th>{{ $t('Commons.text.not_filled', {}) }}</th><th>{{ $t('Pages.text.cut_at_allocation', {}) }}</th><th>{{ $t('Pages.text.short_at_picking_2', {}) }}</th>
 												</tr>
 											</thead>
 											<tbody>
@@ -219,12 +219,12 @@ export default {
 								</tr>
 							</template>
 							<tr v-if="!items.length">
-								<td colspan="10" class="urr_empty">No items match.</td>
+								<td colspan="10" class="urr_empty">{{ $t('Pages.text.no_items_match', {}) }}</td>
 							</tr>
 						</tbody>
 					</table></div>
 					<p class="urr_note">
-						Quantities are in each item's own unit. County and zip are the requesting partner's.
+						{{ $t('Pages.text.quantities_are_in_each_3', {}) }}
 					</p>
 				</template>
 			</template>

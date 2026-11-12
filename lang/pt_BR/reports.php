@@ -1,0 +1,161 @@
+<?php
+
+// This file is part of the Relief Inventory Project (https://reliefinventory.app)
+// Licensed under the GNU GPL v. 3. See LICENSE.md for details
+
+// GENERATED file — pt_BR strings for Blade __() keys under the 'reports.' namespace.
+// Source of truth: resources/js/i18n/auto/pt_BR/*.json (+ dev/scripts/i18n-lang-extra.json).
+// Regenerate with: node dev/scripts/i18n-lang-from-auto.cjs — do not hand-edit.
+
+return [
+    'generated_at' => 'gerado em :date',
+    'printed' => 'impresso em :date',
+    'Bol' => [
+        'text' => [
+            'bill_of_lading' => 'Conhecimento de embarque (BOL)',
+            'carrier_driver_receipt' => 'Recibo da transportadora / motorista',
+            'no_lines_on_this' => 'Sem linhas neste pedido.',
+            'pallet_count_as_packed' => 'Contagem de pallets (como embalado)',
+            'pallet_count_confirmed_by' => 'Contagem de pallets (confirmada pelo motorista)',
+            'received_by_print' => 'Recebido por (impressão):',
+        ],
+    ],
+    'Donors' => [
+        'text' => [
+            'donor_donation' => 'Doador / Doação',
+            'not_enough_data' => 'dados insuficientes',
+            'units_sorted_overall_loss' => 'unidades triadas, quebra geral',
+        ],
+    ],
+    'Flow' => [
+        'text' => [
+            'adjust' => 'Ajuste.',
+            'adjustments_by_reason' => 'Ajustes por motivo',
+            'closing_on_hand' => '= saldo final',
+            'inventory_flow_report' => 'Relatório de movimentação de estoque',
+            'on_hand_end' => 'Saldo (final)',
+            'opening_on_hand' => 'Saldo inicial',
+        ],
+    ],
+    'Inventory' => [
+        'text' => [
+            'generated_at_the_moment' => 'Gerado no momento da visualização a partir do movimento do ledger registrado. Somente tipos de item com quantidade registrada como utilizável, vencida, descartada ou redirecionada são listados; o catálogo completo é maior.',
+            'no_stock_on_hand' => 'Ainda não há estoque.',
+        ],
+    ],
+    'MailingLabels' => [
+        'text' => [
+            'no_mailing_labels_nobody' => 'Sem etiquetas de correspondência: ninguém selecionado tem endereço completo.',
+        ],
+    ],
+    'OrderForm' => [
+        'text' => [
+            'anything_you_need_that' => 'Algo que você precise e que não esteja listado acima:',
+            'date_needed_by' => 'Data desejada',
+            'no_items_are_currently' => 'Nenhum item disponível para solicitação no momento.',
+            'order_request_form' => 'Formulário de solicitação de pedido',
+            'organization_pod_name' => 'Organização / Nome do POD',
+            'this_list_reflects_items' => 'Esta lista reflete os itens com estoque no momento em que este formulário foi gerado e pode mudar antes do processamento do seu pedido. As quantidades só são garantidas após confirmação.',
+            'write_the_quantity_needed' => 'Escreva a quantidade necessária ao lado de cada item abaixo e devolva este formulário (e-mail, fax ou presencialmente) para ser registrado como seu pedido. Os itens listados têm estoque disponível. Se precisar de algo não listado, use a seção "Outras necessidades" no final.',
+        ],
+    ],
+    'Orders' => [
+        'text' => [
+            'includes_every_order_in' => 'Inclui todo pedido com status Novo pedido, Pronto para atendimento, Em atendimento ou Atendido — tudo que ainda não foi Expedido.',
+            'no_outstanding_orders' => 'Nenhum pedido em aberto.',
+            'outstanding_orders_report' => 'Relatório de pedidos em aberto',
+        ],
+    ],
+    'Partners' => [
+        'text' => [
+            'partner_request' => 'Parceiro / Solicitação',
+        ],
+    ],
+    'PickSheets' => [
+        'text' => [
+            'nothing_to_pick_on' => 'Nada a separar neste pedido.',
+            'open_pallet_first' => '(abra o pallet primeiro)',
+            'qty_to_pick' => 'Qtd. a separar',
+            'take_the_whole_pallet' => '(leve o pallet inteiro)',
+        ],
+    ],
+    'ShippingLabel' => [
+        'text' => [
+            'ship_to_delivery_address' => 'Destino / Endereço de entrega',
+        ],
+    ],
+    'Sitrep' => [
+        'text' => [
+            'item_types_stocked' => 'Tipos de item com estoque',
+            'last_30_days' => 'Últimos 30 dias',
+            'last_7_days' => 'Últimos 7 dias',
+            'no_orders_placed_yet' => 'Nenhum pedido registrado ainda.',
+            'orders_by_county' => 'Pedidos por condado',
+            'stock_on_hand' => 'Estoque disponível',
+            'this_is_a_live' => 'Este é um retrato operacional ao vivo gerado no momento da visualização, não um relatório oficial ou final. Os números refletem a atividade registrada no sistema e podem ser revisados à medida que o registro acompanhar a operação física.',
+            'total_units_on_hand' => 'Total de unidades em estoque',
+        ],
+    ],
+    'Training' => [
+        'Certificate' => [
+            'text' => [
+                'certificate_of_completion' => 'Certificado de Conclusão',
+                'no_trainee_has_completed' => 'Nenhum treinando concluiu as seis estações nesta faixa ainda.',
+                'this_certifies_that' => 'Certificamos que',
+            ],
+        ],
+        'ReportCards' => [
+            'text' => [
+                'each_number_is_how' => 'Cada número é quantas ações o treinando registrou naquela estação.',
+                'no_trainee_activity_in' => 'Nenhuma atividade de treinando nesta faixa.',
+                'training_report_cards' => 'Boletins do treinamento',
+            ],
+        ],
+        'SetupPacket' => [
+            'text' => [
+                'already_sorted_not_on' => 'Já triado, ainda fora de pallet — a primeira equipe monta um pallet a partir destes e o coloca em um ponto de mesa.',
+                'contents_slips_cut_apart' => 'Comprovantes de conteúdo — recortados, um para cada ponto e carga',
+                'how_it_works' => 'Como funciona',
+                'in_round_2_each' => 'Na Rodada 2, cada equipe entrega a carga que expediu ao próprio motorista na Estação 5.',
+                'nothing_each_team_delivers' => 'Nada — cada equipe entrega a carga que expediu',
+                'nothing_the_teams_sort' => 'Nada — as equipes triam o que receberam',
+                'orders_waiting_to_be' => 'Pedidos aguardando separação (Pronto para atendimento)',
+                'put_out_boxes_of' => 'Coloque caixas dos seus próprios bens para receber; a equipe de recebimento casa cada entrega com uma destas ofertas comunicadas por telefone.',
+                'sorted_goods_on_the' => 'Bens triados na mesa da área de triagem',
+                'training_setup_packet' => 'Pacote de preparação do treinamento',
+            ],
+        ],
+        'SignupPoster' => [
+            'text' => [
+                'scan_with_your_phone' => 'Escaneie com a câmera do seu celular — leva menos de um minuto.',
+                'sign_up_for_training' => 'Inscreva-se no treinamento',
+                'sign_up_for_training_2' => 'inscrever-se no treinamento',
+            ],
+        ],
+        'SpotLabels' => [
+            'text' => [
+                'table_spot_labels' => 'Etiquetas de pontos de mesa',
+            ],
+        ],
+        'TeamSheet' => [
+            'text' => [
+                'round_1_at_every' => '= Rodada 1 em todas as estações.',
+                'round_1_segment_1' => 'Rodada 1 (segmento 1)',
+                'round_2_segment_2' => 'Rodada 2 (segmento 2)',
+                'training_team_sheets' => 'Fichas de equipe do treinamento',
+                'when_the_trainer_calls' => 'quando o treinador marcar o tempo: vá para a próxima estação da lista abaixo (a Estação 6 volta para a Estação 1).',
+                'your_team_driver_station' => 'Motorista da sua equipe (Estação 6, Portal do motorista):',
+            ],
+        ],
+    ],
+    'Unfulfilled' => [
+        'text' => [
+            'cut_at_allocation' => 'Cortado na alocação',
+            'item_types_short_across' => 'tipos de item em falta em',
+            'items_not_filled' => 'Itens não atendidos',
+            'not_filled_by_label' => 'Não atendidos por {{ $label }}',
+            'short_at_picking' => 'Faltando na separação',
+            'unfulfilled_requests_report' => 'Relatório de solicitações não atendidas',
+        ],
+    ],
+];

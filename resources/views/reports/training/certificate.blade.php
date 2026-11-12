@@ -3,17 +3,17 @@
      Training Mode. --}}
 @php
     $f = $report['filters'];
-    $date = $f['from'] === $f['to'] ? \Carbon\Carbon::parse($f['from'])->format('F j, Y')
-        : \Carbon\Carbon::parse($f['from'])->format('F j').' – '.\Carbon\Carbon::parse($f['to'])->format('F j, Y');
+    $date = $f['from'] === $f['to'] ? \Carbon\Carbon::parse($f['from'])->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')
+        : \Carbon\Carbon::parse($f['from'])->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F' : 'F j').' – '.\Carbon\Carbon::parse($f['to'])->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y');
     $logo = 'data:image/png;base64,'.base64_encode(file_get_contents(public_path('img/relief-inventory-logo.png')));
 @endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Training Certificates</title>
+    <title>{{ __("commons.text.training_certificates") }}</title>
     <style>
-        @page { size: letter landscape; margin: 0.5in; }
+        @page { size: {{ \App\Support\ReportPaper::size() }} landscape; margin: 0.5in; }
         body { font-family: Georgia, 'Times New Roman', serif; color: #222; margin: 0; }
         .cert {
             border: 6px double #0347a4; padding: 0.5in 0.8in; height: 7.45in; box-sizing: border-box;
@@ -37,10 +37,10 @@
     @forelse ($trainees as $t)
         <div class="cert">
             <img class="logo" src="{{ $logo }}" alt="">
-            <h1>Certificate of Completion</h1>
-            <div class="lead">This certifies that</div>
+            <h1>{{ __("reports.Training.Certificate.text.certificate_of_completion") }}</h1>
+            <div class="lead">{{ __("reports.Training.Certificate.text.this_certifies_that") }}</div>
             <div class="name">{{ $t['name'] }}</div>
-            <div class="lead">has completed</div>
+            <div class="lead">{{ __("commons.text.has_completed") }}</div>
             <div class="event">{{ $eventTitle ?: 'Hands-on Warehouse Training' }}</div>
             <div class="lead">{{ $eventLocation ? 'held at '.$eventLocation.' on ' : 'on ' }}{{ $date }}</div>
             <div class="signers">
@@ -53,7 +53,7 @@
             </div>
         </div>
     @empty
-        <p style="font-family: Arial, sans-serif;">No trainee has completed all six stations in this range yet.</p>
+        <p style="font-family: Arial, sans-serif;">{{ __("reports.Training.Certificate.text.no_trainee_has_completed") }}</p>
     @endforelse
 </body>
 </html>

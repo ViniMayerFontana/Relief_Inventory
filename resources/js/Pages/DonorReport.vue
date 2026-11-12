@@ -18,12 +18,13 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import ChartCanvas from '@/Components/ChartCanvas.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 const STANDINGS = [
 	{ value: 'preferred', label: 'Preferred' },
-	{ value: 'normal', label: 'Normal' },
-	{ value: 'watch', label: 'Watch' },
-	{ value: 'decline', label: 'Decline' },
+	{ value: 'normal', label: t('Commons.text.normal') },
+	{ value: 'watch', label: t('Commons.text.watch') },
+	{ value: 'decline', label: t('Commons.text.decline') },
 ];
 
 export default {
@@ -114,8 +115,8 @@ export default {
 				this.edit = {};
 			} catch (error) {
 				this.error = error.response?.status === 422
-					? 'Check the dates: the "to" date can\'t be before the "from" date.'
-					: 'Could not load the donor report.';
+					? t('Pages.text.check_the_dates_the')
+					: t('Pages.text.could_not_load_the_12');
 			} finally {
 				this.loading = false;
 			}
@@ -148,7 +149,7 @@ export default {
 				this.report.totals.decline = this.report.donors.filter((x) => !x.is_system && x.standing === 'decline').length;
 				this.report.totals.needs_review = this.report.donors.filter((x) => this.needsReview(x)).length;
 			} catch (error) {
-				e.error = error.response?.data?.errors?.note?.[0] || error.response?.data?.message || 'Could not save the standing.';
+				e.error = error.response?.data?.errors?.note?.[0] || error.response?.data?.message || t('Pages.text.could_not_save_the_9');
 			} finally {
 				e.saving = false;
 			}
@@ -170,15 +171,15 @@ export default {
 </script>
 
 <template>
-	<Head title="Donor Report" />
+	<Head :title="$t('Commons.title.donor_report')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="dnr_container">
 			<h2 class="ri_datatable_head dnr_head">
-				Donor Report
+				{{ $t('Commons.heading.donor_report', {}) }}
 				<span class="dnr_exports">
-					<a :href="$withWarehouse('/report/donors.csv' + query)" class="ri_defaultbutton">Download CSV</a>
+					<a :href="$withWarehouse('/report/donors.csv' + query)" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
 					<PrintMenu document-key="donor-report" media="report" label="Print / PDF"
 						:params="appliedParams" :download-href="'/report/donors.pdf' + query" />
 				</span>
@@ -187,52 +188,51 @@ export default {
 			<p class="dnr_intro">
 				What each donor sent and how much of it couldn't be used. Loss % is outdated + trashed over
 				everything sorted (diverted goods aren't counted against a donor). A suggested standing needs
-				at least {{ thresholds.min_donations }} sorted donations and {{ thresholds.min_units }} units; it is
-				only a suggestion &mdash; the standing you set is what shows at Receiving.
+				at least {{ thresholds.min_donations }} sorted donations and {{ thresholds.min_units }} {{ $t('Pages.text.units_it_is_only') }}
 			</p>
 
 			<form class="dnr_toolbar" @submit.prevent="fetchReport">
-				<label>Donated from <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>{{ $t('Commons.label.donated_from', {}) }} <input type="date" v-model="from" class="ri_forminput" /></label>
 				<label>to <input type="date" v-model="to" class="ri_forminput" /></label>
-				<button type="submit" class="ri_defaultbutton">Apply</button>
-				<button v-if="from || to" type="button" class="ri_defaultbutton" @click="clearDates">All dates</button>
-				<label class="dnr_check"><input type="checkbox" v-model="flaggedOnly" /> Suggestion differs from standing</label>
-				<input type="text" v-model="search" class="ri_forminput dnr_search" placeholder="Search donor..." />
+				<button type="submit" class="ri_defaultbutton">{{ $t('Commons.button.apply', {}) }}</button>
+				<button v-if="from || to" type="button" class="ri_defaultbutton" @click="clearDates">{{ $t('Commons.button.all_dates', {}) }}</button>
+				<label class="dnr_check"><input type="checkbox" v-model="flaggedOnly" /> {{ $t('Pages.label.suggestion_differs_from_standing', {}) }}</label>
+				<input type="text" v-model="search" class="ri_forminput dnr_search" :placeholder="$t('Pages.placeholder.search_donor')" />
 			</form>
 
 			<p v-if="error" class="dnr_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 
 			<template v-if="report && !loading">
 				<div class="dnr_cards">
-					<div class="dnr_card"><span>Donors</span><strong>{{ n(totals.donors) }}</strong></div>
-					<div class="dnr_card"><span>Sorted donations</span><strong>{{ n(totals.donations) }}</strong></div>
-					<div class="dnr_card"><span>Units sorted</span><strong>{{ n(totals.units) }}</strong></div>
-					<div class="dnr_card"><span>Overall loss</span><strong>{{ pct(totals.loss_percent) }}</strong></div>
-					<div class="dnr_card"><span>On watch / decline</span><strong>{{ n(totals.watch) }} / {{ n(totals.decline) }}</strong></div>
+					<div class="dnr_card"><span>{{ $t('Commons.heading.donors', {}) }}</span><strong>{{ n(totals.donors) }}</strong></div>
+					<div class="dnr_card"><span>{{ $t('Commons.text.sorted_donations', {}) }}</span><strong>{{ n(totals.donations) }}</strong></div>
+					<div class="dnr_card"><span>{{ $t('Commons.text.units_sorted', {}) }}</span><strong>{{ n(totals.units) }}</strong></div>
+					<div class="dnr_card"><span>{{ $t('Commons.text.overall_loss', {}) }}</span><strong>{{ pct(totals.loss_percent) }}</strong></div>
+					<div class="dnr_card"><span>{{ $t('Pages.text.on_watch_decline', {}) }}</span><strong>{{ n(totals.watch) }} / {{ n(totals.decline) }}</strong></div>
 					<div class="dnr_card dnr_card_review">
-						<span>Suggestion differs</span><strong>{{ n(totals.needs_review) }}</strong>
-						<small>donors worth a look</small>
+						<span>{{ $t('Commons.text.suggestion_differs', {}) }}</span><strong>{{ n(totals.needs_review) }}</strong>
+						<small>{{ $t('Pages.text.donors_worth_a_look', {}) }}</small>
 					</div>
 				</div>
 
 				<p v-if="!report.donors.length" class="dnr_empty">
-					No donations{{ report.filters.from || report.filters.to ? ' in this date range' : '' }}.
+					{{ $t('Commons.text.no_donations') }}{{ report.filters.from || report.filters.to ? $t('Pages.text.in_this_date_range') : '' }}.
 				</p>
 
 				<template v-else>
 					<div v-if="lossChart.count" class="dnr_chartbox">
-						<h3>Loss % by donor</h3>
-						<ChartCanvas :config="lossChart" :height="chartHeight" label="Percent of sorted goods lost, per donor" />
+						<h3>{{ $t('Pages.heading.loss_by_donor', {}) }}</h3>
+						<ChartCanvas :config="lossChart" :height="chartHeight" :label="$t('Pages.label.percent_of_sorted_goods')" />
 					</div>
 
-					<h3>Donors</h3>
+					<h3>{{ $t('Commons.heading.donors', {}) }}</h3>
 					<div class="dnr_tablewrap"><table class="ri_datatable" border="1">
 						<thead>
 							<tr>
-								<th></th><th>Donor</th><th>Standing</th><th>Suggested</th><th>Donations</th><th>Units</th>
-								<th>Usable</th><th>Outdated</th><th>Trashed</th><th>Diverted</th>
-								<th>Loss %</th><th title="Loss % of the donor's last three sorted donations">Recent Loss %</th><th>Last Donation</th>
+								<th></th><th>{{ $t('Commons.text.donor', {}) }}</th><th>{{ $t('Commons.label.standing', {}) }}</th><th>{{ $t('Commons.text.suggested', {}) }}</th><th>{{ $t('Commons.heading.donations', {}) }}</th><th>{{ $t('Commons.text.units', {}) }}</th>
+								<th>{{ $t('Commons.text.usable', {}) }}</th><th>{{ $t('Commons.text.outdated', {}) }}</th><th>{{ $t('Commons.text.trashed', {}) }}</th><th>{{ $t('Commons.text.diverted', {}) }}</th>
+								<th>{{ $t('Commons.text.loss', {}) }}</th><th title="Loss % of the donor's last three sorted donations">{{ $t('Pages.text.recent_loss', {}) }}</th><th>{{ $t('Commons.text.last_donation', {}) }}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -243,7 +243,7 @@ export default {
 									<td><span v-if="!d.is_system" :class="['dnr_badge', 'dnr_badge_' + d.standing]">{{ label(d.standing) }}</span></td>
 									<td>
 										<span v-if="d.is_system">—</span>
-										<span v-else-if="d.suggested === null" class="dnr_muted">not enough data</span>
+										<span v-else-if="d.suggested === null" class="dnr_muted">{{ $t('Pages.text.not_enough_data', {}) }}</span>
 										<span v-else :class="['dnr_badge', 'dnr_badge_' + d.suggested, needsReview(d) ? 'dnr_differs' : '']">{{ label(d.suggested) }}</span>
 									</td>
 									<td class="dnr_num">{{ n(d.donations) }}<span v-if="d.unsorted_donations" class="dnr_muted"> +{{ d.unsorted_donations }} unsorted</span></td>
@@ -262,25 +262,25 @@ export default {
 										<p v-if="!d.is_system" class="dnr_reason">{{ d.suggestion_reason }}</p>
 
 										<div v-if="canSetStanding && !d.is_system && edit[d.person_id]" class="dnr_standing" @click.stop>
-											<label>Standing
+											<label>{{ $t('Commons.label.standing', {}) }}
 												<select v-model="edit[d.person_id].standing" class="ri_forminput">
 													<option v-for="s in standings" :key="s.value" :value="s.value">{{ s.label }}</option>
 												</select>
 											</label>
-											<label class="dnr_notefield">Note
+											<label class="dnr_notefield">{{ $t('Commons.label.note', {}) }}
 												<input type="text" v-model="edit[d.person_id].note" class="ri_forminput" maxlength="500"
 													:placeholder="edit[d.person_id].standing === 'decline' ? 'Required: why decline?' : 'Optional'" />
 											</label>
 											<button type="button" class="ri_defaultbutton" :disabled="edit[d.person_id].saving" @click="saveStanding(d)">
-												{{ edit[d.person_id].saving ? 'Saving...' : 'Save standing' }}
+												{{ edit[d.person_id].saving ? $t('Pages.button.saving') : $t('Commons.button.save_standing') }}
 											</button>
 											<span v-if="edit[d.person_id].error" class="dnr_error">{{ edit[d.person_id].error }}</span>
 										</div>
-										<p v-else-if="d.standing_note" class="dnr_reason">Note: {{ d.standing_note }}</p>
+										<p v-else-if="d.standing_note" class="dnr_reason">{{ $t('Commons.text.note_2') }} {{ d.standing_note }}</p>
 
 										<table class="dnr_subtable">
 											<thead>
-												<tr><th>Donation #</th><th>Date</th><th>Status</th><th>Usable</th><th>Outdated</th><th>Trashed</th><th>Diverted</th><th>Loss %</th></tr>
+												<tr><th>{{ $t('Commons.text.donation_2', {}) }}</th><th>{{ $t('Commons.text.date', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.usable', {}) }}</th><th>{{ $t('Commons.text.outdated', {}) }}</th><th>{{ $t('Commons.text.trashed', {}) }}</th><th>{{ $t('Commons.text.diverted', {}) }}</th><th>{{ $t('Commons.text.loss', {}) }}</th></tr>
 											</thead>
 											<tbody>
 												<tr v-for="n2 in d.donation_list" :key="n2.id">
@@ -298,14 +298,14 @@ export default {
 									</td>
 								</tr>
 							</template>
-							<tr v-if="!donors.length"><td colspan="13" class="dnr_empty">No donors match.</td></tr>
+							<tr v-if="!donors.length"><td colspan="13" class="dnr_empty">{{ $t('Pages.text.no_donors_match', {}) }}</td></tr>
 						</tbody>
 					</table></div>
 					<p class="dnr_note">
-						Suggestions: watch at {{ thresholds.watch_loss_percent }}%+ loss; decline at
+						{{ $t('Pages.text.suggestions_watch_at') }} {{ thresholds.watch_loss_percent }}%+ loss; decline at
 						{{ thresholds.decline_loss_percent }}%+ over {{ thresholds.decline_min_donations }}+ donations;
 						preferred at {{ thresholds.preferred_loss_percent }}% or less over {{ thresholds.preferred_min_donations }}+
-						donations and {{ thresholds.preferred_min_units }}+ units. Quantities are in each item's own unit.
+						donations and {{ thresholds.preferred_min_units }}{{ $t('Pages.text.units_quantities_are_in') }}
 					</p>
 				</template>
 			</template>

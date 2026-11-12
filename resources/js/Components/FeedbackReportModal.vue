@@ -130,15 +130,15 @@ async function captureScreenshot() {
 <template>
 	<Modal :show="dialogVisible" @close="close" max-width="lg">
 		<div class="p-6 space-y-4">
-			<h2 class="text-lg font-semibold">Report an Issue</h2>
+			<h2 class="text-lg font-semibold">{{ $t('Components.heading.report_an_issue', {}) }}</h2>
 
 			<template v-if="submitted">
 				<div class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3 text-sm">
-					Thanks — your report was submitted. We'll email you at
-					{{ page.props.auth.user.email }} when there's an update.
+					{{ $t('Components.text.thanks_your_report_was') }}
+					{{ page.props.auth.user.email }} {{ $t('Components.text.when_there_s_an') }}
 				</div>
 				<div class="flex justify-end">
-					<SecondaryButton @click="close">Close</SecondaryButton>
+					<SecondaryButton @click="close">{{ $t('Commons.button.close', {}) }}</SecondaryButton>
 				</div>
 			</template>
 
@@ -146,11 +146,11 @@ async function captureScreenshot() {
 				<div class="flex gap-4 text-sm">
 					<label class="flex items-center gap-2">
 						<input type="radio" value="bug" v-model="type" />
-						Bug report
+						{{ $t('Commons.label.bug_report', {}) }}
 					</label>
 					<label class="flex items-center gap-2">
 						<input type="radio" value="feature" v-model="type" />
-						Feature idea
+						{{ $t('Commons.label.feature_idea', {}) }}
 					</label>
 				</div>
 
@@ -158,19 +158,19 @@ async function captureScreenshot() {
 					v-model="message"
 					rows="5"
 					class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-					placeholder="What happened, or what would you like to see?"
+					:placeholder="$t('Components.placeholder.what_happened_or_what')"
 				></textarea>
 
 				<label class="flex items-center gap-2 text-sm text-gray-700">
 					<input type="checkbox" v-model="urgent" />
-					Urgent — this is blocking work right now
+					{{ $t('Components.label.urgent_this_is_blocking', {}) }}
 				</label>
 
 				<label class="flex items-center gap-2 text-sm text-gray-700">
 					<input type="checkbox" v-model="includeScreenshot" :disabled="capturingScreenshot || !screenshotBlob" />
-					<span v-if="capturingScreenshot">Capturing screenshot…</span>
-					<span v-else-if="screenshotBlob">Attach a screenshot of this page</span>
-					<span v-else>Screenshot unavailable</span>
+					<span v-if="capturingScreenshot">{{ $t('Commons.text.capturing_screenshot', {}) }}</span>
+					<span v-else-if="screenshotBlob">{{ $t('Components.text.attach_a_screenshot_of', {}) }}</span>
+					<span v-else>{{ $t('Commons.text.screenshot_unavailable', {}) }}</span>
 				</label>
 
 				<p class="text-xs text-gray-500">
@@ -183,7 +183,7 @@ async function captureScreenshot() {
 				</div>
 
 				<div class="flex justify-end gap-3">
-					<SecondaryButton :disabled="submitting" @click="close">Cancel</SecondaryButton>
+					<SecondaryButton :disabled="submitting" @click="close">{{ $t('Commons.button.cancel', {}) }}</SecondaryButton>
 					<PrimaryButton :disabled="submitting" @click="submit">
 						{{ submitting ? 'Submitting…' : 'Submit Report' }}
 					</PrimaryButton>

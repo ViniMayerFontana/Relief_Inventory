@@ -1,0 +1,2208 @@
+diff --git a/package-lock.json b/package-lock.json
+index e036762..3d96ca3 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -7653,16 +7653,42 @@
+     "packages/cli": {
+       "name": "@ai-localizer/cli",
+       "version": "0.1.0",
++      "license": "Apache-2.0",
+       "dependencies": {
+-        "@ai-localizer/core": "*"
++        "@ai-localizer/core": "^0.1.0"
+       },
+       "bin": {
+         "ai-localize": "bin/ai-localize.js"
++      },
++      "engines": {
++        "node": ">=18"
+       }
+     },
+     "packages/core": {
+       "name": "@ai-localizer/core",
+-      "version": "0.1.0"
++      "version": "0.1.0",
++      "license": "Apache-2.0",
++      "dependencies": {
++        "magic-string": "^0.30.21",
++        "oxc-parser": "^0.89.0"
++      },
++      "engines": {
++        "node": ">=18"
++      },
++      "peerDependenciesMeta": {
++        "@babel/generator": {
++          "optional": true
++        },
++        "@babel/parser": {
++          "optional": true
++        },
++        "@babel/traverse": {
++          "optional": true
++        },
++        "@babel/types": {
++          "optional": true
++        }
++      }
+     }
+   }
+ }
+diff --git a/packages/core/src/i18n/lib/parsers/vueParser.js b/packages/core/src/i18n/lib/parsers/vueParser.js
+index 8d9f81b..d562156 100644
+--- a/packages/core/src/i18n/lib/parsers/vueParser.js
++++ b/packages/core/src/i18n/lib/parsers/vueParser.js
+@@ -56,6 +56,32 @@ class VueParser extends BaseParser {
+       return results;
+     }
+ 
++    // Ensure ignore patterns from options are respected by helper methods
++    this.ignorePatterns = options.ignorePatterns || this.ignorePatterns || {};
++
++    // Template literals in scripts are UI copy when they interpolate
++    // (confirm(`Remove "${item}"?`), notices). Extract them as keys with
++    // {pN} placeholders BEFORE the code-block placeholder pass strips the
++    // backticks — otherwise these strings are invisible to the extractor.
++    if (content.includes('`')) {
++      const templateLiteralRegex = /`((?:\\.|[^`\\])*)`/g;
++      let templateMatch;
++      while ((templateMatch = templateLiteralRegex.exec(content)) !== null) {
++        const params = [];
++        const text = templateMatch[1]
++          .replace(/\$\{([^}]+)\}/g, (e, expr) => {
++            params.push(expr);
++            return `{p${params.length - 1}}`;
++          })
++          .replace(/\s+/g, ' ')
++          .trim();
++        if (!text || !params.length) continue;
++        if (!shouldTranslate(text, { ignorePatterns: this.ignorePatterns })) continue;
++        results.items.push({ type: 'string', text, kind: 'text' });
++        results.stats.extracted++;
++      }
++    }
++
+     // Handle code blocks that might break state machine parsing
+     if (content.includes('```') || content.includes('`')) {
+       // Replace code blocks with placeholders to avoid parsing issues
+@@ -63,9 +89,6 @@ class VueParser extends BaseParser {
+       content = content.replace(/`[^`]+`/g, '<inline-code></inline-code>');
+     }
+ 
+-    // Ensure ignore patterns from options are respected by helper methods
+-    this.ignorePatterns = options.ignorePatterns || this.ignorePatterns || {};
+-
+     results.stats.processed = 1;
+ 
+     // Extract and parse template section
+@@ -74,9 +97,10 @@ class VueParser extends BaseParser {
+       this.parseTemplate(template, results);
+     }
+ 
+-    // Also extract from script section for i18n keys
+-    const script = this.extractScript(content);
+-    if (script) {
++    // Also extract from every script section: an SFC may legally have both
++    // <script setup> and a plain <script> (Options API) — extracting only the
++    // first left half the file unscanned.
++    for (const script of this.extractScripts(content)) {
+       this.parseScript(script, results);
+     }
+ 
+@@ -136,6 +160,19 @@ class VueParser extends BaseParser {
+     return match ? match[1] : null;
+   }
+ 
++  /**
++   * Extract ALL script sections from a Vue SFC (setup + Options API blocks).
++   */
++  extractScripts(content) {
++    const scripts = [];
++    const regex = /<script[^>]*>([\s\S]*?)<\/script>/gi;
++    let match;
++    while ((match = regex.exec(content)) !== null) {
++      scripts.push(match[1]);
++    }
++    return scripts;
++  }
++
+   /**
+    * Parse Vue template using state machine
+    */
+@@ -218,8 +255,11 @@ class VueParser extends BaseParser {
+       // Decode HTML entities before validation
+       validationText = decodeHtmlEntities(validationText);
+ 
+-      // Validate the text with placeholders preserved
+-      if (shouldTranslate(validationText, { ignorePatterns: this.ignorePatterns })) {
++      // Validate the text with placeholders preserved. Text containing
++      // mustache expressions never becomes a full key: the raw {{ expr }}
++      // inside a vue-i18n message renders literally, so only the leading and
++      // trailing copies around the expressions are extracted instead.
++      if (mustacheRanges.length === 0 && shouldTranslate(validationText, { ignorePatterns: this.ignorePatterns })) {
+         // For the actual extracted text, preserve mustache expressions as placeholders
+         // This ensures the text is complete and can be properly replaced later
+         let extractedText = text;
+@@ -240,12 +280,67 @@ class VueParser extends BaseParser {
+           parentTag: getCurrentParentTag(),
+         });
+         results.stats.extracted++;
++      } else if (mustacheRanges.length > 0) {
++        // Leading copy before the first mustache ("Name{{ sortArrow('x') }}"):
++        // the full text fails validation (the placeholder braces break the
++        // label rules), but the leading label is real UI copy — register it
++        // on its own so the replacer can translate it in front of the
++        // expression.
++        const lead = text.slice(0, mustacheRanges[0].start).replace(/\s+/g, ' ').trim();
++        const leadDecoded = decodeHtmlEntities(lead);
++        if (leadDecoded && shouldTranslate(leadDecoded, { ignorePatterns: this.ignorePatterns })) {
++          const kind = this.inferKindFromTag(getCurrentParentTag());
++          results.items.push({
++            type: 'text',
++            text: leadDecoded,
++            kind,
++            parentTag: getCurrentParentTag(),
++          });
++          results.stats.extracted++;
++        }
++        // Trailing copy after the LAST mustache ("{{ n }} minutes"): same
++        // rationale — the tail is real UI copy the replacer can translate
++        // after the expression.
++        const tail = text.slice(mustacheRanges[mustacheRanges.length - 1].end).replace(/\s+/g, ' ').trim();
++        const tailDecoded = decodeHtmlEntities(tail);
++        if (tailDecoded && shouldTranslate(tailDecoded, { ignorePatterns: this.ignorePatterns })) {
++          const kind = this.inferKindFromTag(getCurrentParentTag());
++          results.items.push({
++            type: 'text',
++            text: tailDecoded,
++            kind,
++            parentTag: getCurrentParentTag(),
++          });
++          results.stats.extracted++;
++        }
+       }
+     };
+ 
+     const processAttributeValue = (name, value, tag) => {
+       if (!name || !value) return;
+ 
++      // Bound option arrays — :options="[{ id: 'active', name: 'Active' }]".
++      // The expression itself is code, but its quoted display literals are UI
++      // copy: scan them as candidates.
++      const boundName = String(name).toLowerCase();
++      if (boundName === ':options' || boundName === ':items') {
++        const literalRegex = /(['"])((?:\\.|(?!\1)[^\\])*)\1/g;
++        let litMatch;
++        while ((litMatch = literalRegex.exec(value)) !== null) {
++          const candidate = (litMatch[2] || '').trim();
++          if (!candidate) continue;
++          if (!shouldTranslate(candidate, { ignorePatterns: this.ignorePatterns })) continue;
++          results.items.push({
++            type: 'text',
++            text: decodeHtmlEntities(candidate),
++            kind: 'text',
++            parentTag: tag,
++          });
++          results.stats.extracted++;
++        }
++        return;
++      }
++
+       // Skip Vue directives and bindings
+       if (isNonTranslatableAttribute(name)) return;
+       if (!isTranslatableAttribute(name)) return;
+@@ -520,7 +615,43 @@ class VueParser extends BaseParser {
+       return;
+     }
+ 
+-    const lines = script.split('\n');
++    // Strip comments before scanning (quoted strings inside comments used to
++    // become translation keys). String literals are masked first so `//`
++    // inside URLs/strings survives; then line and block comments are cut.
++    const stringMask = /(['"])(?:\\.|(?!\1)[^\\])*\1/g;
++    const cleanLines = [];
++    let inBlockComment = false;
++    for (const rawLine of script.split('\n')) {
++      let line = rawLine;
++      if (inBlockComment) {
++        const end = line.indexOf('*/');
++        if (end === -1) {
++          cleanLines.push('');
++          continue;
++        }
++        inBlockComment = false;
++        line = line.slice(end + 2);
++      }
++      let mask = line.replace(stringMask, (m) => ' '.repeat(m.length));
++      const blockStart = mask.indexOf('/*');
++      if (blockStart !== -1) {
++        const blockEnd = mask.indexOf('*/', blockStart);
++        if (blockEnd === -1) {
++          inBlockComment = true;
++          cleanLines.push(line.slice(0, blockStart));
++          continue;
++        }
++        line = line.slice(0, blockStart) + line.slice(blockEnd + 2);
++        mask = line.replace(stringMask, (m) => ' '.repeat(m.length));
++      }
++      const lineComment = mask.indexOf('//');
++      cleanLines.push(lineComment === -1 ? line : line.slice(0, lineComment));
++    }
++    const lines = cleanLines;
++
++    // Depth counter for `const ALL_CAPS = [...]` arrays: their string literals
++    // are machine identifiers (e.g. RBAC role names), not UI copy.
++    let capsArrayDepth = 0;
+ 
+     // First, identify lines that contain explicit i18n key lookups or logging
+     // so we avoid treating those strings as user-facing text.
+@@ -533,28 +664,26 @@ class VueParser extends BaseParser {
+ 
+     for (let i = 0; i < lines.length; i++) {
+       const line = lines[i];
+-      for (const pattern of i18nLinePatterns) {
+-        if (pattern.test(line)) {
++      // Only LOGGING lines are skipped wholesale now. Lines containing t()
++      // calls are NOT: a partially translated line (label: t('…'), hint: '…')
++      // still has raw UI literals to extract — the key-shaped-literal guard
++      // below keeps the t() arguments themselves out.
++      for (const logPattern of LOGGING_LINE_PATTERNS) {
++        if (logPattern.test(line)) {
+           skipLineIndexes.add(i);
+           break;
+         }
+       }
+-      if (!skipLineIndexes.has(i)) {
+-        for (const logPattern of LOGGING_LINE_PATTERNS) {
+-          if (logPattern.test(line)) {
+-            skipLineIndexes.add(i);
+-            break;
+-          }
+-        }
+-      }
+     }
+ 
+     // Now scan for string literals in the script (computed(), methods, etc.).
+     // Minimum length 2 so two-char CJK strings ('确定', '保存', …) are captured;
+-    // shouldTranslate will drop technical tokens.
++    // shouldTranslate will drop technical tokens. The capture is ESCAPE-AWARE:
++    // \' inside a literal ('Enter the driver\'s name.') used to split the scan
++    // into a truncated fragment and a junk key like "s name.".
+     const stringPatterns = [
+-      /'([^'\\\n]{2,200})'/g,
+-      /"([^"\\\n]{2,200})"/g,
++      /'((?:\\.|[^'\\\n]){2,200})'/g,
++      /"((?:\\.|[^"\\\n]){2,200})"/g,
+     ];
+ 
+     // Also look for ref() and reactive() calls with string values
+@@ -571,6 +700,57 @@ class VueParser extends BaseParser {
+       // Skip import/export lines
+       if (/^\s*(import|export)\s/.test(line)) continue;
+ 
++    // Inside an ALL_CAPS const array: bare literals are machine identifiers
++    // (e.g. RBAC role names) — but UI-config arrays (DISPOSITIONS = [
++    // { key: 'usable', label: 'Usable', hint: '…' }, …]) hold translatable
++    // copy under UI props. So inside caps arrays the per-literal guards still
++    // run: prop-prefixed literals follow the normal technical/UI rules, and
++    // BARE literals (no `prop:` immediately before) stay skipped.
++    let inCapsArray = capsArrayDepth > 0;
++    if (inCapsArray) {
++      for (const ch of line) {
++        if (ch === '[') capsArrayDepth++;
++        else if (ch === ']') capsArrayDepth--;
++      }
++    } else {
++      const capsArrayDecl = line.match(/^\s*(?:const|let|var)\s+[A-Z][A-Z0-9_]*\s*=\s*\[/);
++      if (capsArrayDecl) {
++        let depth = 0;
++        for (const ch of line) {
++          if (ch === '[') depth++;
++          else if (ch === ']') depth--;
++        }
++        if (depth > 0) capsArrayDepth = depth;
++        inCapsArray = true;
++      }
++    }
++
++      // Script chains: 'lit' + expr [+ 'lit2'] and template literals with
++      // ${expr} become ONE key with placeholders (the notice/confirm cases).
++      // Matching a chain skips the individual-literal scans for this line so
++      // the chain key replaces the fragmented ones.
++      const chainMatch = line.match(/(['"])((?:\\.|(?!\1)[^\\\n])*)\1\s*\+\s*([A-Za-z_$][\w$.]*(?:\([^()]*\))?)(?:\s*\+\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\4)?/);
++      const templateMatch = /`((?:\\.|[^`\\])*)`/.test(line) && /\$\{[^}]+\}/.test(line) ? line.match(/`((?:\\.|[^`\\])*)`/) : null;
++      if ((chainMatch && chainMatch[3]) || templateMatch) {
++        let text = null;
++        if (templateMatch) {
++          const params = [];
++          text = templateMatch[1].replace(/\$\{([^}]+)\}/g, () => {
++            params.push(1);
++            return `{p${params.length - 1}}`;
++          });
++        } else {
++          // Keep literal whitespace: the mid-chain space is part of the sentence.
++          text = `${chainMatch[2]}{placeholder}` + (chainMatch[5] !== undefined ? chainMatch[5] : '');
++        }
++        text = text.replace(/\s+/g, ' ').trim();
++        if (text && shouldTranslate(text, { ignorePatterns: this.ignorePatterns })) {
++          results.items.push({ type: 'string', text, kind: 'text' });
++          results.stats.extracted++;
++        }
++        continue;
++      }
++
+       // Check ref patterns first (higher priority)
+       for (const pattern of refPatterns) {
+         pattern.lastIndex = 0;
+@@ -579,6 +759,17 @@ class VueParser extends BaseParser {
+           const candidate = (match[1] || '').trim();
+           if (!candidate) continue;
+ 
++          // Skip values of technical property names (value/id/key/...) and
++          // comparison targets: machine identifiers, not UI copy. Also event
++          // NAMES: the literal is the argument of emit('name') / $emit('name')
++          // or sits in defineEmits(...)/emits: [...] — code contracts, not UI.
++          const beforeRef = line.slice(0, match.index);
++          if (/(^|[,{([])\s*(value|id|key|slug|kind|mode|to|from|type|status|action|channel|scope)\s*:\s*$/.test(beforeRef)) continue;
++          if (/(={2,3}|!==?)\s*$/.test(beforeRef)) continue;
++          if (/(defineEmits\s*\(|\bemits\s*:)/.test(beforeRef)) continue;
++          if (/\$?emit\s*\(\s*$/.test(beforeRef)) continue;
++          if (inCapsArray && !/[A-Za-z_$][\w$]*\s*:\s*$/.test(beforeRef)) continue;
++
+           if (skipLineIndexes.has(lineIndex)) continue;
+ 
+           if (!shouldTranslate(candidate, { ignorePatterns: this.ignorePatterns })) {
+@@ -599,9 +790,27 @@ class VueParser extends BaseParser {
+         pattern.lastIndex = 0;
+         let match;
+         while ((match = pattern.exec(line)) !== null) {
+-          const candidate = (match[1] || '').trim();
++          // Unescape \' \" \\ so the stored text (and later the translation)
++          // is the string the user sees, not the source spelling.
++          const candidate = (match[1] || '').replace(/\\(['"\\])/g, '$1').trim();
+           if (!candidate) continue;
+ 
++          // Skip values of technical property names (value/id/key/...) and
++          // comparison targets (`=== 'none'`): machine identifiers, not UI copy.
++          // Also event NAMES (emit('name')/$emit('name') call sites and
++          // defineEmits(...)/emits: [...] declarations) — code contracts.
++          // Inside ALL_CAPS arrays also skip bare literals (role names).
++          // i18n KEY literals (Commons.text.usable) are skipped by shape —
++          // they are the arguments of the t() calls on partially translated
++          // lines, not new UI copy.
++          const beforeText = line.slice(0, match.index);
++          if (/(^|[,{([])\s*(value|id|key|slug|kind|mode|to|from|type|status|action|channel|scope)\s*:\s*$/.test(beforeText)) continue;
++          if (/(={2,3}|!==?)\s*$/.test(beforeText)) continue;
++          if (/(defineEmits\s*\(|\bemits\s*:)/.test(beforeText)) continue;
++          if (/\$?emit\s*\(\s*$/.test(beforeText)) continue;
++          if (inCapsArray && !/[A-Za-z_$][\w$]*\s*:\s*$/.test(beforeText)) continue;
++          if (/^[A-Z][A-Za-z0-9_]*(?:\.[A-Za-z0-9_]+){2,}$/.test(candidate)) continue;
++
+           // Skip obvious i18n key lookups; validators will also reject most keys,
+           // but this keeps noise down if keys look like natural language.
+           if (skipLineIndexes.has(lineIndex)) {
+diff --git a/packages/core/src/i18n/lib/replacers/baseReplacer.js b/packages/core/src/i18n/lib/replacers/baseReplacer.js
+index 3711c07..246b397 100644
+--- a/packages/core/src/i18n/lib/replacers/baseReplacer.js
++++ b/packages/core/src/i18n/lib/replacers/baseReplacer.js
+@@ -87,6 +87,20 @@ class BaseReplacer {
+       }
+     }
+ 
++    // Last resort: the same text may be registered under another kind
++    // (e.g. a "Lead {{ expr }} trail" node extracts the lead under `heading`
++    // because it sits in an <h2>, while the replacer context only knows
++    // `text`). Same string = same translation, so any kind resolves.
++    const kindsToTry = ['heading', 'label', 'button', 'link', 'placeholder', 'title', 'alt', 'aria_label'];
++    for (const ns of [effectiveNs, namespace]) {
++      for (const k of kindsToTry) {
++        if (k === kind) continue;
++        keyId = `${ns}|${k}|${cleaned}`;
++        fullKey = keyMap.get(keyId);
++        if (fullKey) return fullKey;
++      }
++    }
++
+     return null;
+   }
+ 
+diff --git a/packages/core/src/i18n/lib/replacers/jsxReplacer.js b/packages/core/src/i18n/lib/replacers/jsxReplacer.js
+index af77481..619a3e0 100644
+--- a/packages/core/src/i18n/lib/replacers/jsxReplacer.js
++++ b/packages/core/src/i18n/lib/replacers/jsxReplacer.js
+@@ -37,6 +37,58 @@ class JsxReplacer extends BaseReplacer {
+     let modified = content;
+     let changeCount = 0;
+ 
++    // Mask quotes INSIDE comments so no regex pass below can match string
++    // literals there (Issue 10 on the replace side: `// label: 'Active'` and
++    // `// '' | 'none' | a role id` were being rewritten). Every pass is
++    // quote-driven, so replacing quote chars with 1:1 control chars makes
++    // comments inert while keeping byte offsets stable. Restoration at the
++    // end maps the control chars back, self-healing any misdetection.
++    const hasControlChars = /[\u0001\u0002\u0003]/.test(content);
++    if (!hasControlChars) {
++      // String-literal mask used ONLY to locate comment markers; the working
++      // content keeps the code itself untouched.
++      const stringMask = /(['"])(?:\\.|(?!\1)[^\\])*\1/g;
++      const quoteSub = { "'": '\u0001', '"': '\u0002', '`': '\u0003' };
++      let inBlockComment = false;
++      const maskedLines = [];
++      for (const rawLine of content.split('\n')) {
++        let line = rawLine;
++        if (inBlockComment) {
++          const end = line.indexOf('*/');
++          if (end === -1) {
++            maskedLines.push(line.replace(/['"`]/g, (q) => quoteSub[q]));
++            continue;
++          }
++          inBlockComment = false;
++          maskedLines.push(line.slice(0, end + 2).replace(/['"`]/g, (q) => quoteSub[q]));
++          line = line.slice(end + 2);
++        }
++        const mask = line.replace(stringMask, (m) => ' '.repeat(m.length));
++        const blockStart = mask.indexOf('/*');
++        if (blockStart !== -1) {
++          const blockEnd = mask.indexOf('*/', blockStart);
++          if (blockEnd === -1) {
++            inBlockComment = true;
++            maskedLines.push(line.slice(0, blockStart) + line.slice(blockStart).replace(/['"`]/g, (q) => quoteSub[q]));
++            continue;
++          }
++          maskedLines.push(
++            line.slice(0, blockStart) +
++              line.slice(blockStart, blockEnd + 2).replace(/['"`]/g, (q) => quoteSub[q]) +
++              line.slice(blockEnd + 2)
++          );
++          continue;
++        }
++        const lineComment = mask.indexOf('//');
++        if (lineComment !== -1) {
++          maskedLines.push(line.slice(0, lineComment) + line.slice(lineComment).replace(/['"`]/g, (q) => quoteSub[q]));
++        } else {
++          maskedLines.push(line);
++        }
++      }
++      modified = maskedLines.join('\n');
++    }
++
+     // Helper to check if text should be translated
+     const canTranslate = (text) => {
+       const cleaned = this.normalizeText(text);
+@@ -228,11 +280,125 @@ class JsxReplacer extends BaseReplacer {
+       return `${prefix}t('${fullKey}')${suffix}`;
+     });
+ 
++    // Script-side chains: 'lit' + expr [+ 'lit2'] becomes ONE key with a
++    // {placeholder} param ("Removed carton " + code + ". Its next scan…").
++    // The expression may open with `new` ("Saved " + new Date().toLocaleTimeString())
++    // and may chain member calls; a bare keyword like `new` alone must NOT be
++    // captured as the whole expression (that truncated the call and emitted
++    // invalid JS: t('…', { placeholder: new }) Date().toLocaleTimeString()).
++    const chainRegex = /(['"])((?:\\.|(?!\1)[^\\\n])*)\1\s*\+\s*((?:new\s+)?[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)*(?:\((?:[^()]|\([^()]*\))*\))?(?:\.[A-Za-z_$][\w$]*(?:\((?:[^()]|\([^()]*\))*\))?)*)(?:\s*\+\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\4)?/g;
++    modified = modified.replace(chainRegex, (match, q1, lit1, expr, q2, lit2) => {
++      if (!expr || lit1 === undefined) return match;
++      if (/\$?t\s*\(/.test(match)) return match;
++      // Guard: the captured expression must not be a bare JS keyword
++      if (/^(new|typeof|await|delete|void|in|of|instanceof|return|case|do|else)$/.test(expr.trim())) return match;
++      // Keep literal whitespace: the mid-chain space is part of the sentence
++      // ("Removed carton " + code → "Removed carton {placeholder}").
++      let text = `${lit1}{placeholder}` + (lit2 !== undefined ? lit2 : '');
++      text = text.replace(/\s+/g, ' ').trim();
++      if (!canTranslate(text)) return match;
++      const fullKey = this.lookupKey(keyMap, namespace, 'text', text);
++      if (!fullKey) return match;
++      changeCount++;
++      return `t('${fullKey}', { placeholder: ${expr} })`;
++    });
++
++    // Template literals with ${expr} become ONE key with {p0}… params
++    // (confirm(`Remove "${item}"?`) → confirm(t('key', { p0: item }))).
++    const templateRegex = /`((?:\\.|[^`\\])*)`/g;
++    modified = modified.replace(templateRegex, (m, inner) => {
++      if (!/\$\{[^}]+\}/.test(inner)) return m;
++      if (/\$?t\s*\(/.test(inner)) return m;
++      const params = [];
++      let text = inner.replace(/\$\{([^}]+)\}/g, (e, expr) => {
++        params.push(expr);
++        return `{p${params.length - 1}}`;
++      });
++      text = text.replace(/\s+/g, ' ').trim();
++      if (!canTranslate(text)) return m;
++      const fullKey = this.lookupKey(keyMap, namespace, 'text', text);
++      if (!fullKey) return m;
++      changeCount++;
++      const rendered = params.map((p, i) => `p${i}: ${p}`).join(', ');
++      return `t('${fullKey}', { ${rendered} })`;
++    });
++
++    // Final pass: any remaining string literal whose exact text has a key is
++    // replaced (covers `|| 'fallback'` and other expression contexts the
++    // structured passes don't reach). Guards keep technical values safe
++    // (Issue 9): values of technical property names, comparison targets and
++    // ALL_CAPS const arrays (RBAC role names etc. — mirrored from the
++    // extractor's capsArrayDepth guard) are never rewritten.
++    const capsSpans = [];
++    {
++      let depth = 0;
++      let startOff = -1;
++      let offset = 0;
++      for (const line of modified.split('\n')) {
++        if (depth > 0) {
++          for (const ch of line) {
++            if (ch === '[') depth++;
++            else if (ch === ']') depth--;
++          }
++          offset += line.length + 1;
++          if (depth === 0) {
++            capsSpans.push([startOff, offset]);
++            startOff = -1;
++          }
++          continue;
++        }
++        if (/^\s*(?:const|let|var)\s+[A-Z][A-Z0-9_]*\s*=\s*\[/.test(line)) {
++          let d = 0;
++          for (const ch of line) {
++            if (ch === '[') d++;
++            else if (ch === ']') d--;
++          }
++          if (d > 0) {
++            depth = d;
++            startOff = offset;
++          } else {
++            // Complete on one line: the whole declaration stays verbatim.
++            capsSpans.push([offset, offset + line.length]);
++          }
++        }
++        offset += line.length + 1;
++      }
++    }
++    const inCapsSpan = (pos) => capsSpans.some(([s, e]) => pos >= s && pos < e);
++    const genericLiteralRegex = /(['"])((?:\\.|(?!\1)[^\\\n])*)\1/g;
++    modified = modified.replace(genericLiteralRegex, (lit, quote, text, offset) => {
++      if (!text || text.length < 2) return lit;
++      const before = modified.slice(0, offset);
++      // Inside ALL_CAPS arrays, bare literals are machine identifiers (roles):
++      // skip them. Prop-prefixed literals follow the normal guards below.
++      if (inCapsSpan(offset) && !/[A-Za-z_$][\w$]*\s*:\s*$/.test(before)) return lit;
++      if (/(defineEmits\s*\(|\bemits\s*:)/.test(before)) return lit;
++      if (/\$?emit\s*\(\s*$/.test(before)) return lit;
++      // Unescape \' \" \\ so lookups match the text the extractor stored.
++      const unescaped = text.replace(/\\(['"\\])/g, '$1');
++      if (!unescaped || unescaped.length < 2) return lit;
++      if (/\$?t\s*\(\s*$/.test(before)) return lit;
++      if (/(^|[,{([])\s*(value|id|key|slug|kind|mode|to|from|type|status|action|channel|scope)\s*:\s*$/.test(before)) return lit;
++      if (/(={2,3}|!==?)\s*$/.test(before)) return lit;
++      if (!canTranslate(unescaped)) return lit;
++      const fullKey = this.lookupKey(keyMap, namespace, 'text', unescaped);
++      if (!fullKey) return lit;
++      changeCount++;
++      // Script context: t() (not $t()) — ensureTImport adds the import.
++      return `t('${fullKey}')`;
++    });
++
+     // Add t import if needed
+     if (changeCount > 0) {
+       modified = this.ensureTImport(modified);
+     }
+ 
++    // Restore comment quotes masked at the start (control chars → quotes).
++    if (!hasControlChars) {
++      const quoteRestore = { '\u0001': "'", '\u0002': '"', '\u0003': '`' };
++      modified = modified.replace(/[\u0001\u0002\u0003]/g, (c) => quoteRestore[c]);
++    }
++
+     return { content: modified, changeCount };
+   }
+ 
+@@ -250,10 +416,14 @@ class JsxReplacer extends BaseReplacer {
+       return content;
+     }
+ 
+-    // Find last import statement
+-    const lastImportMatch = content.match(/(import\s+[^;]+;)(?![\s\S]*import\s+[^;]+;)/);
+-    if (lastImportMatch) {
+-      const insertPos = lastImportMatch.index + lastImportMatch[0].length;
++    // Find the last import statement. Anchored to line starts so words like
++    // "manage-import" inside comments (whose text may run past a semicolon
++    // line far below) are never mistaken for import statements — that used
++    // to inject the t import INSIDE a function body (syntax error).
++    const importMatches = [...content.matchAll(/^import\s+[^;\n]+;/gm)];
++    if (importMatches.length > 0) {
++      const last = importMatches[importMatches.length - 1];
++      const insertPos = last.index + last[0].length;
+       return content.slice(0, insertPos) + "\nimport { t } from '@/i18n';" + content.slice(insertPos);
+     }
+ 
+diff --git a/packages/core/src/i18n/lib/replacers/vueReplacer.js b/packages/core/src/i18n/lib/replacers/vueReplacer.js
+index 8ac1a94..7ce3f01 100644
+--- a/packages/core/src/i18n/lib/replacers/vueReplacer.js
++++ b/packages/core/src/i18n/lib/replacers/vueReplacer.js
+@@ -8,6 +8,7 @@
+ 
+ const { BaseReplacer } = require('./baseReplacer');
+ const { JsxReplacer } = require('./jsxReplacer');
++const { decodeHtmlEntities } = require('../parsers/baseParser');
+ 
+ class VueReplacer extends BaseReplacer {
+   static getExtensions() {
+@@ -27,7 +28,7 @@ class VueReplacer extends BaseReplacer {
+ 
+     // Helper to check if text should be translated
+     const canTranslate = (text) => {
+-      const cleaned = this.normalizeText(text);
++      const cleaned = this.normalizeText(this.decodeHtmlText(text));
+       if (!cleaned) return false;
+       if (!/[A-Za-z]/.test(cleaned)) return false;
+       
+@@ -43,40 +44,103 @@ class VueReplacer extends BaseReplacer {
+     };
+ 
+     // Process <template> section
+-    const templateMatch = content.match(/(<template[^>]*>)([\s\S]*?)(<\/template>)/i);
+-    if (templateMatch) {
+-      const [fullMatch, openTag, templateContent, closeTag] = templateMatch;
++    // Find the OUTERMOST <template> block: nested <template> tags (e.g. named
++    // slot templates) must not terminate the scan. A non-greedy match here
++    // stopped at the first inner </template>, leaving everything after it
++    // unprocessed (slot-based SFCs ended up with near-zero coverage).
++    const templateBlock = this.findOuterTemplate(content);
++    if (templateBlock) {
++      const { openTag, templateContent, closeTag, start, end } = templateBlock;
+       let newTemplateContent = this.replaceInTemplate(templateContent, keyMap, namespace, canTranslate);
+ 
+       if (newTemplateContent !== templateContent) {
+         const templateChangeCount = this.countDifferences(templateContent, newTemplateContent);
+         changeCount += templateChangeCount;
+-        modified = modified.replace(fullMatch, `${openTag}${newTemplateContent}${closeTag}`);
++        // Rebuild via slice: String.replace(pattern, string) would interpret
++        // "$" sequences (e.g. $&, $`) inside the replacement content.
++        modified = content.slice(0, start) + openTag + newTemplateContent + closeTag + content.slice(end);
+       }
+     }
+ 
+-    // Process <script> section using JsxReplacer
+-    const scriptMatch = modified.match(/(<script[^>]*>)([\s\S]*?)(<\/script>)/i);
+-    if (scriptMatch) {
+-      const [fullMatch, openTag, scriptContent, closeTag] = scriptMatch;
++    // Process every <script> block (an SFC may legally have both
++    // <script setup> and a plain <script> — Options API state/methods).
++    // A single non-greedy match processed only the FIRST block.
++    const scriptRegex = /(<script[^>]*>)([\s\S]*?)(<\/script>)/gi;
++    modified = modified.replace(scriptRegex, (fullMatch, openTag, scriptContent, closeTag) => {
+       const jsxReplacer = new JsxReplacer();
+       const result = jsxReplacer.replace(scriptContent, keyMap, namespace, options);
+ 
+       if (result.changeCount > 0) {
+         changeCount += result.changeCount;
+-        modified = modified.replace(fullMatch, `${openTag}${result.content}${closeTag}`);
++        // Replacer function: the replacement must be used literally, without
++        // "$" pattern interpretation by String.replace.
++        return `${openTag}${result.content}${closeTag}`;
+       }
+-    }
++      return fullMatch;
++    });
+ 
+     return { content: modified, changeCount };
+   }
+ 
++  /**
++   * Decode HTML entities (&amp; etc.) so replacement lookups match keys that
++   * extraction already stored decoded.
++   */
++  decodeHtmlText(text) {
++    return decodeHtmlEntities(text);
++  }
++
++  /**
++   * Find the outermost <template> block of an SFC, tracking nested <template>
++   * tags (named slot templates) so the scan ends at the component's own
++   * closing </template> instead of the first inner one. Self-closing
++   * <template ... /> tags do not affect depth. Returns null when no balanced
++   * block is found.
++   */
++  findOuterTemplate(content) {
++    const openMatch = content.match(/<template[^>]*>/i);
++    if (!openMatch) return null;
++    const start = openMatch.index;
++    const openEnd = start + openMatch[0].length;
++    const tagRegex = /<\/?template(?:\s[^>]*)?>/gi;
++    tagRegex.lastIndex = openEnd;
++    let depth = 1;
++    let match;
++    while ((match = tagRegex.exec(content)) !== null) {
++      if (/\/>$/.test(match[0])) continue; // self-closing
++      if (match[0][1] === '/') {
++        depth -= 1;
++        if (depth === 0) {
++          return {
++            openTag: openMatch[0],
++            closeTag: match[0],
++            templateContent: content.slice(openEnd, match.index),
++            start,
++            end: match.index + match[0].length,
++          };
++        }
++      } else {
++        depth += 1;
++      }
++    }
++    return null;
++  }
++
+   /**
+    * Replace strings in Vue template
+    */
+   replaceInTemplate(template, keyMap, namespace, canTranslate) {
+     let modified = template;
+ 
++    // Mask quotes inside HTML comments (<!-- ... -->) so the attribute and
++    // text passes below cannot rewrite commented-out markup. 1:1 control-char
++    // substitution keeps offsets stable; restored before returning.
++    const tplHasControlChars = /[\u0001\u0002\u0003]/.test(modified);
++    if (!tplHasControlChars) {
++      const tplQuoteSub = { "'": '\u0001', '"': '\u0002', '`': '\u0003' };
++      modified = modified.replace(/<!--[\s\S]*?-->/g, (m) => m.replace(/['"`]/g, (q) => tplQuoteSub[q]));
++    }
++
+     // 1. Plain text content between tags (including those with {{ }})
+     // Matches text content within HTML elements, handling indentation and whitespace
+     // Skip content that already has {{ $t(...) }} or {{ t(...) }} wrapper
+@@ -86,18 +150,103 @@ class VueReplacer extends BaseReplacer {
+       const trimmed = text.trim();
+       // Skip if already contains $t() or t() calls
+       if (/\{\{\s*\$?t\s*\(/.test(text)) return match;
+-      if (!trimmed || !canTranslate(trimmed)) return match;
++      if (!trimmed) return match;
++
++      const decoded = this.decodeHtmlText(trimmed);
++
++      // Leading copy before an inline mustache ("Name{{ sortArrow('x') }}"):
++      // translate the leading text as its own string and keep the expression.
++      const leading = decoded.match(/^([^{}]*?)\s*(\{\{[\s\S]*\}\})$/);
++      if (leading && leading[1].trim()) {
++        const lead = leading[1].trim();
++        if (canTranslate(lead)) {
++          const leadKey = this.lookupKey(keyMap, namespace, 'text', lead);
++          if (leadKey) {
++            const leadSpace = text.match(/^\s*/)[0];
++            const trailSpace = text.match(/\s*$/)[0];
++            // Trailing copy after the last mustache of the rest
++            // ("Active in the last {{ n }} minutes" → lead + expr + tail):
++            const rest = leading[2];
++            const innerTrailing = rest.match(/^((?:\{\{[^{}]*\}\})+)([^{}]*)$/);
++            if (innerTrailing && innerTrailing[2].trim()) {
++              const trail = innerTrailing[2].trim();
++              const trailKey = this.lookupKey(keyMap, namespace, 'text', trail);
++              if (trailKey) {
++                return `${open}${leadSpace}{{ $t('${leadKey}') }} ${innerTrailing[1]} {{ $t('${trailKey}') }}${trailSpace}${close}`;
++              }
++            }
++            return `${open}${leadSpace}{{ $t('${leadKey}') }} ${rest}${trailSpace}${close}`;
++          }
++        }
++      }
++
++      // Trailing copy after the last mustache ("{{ n }} minutes"): translate
++      // the trailing text as its own string, keeping the expression(s).
++      const trailing = decoded.match(/^((?:\{\{[^{}]*\}\})+)([^{}]*)$/);
++      if (trailing && trailing[2].trim()) {
++        const trail = trailing[2].trim();
++        if (canTranslate(trail)) {
++          const trailKey = this.lookupKey(keyMap, namespace, 'text', trail);
++          if (trailKey) {
++            const leadSpace = text.match(/^\s*/)[0];
++            const trailSpace = text.match(/\s*$/)[0];
++            return `${open}${leadSpace}${trailing[1]} {{ $t('${trailKey}') }}${trailSpace}${close}`;
++          }
++        }
++      }
++
++      // Text on BOTH sides of the mustache(s) ("Active in the last {{ n }}
++      // minutes"): round 3 only covered mustache-at-start and mustache-at-end
++      // nodes, so these never injected. Split the node into segments; each
++      // text segment with a key becomes its own $t(), expressions and
++      // keyless segments stay verbatim. Each translated segment keeps its
++      // original leading/trailing whitespace so no double spaces appear.
++      if (/\{\{[^{}]*\}\}/.test(decoded)) {
++        const pieces = text.split(/(\{\{[^{}]*\}\})/);
++        if (pieces.length > 1) {
++          const rebuilt = [];
++          let translated = 0;
++          for (const piece of pieces) {
++            if (!piece) continue;
++            if (/^\{\{[^{}]*\}\}$/.test(piece)) {
++              rebuilt.push(piece);
++              continue;
++            }
++            const segTrim = this.decodeHtmlText(piece).trim();
++            if (!segTrim) {
++              rebuilt.push(piece);
++              continue;
++            }
++            const segKey = canTranslate(segTrim)
++              ? this.lookupKey(keyMap, namespace, 'text', segTrim)
++              : null;
++            if (segKey) {
++              const leadWs = piece.match(/^\s*/)[0];
++              const trailWs = piece.match(/\s*$/)[0];
++              rebuilt.push(`${leadWs}{{ $t('${segKey}') }}${trailWs}`);
++              translated++;
++            } else {
++              rebuilt.push(piece);
++            }
++          }
++          if (translated > 0) {
++            return `${open}${rebuilt.join('')}${close}`;
++          }
++        }
++      }
++
++      if (!canTranslate(decoded)) return match;
+ 
+       // For text with mustache expressions, create a normalized version for key lookup
+-      let lookupText = trimmed;
+-      const mustacheMatches = trimmed.match(/\{\{[^}]+\}\}/g);
++      let lookupText = decoded;
++      const mustacheMatches = decoded.match(/\{\{[^}]+\}\}/g);
+       if (mustacheMatches) {
+         // Replace mustache expressions with placeholders for key lookup
+-        lookupText = trimmed.replace(/\{\{[^}]+\}\}/g, '{placeholder}');
++        lookupText = decoded.replace(/\{\{[^}]+\}\}/g, '{placeholder}');
+         lookupText = lookupText.replace(/\s+/g, ' ').trim();
+       }
+ 
+-      const fullKey = this.lookupKey(keyMap, namespace, 'text', trimmed);
++      const fullKey = this.lookupKey(keyMap, namespace, 'text', decoded);
+       if (!fullKey) return match;
+ 
+       const leadingSpace = text.match(/^\s*/)[0];
+@@ -110,7 +259,7 @@ class VueReplacer extends BaseReplacer {
+     // 2. Attribute values (non-bound)
+     // Matches: placeholder="text", title="text", etc.
+     // Skip already bound attributes (prefixed with : or v-bind:)
+-    const attrNames = 'placeholder|title|alt|aria-label|label|error-message|helper-text';
++    const attrNames = 'placeholder|title|alt|aria-label|label|error-message|helper-text|newrecordcaption';
+     const attrRegex = new RegExp(
+       `(\\s)(?![:v])(${attrNames})(\\s*=\\s*)(['"])([^'"]{2,200})\\4`,
+       'gi'
+@@ -132,22 +281,63 @@ class VueReplacer extends BaseReplacer {
+ 
+     // 3. String literals inside {{ }} expressions
+     // Matches: {{ condition ? "text1" : "text2" }}
+-    // Skip strings that are already inside $t() or t() calls
+-    const mustacheRegex = /(\{\{[^}]*?)(['"])([^'"]{3,200})\2([^}]*?\}\})/g;
+-
+-    modified = modified.replace(mustacheRegex, (match, before, quote, text, after) => {
+-      // Skip if already inside a $t() or t() call (idempotency guard)
+-      if (/\$?t\s*\(\s*$/.test(before)) return match;
+-      // Skip if text looks like a translation key (dot-separated path)
+-      if (/^[A-Z][a-zA-Z0-9]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+$/.test(text)) return match;
+-      
+-      if (!canTranslate(text)) return match;
+-
+-      const fullKey = this.lookupKey(keyMap, namespace, 'text', text);
+-      if (!fullKey) return match;
+-
+-      return `${before}$t('${fullKey}')${after}`;
+-    });
++    // Process EVERY string literal inside each mustache region: a single
++    // non-greedy match consumed the whole {{ }} at the first quoted string,
++    // leaving the other literals of a ternary (e.g. the else branch) untouched.
++    // Region scan is depth-aware: expressions containing template literals
++    // (`${expr}`) or nested braces must not truncate the region.
++    const mustacheRegions = [];
++    {
++      let i = modified.indexOf('{{');
++      while (i !== -1) {
++        let depth = 2;
++        let j = i + 2;
++        while (j < modified.length && depth > 0) {
++          const ch = modified[j];
++          if (ch === '{') depth++;
++          else if (ch === '}') depth--;
++          j++;
++        }
++        if (depth === 0) {
++          mustacheRegions.push([i, j]);
++          i = modified.indexOf('{{', j);
++        } else {
++          i = modified.indexOf('{{', i + 2);
++        }
++      }
++    }
++    const literalRegex = /(['"])((?:\\.|(?!\1)[^\\])*)\1/g;
++
++    // Apply bottom-up: replacing a region shifts the offsets of every region
++    // recorded after it, so descending order keeps [start, end] valid.
++    for (let r = mustacheRegions.length - 1; r >= 0; r--) {
++      const [start, end] = mustacheRegions[r];
++      const region = modified.slice(start, end);
++      const next = region.replace(literalRegex, (lit, quote, text, offset) => {
++        if (!text) return lit;
++        // Skip if this literal is already the argument of a $t() / t() call
++        // (idempotency guard for re-runs over already-translated regions).
++        if (/\$?t\s*\(\s*$/.test(region.slice(0, offset))) return lit;
++        // Skip comparison targets ({{ choice === 'download' ? … }}): state
++        // values compared against data, never UI copy.
++        if (/(={2,3}|!==?)\s*$/.test(region.slice(0, offset))) return lit;
++        // Skip if text looks like a translation key (dot-separated path)
++        if (/^[A-Z][a-zA-Z0-9]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+$/.test(text)) return lit;
++
++        const decoded = this.decodeHtmlText(text);
++        if (!canTranslate(decoded)) return lit;
++
++        const fullKey = this.lookupKey(keyMap, namespace, 'text', decoded);
++        if (!fullKey) return lit;
++
++        // Drop the original quotes: the literal sits inside a JS expression,
++        // and $t('key') brings its own.
++        return `$t('${fullKey}')`;
++      });
++      if (next !== region) {
++        modified = modified.slice(0, start) + next + modified.slice(end);
++      }
++    }
+ 
+     // 4. Bound attribute string values
+     // Matches: :placeholder="'text'" or :title="'text'"
+@@ -160,19 +350,46 @@ class VueReplacer extends BaseReplacer {
+     modified = modified.replace(boundAttrRegex, (match, prefix, quote, text) => {
+       // Skip if text looks like a translation key (idempotency guard)
+       if (/^[A-Z][a-zA-Z0-9]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+$/.test(text)) return match;
+-      
+-      if (!canTranslate(text)) return match;
++
++      const decoded = this.decodeHtmlText(text);
++      if (!canTranslate(decoded)) return match;
+ 
+       const attrMatch = prefix.match(/:(\S+)\s*=/);
+       const attrName = attrMatch ? attrMatch[1] : 'text';
+       const kind = this.inferKindFromAttr(attrName);
+ 
+-      const fullKey = this.lookupKey(keyMap, namespace, kind, text);
++      const fullKey = this.lookupKey(keyMap, namespace, kind, decoded);
+       if (!fullKey) return match;
+ 
+       return `${prefix}$t('${fullKey}')"`;
+     });
+ 
++    // 4b. String literals inside :options="..." array expressions
++    // (e.g. :options="[{ id: 'active', name: 'Active' }]") — translate the
++    // display literals in place, keeping the array expression intact. A
++    // simple bound-attr replacement would be wrong here: the value is not
++    // a string but an expression.
++    modified = modified.replace(/(:options\s*=\s*")([^"]*)(")/g, (m2, prefix, expr, q) => {
++      const next = expr.replace(literalRegex, (lit, quote, text, offset) => {
++        if (!text) return lit;
++        // Skip if this literal is already the argument of a $t() / t() call
++        if (/\$?t\s*\(\s*$/.test(expr.slice(0, offset))) return lit;
++        // Skip if text looks like a translation key (dot-separated path)
++        if (/^[A-Z][a-zA-Z0-9]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+$/.test(text)) return lit;
++
++        const decoded = this.decodeHtmlText(text);
++        if (!canTranslate(decoded)) return lit;
++
++        const fullKey = this.lookupKey(keyMap, namespace, 'text', decoded);
++        if (!fullKey) return lit;
++
++        // Drop the original quotes: the literal sits inside a JS expression,
++        // and $t('key') brings its own.
++        return `$t('${fullKey}')`;
++      });
++      return next === expr ? m2 : `${prefix}${next}${q}`;
++    });
++
+     // 5. v-text and v-html with string literals
+     // Matches: v-text="'text'" or v-html="'text'"
+     // Skip if already using $t()
+@@ -190,6 +407,12 @@ class VueReplacer extends BaseReplacer {
+       return `${prefix}$t('${fullKey}')"`;
+     });
+ 
++    // Restore HTML-comment quotes masked at the start (control chars → quotes).
++    if (!tplHasControlChars) {
++      const tplQuoteRestore = { '\u0001': "'", '\u0002': '"', '\u0003': '`' };
++      modified = modified.replace(/[\u0001\u0002\u0003]/g, (c) => tplQuoteRestore[c]);
++    }
++
+     return modified;
+   }
+ 
+diff --git a/packages/core/src/i18n/lib/validators/cssValidator.js b/packages/core/src/i18n/lib/validators/cssValidator.js
+index 4881a0c..1341a6d 100644
+--- a/packages/core/src/i18n/lib/validators/cssValidator.js
++++ b/packages/core/src/i18n/lib/validators/cssValidator.js
+@@ -156,6 +156,9 @@ const ENGLISH_NOT_CSS = new Set([
+   'container', 'wrapper', 'content', 'header', 'footer', 'sidebar', 'main',
+   'row', 'column', 'item', 'items', 'list', 'table', 'form', 'input', 'button',
+   'none', 'auto', 'full', 'empty', 'loading', 'error', 'pending',
++  'package', // UI label (e.g. the "Package" column), not the package.json file
++  'password', // UI label ("Password"); Tachyons' "pa" prefix matched "pa…ssword"
++  'upc', // UI label (UPC column/field)
+   // Multi-word phrases that might look CSS-ish
+   'no items', 'no results', 'not found', 'loading items', 'error loading',
+ ]);
+@@ -250,12 +253,17 @@ function isSingleCssClass(part) {
+     'small-', 'medium-', 'large-',
+     // Semantic UI
+     'ui ', 'labeled',
+-    // Tachyons
+-    'pa', 'ma', 'ba', 'br', 'dib', 'dn', 'db',
+     // CSS Modules patterns
+     'styles.', 'css.',
+   ];
+-  
++  // Tachyons shorthands are STANDALONE tokens: match them by exact equality
++  // only. startsWith/includes made every word containing "pa" ("password")
++  // or "ma" ("email") a CSS class.
++  const tachyonsTokens = new Set(['pa', 'ma', 'ba', 'br', 'dib', 'dn', 'db']);
++  if (tachyonsTokens.has(lower)) {
++    return true;
++  }
++
+   // Check for known framework prefixes
+   for (const prefix of cssFrameworkPrefixes) {
+     if (lower.startsWith(prefix) || lower.includes(prefix)) {
+@@ -287,8 +295,10 @@ function isSingleCssClass(part) {
+   //    e.g., dark:text-white, sm:flex, hover:bg-blue-500, prose-a:text-primary-600
+   if (/:/.test(part)) {
+     const segments = part.split(':');
+-    // If any segment looks like a CSS pattern, it's likely a class
+-    if (segments.some(seg => /^[a-z]+(?:-[a-z0-9]+)*$/i.test(seg))) {
++    // A trailing colon (e.g. the UI field label "Name:") yields an empty last
++    // segment — that's a label, not a variant chain. Require every segment to
++    // be non-empty and class-shaped.
++    if (segments.length > 1 && segments.every(seg => /^[a-z]+(?:-[a-z0-9]+)*$/i.test(seg))) {
+       return true;
+     }
+   }
+@@ -452,7 +462,14 @@ function isCssSelector(text) {
+ function isCssContent(text) {
+   const trimmed = String(text || '').trim();
+   if (!trimmed) return false;
+-  
++
++  // Font-family stacks: a comma-separated list ending in a generic family
++  // ("Figtree, 'RI Emoji', ui-sans-serif, system-ui, sans-serif") is a CSS
++  // value assigned to font properties, never UI copy.
++  if (/,\s*['"]?(?:serif|sans-serif|monospace|system-ui|ui-sans-serif|ui-serif|ui-monospace|cursive|fantasy)['"]?\s*$/i.test(trimmed)) {
++    return true;
++  }
++
+   // Quick reject: if it contains typical sentence markers, it's probably not CSS
+   // BUT be lenient - only reject obvious prose
+   if (/^[A-Z][a-z]+\s+[a-z]+.*[.!?]$/.test(trimmed) && !/[:{\[\-]/.test(trimmed)) {
+@@ -540,7 +557,10 @@ function isCssContent(text) {
+   }
+   
+   // Check for multiple values separated by commas (font families, shadows, etc.)
+-  if (/^[a-z0-9-]+(?:\s+[a-z0-9-]+)*(?:,\s*[a-z0-9-]+(?:\s+[a-z0-9-]+)*)+$/i.test(trimmed)) {
++  // Skip prose: a comma phrase with English sentence indicators ("Both - public
++  // link, or staff filling it out…", em-dash normalized to "-") is UI copy,
++  // not a CSS value list.
++  if (/^[a-z0-9-]+(?:\s+[a-z0-9-]+)*(?:,\s*[a-z0-9-]+(?:\s+[a-z0-9-]+)*)+$/i.test(trimmed) && !isEnglishNotCss(trimmed)) {
+     return true;
+   }
+   
+diff --git a/packages/core/src/i18n/lib/validators/htmlValidator.js b/packages/core/src/i18n/lib/validators/htmlValidator.js
+index 738cd93..aecde9d 100644
+--- a/packages/core/src/i18n/lib/validators/htmlValidator.js
++++ b/packages/core/src/i18n/lib/validators/htmlValidator.js
+@@ -60,7 +60,7 @@ const NON_TRANSLATABLE_ATTRIBUTES = new Set([
+ // Attributes that SHOULD be translated
+ const TRANSLATABLE_ATTRIBUTES = new Set([
+   'title', 'alt', 'placeholder', 'label', 'aria-label', 'aria-description',
+-  'aria-placeholder', 'aria-valuetext',
++  'aria-placeholder', 'aria-valuetext', 'newrecordcaption',
+ ]);
+ 
+ // Template directive patterns from various frameworks
+diff --git a/packages/core/src/i18n/lib/validators/index.js b/packages/core/src/i18n/lib/validators/index.js
+index 8db4959..5f40f29 100644
+--- a/packages/core/src/i18n/lib/validators/index.js
++++ b/packages/core/src/i18n/lib/validators/index.js
+@@ -192,8 +192,9 @@ function looksLikeHumanText(text) {
+     // Single word: must start with capital letter and look like a word
+     let word = words[0];
+     
+-    // Strip trailing punctuation (.,:;!?) for validation
+-    word = word.replace(/[.,:;!?]+$/, '');
++    // Strip trailing punctuation (.,:;!?…) for validation — the unicode
++    // ellipsis is common at the end of UI labels ("Removing…").
++    word = word.replace(/[.,:;!?…]+$/, '');
+     
+     // Allow single capitalized words that look like labels (including contractions)
+     if (/^[A-Z][a-zA-Z0-9']*$/.test(word)) {
+@@ -212,7 +213,9 @@ function looksLikeHumanText(text) {
+       'import', 'upload', 'download', 'share', 'copy', 'paste', 'cut', 'undo',
+       'redo', 'refresh', 'reload', 'reset', 'clear', 'submit', 'send', 'continue',
+       'skip', 'finish', 'start', 'stop', 'pause', 'play', 'resume', 'retry',
+-      'confirm', 'ok', 'yes', 'no', 'all', 'none', 'any', 'other', 'more', 'less'
++      'confirm', 'ok', 'yes', 'no', 'all', 'none', 'any', 'other', 'more', 'less',
++      // Time units: common UI labels ("{{ n }} minutes")
++      'minutes', 'hours', 'days', 'seconds', 'weeks', 'months', 'years'
+     ]);
+     if (commonUIWords.has(word.toLowerCase())) {
+       return true;
+@@ -346,7 +349,39 @@ function shouldTranslate(text, options = {}) {
+   if (isPlaceholderOnly(trimmed)) {
+     return false;
+   }
+-  
++
++  // Custom ignore patterns BEFORE the common-UI early exit: an explicit
++  // project ignore ("download" as a state value) must win even when the text
++  // matches an action-word allowlist, which used to return true before the
++  // ignore list was ever consulted.
++  if (ignorePatterns) {
++    const ignoreNormalized = trimmed.replace(/\s+/g, ' ');
++
++    // Exact match
++    if (Array.isArray(ignorePatterns.exact) && ignorePatterns.exact.includes(ignoreNormalized)) {
++      return false;
++    }
++
++    // Case-insensitive exact match
++    if (Array.isArray(ignorePatterns.exactInsensitive)) {
++      const lowerNorm = ignoreNormalized.toLowerCase();
++      for (const v of ignorePatterns.exactInsensitive) {
++        if (String(v).toLowerCase() === lowerNorm) {
++          return false;
++        }
++      }
++    }
++
++    // Contains match
++    if (Array.isArray(ignorePatterns.contains)) {
++      for (const part of ignorePatterns.contains) {
++        if (part && ignoreNormalized.includes(String(part))) {
++          return false;
++        }
++      }
++    }
++  }
++
+   // **NEW**: Early exit for common UI strings (before aggressive technical checks)
+   // This prevents false positives on legitimate UI text
+   if (isCommonUIString(trimmed)) {
+diff --git a/packages/core/src/i18n/lib/validators/technicalValidator.js b/packages/core/src/i18n/lib/validators/technicalValidator.js
+index 9bbda0e..6c9e81a 100644
+--- a/packages/core/src/i18n/lib/validators/technicalValidator.js
++++ b/packages/core/src/i18n/lib/validators/technicalValidator.js
+@@ -72,11 +72,13 @@ const TECHNICAL_ABBREVIATIONS = new Set([
+ 
+ // Environment variable patterns
+ const ENV_VAR_PATTERNS = [
+-  /^[A-Z][A-Z0-9_]*$/,              // SCREAMING_SNAKE_CASE
+-  /^\$[A-Z][A-Z0-9_]*$/,            // $VARIABLE
+-  /^\$\{[A-Z][A-Z0-9_]*\}$/,        // ${VARIABLE}
+-  /^%[A-Z][A-Z0-9_]*%$/,            // %VARIABLE% (Windows)
+-  /^\$\([A-Z][A-Z0-9_]*\)$/,        // $(VARIABLE) (Make)
++  // Require at least 4 characters: 1–3 char all-caps tokens (UPC, TAG, PIN)
++  // are usually UI column headers/labels in the target domain, not variables.
++  /^[A-Z][A-Z0-9_]{3,}$/,           // SCREAMING_SNAKE_CASE (4+ chars)
++  /^\$[A-Z][A-Z0-9_]{3,}$/,         // $VARIABLE
++  /^\$\{[A-Z][A-Z0-9_]{3,}\}$/,     // ${VARIABLE}
++  /^%[A-Z][A-Z0-9_]{3,}%$/,         // %VARIABLE% (Windows)
++  /^\$\([A-Z][A-Z0-9_]{3,}\)$/,     // $(VARIABLE) (Make)
+ ];
+ 
+ // Config key patterns (key=value, key: value, etc.)
+@@ -153,9 +155,11 @@ function isFilePath(text) {
+   const trimmed = String(text || '').trim();
+   if (!trimmed) return false;
+   
+-  // Check for file extension
+-  const extMatch = trimmed.match(/\.([a-z0-9]+)$/i);
+-  if (extMatch && FILE_EXTENSIONS.has(extMatch[1].toLowerCase())) {
++  // Check for file extension. The filename token must sit FLUSH against the
++  // dot: a sentence like "Will use the one in the server .env" has a space
++  // before the dot, so it is prose mentioning a dotfile, not a path.
++  const extMatch = trimmed.match(/([A-Za-z0-9_-])\.([a-z0-9]+)$/i);
++  if (extMatch && FILE_EXTENSIONS.has(extMatch[2].toLowerCase())) {
+     return true;
+   }
+   
+@@ -165,7 +169,9 @@ function isFilePath(text) {
+   }
+   
+   // Check for config files without extensions
+-  if (/^(package|tsconfig|jsconfig|webpack|vite|rollup|babel|eslint|prettier|docker|makefile|rakefile|gemfile|podfile|cartfile|procfile|dockerfile|vagrantfile|gulpfile|gruntfile)\.?[a-z]*$/i.test(trimmed)) {
++  // Config filenames are lowercase; a capitalized word ("Package") is a UI
++  // label, not the package.json file.
++  if (/^(package|tsconfig|jsconfig|webpack|vite|rollup|babel|eslint|prettier|docker|makefile|rakefile|gemfile|podfile|cartfile|procfile|dockerfile|vagrantfile|gulpfile|gruntfile)\.?[a-z]*$/.test(trimmed)) {
+     return true;
+   }
+   
+@@ -513,9 +519,13 @@ function isRegexPattern(text) {
+     return true;
+   }
+   
+-  // Check for regex-like patterns (with special chars)
+-  if (/[\^\$\*\+\?\.\[\]\(\)\{\}\\|]/.test(trimmed) && trimmed.length >= 3) {
+-    const specialCharCount = (trimmed.match(/[\^\$\*\+\?\.\[\]\(\)\{\}\\|]/g) || []).length;
++  // Check for regex-like patterns (with special chars). The fallback is
++  // deliberately strict: a single token (no spaces) with 2+ regex special
++  // chars — plain dots and English words in parentheses ("Variant (optional)",
++  // "Moving...") are UI copy, not patterns.
++  if (trimmed.length >= 3 && !/\s/.test(trimmed) &&
++      /[\^\$\*\+\?\[\]\(\)\{\}\\|]/.test(trimmed)) {
++    const specialCharCount = (trimmed.match(/[\^\$\*\+\?\[\]\(\)\{\}\\|]/g) || []).length;
+     if (specialCharCount >= 2) {
+       return true;
+     }
+@@ -532,7 +542,10 @@ function isCodeSnippet(text) {
+   if (!trimmed) return false;
+   
+   // Check for function calls
+-  if (/^[a-z_$][a-z0-9_$]*\s*\([^)]*\)$/i.test(trimmed)) {
++  // Function-call shape: lowercase/camelCase name, NO space before parens.
++  // Case-sensitive and space-free so English UI like "Variant (optional)"
++  // (a word plus a parenthesized qualifier) is not mistaken for code.
++  if (/^[a-z_$][a-z0-9_$]*\([^)]*\)$/.test(trimmed)) {
+     return true;
+   }
+   
+diff --git a/packages/core/src/i18n/rewrite-i18n-blade.js b/packages/core/src/i18n/rewrite-i18n-blade.js
+index c3a217d..fbd2fd2 100644
+--- a/packages/core/src/i18n/rewrite-i18n-blade.js
++++ b/packages/core/src/i18n/rewrite-i18n-blade.js
+@@ -25,6 +25,39 @@ function shouldTranslateText(text) {
+   return trimmed && !shouldIgnoreText(trimmed);
+ }
+ 
++// Mirrors BaseReplacer.isCommonShortText (Vue/JS path): short texts are
++// extracted into the Commons namespace, so Blade lookups must be able to
++// resolve them there.
++function isCommonShortText(text) {
++  const trimmed = String(text || '').trim();
++  if (!trimmed) return false;
++  const cleaned = trimmed.replace(/\s+/g, ' ').trim();
++  if (/[.!?]/.test(cleaned)) return false;
++  const words = cleaned.split(' ').filter(Boolean);
++  if (words.length === 0 || words.length > 2) return false;
++  if (cleaned.length > 24) return false;
++  if (/[\/_]/.test(cleaned)) return false;
++  return true;
++}
++
++// Mirrors BaseReplacer.lookupKey: try the Commons namespace for short texts,
++// and fall back to the "text" kind when the inferred kind has no entry (e.g.
++// <h1> extracted as text but inferred as heading here). As a last resort the
++// same text may be registered under another kind (same string = same
++// translation), so every kind is tried before giving up.
++function lookupBladeKey(keyMap, namespace, kind, normalized) {
++  const effectiveNs = isCommonShortText(normalized) ? 'Commons' : namespace;
++  const kindsToTry = [kind, 'text', 'heading', 'label', 'button', 'link', 'placeholder', 'title', 'alt', 'aria_label'];
++  const namespaces = effectiveNs === 'Commons' ? [effectiveNs, namespace] : [effectiveNs];
++  for (const ns of namespaces) {
++    for (const k of kindsToTry) {
++      const fullKey = keyMap.get(`${ns}|${k}|${normalized}`);
++      if (fullKey) return fullKey;
++    }
++  }
++  return null;
++}
++
+ function buildKeyMapFromTranslations(translations) {
+   const map = new Map();
+ 
+@@ -141,7 +174,22 @@ async function processBladeFile(filePath, keyMap) {
+   let code = await readFile(filePath, 'utf8');
+   const namespace = getNamespaceFromBladeFile(filePath);
+ 
+-  let template = code.replace(/{{--[\s\S]*?--}}/g, ' ');
++  // Comments (Blade {{-- --}} and HTML <!-- -->) must be BOTH excluded from
++  // matching AND preserved verbatim in the written file. The old approach
++  // replaced comments with a single space and wrote that back, DELETING the
++  // comments from the source. Tokenize instead: short unique sentinels keep
++  // the tag regexes from matching inside comments, and are restored before
++  // the file is written.
++  const commentTokens = [];
++  if (!code.includes('\u0000')) {
++    code = code.replace(/{{--[\s\S]*?--}}|<!--[\s\S]*?-->/g, (m) => {
++      const token = `\u0000B${commentTokens.length}\u0000`;
++      commentTokens.push(m);
++      return token;
++    });
++  }
++
++  let template = code;
+ 
+   const tagRegex = /<([A-Za-z][A-Za-z0-9-_]*)\b([^>]*)>([^<]+)<\/\1>/g;
+   let changed = false;
+@@ -158,8 +206,7 @@ async function processBladeFile(filePath, keyMap) {
+     if (!shouldTranslateText(normalized)) return whole;
+ 
+     const kind = inferKindFromTagName(tagName);
+-    const keyId = `${namespace}|${kind}|${normalized}`;
+-    const fullKey = keyMap.get(keyId);
++    const fullKey = lookupBladeKey(keyMap, namespace, kind, normalized);
+     if (!fullKey) return whole;
+ 
+     changed = true;
+@@ -174,16 +221,18 @@ async function processBladeFile(filePath, keyMap) {
+     return `<${tagName}${attrs}>${wrapped}</${tagName}>`;
+   });
+ 
++  // Restore the original comment text before writing anything.
++  if (commentTokens.length > 0) {
++    template = template.replace(/\u0000B(\d+)\u0000/g, (m, i) => commentTokens[Number(i)] ?? m);
++  }
++
+   if (!changed) {
+     return false;
+   }
+ 
+   const viewsRoot = path.resolve(projectRoot, 'resources', 'views');
+   const rel = path.relative(viewsRoot, filePath);
+-  // We operate on the full file content (with Blade comments stripped), so
+-  // simply write the transformed template back.
+-  code = template;
+-  await writeFile(filePath, code, 'utf8');
++  await writeFile(filePath, template, 'utf8');
+   console.log(`[i18n-rewrite-blade] Updated ${rel}`);
+   return true;
+ }
+@@ -272,7 +321,20 @@ async function main() {
+     process.exit(0);
+   }
+ 
+-  const files = await listBladeFiles(viewsRoot);
++  // Positional args (not starting with --) restrict the run to specific
++  // files, mirroring extract-i18n.js / replace-i18n.js scoped mode.
++  const specificFiles = process.argv.slice(2)
++    .filter((arg) => !arg.startsWith('--'))
++    .map((f) => path.resolve(projectRoot, f));
++
++  let files;
++  if (specificFiles.length > 0) {
++    files = specificFiles.filter((f) => existsSync(f) && /\.(blade\.php|php)$/i.test(f));
++    console.log(`[i18n-rewrite-blade] Processing ${files.length} specific file(s)`);
++  } else {
++    files = await listBladeFiles(viewsRoot);
++  }
++
+   if (!files.length) {
+     console.log('[i18n-rewrite-blade] No Blade/PHP view files found to rewrite.');
+     process.exit(0);
+diff --git a/src/i18n/lib/parsers/vueParser.js b/src/i18n/lib/parsers/vueParser.js
+index 8d9f81b..f4030e5 100644
+--- a/src/i18n/lib/parsers/vueParser.js
++++ b/src/i18n/lib/parsers/vueParser.js
+@@ -74,9 +74,10 @@ class VueParser extends BaseParser {
+       this.parseTemplate(template, results);
+     }
+ 
+-    // Also extract from script section for i18n keys
+-    const script = this.extractScript(content);
+-    if (script) {
++    // Also extract from every script section: an SFC may legally have both
++    // <script setup> and a plain <script> (Options API) — extracting only the
++    // first left half the file unscanned.
++    for (const script of this.extractScripts(content)) {
+       this.parseScript(script, results);
+     }
+ 
+@@ -136,6 +137,19 @@ class VueParser extends BaseParser {
+     return match ? match[1] : null;
+   }
+ 
++  /**
++   * Extract ALL script sections from a Vue SFC (setup + Options API blocks).
++   */
++  extractScripts(content) {
++    const scripts = [];
++    const regex = /<script[^>]*>([\s\S]*?)<\/script>/gi;
++    let match;
++    while ((match = regex.exec(content)) !== null) {
++      scripts.push(match[1]);
++    }
++    return scripts;
++  }
++
+   /**
+    * Parse Vue template using state machine
+    */
+@@ -218,8 +232,11 @@ class VueParser extends BaseParser {
+       // Decode HTML entities before validation
+       validationText = decodeHtmlEntities(validationText);
+ 
+-      // Validate the text with placeholders preserved
+-      if (shouldTranslate(validationText, { ignorePatterns: this.ignorePatterns })) {
++      // Validate the text with placeholders preserved. Text containing
++      // mustache expressions never becomes a full key: the raw {{ expr }}
++      // inside a vue-i18n message renders literally, so only the leading and
++      // trailing copies around the expressions are extracted instead.
++      if (mustacheRanges.length === 0 && shouldTranslate(validationText, { ignorePatterns: this.ignorePatterns })) {
+         // For the actual extracted text, preserve mustache expressions as placeholders
+         // This ensures the text is complete and can be properly replaced later
+         let extractedText = text;
+@@ -240,12 +257,67 @@ class VueParser extends BaseParser {
+           parentTag: getCurrentParentTag(),
+         });
+         results.stats.extracted++;
++      } else if (mustacheRanges.length > 0) {
++        // Leading copy before the first mustache ("Name{{ sortArrow('x') }}"):
++        // the full text fails validation (the placeholder braces break the
++        // label rules), but the leading label is real UI copy — register it
++        // on its own so the replacer can translate it in front of the
++        // expression.
++        const lead = text.slice(0, mustacheRanges[0].start).replace(/\s+/g, ' ').trim();
++        const leadDecoded = decodeHtmlEntities(lead);
++        if (leadDecoded && shouldTranslate(leadDecoded, { ignorePatterns: this.ignorePatterns })) {
++          const kind = this.inferKindFromTag(getCurrentParentTag());
++          results.items.push({
++            type: 'text',
++            text: leadDecoded,
++            kind,
++            parentTag: getCurrentParentTag(),
++          });
++          results.stats.extracted++;
++        }
++        // Trailing copy after the LAST mustache ("{{ n }} minutes"): same
++        // rationale — the tail is real UI copy the replacer can translate
++        // after the expression.
++        const tail = text.slice(mustacheRanges[mustacheRanges.length - 1].end).replace(/\s+/g, ' ').trim();
++        const tailDecoded = decodeHtmlEntities(tail);
++        if (tailDecoded && shouldTranslate(tailDecoded, { ignorePatterns: this.ignorePatterns })) {
++          const kind = this.inferKindFromTag(getCurrentParentTag());
++          results.items.push({
++            type: 'text',
++            text: tailDecoded,
++            kind,
++            parentTag: getCurrentParentTag(),
++          });
++          results.stats.extracted++;
++        }
+       }
+     };
+ 
+     const processAttributeValue = (name, value, tag) => {
+       if (!name || !value) return;
+ 
++      // Bound option arrays — :options="[{ id: 'active', name: 'Active' }]".
++      // The expression itself is code, but its quoted display literals are UI
++      // copy: scan them as candidates.
++      const boundName = String(name).toLowerCase();
++      if (boundName === ':options' || boundName === ':items') {
++        const literalRegex = /(['"])((?:\\.|(?!\1)[^\\])*)\1/g;
++        let litMatch;
++        while ((litMatch = literalRegex.exec(value)) !== null) {
++          const candidate = (litMatch[2] || '').trim();
++          if (!candidate) continue;
++          if (!shouldTranslate(candidate, { ignorePatterns: this.ignorePatterns })) continue;
++          results.items.push({
++            type: 'text',
++            text: decodeHtmlEntities(candidate),
++            kind: 'text',
++            parentTag: tag,
++          });
++          results.stats.extracted++;
++        }
++        return;
++      }
++
+       // Skip Vue directives and bindings
+       if (isNonTranslatableAttribute(name)) return;
+       if (!isTranslatableAttribute(name)) return;
+@@ -520,7 +592,43 @@ class VueParser extends BaseParser {
+       return;
+     }
+ 
+-    const lines = script.split('\n');
++    // Strip comments before scanning (quoted strings inside comments used to
++    // become translation keys). String literals are masked first so `//`
++    // inside URLs/strings survives; then line and block comments are cut.
++    const stringMask = /(['"])(?:\\.|(?!\1)[^\\])*\1/g;
++    const cleanLines = [];
++    let inBlockComment = false;
++    for (const rawLine of script.split('\n')) {
++      let line = rawLine;
++      if (inBlockComment) {
++        const end = line.indexOf('*/');
++        if (end === -1) {
++          cleanLines.push('');
++          continue;
++        }
++        inBlockComment = false;
++        line = line.slice(end + 2);
++      }
++      let mask = line.replace(stringMask, (m) => ' '.repeat(m.length));
++      const blockStart = mask.indexOf('/*');
++      if (blockStart !== -1) {
++        const blockEnd = mask.indexOf('*/', blockStart);
++        if (blockEnd === -1) {
++          inBlockComment = true;
++          cleanLines.push(line.slice(0, blockStart));
++          continue;
++        }
++        line = line.slice(0, blockStart) + line.slice(blockEnd + 2);
++        mask = line.replace(stringMask, (m) => ' '.repeat(m.length));
++      }
++      const lineComment = mask.indexOf('//');
++      cleanLines.push(lineComment === -1 ? line : line.slice(0, lineComment));
++    }
++    const lines = cleanLines;
++
++    // Depth counter for `const ALL_CAPS = [...]` arrays: their string literals
++    // are machine identifiers (e.g. RBAC role names), not UI copy.
++    let capsArrayDepth = 0;
+ 
+     // First, identify lines that contain explicit i18n key lookups or logging
+     // so we avoid treating those strings as user-facing text.
+@@ -571,6 +679,52 @@ class VueParser extends BaseParser {
+       // Skip import/export lines
+       if (/^\s*(import|export)\s/.test(line)) continue;
+ 
++      // Inside an ALL_CAPS const array: skip every literal on the line and
++      // keep tracking the bracket depth across continuation lines.
++      if (capsArrayDepth > 0) {
++        for (const ch of line) {
++          if (ch === '[') capsArrayDepth++;
++          else if (ch === ']') capsArrayDepth--;
++        }
++        continue;
++      }
++      const capsArrayDecl = line.match(/^\s*(?:const|let|var)\s+[A-Z][A-Z0-9_]*\s*=\s*\[/);
++      if (capsArrayDecl) {
++        let depth = 0;
++        for (const ch of line) {
++          if (ch === '[') depth++;
++          else if (ch === ']') depth--;
++        }
++        if (depth > 0) capsArrayDepth = depth;
++        continue;
++      }
++
++      // Script chains: 'lit' + expr [+ 'lit2'] and template literals with
++      // ${expr} become ONE key with placeholders (the notice/confirm cases).
++      // Matching a chain skips the individual-literal scans for this line so
++      // the chain key replaces the fragmented ones.
++      const chainMatch = line.match(/(['"])((?:\\.|(?!\1)[^\\\n])*)\1\s*\+\s*([A-Za-z_$][\w$.]*(?:\([^()]*\))?)(?:\s*\+\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\4)?/);
++      const templateMatch = /`((?:\\.|[^`\\])*)`/.test(line) && /\$\{[^}]+\}/.test(line) ? line.match(/`((?:\\.|[^`\\])*)`/) : null;
++      if ((chainMatch && chainMatch[3]) || templateMatch) {
++        let text = null;
++        if (templateMatch) {
++          const params = [];
++          text = templateMatch[1].replace(/\$\{([^}]+)\}/g, () => {
++            params.push(1);
++            return `{p${params.length - 1}}`;
++          });
++        } else {
++          // Keep literal whitespace: the mid-chain space is part of the sentence.
++          text = `${chainMatch[2]}{placeholder}` + (chainMatch[5] !== undefined ? chainMatch[5] : '');
++        }
++        text = text.replace(/\s+/g, ' ').trim();
++        if (text && shouldTranslate(text, { ignorePatterns: this.ignorePatterns })) {
++          results.items.push({ type: 'string', text, kind: 'text' });
++          results.stats.extracted++;
++        }
++        continue;
++      }
++
+       // Check ref patterns first (higher priority)
+       for (const pattern of refPatterns) {
+         pattern.lastIndex = 0;
+@@ -579,6 +733,12 @@ class VueParser extends BaseParser {
+           const candidate = (match[1] || '').trim();
+           if (!candidate) continue;
+ 
++          // Skip values of technical property names (value/id/key/...) and
++          // comparison targets: machine identifiers, not UI copy.
++          const beforeRef = line.slice(0, match.index);
++          if (/(^|[,{([])\s*(value|id|key|slug|kind|mode|to|from|type|status|action|channel|scope)\s*:\s*$/.test(beforeRef)) continue;
++          if (/(={2,3}|!==?)\s*$/.test(beforeRef)) continue;
++
+           if (skipLineIndexes.has(lineIndex)) continue;
+ 
+           if (!shouldTranslate(candidate, { ignorePatterns: this.ignorePatterns })) {
+@@ -602,6 +762,12 @@ class VueParser extends BaseParser {
+           const candidate = (match[1] || '').trim();
+           if (!candidate) continue;
+ 
++          // Skip values of technical property names (value/id/key/...) and
++          // comparison targets (`=== 'none'`): machine identifiers, not UI copy.
++          const beforeText = line.slice(0, match.index);
++          if (/(^|[,{([])\s*(value|id|key|slug|kind|mode|to|from|type|status|action|channel|scope)\s*:\s*$/.test(beforeText)) continue;
++          if (/(={2,3}|!==?)\s*$/.test(beforeText)) continue;
++
+           // Skip obvious i18n key lookups; validators will also reject most keys,
+           // but this keeps noise down if keys look like natural language.
+           if (skipLineIndexes.has(lineIndex)) {
+diff --git a/src/i18n/lib/replacers/jsxReplacer.js b/src/i18n/lib/replacers/jsxReplacer.js
+index af77481..0397244 100644
+--- a/src/i18n/lib/replacers/jsxReplacer.js
++++ b/src/i18n/lib/replacers/jsxReplacer.js
+@@ -228,6 +228,63 @@ class JsxReplacer extends BaseReplacer {
+       return `${prefix}t('${fullKey}')${suffix}`;
+     });
+ 
++    // Script-side chains: 'lit' + expr [+ 'lit2'] becomes ONE key with a
++    // {placeholder} param ("Removed carton " + code + ". Its next scan…").
++    const chainRegex = /(['"])((?:\\.|(?!\1)[^\\\n])*)\1\s*\+\s*([A-Za-z_$][\w$.]*(?:\([^()]*\))?)(?:\s*\+\s*(['"])((?:\\.|(?!\1)[^\\\n])*)\4)?/g;
++    modified = modified.replace(chainRegex, (match, q1, lit1, expr, q2, lit2) => {
++      if (!expr || lit1 === undefined) return match;
++      if (/\$?t\s*\(/.test(match)) return match;
++      // Keep literal whitespace: the mid-chain space is part of the sentence
++      // ("Removed carton " + code → "Removed carton {placeholder}").
++      let text = `${lit1}{placeholder}` + (lit2 !== undefined ? lit2 : '');
++      text = text.replace(/\s+/g, ' ').trim();
++      if (!canTranslate(text)) return match;
++      const fullKey = this.lookupKey(keyMap, namespace, 'text', text);
++      if (!fullKey) return match;
++      changeCount++;
++      return `t('${fullKey}', { placeholder: ${expr} })`;
++    });
++
++    // Template literals with ${expr} become ONE key with {p0}… params
++    // (confirm(`Remove "${item}"?`) → confirm(t('key', { p0: item }))).
++    const templateRegex = /`((?:\\.|[^`\\])*)`/g;
++    modified = modified.replace(templateRegex, (m, inner) => {
++      if (!/\$\{[^}]+\}/.test(inner)) return m;
++      if (/\$?t\s*\(/.test(inner)) return m;
++      const params = [];
++      let text = inner.replace(/\$\{([^}]+)\}/g, (e, expr) => {
++        params.push(expr);
++        return `{p${params.length - 1}}`;
++      });
++      text = text.replace(/\s+/g, ' ').trim();
++      if (!canTranslate(text)) return m;
++      const fullKey = this.lookupKey(keyMap, namespace, 'text', text);
++      if (!fullKey) return m;
++      changeCount++;
++      const rendered = params.map((p, i) => `p${i}: ${p}`).join(', ');
++      return `t('${fullKey}', { ${rendered} })`;
++    });
++
++    // Final pass: any remaining string literal whose exact text has a key is
++    // replaced (covers `|| 'fallback'` and other expression contexts the
++    // structured passes don't reach). Guards keep technical values safe
++    // (Issue 9): values of technical property names and comparison targets
++    // are never rewritten.
++    const genericLiteralRegex = /(['"])((?:\\.|(?!\1)[^\\\n])*)\1/g;
++    modified = modified.replace(genericLiteralRegex, (lit, quote, text, offset) => {
++      if (!text || text.length < 2) return lit;
++      const before = modified.slice(0, offset);
++      if (/\$?t\s*\(\s*$/.test(before)) return lit;
++      if (/(^|[,{([])\s*(value|id|key|slug|kind|mode|to|from|type|status|action|channel|scope)\s*:\s*$/.test(before)) return lit;
++      if (/(={2,3}|!==?)\s*$/.test(before)) return lit;
++      if (!canTranslate(text)) return lit;
++      const fullKey = this.lookupKey(keyMap, namespace, 'text', text);
++      if (!fullKey) return lit;
++      changeCount++;
++      // Script context: t() (not $t()) — ensureTImport adds the import.
++      return `t('${fullKey}')`;
++    });
++
+     // Add t import if needed
+     if (changeCount > 0) {
+       modified = this.ensureTImport(modified);
+diff --git a/src/i18n/lib/replacers/vueReplacer.js b/src/i18n/lib/replacers/vueReplacer.js
+index 8ac1a94..055a065 100644
+--- a/src/i18n/lib/replacers/vueReplacer.js
++++ b/src/i18n/lib/replacers/vueReplacer.js
+@@ -8,6 +8,7 @@
+ 
+ const { BaseReplacer } = require('./baseReplacer');
+ const { JsxReplacer } = require('./jsxReplacer');
++const { decodeHtmlEntities } = require('../parsers/baseParser');
+ 
+ class VueReplacer extends BaseReplacer {
+   static getExtensions() {
+@@ -27,7 +28,7 @@ class VueReplacer extends BaseReplacer {
+ 
+     // Helper to check if text should be translated
+     const canTranslate = (text) => {
+-      const cleaned = this.normalizeText(text);
++      const cleaned = this.normalizeText(this.decodeHtmlText(text));
+       if (!cleaned) return false;
+       if (!/[A-Za-z]/.test(cleaned)) return false;
+       
+@@ -43,34 +44,88 @@ class VueReplacer extends BaseReplacer {
+     };
+ 
+     // Process <template> section
+-    const templateMatch = content.match(/(<template[^>]*>)([\s\S]*?)(<\/template>)/i);
+-    if (templateMatch) {
+-      const [fullMatch, openTag, templateContent, closeTag] = templateMatch;
++    // Find the OUTERMOST <template> block: nested <template> tags (e.g. named
++    // slot templates) must not terminate the scan. A non-greedy match here
++    // stopped at the first inner </template>, leaving everything after it
++    // unprocessed (slot-based SFCs ended up with near-zero coverage).
++    const templateBlock = this.findOuterTemplate(content);
++    if (templateBlock) {
++      const { openTag, templateContent, closeTag, start, end } = templateBlock;
+       let newTemplateContent = this.replaceInTemplate(templateContent, keyMap, namespace, canTranslate);
+ 
+       if (newTemplateContent !== templateContent) {
+         const templateChangeCount = this.countDifferences(templateContent, newTemplateContent);
+         changeCount += templateChangeCount;
+-        modified = modified.replace(fullMatch, `${openTag}${newTemplateContent}${closeTag}`);
++        // Rebuild via slice: String.replace(pattern, string) would interpret
++        // "$" sequences (e.g. $&, $`) inside the replacement content.
++        modified = content.slice(0, start) + openTag + newTemplateContent + closeTag + content.slice(end);
+       }
+     }
+ 
+-    // Process <script> section using JsxReplacer
+-    const scriptMatch = modified.match(/(<script[^>]*>)([\s\S]*?)(<\/script>)/i);
+-    if (scriptMatch) {
+-      const [fullMatch, openTag, scriptContent, closeTag] = scriptMatch;
++    // Process every <script> block (an SFC may legally have both
++    // <script setup> and a plain <script> — Options API state/methods).
++    // A single non-greedy match processed only the FIRST block.
++    const scriptRegex = /(<script[^>]*>)([\s\S]*?)(<\/script>)/gi;
++    modified = modified.replace(scriptRegex, (fullMatch, openTag, scriptContent, closeTag) => {
+       const jsxReplacer = new JsxReplacer();
+       const result = jsxReplacer.replace(scriptContent, keyMap, namespace, options);
+ 
+       if (result.changeCount > 0) {
+         changeCount += result.changeCount;
+-        modified = modified.replace(fullMatch, `${openTag}${result.content}${closeTag}`);
++        // Replacer function: the replacement must be used literally, without
++        // "$" pattern interpretation by String.replace.
++        return `${openTag}${result.content}${closeTag}`;
+       }
+-    }
++      return fullMatch;
++    });
+ 
+     return { content: modified, changeCount };
+   }
+ 
++  /**
++   * Decode HTML entities (&amp; etc.) so replacement lookups match keys that
++   * extraction already stored decoded.
++   */
++  decodeHtmlText(text) {
++    return decodeHtmlEntities(text);
++  }
++
++  /**
++   * Find the outermost <template> block of an SFC, tracking nested <template>
++   * tags (named slot templates) so the scan ends at the component's own
++   * closing </template> instead of the first inner one. Self-closing
++   * <template ... /> tags do not affect depth. Returns null when no balanced
++   * block is found.
++   */
++  findOuterTemplate(content) {
++    const openMatch = content.match(/<template[^>]*>/i);
++    if (!openMatch) return null;
++    const start = openMatch.index;
++    const openEnd = start + openMatch[0].length;
++    const tagRegex = /<\/?template(?:\s[^>]*)?>/gi;
++    tagRegex.lastIndex = openEnd;
++    let depth = 1;
++    let match;
++    while ((match = tagRegex.exec(content)) !== null) {
++      if (/\/>$/.test(match[0])) continue; // self-closing
++      if (match[0][1] === '/') {
++        depth -= 1;
++        if (depth === 0) {
++          return {
++            openTag: openMatch[0],
++            closeTag: match[0],
++            templateContent: content.slice(openEnd, match.index),
++            start,
++            end: match.index + match[0].length,
++          };
++        }
++      } else {
++        depth += 1;
++      }
++    }
++    return null;
++  }
++
+   /**
+    * Replace strings in Vue template
+    */
+@@ -86,18 +141,63 @@ class VueReplacer extends BaseReplacer {
+       const trimmed = text.trim();
+       // Skip if already contains $t() or t() calls
+       if (/\{\{\s*\$?t\s*\(/.test(text)) return match;
+-      if (!trimmed || !canTranslate(trimmed)) return match;
++      if (!trimmed) return match;
++
++      const decoded = this.decodeHtmlText(trimmed);
++
++      // Leading copy before an inline mustache ("Name{{ sortArrow('x') }}"):
++      // translate the leading text as its own string and keep the expression.
++      const leading = decoded.match(/^([^{}]*?)\s*(\{\{[\s\S]*\}\})$/);
++      if (leading && leading[1].trim()) {
++        const lead = leading[1].trim();
++        if (canTranslate(lead)) {
++          const leadKey = this.lookupKey(keyMap, namespace, 'text', lead);
++          if (leadKey) {
++            const leadSpace = text.match(/^\s*/)[0];
++            const trailSpace = text.match(/\s*$/)[0];
++            // Trailing copy after the last mustache of the rest
++            // ("Active in the last {{ n }} minutes" → lead + expr + tail):
++            const rest = leading[2];
++            const innerTrailing = rest.match(/^((?:\{\{[^{}]*\}\})+)([^{}]*)$/);
++            if (innerTrailing && innerTrailing[2].trim()) {
++              const trail = innerTrailing[2].trim();
++              const trailKey = this.lookupKey(keyMap, namespace, 'text', trail);
++              if (trailKey) {
++                return `${open}${leadSpace}{{ $t('${leadKey}') }} ${innerTrailing[1]} {{ $t('${trailKey}') }}${trailSpace}${close}`;
++              }
++            }
++            return `${open}${leadSpace}{{ $t('${leadKey}') }} ${rest}${trailSpace}${close}`;
++          }
++        }
++      }
++
++      // Trailing copy after the last mustache ("{{ n }} minutes"): translate
++      // the trailing text as its own string, keeping the expression(s).
++      const trailing = decoded.match(/^((?:\{\{[^{}]*\}\})+)([^{}]*)$/);
++      if (trailing && trailing[2].trim()) {
++        const trail = trailing[2].trim();
++        if (canTranslate(trail)) {
++          const trailKey = this.lookupKey(keyMap, namespace, 'text', trail);
++          if (trailKey) {
++            const leadSpace = text.match(/^\s*/)[0];
++            const trailSpace = text.match(/\s*$/)[0];
++            return `${open}${leadSpace}${trailing[1]} {{ $t('${trailKey}') }}${trailSpace}${close}`;
++          }
++        }
++      }
++
++      if (!canTranslate(decoded)) return match;
+ 
+       // For text with mustache expressions, create a normalized version for key lookup
+-      let lookupText = trimmed;
+-      const mustacheMatches = trimmed.match(/\{\{[^}]+\}\}/g);
++      let lookupText = decoded;
++      const mustacheMatches = decoded.match(/\{\{[^}]+\}\}/g);
+       if (mustacheMatches) {
+         // Replace mustache expressions with placeholders for key lookup
+-        lookupText = trimmed.replace(/\{\{[^}]+\}\}/g, '{placeholder}');
++        lookupText = decoded.replace(/\{\{[^}]+\}\}/g, '{placeholder}');
+         lookupText = lookupText.replace(/\s+/g, ' ').trim();
+       }
+ 
+-      const fullKey = this.lookupKey(keyMap, namespace, 'text', trimmed);
++      const fullKey = this.lookupKey(keyMap, namespace, 'text', decoded);
+       if (!fullKey) return match;
+ 
+       const leadingSpace = text.match(/^\s*/)[0];
+@@ -110,7 +210,7 @@ class VueReplacer extends BaseReplacer {
+     // 2. Attribute values (non-bound)
+     // Matches: placeholder="text", title="text", etc.
+     // Skip already bound attributes (prefixed with : or v-bind:)
+-    const attrNames = 'placeholder|title|alt|aria-label|label|error-message|helper-text';
++    const attrNames = 'placeholder|title|alt|aria-label|label|error-message|helper-text|newrecordcaption';
+     const attrRegex = new RegExp(
+       `(\\s)(?![:v])(${attrNames})(\\s*=\\s*)(['"])([^'"]{2,200})\\4`,
+       'gi'
+@@ -132,22 +232,60 @@ class VueReplacer extends BaseReplacer {
+ 
+     // 3. String literals inside {{ }} expressions
+     // Matches: {{ condition ? "text1" : "text2" }}
+-    // Skip strings that are already inside $t() or t() calls
+-    const mustacheRegex = /(\{\{[^}]*?)(['"])([^'"]{3,200})\2([^}]*?\}\})/g;
+-
+-    modified = modified.replace(mustacheRegex, (match, before, quote, text, after) => {
+-      // Skip if already inside a $t() or t() call (idempotency guard)
+-      if (/\$?t\s*\(\s*$/.test(before)) return match;
+-      // Skip if text looks like a translation key (dot-separated path)
+-      if (/^[A-Z][a-zA-Z0-9]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+$/.test(text)) return match;
+-      
+-      if (!canTranslate(text)) return match;
+-
+-      const fullKey = this.lookupKey(keyMap, namespace, 'text', text);
+-      if (!fullKey) return match;
+-
+-      return `${before}$t('${fullKey}')${after}`;
+-    });
++    // Process EVERY string literal inside each mustache region: a single
++    // non-greedy match consumed the whole {{ }} at the first quoted string,
++    // leaving the other literals of a ternary (e.g. the else branch) untouched.
++    // Region scan is depth-aware: expressions containing template literals
++    // (`${expr}`) or nested braces must not truncate the region.
++    const mustacheRegions = [];
++    {
++      let i = modified.indexOf('{{');
++      while (i !== -1) {
++        let depth = 2;
++        let j = i + 2;
++        while (j < modified.length && depth > 0) {
++          const ch = modified[j];
++          if (ch === '{') depth++;
++          else if (ch === '}') depth--;
++          j++;
++        }
++        if (depth === 0) {
++          mustacheRegions.push([i, j]);
++          i = modified.indexOf('{{', j);
++        } else {
++          i = modified.indexOf('{{', i + 2);
++        }
++      }
++    }
++    const literalRegex = /(['"])((?:\\.|(?!\1)[^\\])*)\1/g;
++
++    // Apply bottom-up: replacing a region shifts the offsets of every region
++    // recorded after it, so descending order keeps [start, end] valid.
++    for (let r = mustacheRegions.length - 1; r >= 0; r--) {
++      const [start, end] = mustacheRegions[r];
++      const region = modified.slice(start, end);
++      const next = region.replace(literalRegex, (lit, quote, text, offset) => {
++        if (!text) return lit;
++        // Skip if this literal is already the argument of a $t() / t() call
++        // (idempotency guard for re-runs over already-translated regions).
++        if (/\$?t\s*\(\s*$/.test(region.slice(0, offset))) return lit;
++        // Skip if text looks like a translation key (dot-separated path)
++        if (/^[A-Z][a-zA-Z0-9]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+$/.test(text)) return lit;
++
++        const decoded = this.decodeHtmlText(text);
++        if (!canTranslate(decoded)) return lit;
++
++        const fullKey = this.lookupKey(keyMap, namespace, 'text', decoded);
++        if (!fullKey) return lit;
++
++        // Drop the original quotes: the literal sits inside a JS expression,
++        // and $t('key') brings its own.
++        return `$t('${fullKey}')`;
++      });
++      if (next !== region) {
++        modified = modified.slice(0, start) + next + modified.slice(end);
++      }
++    }
+ 
+     // 4. Bound attribute string values
+     // Matches: :placeholder="'text'" or :title="'text'"
+@@ -160,19 +298,46 @@ class VueReplacer extends BaseReplacer {
+     modified = modified.replace(boundAttrRegex, (match, prefix, quote, text) => {
+       // Skip if text looks like a translation key (idempotency guard)
+       if (/^[A-Z][a-zA-Z0-9]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+$/.test(text)) return match;
+-      
+-      if (!canTranslate(text)) return match;
++
++      const decoded = this.decodeHtmlText(text);
++      if (!canTranslate(decoded)) return match;
+ 
+       const attrMatch = prefix.match(/:(\S+)\s*=/);
+       const attrName = attrMatch ? attrMatch[1] : 'text';
+       const kind = this.inferKindFromAttr(attrName);
+ 
+-      const fullKey = this.lookupKey(keyMap, namespace, kind, text);
++      const fullKey = this.lookupKey(keyMap, namespace, kind, decoded);
+       if (!fullKey) return match;
+ 
+       return `${prefix}$t('${fullKey}')"`;
+     });
+ 
++    // 4b. String literals inside :options="..." array expressions
++    // (e.g. :options="[{ id: 'active', name: 'Active' }]") — translate the
++    // display literals in place, keeping the array expression intact. A
++    // simple bound-attr replacement would be wrong here: the value is not
++    // a string but an expression.
++    modified = modified.replace(/(:options\s*=\s*")([^"]*)(")/g, (m2, prefix, expr, q) => {
++      const next = expr.replace(literalRegex, (lit, quote, text, offset) => {
++        if (!text) return lit;
++        // Skip if this literal is already the argument of a $t() / t() call
++        if (/\$?t\s*\(\s*$/.test(expr.slice(0, offset))) return lit;
++        // Skip if text looks like a translation key (dot-separated path)
++        if (/^[A-Z][a-zA-Z0-9]*(?:\.[a-zA-Z_][a-zA-Z0-9_]*)+$/.test(text)) return lit;
++
++        const decoded = this.decodeHtmlText(text);
++        if (!canTranslate(decoded)) return lit;
++
++        const fullKey = this.lookupKey(keyMap, namespace, 'text', decoded);
++        if (!fullKey) return lit;
++
++        // Drop the original quotes: the literal sits inside a JS expression,
++        // and $t('key') brings its own.
++        return `$t('${fullKey}')`;
++      });
++      return next === expr ? m2 : `${prefix}${next}${q}`;
++    });
++
+     // 5. v-text and v-html with string literals
+     // Matches: v-text="'text'" or v-html="'text'"
+     // Skip if already using $t()
+diff --git a/src/i18n/lib/validators/cssValidator.js b/src/i18n/lib/validators/cssValidator.js
+index 4881a0c..5ebd39d 100644
+--- a/src/i18n/lib/validators/cssValidator.js
++++ b/src/i18n/lib/validators/cssValidator.js
+@@ -156,6 +156,7 @@ const ENGLISH_NOT_CSS = new Set([
+   'container', 'wrapper', 'content', 'header', 'footer', 'sidebar', 'main',
+   'row', 'column', 'item', 'items', 'list', 'table', 'form', 'input', 'button',
+   'none', 'auto', 'full', 'empty', 'loading', 'error', 'pending',
++  'package', // UI label (e.g. the "Package" column), not the package.json file
+   // Multi-word phrases that might look CSS-ish
+   'no items', 'no results', 'not found', 'loading items', 'error loading',
+ ]);
+@@ -287,8 +288,10 @@ function isSingleCssClass(part) {
+   //    e.g., dark:text-white, sm:flex, hover:bg-blue-500, prose-a:text-primary-600
+   if (/:/.test(part)) {
+     const segments = part.split(':');
+-    // If any segment looks like a CSS pattern, it's likely a class
+-    if (segments.some(seg => /^[a-z]+(?:-[a-z0-9]+)*$/i.test(seg))) {
++    // A trailing colon (e.g. the UI field label "Name:") yields an empty last
++    // segment — that's a label, not a variant chain. Require every segment to
++    // be non-empty and class-shaped.
++    if (segments.length > 1 && segments.every(seg => /^[a-z]+(?:-[a-z0-9]+)*$/i.test(seg))) {
+       return true;
+     }
+   }
+diff --git a/src/i18n/lib/validators/htmlValidator.js b/src/i18n/lib/validators/htmlValidator.js
+index 738cd93..aecde9d 100644
+--- a/src/i18n/lib/validators/htmlValidator.js
++++ b/src/i18n/lib/validators/htmlValidator.js
+@@ -60,7 +60,7 @@ const NON_TRANSLATABLE_ATTRIBUTES = new Set([
+ // Attributes that SHOULD be translated
+ const TRANSLATABLE_ATTRIBUTES = new Set([
+   'title', 'alt', 'placeholder', 'label', 'aria-label', 'aria-description',
+-  'aria-placeholder', 'aria-valuetext',
++  'aria-placeholder', 'aria-valuetext', 'newrecordcaption',
+ ]);
+ 
+ // Template directive patterns from various frameworks
+diff --git a/src/i18n/lib/validators/index.js b/src/i18n/lib/validators/index.js
+index 8db4959..6f90e82 100644
+--- a/src/i18n/lib/validators/index.js
++++ b/src/i18n/lib/validators/index.js
+@@ -192,8 +192,9 @@ function looksLikeHumanText(text) {
+     // Single word: must start with capital letter and look like a word
+     let word = words[0];
+     
+-    // Strip trailing punctuation (.,:;!?) for validation
+-    word = word.replace(/[.,:;!?]+$/, '');
++    // Strip trailing punctuation (.,:;!?…) for validation — the unicode
++    // ellipsis is common at the end of UI labels ("Removing…").
++    word = word.replace(/[.,:;!?…]+$/, '');
+     
+     // Allow single capitalized words that look like labels (including contractions)
+     if (/^[A-Z][a-zA-Z0-9']*$/.test(word)) {
+@@ -212,7 +213,9 @@ function looksLikeHumanText(text) {
+       'import', 'upload', 'download', 'share', 'copy', 'paste', 'cut', 'undo',
+       'redo', 'refresh', 'reload', 'reset', 'clear', 'submit', 'send', 'continue',
+       'skip', 'finish', 'start', 'stop', 'pause', 'play', 'resume', 'retry',
+-      'confirm', 'ok', 'yes', 'no', 'all', 'none', 'any', 'other', 'more', 'less'
++      'confirm', 'ok', 'yes', 'no', 'all', 'none', 'any', 'other', 'more', 'less',
++      // Time units: common UI labels ("{{ n }} minutes")
++      'minutes', 'hours', 'days', 'seconds', 'weeks', 'months', 'years'
+     ]);
+     if (commonUIWords.has(word.toLowerCase())) {
+       return true;
+diff --git a/src/i18n/lib/validators/technicalValidator.js b/src/i18n/lib/validators/technicalValidator.js
+index 9bbda0e..0f4c9a8 100644
+--- a/src/i18n/lib/validators/technicalValidator.js
++++ b/src/i18n/lib/validators/technicalValidator.js
+@@ -72,11 +72,13 @@ const TECHNICAL_ABBREVIATIONS = new Set([
+ 
+ // Environment variable patterns
+ const ENV_VAR_PATTERNS = [
+-  /^[A-Z][A-Z0-9_]*$/,              // SCREAMING_SNAKE_CASE
+-  /^\$[A-Z][A-Z0-9_]*$/,            // $VARIABLE
+-  /^\$\{[A-Z][A-Z0-9_]*\}$/,        // ${VARIABLE}
+-  /^%[A-Z][A-Z0-9_]*%$/,            // %VARIABLE% (Windows)
+-  /^\$\([A-Z][A-Z0-9_]*\)$/,        // $(VARIABLE) (Make)
++  // Require at least 4 characters: 1–3 char all-caps tokens (UPC, TAG, PIN)
++  // are usually UI column headers/labels in the target domain, not variables.
++  /^[A-Z][A-Z0-9_]{3,}$/,           // SCREAMING_SNAKE_CASE (4+ chars)
++  /^\$[A-Z][A-Z0-9_]{3,}$/,         // $VARIABLE
++  /^\$\{[A-Z][A-Z0-9_]{3,}\}$/,     // ${VARIABLE}
++  /^%[A-Z][A-Z0-9_]{3,}%$/,         // %VARIABLE% (Windows)
++  /^\$\([A-Z][A-Z0-9_]{3,}\)$/,     // $(VARIABLE) (Make)
+ ];
+ 
+ // Config key patterns (key=value, key: value, etc.)
+@@ -165,7 +167,9 @@ function isFilePath(text) {
+   }
+   
+   // Check for config files without extensions
+-  if (/^(package|tsconfig|jsconfig|webpack|vite|rollup|babel|eslint|prettier|docker|makefile|rakefile|gemfile|podfile|cartfile|procfile|dockerfile|vagrantfile|gulpfile|gruntfile)\.?[a-z]*$/i.test(trimmed)) {
++  // Config filenames are lowercase; a capitalized word ("Package") is a UI
++  // label, not the package.json file.
++  if (/^(package|tsconfig|jsconfig|webpack|vite|rollup|babel|eslint|prettier|docker|makefile|rakefile|gemfile|podfile|cartfile|procfile|dockerfile|vagrantfile|gulpfile|gruntfile)\.?[a-z]*$/.test(trimmed)) {
+     return true;
+   }
+   
+@@ -513,9 +517,13 @@ function isRegexPattern(text) {
+     return true;
+   }
+   
+-  // Check for regex-like patterns (with special chars)
+-  if (/[\^\$\*\+\?\.\[\]\(\)\{\}\\|]/.test(trimmed) && trimmed.length >= 3) {
+-    const specialCharCount = (trimmed.match(/[\^\$\*\+\?\.\[\]\(\)\{\}\\|]/g) || []).length;
++  // Check for regex-like patterns (with special chars). The fallback is
++  // deliberately strict: a single token (no spaces) with 2+ regex special
++  // chars — plain dots and English words in parentheses ("Variant (optional)",
++  // "Moving...") are UI copy, not patterns.
++  if (trimmed.length >= 3 && !/\s/.test(trimmed) &&
++      /[\^\$\*\+\?\[\]\(\)\{\}\\|]/.test(trimmed)) {
++    const specialCharCount = (trimmed.match(/[\^\$\*\+\?\[\]\(\)\{\}\\|]/g) || []).length;
+     if (specialCharCount >= 2) {
+       return true;
+     }
+@@ -532,7 +540,10 @@ function isCodeSnippet(text) {
+   if (!trimmed) return false;
+   
+   // Check for function calls
+-  if (/^[a-z_$][a-z0-9_$]*\s*\([^)]*\)$/i.test(trimmed)) {
++  // Function-call shape: lowercase/camelCase name, NO space before parens.
++  // Case-sensitive and space-free so English UI like "Variant (optional)"
++  // (a word plus a parenthesized qualifier) is not mistaken for code.
++  if (/^[a-z_$][a-z0-9_$]*\([^)]*\)$/.test(trimmed)) {
+     return true;
+   }
+   
+diff --git a/src/i18n/rewrite-i18n-blade.js b/src/i18n/rewrite-i18n-blade.js
+index c3a217d..746a64e 100644
+--- a/src/i18n/rewrite-i18n-blade.js
++++ b/src/i18n/rewrite-i18n-blade.js
+@@ -25,6 +25,39 @@ function shouldTranslateText(text) {
+   return trimmed && !shouldIgnoreText(trimmed);
+ }
+ 
++// Mirrors BaseReplacer.isCommonShortText (Vue/JS path): short texts are
++// extracted into the Commons namespace, so Blade lookups must be able to
++// resolve them there.
++function isCommonShortText(text) {
++  const trimmed = String(text || '').trim();
++  if (!trimmed) return false;
++  const cleaned = trimmed.replace(/\s+/g, ' ').trim();
++  if (/[.!?]/.test(cleaned)) return false;
++  const words = cleaned.split(' ').filter(Boolean);
++  if (words.length === 0 || words.length > 2) return false;
++  if (cleaned.length > 24) return false;
++  if (/[\/_]/.test(cleaned)) return false;
++  return true;
++}
++
++// Mirrors BaseReplacer.lookupKey: try the Commons namespace for short texts,
++// and fall back to the "text" kind when the inferred kind has no entry (e.g.
++// <h1> extracted as text but inferred as heading here).
++function lookupBladeKey(keyMap, namespace, kind, normalized) {
++  const effectiveNs = isCommonShortText(normalized) ? 'Commons' : namespace;
++  const candidates = [
++    `${effectiveNs}|${kind}|${normalized}`,
++    kind !== 'text' ? `${effectiveNs}|text|${normalized}` : null,
++    effectiveNs === 'Commons' ? `${namespace}|${kind}|${normalized}` : null,
++    effectiveNs === 'Commons' && kind !== 'text' ? `${namespace}|text|${normalized}` : null,
++  ].filter(Boolean);
++  for (const keyId of candidates) {
++    const fullKey = keyMap.get(keyId);
++    if (fullKey) return fullKey;
++  }
++  return null;
++}
++
+ function buildKeyMapFromTranslations(translations) {
+   const map = new Map();
+ 
+@@ -158,8 +191,7 @@ async function processBladeFile(filePath, keyMap) {
+     if (!shouldTranslateText(normalized)) return whole;
+ 
+     const kind = inferKindFromTagName(tagName);
+-    const keyId = `${namespace}|${kind}|${normalized}`;
+-    const fullKey = keyMap.get(keyId);
++    const fullKey = lookupBladeKey(keyMap, namespace, kind, normalized);
+     if (!fullKey) return whole;
+ 
+     changed = true;

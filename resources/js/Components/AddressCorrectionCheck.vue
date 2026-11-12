@@ -42,25 +42,25 @@ defineEmits(['accept', 'keep']);
 </script>
 
 <template>
-	<p v-if="status === 'checking'" class="acc_checking">Looking up address…</p>
+	<p v-if="status === 'checking'" class="acc_checking">{{ $t('Components.text.looking_up_address', {}) }}</p>
 	<Modal :show="status === 'ready'" @close="$emit('keep')">
 		<div class="acc_body">
-			<h2 class="acc_title">Confirm Address</h2>
+			<h2 class="acc_title">{{ $t('Commons.heading.confirm_address', {}) }}</h2>
 			<template v-if="casingOnly">
-				<p class="acc_line">Corrected: <strong>{{ suggested.address }}</strong></p>
+				<p class="acc_line">{{ $t('Commons.text.corrected', {}) }} <strong>{{ suggested.address }}</strong></p>
 				<div class="acc_actions">
-					<button type="button" class="ri_defaultbutton" @click="$emit('accept')">Accept Address</button>
-					<button type="button" class="ri_formbutton" @click="$emit('keep')">Keep As Typed</button>
+					<button type="button" class="ri_defaultbutton" @click="$emit('accept')">{{ $t('Commons.button.accept_address', {}) }}</button>
+					<button type="button" class="ri_formbutton" @click="$emit('keep')">{{ $t('Components.button.keep_as_typed', {}) }}</button>
 				</div>
 			</template>
 			<template v-else>
-				<p class="acc_line">Geocodio found a different address — which is right?</p>
+				<p class="acc_line">{{ $t('Components.text.geocodio_found_a_different', {}) }}</p>
 				<div class="acc_actions acc_actions_stacked">
 					<button type="button" class="ri_defaultbutton" @click="$emit('accept')">
-						Use: {{ suggested.address }}, {{ suggested.city }}, {{ suggested.state }} {{ suggested.zip }}
+						{{ $t('Commons.button.use_2') }} {{ suggested.address }}, {{ suggested.city }}, {{ suggested.state }} {{ suggested.zip }}
 					</button>
 					<button type="button" class="ri_formbutton" @click="$emit('keep')">
-						Keep: {{ entered.address }}
+						{{ $t('Commons.button.keep_2') }} {{ entered.address }}
 					</button>
 				</div>
 			</template>

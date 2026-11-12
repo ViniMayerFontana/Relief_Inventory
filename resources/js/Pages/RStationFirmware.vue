@@ -19,6 +19,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useChunkedUpload } from '@/composables/chunkedUpload';
 import axios from 'axios';
 import { onMounted, reactive, ref, watch } from 'vue';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: {
@@ -60,10 +61,10 @@ async function saveSource() {
 		const { data } = await axios.put('/json/firmware-source', { source_url: sourceUrl.value.trim() || null });
 		savedSource.value = sourceUrl.value = data.source_url || '';
 		notice.value = data.source_url
-			? 'Saved. Devices paired here will look for software at that server from their next check-in.'
-			: 'Saved. This server offers its own releases again.';
+			? t('Pages.text.saved_devices_paired_here')
+			: t('Pages.text.saved_this_server_offers');
 	} catch (e) {
-		fail(e, 'Could not save the firmware source.');
+		fail(e, t('Pages.text.could_not_save_the_7'));
 	} finally {
 		savingSource.value = false;
 	}
@@ -76,28 +77,28 @@ async function toggleTag(release, channel) {
 		await axios.post(`/json/device-releases/${release.id}/${action}`, { channel });
 		await fetchAll();
 	} catch (e) {
-		fail(e, 'Could not change that release\'s channels.');
+		fail(e, t('Pages.text.could_not_change_that'));
 	}
 }
 
 async function deleteRelease(release) {
-	if (!window.confirm(`Delete ${release.filename}?`)) return;
+	if (!window.confirm(t('Pages.text.delete_p0', { p0: release.filename }))) return;
 	try {
 		await axios.delete(`/json/device-releases/${release.id}`);
 		await fetchAll();
 	} catch (e) {
-		fail(e, 'Could not delete that release.');
+		fail(e, t('Pages.text.could_not_delete_that_2'));
 	}
 }
 
-const IMAGE_LABELS = { disk_image: 'Raspberry Pi SD Card Image', vm_image: 'Virtual Machine Image' };
+const IMAGE_LABELS = { disk_image: t('Pages.text.raspberry_pi_sd_card'), vm_image: t('Pages.text.virtual_machine_image') };
 
 // Images and the print client are downloaded by people (anyone who can pair a device), never
 // offered to devices — so they have no update channels.
 const isDownloadOnly = (release) => release.kind === 'print_client' || release.release_type in IMAGE_LABELS;
 
 function releaseLabel(release) {
-	if (release.kind === 'print_client') return 'RI Print Client';
+	if (release.kind === 'print_client') return t('Pages.heading.ri_print_client');
 	return IMAGE_LABELS[release.release_type] || release.kind;
 }
 
@@ -143,7 +144,7 @@ async function startUpload() {
 		await finished(await start(uploadFile.value, metadata), name);
 	} catch (e) {
 		// No upload id yet means the server refused to start it (validation); otherwise it was interrupted.
-		fail(e, task.id ? 'The upload was interrupted. Choose Resume to carry on from where it stopped.' : 'Could not start that upload.');
+		fail(e, task.id ? t('Pages.text.the_upload_was_interrupted') : t('Pages.text.could_not_start_that'));
 	}
 }
 
@@ -153,13 +154,13 @@ async function resumeUpload() {
 	try {
 		await finished(await resume(), name);
 	} catch (e) {
-		fail(e, 'The upload was interrupted. Choose Resume to carry on from where it stopped.');
+		fail(e, t('Pages.text.the_upload_was_interrupted'));
 	}
 }
 
 async function finished(completed, name) {
 	if (!completed) return;
-	notice.value = `Uploaded ${name}. It is offered to no one until you tick a channel for it.`;
+	notice.value = t('Pages.text.uploaded_p0_it_is', { p0: name });
 	reset(); // the server already holds the file; nothing to delete
 	uploadFile.value = null;
 	if (fileInput.value) fileInput.value.value = '';
@@ -169,53 +170,50 @@ async function finished(completed, name) {
 
 async function cancelUpload() {
 	await cancel();
-	notice.value = 'Upload cancelled.';
+	notice.value = t('Pages.text.upload_cancelled');
 }
 
 onMounted(fetchAll);
 </script>
 
 <template>
-	<Head title="R Station Firmware" />
+	<Head :title="$t('Pages.title.r_station_firmware')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">R Station Firmware</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Pages.heading.r_station_firmware', {}) }}</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
 
 			<!-- Where devices look -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-3">
-				<h2 class="text-lg font-semibold">Where devices look for software</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Pages.heading.where_devices_look_for', {}) }}</h2>
 				<p class="text-sm text-gray-600">
-					Devices always check in with the server they are paired to. By default that server offers
-					the releases listed below. To use another Relief Inventory server's releases instead (for example a
-					central one that maintains firmware for many sites), enter its address: devices paired here are then
-					sent to it for updates, using the update channel set for each device on this server.
+					{{ $t('Pages.text.devices_always_check_in', {}) }}
 				</p>
 				<div class="flex gap-3 items-end text-sm">
 					<label class="block grow">
-						<span class="text-gray-700">Firmware source server (leave empty to use this server)</span>
+						<span class="text-gray-700">{{ $t('Pages.text.firmware_source_server_leave', {}) }}</span>
 						<input type="url" v-model="sourceUrl" placeholder="https://relief.example.org" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<PrimaryButton :disabled="savingSource || sourceUrl.trim() === savedSource" @click="saveSource">
-						{{ savingSource ? 'Saving…' : 'Save' }}
+						{{ savingSource ? $t('Commons.button.saving') : $t('Commons.button.save') }}
 					</PrimaryButton>
 				</div>
 				<p v-if="savedSource" class="text-sm rounded bg-amber-50 border border-amber-300 px-3 py-2">
-					Devices paired here currently get software from <strong>{{ savedSource }}</strong>. The releases below are not
+					{{ $t('Pages.text.devices_paired_here_currently', {}) }} <strong>{{ savedSource }}</strong>. The releases below are not
 					offered to them (but remain available to any server pointed at this one).
 				</p>
 			</section>
 
 			<!-- Releases -->
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
-				<h2 class="text-lg font-semibold">Software Releases</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.software_releases', {}) }}</h2>
 				<table v-if="releases.length" class="w-full text-sm">
 					<thead>
 						<tr class="text-left text-gray-600">
-							<th class="py-1">Release</th>
-							<th>Live on channel</th>
+							<th class="py-1">{{ $t('Commons.text.release', {}) }}</th>
+							<th>{{ $t('Pages.text.live_on_channel', {}) }}</th>
 							<th></th>
 						</tr>
 					</thead>
@@ -225,11 +223,11 @@ onMounted(fetchAll);
 								<div><strong>{{ releaseLabel(release) }}</strong> {{ release.version }}
 									<span class="text-gray-500">({{ releaseDetail(release) }}, {{ formatSize(release.size_bytes) }})</span>
 								</div>
-								<div v-if="release.required_base_version" class="text-xs text-gray-500">applies on top of {{ release.required_base_version }}</div>
+								<div v-if="release.required_base_version" class="text-xs text-gray-500">{{ $t('Pages.text.applies_on_top_of') }} {{ release.required_base_version }}</div>
 								<div class="text-xs text-gray-400">{{ release.filename }}</div>
 							</td>
 							<td v-if="isDownloadOnly(release)" class="text-gray-500">
-								Download only — available to anyone who can pair devices
+								{{ $t('Pages.text.download_only_available_to', {}) }}
 							</td>
 							<td v-else>
 								<label v-for="c in CHANNELS" :key="c" class="mr-3 whitespace-nowrap">
@@ -238,53 +236,53 @@ onMounted(fetchAll);
 								</label>
 							</td>
 							<td class="text-right">
-								<button type="button" class="text-red-700 underline" @click="deleteRelease(release)">Delete</button>
+								<button type="button" class="text-red-700 underline" @click="deleteRelease(release)">{{ $t('Commons.button.delete', {}) }}</button>
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<p v-else class="text-sm text-gray-400">No releases uploaded yet.</p>
+				<p v-else class="text-sm text-gray-400">{{ $t('Pages.text.no_releases_uploaded_yet', {}) }}</p>
 
-				<h3 class="font-medium text-sm pt-2">Upload a release</h3>
+				<h3 class="font-medium text-sm pt-2">{{ $t('Pages.heading.upload_a_release', {}) }}</h3>
 				<fieldset :disabled="task.id !== null" class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 					<label class="block">
-						<span class="text-gray-700">Kind</span>
+						<span class="text-gray-700">{{ $t('Commons.text.kind', {}) }}</span>
 						<select v-model="upload.kind" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="app">App (.tar.gz)</option>
-							<option value="os">OS bundle (.raucb)</option>
-							<option value="print_client">RI Print Client (installer)</option>
+							<option value="app">{{ $t('Pages.text.app_tar_gz', {}) }}</option>
+							<option value="os">{{ $t('Pages.text.os_bundle_raucb', {}) }}</option>
+							<option value="print_client">{{ $t('Pages.text.ri_print_client_installer', {}) }}</option>
 						</select>
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Type</span>
+						<span class="text-gray-700">{{ $t('Commons.text.type_2', {}) }}</span>
 						<select v-model="upload.release_type" :disabled="upload.kind === 'print_client'" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="full">Full</option>
-							<option v-if="upload.kind === 'os'" value="hotfix">Hotfix (small, on top of one base version)</option>
-							<option v-if="upload.kind === 'os'" value="disk_image">Raspberry Pi SD Card Image (SD card re-flash; never auto-offered)</option>
-							<option v-if="upload.kind === 'os'" value="vm_image">Virtual Machine Image (.img.xz; never auto-offered)</option>
+							<option value="full">{{ $t('Commons.text.full', {}) }}</option>
+							<option v-if="upload.kind === 'os'" value="hotfix">{{ $t('Pages.text.hotfix_small_on_top', {}) }}</option>
+							<option v-if="upload.kind === 'os'" value="disk_image">{{ $t('Pages.text.raspberry_pi_sd_card_2', {}) }}</option>
+							<option v-if="upload.kind === 'os'" value="vm_image">{{ $t('Pages.text.virtual_machine_image_img', {}) }}</option>
 						</select>
 					</label>
 					<label class="block">
-						<span class="text-gray-700">Version</span>
-						<input type="text" v-model="upload.version" placeholder="e.g. 0.4.0_0.1.1" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+						<span class="text-gray-700">{{ $t('Commons.heading.version', {}) }}</span>
+						<input type="text" v-model="upload.version" :placeholder="$t('Pages.placeholder.e_g_0_4')" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block">
-						<span class="text-gray-700">{{ upload.kind === 'print_client' ? 'Platform' : 'Architecture' }}</span>
+						<span class="text-gray-700">{{ upload.kind === 'print_client' ? $t('Commons.text.platform') : $t('Commons.text.architecture') }}</span>
 						<select v-if="upload.kind === 'print_client'" v-model="upload.architecture" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
 							<option v-for="(label, key) in platforms" :key="key" :value="key">{{ label }}</option>
 						</select>
 						<input v-else type="text" v-model="upload.architecture" placeholder="aarch64" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label v-if="upload.release_type === 'hotfix'" class="block sm:col-span-2">
-						<span class="text-gray-700">Required base version (exact)</span>
+						<span class="text-gray-700">{{ $t('Pages.text.required_base_version_exact', {}) }}</span>
 						<input type="text" v-model="upload.required_base_version" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 					<label class="block sm:col-span-2">
-						<span class="text-gray-700">File</span>
+						<span class="text-gray-700">{{ $t('Commons.text.file', {}) }}</span>
 						<input ref="fileInput" type="file" @change="uploadFile = $event.target.files[0]" class="mt-1 block w-full text-sm" />
 					</label>
 					<label class="block sm:col-span-2">
-						<span class="text-gray-700">Notes (optional)</span>
+						<span class="text-gray-700">{{ $t('Commons.text.notes_optional', {}) }}</span>
 						<input type="text" v-model="upload.notes" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 					</label>
 				</fieldset>
@@ -293,8 +291,8 @@ onMounted(fetchAll);
 					<div class="flex justify-between text-sm">
 						<span>
 							<strong>{{ task.file?.name }}</strong>
-							<template v-if="task.running"> — uploading…</template>
-							<template v-else-if="task.failed"> — interrupted</template>
+							<template v-if="task.running"> {{ $t('Commons.text.uploading', {}) }}</template>
+							<template v-else-if="task.failed"> {{ $t('Commons.text.interrupted', {}) }}</template>
 						</span>
 						<span>{{ percent }}% · {{ formatSize(task.received) }} of {{ formatSize(task.size) }}</span>
 					</div>
@@ -302,20 +300,14 @@ onMounted(fetchAll);
 						<div class="h-3 rounded" :class="task.failed ? 'bg-red-500' : 'bg-blue-600'" :style="{ width: percent + '%' }"></div>
 					</div>
 					<div class="flex gap-3 text-sm">
-						<PrimaryButton v-if="task.failed && !task.running" @click="resumeUpload">Resume</PrimaryButton>
-						<button type="button" class="text-red-700 underline" @click="cancelUpload">Cancel upload</button>
+						<PrimaryButton v-if="task.failed && !task.running" @click="resumeUpload">{{ $t('Commons.button.resume', {}) }}</PrimaryButton>
+						<button type="button" class="text-red-700 underline" @click="cancelUpload">{{ $t('Commons.button.cancel_upload', {}) }}</button>
 					</div>
 				</div>
-				<PrimaryButton v-else :disabled="!uploadFile || !upload.version" @click="startUpload">Upload</PrimaryButton>
+				<PrimaryButton v-else :disabled="!uploadFile || !upload.version" @click="startUpload">{{ $t('Commons.button.upload', {}) }}</PrimaryButton>
 
 				<p class="text-xs text-gray-500">
-					Large files are sent in small pieces, so there is no practical size limit and a dropped connection resumes
-					where it stopped (keep this page open while it uploads). A newly uploaded release is offered to no one
-					until you tick a channel (Raspberry Pi SD card images, virtual machine images and the print client never
-					go to devices; anyone who can pair a device downloads them from the Devices page, and only the latest upload
-					per platform or image type is kept — uploading a new one deletes the older one). Ticking a channel replaces whatever release held that slot there (one full
-					release per kind and architecture, one hotfix per base version). Devices are only ever offered newer
-					versions, never downgrades.
+					{{ $t('Pages.text.large_files_are_sent', {}) }}
 				</p>
 			</section>
 		</div>

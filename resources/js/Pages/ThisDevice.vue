@@ -15,6 +15,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: { type: Array },
@@ -36,7 +37,7 @@ async function load() {
 		form.value.label = status.value.device?.label || '';
 		form.value.reason = status.value.device?.status === 'pending' ? (status.value.device.request_reason || '') : '';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not check this device.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_check_this');
 	}
 }
 
@@ -49,10 +50,10 @@ async function submit() {
 			reason: form.value.reason || null,
 		})).data;
 		notice.value = status.value.device.status === 'approved'
-			? 'This device is approved for PIN login.'
-			: 'Request sent. An administrator will approve or deny it.';
+			? t('Pages.text.this_device_is_approved')
+			: t('Pages.text.request_sent_an_administrator');
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not send the request.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_send_the_2');
 	} finally {
 		busy.value = false;
 	}
@@ -66,77 +67,74 @@ onMounted(load);
 </script>
 
 <template>
-	<Head title="PIN Login on This Device" />
+	<Head :title="$t('Pages.title.pin_login_on_this')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-2xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">PIN Login on This Device</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Pages.heading.pin_login_on_this', {}) }}</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 			<div v-if="notice" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3">{{ notice }}</div>
-			<p v-if="!status && !error" class="text-gray-500">Checking this device…</p>
+			<p v-if="!status && !error" class="text-gray-500">{{ $t('Pages.text.checking_this_device', {}) }}</p>
 
 			<template v-if="status">
 				<section class="bg-white shadow rounded-lg p-6 space-y-3">
-					<h2 class="text-lg font-semibold">This device</h2>
+					<h2 class="text-lg font-semibold">{{ $t('Commons.heading.this_device', {}) }}</h2>
 					<div class="text-sm space-y-1">
-						<div v-if="!device" class="text-gray-700">Not set up for PIN login.</div>
+						<div v-if="!device" class="text-gray-700">{{ $t('Pages.text.not_set_up_for', {}) }}</div>
 						<template v-else>
 							<div>
-								<span class="font-semibold">{{ device.label || 'Unnamed station' }}</span> —
+								<span class="font-semibold">{{ device.label || $t('Commons.text.unnamed_station') }}</span> —
 								<span v-if="device.status === 'approved'" class="text-green-700 font-semibold">approved</span>
-								<span v-else-if="device.status === 'pending'" class="text-amber-700 font-semibold">waiting for approval</span>
-								<span v-else-if="device.status === 'denied'" class="text-red-700 font-semibold">request denied</span>
+								<span v-else-if="device.status === 'pending'" class="text-amber-700 font-semibold">{{ $t('Pages.text.waiting_for_approval', {}) }}</span>
+								<span v-else-if="device.status === 'denied'" class="text-red-700 font-semibold">{{ $t('Commons.text.request_denied', {}) }}</span>
 								<span v-else class="text-gray-600 font-semibold">revoked</span>
 							</div>
 							<div v-if="device.status === 'pending'" class="text-gray-600">
-								Requested {{ when(device.requested_at) }}<template v-if="device.requester"> by {{ device.requester }}</template>.
+								{{ $t('Commons.text.requested') }} {{ when(device.requested_at) }}<template v-if="device.requester"> by {{ device.requester }}</template>.
 							</div>
 							<div v-if="device.status === 'approved' && device.approver" class="text-gray-600">
-								Approved by {{ device.approver }} {{ when(device.approved_at) }}.
+								{{ $t('Commons.text.approved_by') }} {{ device.approver }} {{ when(device.approved_at) }}.
 							</div>
 						</template>
 						<div class="text-xs text-gray-500 pt-1">
-							{{ [status.detected.browser, status.detected.os].filter(Boolean).join(' on ') || 'Unknown browser' }}
-							· IP address <span class="font-mono">{{ status.detected.ip_address }}</span>
+							{{ [status.detected.browser, status.detected.os].filter(Boolean).join(' on ') || $t('Commons.text.unknown_browser') }} {{ $t('Pages.text.ip_address') }} <span class="font-mono">{{ status.detected.ip_address }}</span>
 						</div>
 					</div>
 
 					<p v-if="!status.pin_login_enabled" class="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded px-3 py-2">
-						PIN login is switched off for the whole system right now. A device can still be approved,
-						but PIN login won't be offered until an administrator turns it on.
+						{{ $t('Pages.text.pin_login_is_switched', {}) }}
 					</p>
 					<p v-if="device?.status === 'approved' && !status.has_pin" class="text-sm text-gray-700">
-						To use it yourself, set a PIN on your <Link :href="route('profile.edit')" class="text-blue-600 underline">Profile</Link>.
+						{{ $t('Pages.text.to_use_it_yourself', {}) }} <Link :href="route('profile.edit')" class="text-blue-600 underline">{{ $t('Commons.link.profile', {}) }}</Link>.
 					</p>
 				</section>
 
 				<section v-if="canAsk" class="bg-white shadow rounded-lg p-6 space-y-4">
 					<h2 class="text-lg font-semibold">
-						{{ status.can_approve ? 'Approve this device' : (device?.status === 'pending' ? 'Update your request' : 'Ask for PIN login here') }}
+						{{ status.can_approve ? $t('Pages.heading.approve_this_device') : (device?.status === 'pending' ? $t('Pages.heading.update_your_request') : $t('Pages.heading.ask_for_pin_login')) }}
 					</h2>
 					<p class="text-sm text-gray-700">
-						<template v-if="status.can_approve">You can approve devices, so this takes effect straight away.</template>
-						<template v-else>An administrator will see your request on Setup &gt; PIN Login and approve or deny it.</template>
-						Both fields are optional.
+						<template v-if="status.can_approve">{{ $t('Pages.text.you_can_approve_devices', {}) }}</template>
+						<template v-else>{{ $t('Pages.text.an_administrator_will_see', {}) }}</template>
+						{{ $t('Pages.text.both_fields_are_optional', {}) }}
 					</p>
 					<form class="space-y-4 text-sm" @submit.prevent="submit">
 						<label class="block">
-							<span class="text-gray-700">Station name</span>
-							<input v-model="form.label" maxlength="255" placeholder="e.g. Sorting Station 1"
+							<span class="text-gray-700">{{ $t('Commons.text.station_name', {}) }}</span>
+							<input v-model="form.label" maxlength="255" :placeholder="$t('Pages.placeholder.e_g_sorting_station')"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Reason</span>
-							<textarea v-model="form.reason" rows="2" maxlength="1000" placeholder="e.g. Shared tablet at the sorting tables"
+							<span class="text-gray-700">{{ $t('Commons.text.reason', {}) }}</span>
+							<textarea v-model="form.reason" rows="2" maxlength="1000" :placeholder="$t('Pages.placeholder.e_g_shared_tablet')"
 								class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
 						</label>
 						<PrimaryButton :disabled="busy">
-							{{ busy ? 'Sending…' : (status.can_approve ? 'Approve This Device' : (device?.status === 'pending' ? 'Update Request' : 'Request PIN Login')) }}
+							{{ busy ? $t('Commons.button.sending') : (status.can_approve ? $t('Pages.button.approve_this_device') : (device?.status === 'pending' ? $t('Commons.button.update_request') : $t('Pages.button.request_pin_login'))) }}
 						</PrimaryButton>
 					</form>
 					<p class="text-xs text-gray-500">
-						This records the device's IP address, browser and operating system shown above, so the
-						administrator can tell which device is asking.
+						{{ $t('Pages.text.this_records_the_device', {}) }}
 					</p>
 				</section>
 			</template>

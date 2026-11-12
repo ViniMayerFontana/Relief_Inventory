@@ -57,7 +57,7 @@ class SystemController extends Controller
     private function requireSystemd(): ?JsonResponse
     {
         return $this->isDocker()
-            ? response()->json(['message' => 'Not available in a Docker install: it is upgraded by the host-side updater.'], 409)
+            ? response()->json(['message' => __('updates.not_available_docker')], 409)
             : null;
     }
 
@@ -110,7 +110,7 @@ class SystemController extends Controller
         $result = Process::path(base_path())->timeout(60)->run(['git', 'fetch', 'origin', 'master']);
         if (! $result->successful()) {
             return response()->json([
-                'message' => 'Could not reach the update server: '.trim($result->errorOutput()),
+                'message' => __('updates.could_not_reach_update_server', [':output' => trim($result->errorOutput())]),
             ], 502);
         }
 
@@ -125,14 +125,14 @@ class SystemController extends Controller
         }
         Log::warning('Deprecated bare-metal web update used', ['person_id_user' => Auth::id()]);
         if (($this->readUpdateStatus()['state'] ?? null) === 'running') {
-            return response()->json(['message' => 'An update is already running.'], 409);
+            return response()->json(['message' => __('updates.already_running')], 409);
         }
 
         // Optimistic status so the panel shows "running" immediately;
         // update.sh overwrites this as soon as the unit starts.
         file_put_contents(config('system.update_status_file'), json_encode([
             'state' => 'running',
-            'message' => 'Update requested; waiting for the updater to start',
+            'message' => __('updates.requested_waiting_start'),
             'updated_at' => now()->toIso8601String(),
         ]));
 
@@ -153,13 +153,13 @@ class SystemController extends Controller
     private function requestDockerUpdate(string $action): JsonResponse
     {
         if (! $this->isInstanceAdmin()) {
-            return response()->json(['message' => 'Only an instance administrator can check for or install updates.'], 403);
+            return response()->json(['message' => __('updates.only_instance_admin')], 403);
         }
         if (! InstanceUpdate::enabled()) {
-            return response()->json(['message' => 'Automatic updates are not set up: set RI_UPDATE_SECRET in compose.yaml and run the updater on the host (docker/updater/).'], 409);
+            return response()->json(['message' => __('updates.automatic_updates_not_set_up')], 409);
         }
         if (! InstanceUpdate::request($action, Auth::user()->email)) {
-            return response()->json(['message' => 'An update is already in progress.'], 409);
+            return response()->json(['message' => __('updates.already_in_progress')], 409);
         }
 
         return response()->json(['docker_update' => InstanceUpdate::current()->payload() + ['can_request' => true]], 202);
@@ -171,11 +171,11 @@ class SystemController extends Controller
         $result = Process::timeout(15)->run(['sudo', '-n', '/usr/bin/systemctl', 'start', '--no-block', $unit]);
         if (! $result->successful()) {
             return response()->json([
-                'message' => "Could not start $unit — is the sudoers rule from scripts/systemd/reliefinventory-sudoers installed? ".trim($result->errorOutput()),
+                'message' => __('updates.could_not_start_unit', [':unit' => $unit, ':output' => trim($result->errorOutput())]),
             ], 500);
         }
 
-        return response()->json(['message' => 'started']);
+        return response()->json(['message' => __('updates.started')]);
     }
 
     private function git(string ...$args): ?string
@@ -228,9 +228,10 @@ class SystemController extends Controller
                 // status write (from an update that does start) simply
                 // supersedes this the next time the file is read.
                 $decoded['state'] = 'stalled';
-                $decoded['message'] = 'No progress in over '.intdiv(self::RUNNING_STALE_AFTER_SECONDS, 60)
-                    .' minutes (last status: "'.$decoded['message'].'"). The update most likely never '
-                    .'started — check SYSTEM_UPDATE_UNIT in .env and the sudoers rule on the server, then try again.';
+                $decoded['message'] = __('updates.no_progress_stalled', [
+                    ':minutes' => intdiv(self::RUNNING_STALE_AFTER_SECONDS, 60),
+                    ':last' => $decoded['message'],
+                ]);
             }
         }
 

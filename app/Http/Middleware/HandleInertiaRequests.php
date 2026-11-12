@@ -47,6 +47,9 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            // Application locale (config/app.php APP_LOCALE): seeds the front
+            // end's vue-i18n instance (resources/js/i18n) on every page load.
+            'locale' => app()->getLocale(),
             // Which warehouse this page belongs to (MULTI_WAREHOUSE.md §3): every request the page makes names it
             // (bootstrap.js), so a tab left on one warehouse can't act on another; and browser storage is kept
             // per warehouse with `storageSuffix` (empty for the default warehouse, which keeps its old keys).

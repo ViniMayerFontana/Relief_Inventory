@@ -21,8 +21,9 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { t } from '@/i18n';
 
-const AUDIENCES = { partner: 'Partners', donor: 'Donors', volunteer: 'Volunteers', other: 'Other (no tag)' };
+const AUDIENCES = { partner: t('Commons.heading.partners'), donor: t('Commons.heading.donors'), volunteer: t('Commons.text.volunteers'), other: t('Pages.text.other_no_tag') };
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu },
@@ -114,7 +115,7 @@ export default {
 				this.unchecked = {};
 				this.loaded = params;
 			} catch (error) {
-				this.error = 'Could not load the mailing list.';
+				this.error = t('Pages.text.could_not_load_the_14');
 			} finally {
 				this.loading = false;
 			}
@@ -142,68 +143,66 @@ export default {
 </script>
 
 <template>
-	<Head title="Mailing Labels" />
+	<Head :title="$t('Commons.title.mailing_labels')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 		<div class="ml_container">
 			<h2 class="ri_datatable_head ml_head">
-				Mailing Labels
+				{{ $t('Commons.heading.mailing_labels', {}) }}
 				<span class="ml_actions">
-					<PrintMenu document-key="mailing-labels" media="report" label="Print Labels"
+					<PrintMenu document-key="mailing-labels" media="report" :label="$t('Commons.label.print_labels')"
 						:disabled="!selected.length || loading" :params="printParams" :download-href="downloadHref" />
 				</span>
 			</h2>
 			<p class="ml_intro">
-				Address labels on Avery 8160 / 5160 sheets (30 per page) for an office printer. To add a list of
-				names and addresses, import a CSV on <a href="/setup/import">Data Import</a> ("Names &amp; addresses")
-				and tag each row donor, partner, volunteer or other.
+				{{ $t('Pages.text.address_labels_on_avery', {}) }} <a href="/setup/import">{{ $t('Commons.heading.data_import', {}) }}</a> {{ $t('Pages.text.names_addresses_and_tag', {}) }}
 			</p>
 
-			<div class="ml_audiences" role="radiogroup" aria-label="Mailing list">
+			<div class="ml_audiences" role="radiogroup" :aria-label="$t('Commons.aria_label.mailing_list')">
 				<button v-for="(label, key) in audiences" :key="key" type="button" role="radio"
 					:aria-checked="audience === key" :class="['ml_audience', { ml_active: audience === key }]"
 					@click="audience = key">{{ label }}</button>
 			</div>
 
 			<div class="ml_toolbar">
-				<label>County
+				<label>{{ $t('Commons.label.county_2', {}) }}
 					<select v-model="countyId" class="ri_forminput">
-						<option value="">All</option>
+						<option value="">{{ $t('Commons.text.all', {}) }}</option>
 						<option v-for="c in counties" :key="c.id" :value="c.id">{{ c.county }}, {{ c.state }}</option>
 					</select>
 				</label>
-				<label>Order
+				<label>{{ $t('Commons.label.order', {}) }}
 					<select v-model="sort" class="ri_forminput">
-						<option value="name">By name</option>
-						<option value="zip">By zip code</option>
+						<option value="name">{{ $t('Commons.text.by_name', {}) }}</option>
+						<option value="zip">{{ $t('Pages.text.by_zip_code', {}) }}</option>
 					</select>
 				</label>
-				<input type="text" v-model="search" class="ri_forminput ml_search" placeholder="Search name, organization, city or zip..." />
+				<input type="text" v-model="search" class="ri_forminput ml_search" :placeholder="$t('Pages.placeholder.search_name_organization_city')" />
 			</div>
 
 			<p v-if="error" class="ml_error">{{ error }}</p>
 
 			<div class="ml_layout">
 				<div class="ml_list">
-					<p v-if="loading">Loading...</p>
+					<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 					<template v-else>
 						<p class="ml_summary">
 							<strong>{{ selected.length }}</strong> label{{ selected.length === 1 ? '' : 's' }} selected
 							<template v-if="selected.length"> &middot; {{ sheets }} sheet{{ sheets === 1 ? '' : 's' }}</template>
 							<template v-if="mailable.length">
 								&middot;
-								<button type="button" class="ml_link" @click="setAll(true)" :disabled="allChecked">Select all</button>
+								<button type="button" class="ml_link" @click="setAll(true)" :disabled="allChecked">{{ $t('Commons.aria_label.select_all', {}) }}</button>
 								/
-								<button type="button" class="ml_link" @click="setAll(false)" :disabled="!selected.length">none</button>
+								<button type="button" class="ml_link" @click="setAll(false)" :disabled="!selected.length">{{ $t('Commons.button.none', {}) }}</button>
 							</template>
 						</p>
-						<p v-if="!records.length" class="ml_empty">Nobody in this list{{ countyId || search ? ' for these filters' : '' }}.</p>
+						<p v-if="!records.length" class="ml_empty">{{ $t('Pages.text.nobody_in_this_list') }}{{ countyId || search ? $t('Pages.text.for_these_filters') : '' }}.</p>
 						<div v-else-if="mailable.length" class="ml_tablewrap">
 							<table class="ri_datatable" border="1">
 								<thead>
 									<tr>
-										<th class="ml_check"><input type="checkbox" :checked="allChecked" @change="setAll($event.target.checked)" aria-label="Select all" /></th>
-										<th>Name</th><th>Address</th><th>County</th><th>Tags</th>
+										<th class="ml_check"><input type="checkbox" :checked="allChecked" @change="setAll($event.target.checked)" :aria-label="$t('Commons.aria_label.select_all')" /></th>
+										<th>{{ $t('Commons.button.name', {}) }}</th><th>{{ $t('Commons.text.address_3', {}) }}</th><th>{{ $t('Commons.label.county_2', {}) }}</th><th>{{ $t('Commons.text.tags', {}) }}</th>
 									</tr>
 								</thead>
 								<tbody>
@@ -220,40 +219,39 @@ export default {
 
 						<div v-if="missing.length" class="ml_missing">
 							<button type="button" class="ml_link" @click="showMissing = !showMissing">
-								{{ showMissing ? '−' : '+' }} {{ missing.length }} without a complete address (no label)
+								{{ showMissing ? '−' : '+' }} {{ missing.length }} {{ $t('Pages.button.without_a_complete_address') }}
 							</button>
 							<ul v-if="showMissing">
 								<li v-for="r in missing" :key="r.id">
 									{{ r.name }}<span v-if="r.organization && r.organization !== r.name"> ({{ r.organization }})</span>
-									— {{ addressLine(r) || 'no address' }}
+									— {{ addressLine(r) || $t('Commons.text.no_address') }}
 								</li>
 							</ul>
-							<p v-if="showMissing" class="ml_note">Add the missing street, city, state or zip on the <a href="/setup/people">People</a> page.</p>
+							<p v-if="showMissing" class="ml_note">{{ $t('Pages.text.add_the_missing_street', {}) }} <a href="/setup/people">{{ $t('Commons.link.people', {}) }}</a> page.</p>
 						</div>
 					</template>
 				</div>
 
 				<aside class="ml_side">
-					<h3>Start at label</h3>
-					<p class="ml_note">Using a partly-used sheet? Click the first empty label (1 is top left, across then down).</p>
-					<div class="ml_sheet" aria-label="Avery 8160 sheet">
+					<h3>{{ $t('Pages.heading.start_at_label', {}) }}</h3>
+					<p class="ml_note">{{ $t('Pages.text.using_a_partly_used', {}) }}</p>
+					<div class="ml_sheet" :aria-label="$t('Pages.aria_label.avery_8160_sheet')">
 						<button v-for="n in sheetCells" :key="n" type="button"
 							:class="['ml_cell', { ml_used: n < start, ml_start: n === start }]"
 							:aria-pressed="n === start" :title="'Start at label ' + n" @click="setStart(n)">{{ n === start ? n : '' }}</button>
 					</div>
-					<label class="ml_startinput">Label #
+					<label class="ml_startinput">{{ $t('Commons.label.label_2', {}) }}
 						<input type="number" min="1" :max="perSheet" :value="start" class="ri_forminput" @change="setStart($event.target.value)" />
 					</label>
 
 					<template v-if="selected.length">
-						<h3>First label</h3>
+						<h3>{{ $t('Commons.heading.first_label', {}) }}</h3>
 						<div class="ml_preview">
 							<div v-for="(line, i) in selected[0].lines" :key="i">{{ line }}</div>
 						</div>
 					</template>
 					<p class="ml_note">
-						Print at <strong>Actual size</strong> (100%, not "Fit to page"). Try a plain sheet first and hold it
-						against a label sheet to check the alignment.
+						{{ $t('Commons.text.print_at', {}) }} <strong>{{ $t('Commons.text.actual_size', {}) }}</strong> {{ $t('Pages.text.100_not_fit_to', {}) }}
 					</p>
 				</aside>
 			</div>

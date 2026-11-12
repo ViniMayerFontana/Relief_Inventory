@@ -29,7 +29,7 @@ class FormSubmissionNotification extends Mailable implements ShouldBeEncrypted
     {
         $this->submission->loadMissing(['form', 'answers']);
 
-        return $this->subject("New submission: {$this->submission->form->name}")
+        return $this->subject(trans('mail.form_submission_subject', ['form' => $this->submission->form->name]))
             ->view('emails.form-submission-notification');
     }
 }

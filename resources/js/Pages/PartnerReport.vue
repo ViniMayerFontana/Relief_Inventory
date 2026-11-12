@@ -17,6 +17,7 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import ChartCanvas from '@/Components/ChartCanvas.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu, ChartCanvas },
@@ -65,14 +66,14 @@ export default {
 				data: {
 					labels: rows.map((r) => r.county),
 					datasets: [
-						{ label: 'Requested', data: rows.map((r) => r.requested), backgroundColor: '#2a78d6', borderRadius: 4 },
-						{ label: 'Filled', data: rows.map((r) => r.filled), backgroundColor: '#eb6834', borderRadius: 4 },
+						{ label: t('Commons.text.requested'), data: rows.map((r) => r.requested), backgroundColor: '#2a78d6', borderRadius: 4 },
+						{ label: t('Commons.text.filled'), data: rows.map((r) => r.filled), backgroundColor: '#eb6834', borderRadius: 4 },
 					],
 				},
 				options: {
 					indexAxis: 'y',
 					scales: { x: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.06)' } }, y: { grid: { display: false } } },
-					plugins: { legend: { position: 'top', align: 'start' } },
+					plugins: { legend: { position: 'top', align: t('Commons.text.start') } },
 				},
 			};
 		},
@@ -94,8 +95,8 @@ export default {
 				this.expanded = {};
 			} catch (error) {
 				this.error = error.response?.status === 422
-					? 'Check the dates: the "to" date can\'t be before the "from" date.'
-					: 'Could not load the partner report.';
+					? t('Pages.text.check_the_dates_the')
+					: t('Pages.text.could_not_load_the_16');
 			} finally {
 				this.loading = false;
 			}
@@ -123,71 +124,70 @@ export default {
 </script>
 
 <template>
-	<Head title="Partner Report" />
+	<Head :title="$t('Commons.title.partner_report')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="ptr_container">
 			<h2 class="ri_datatable_head ptr_head">
-				Partner Report
+				{{ $t('Commons.heading.partner_report', {}) }}
 				<span class="ptr_exports">
-					<a :href="$withWarehouse('/report/partners.csv' + query)" class="ri_defaultbutton">Download CSV</a>
+					<a :href="$withWarehouse('/report/partners.csv' + query)" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
 					<PrintMenu document-key="partner-report" media="report" label="Print / PDF"
 						:params="appliedParams" :download-href="'/report/partners.pdf' + query" />
 				</span>
 			</h2>
 
 			<p class="ptr_intro">
-				What each partner has requested and received. The fill rate counts only requests whose filling
-				is finished; for what was short and why, see the
-				<a href="/reports/unfulfilled">Unfulfilled Requests Report</a>.
+				{{ $t('Pages.text.what_each_partner_has', {}) }}
+				<a href="/reports/unfulfilled">{{ $t('Pages.heading.unfulfilled_requests_report', {}) }}</a>.
 			</p>
 
 			<form class="ptr_toolbar" @submit.prevent="fetchReport">
-				<label>Ordered from <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>{{ $t('Commons.label.ordered_from', {}) }} <input type="date" v-model="from" class="ri_forminput" /></label>
 				<label>to <input type="date" v-model="to" class="ri_forminput" /></label>
-				<label>County
+				<label>{{ $t('Commons.label.county_2', {}) }}
 					<select v-model="countyId" class="ri_forminput" @change="fetchReport">
-						<option value="">All</option>
+						<option value="">{{ $t('Commons.text.all', {}) }}</option>
 						<option v-for="c in report?.options?.counties || []" :key="c.id" :value="c.id">{{ c.county }}, {{ c.state }}</option>
 					</select>
 				</label>
-				<button type="submit" class="ri_defaultbutton">Apply</button>
-				<button v-if="from || to || countyId" type="button" class="ri_defaultbutton" @click="clearFilters">Clear</button>
+				<button type="submit" class="ri_defaultbutton">{{ $t('Commons.button.apply', {}) }}</button>
+				<button v-if="from || to || countyId" type="button" class="ri_defaultbutton" @click="clearFilters">{{ $t('Commons.button.clear', {}) }}</button>
 				<input type="text" v-model="search" class="ri_forminput ptr_search"
-					placeholder="Search partner, county or zip..." />
+					:placeholder="$t('Pages.placeholder.search_partner_county_or')" />
 			</form>
 
 			<p v-if="error" class="ptr_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 
 			<template v-if="report && !loading">
 				<div class="ptr_cards">
-					<div class="ptr_card"><span>Partners</span><strong>{{ n(totals.partners) }}</strong></div>
-					<div class="ptr_card"><span>Requests</span><strong>{{ n(totals.requests) }}</strong></div>
-					<div class="ptr_card"><span>Requested</span><strong>{{ n(totals.requested) }}</strong></div>
-					<div class="ptr_card"><span>Filled</span><strong>{{ n(totals.filled) }}</strong></div>
-					<div class="ptr_card"><span>Fill rate (finished)</span><strong>{{ rate(totals.fill_rate) }}</strong></div>
+					<div class="ptr_card"><span>{{ $t('Commons.heading.partners', {}) }}</span><strong>{{ n(totals.partners) }}</strong></div>
+					<div class="ptr_card"><span>{{ $t('Commons.heading.requests', {}) }}</span><strong>{{ n(totals.requests) }}</strong></div>
+					<div class="ptr_card"><span>{{ $t('Commons.text.requested', {}) }}</span><strong>{{ n(totals.requested) }}</strong></div>
+					<div class="ptr_card"><span>{{ $t('Commons.text.filled', {}) }}</span><strong>{{ n(totals.filled) }}</strong></div>
+					<div class="ptr_card"><span>{{ $t('Pages.text.fill_rate_finished', {}) }}</span><strong>{{ rate(totals.fill_rate) }}</strong></div>
 					<div class="ptr_card">
-						<span>Shipped / delivered</span><strong>{{ n(totals.shipped) }} / {{ n(totals.delivered) }}</strong>
+						<span>{{ $t('Pages.text.shipped_delivered', {}) }}</span><strong>{{ n(totals.shipped) }} / {{ n(totals.delivered) }}</strong>
 						<small>requests</small>
 					</div>
 				</div>
 
 				<p v-if="!report.partners.length" class="ptr_empty">
-					No requests{{ report.filters.from || report.filters.to || report.filters.county_id ? ' for these filters' : '' }}.
+					{{ $t('Commons.text.no_requests') }}{{ report.filters.from || report.filters.to || report.filters.county_id ? $t('Pages.text.for_these_filters') : '' }}.
 				</p>
 
 				<template v-else>
 					<div class="ptr_places">
 						<div class="ptr_chartbox">
-							<h3>Requested vs. filled by county</h3>
-							<ChartCanvas :config="countyChart" :height="chartHeight" label="Units requested and filled per county" />
+							<h3>{{ $t('Pages.heading.requested_vs_filled_by', {}) }}</h3>
+							<ChartCanvas :config="countyChart" :height="chartHeight" :label="$t('Pages.label.units_requested_and_filled')" />
 						</div>
 						<div class="ptr_tablewrap">
-							<h3>By County</h3>
+							<h3>{{ $t('Commons.heading.by_county', {}) }}</h3>
 							<table class="ri_datatable" border="1">
-								<thead><tr><th>County</th><th>Partners</th><th>Requests</th><th>Requested</th><th>Filled</th></tr></thead>
+								<thead><tr><th>{{ $t('Commons.label.county_2', {}) }}</th><th>{{ $t('Commons.heading.partners', {}) }}</th><th>{{ $t('Commons.heading.requests', {}) }}</th><th>{{ $t('Commons.text.requested', {}) }}</th><th>{{ $t('Commons.text.filled', {}) }}</th></tr></thead>
 								<tbody>
 									<tr v-for="row in report.by_county" :key="row.county">
 										<td>{{ row.county }}</td>
@@ -201,19 +201,19 @@ export default {
 						</div>
 					</div>
 
-					<h3>Partners</h3>
+					<h3>{{ $t('Commons.heading.partners', {}) }}</h3>
 					<div class="ptr_tablewrap"><table class="ri_datatable" border="1">
 						<thead>
 							<tr>
-								<th></th><th>Partner</th><th>County</th><th>Zip</th><th>Requests</th><th>Requested</th>
-								<th>Filled</th><th title="Filled ÷ requested, finished requests only">Fill Rate</th>
-								<th>Shipped</th><th>Delivered</th><th>Last Request</th>
+								<th></th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.label.county_2', {}) }}</th><th>{{ $t('Commons.placeholder.zip', {}) }}</th><th>{{ $t('Commons.heading.requests', {}) }}</th><th>{{ $t('Commons.text.requested', {}) }}</th>
+								<th>{{ $t('Commons.text.filled', {}) }}</th><th :title="$t('Pages.title.filled_requested_finished_requests')">{{ $t('Commons.text.fill_rate', {}) }}</th>
+								<th>{{ $t('Commons.text.shipped', {}) }}</th><th>Delivered</th><th>{{ $t('Commons.text.last_request', {}) }}</th>
 							</tr>
 						</thead>
 						<tbody>
 							<template v-for="p in partners" :key="p.person_id ?? 'none'">
 								<tr class="ptr_rowlink" @click="toggleExpanded(p.person_id ?? 'none')">
-									<td class="ptr_expander">{{ expanded[p.person_id ?? 'none'] ? '−' : '+' }}</td>
+									<td class="ptr_expander">{{ expanded[p.person_id ?? $t('Commons.button.none')] ? '−' : '+' }}</td>
 									<td>{{ p.name }}</td>
 									<td>{{ p.county }}</td>
 									<td>{{ p.zip }}</td>
@@ -229,7 +229,7 @@ export default {
 									<td></td>
 									<td colspan="10">
 										<table class="ptr_subtable">
-											<thead><tr><th>Request #</th><th>Order Date</th><th>Status</th><th>Requested</th><th>Filled</th></tr></thead>
+											<thead><tr><th>{{ $t('Commons.text.request', {}) }}</th><th>{{ $t('Commons.text.order_date', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.requested', {}) }}</th><th>{{ $t('Commons.text.filled', {}) }}</th></tr></thead>
 											<tbody>
 												<tr v-for="o in p.orders" :key="o.id">
 													<td>{{ o.id }}</td>
@@ -243,12 +243,11 @@ export default {
 									</td>
 								</tr>
 							</template>
-							<tr v-if="!partners.length"><td colspan="11" class="ptr_empty">No partners match.</td></tr>
+							<tr v-if="!partners.length"><td colspan="11" class="ptr_empty">{{ $t('Pages.text.no_partners_match', {}) }}</td></tr>
 						</tbody>
 					</table></div>
 					<p class="ptr_note">
-						Quantities are in each item's own unit, so unit totals are a volume count, not a weight.
-						County and zip are the partner's.
+						{{ $t('Pages.text.quantities_are_in_each_2', {}) }}
 					</p>
 				</template>
 			</template>

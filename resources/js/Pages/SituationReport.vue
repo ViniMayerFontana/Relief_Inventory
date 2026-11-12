@@ -23,9 +23,10 @@ import PeriodStatCard from '@/Components/Dashboard/PeriodStatCard.vue';
 import BarBreakdownCard from '@/Components/Dashboard/BarBreakdownCard.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
-const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: 'Sorting', Complete: 'Complete' };
-const ORDER_STAGE_LABELS = { 'New Order': 'New Order', Filling: 'Filling', Filled: 'Filled', Shipped: 'Shipped' };
+const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') };
+const ORDER_STAGE_LABELS = { 'New Order': t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped') };
 
 export default {
 	components: { AuthenticatedLayout, Head, PeriodStatCard, BarBreakdownCard, PrintMenu },
@@ -61,10 +62,10 @@ export default {
 			return this.data.zip_breakdown.rows.map((z) => ({ label: z.zip, value: z.count }));
 		},
 		zipTitle() {
-			if (!this.data) return 'Orders by Zip';
+			if (!this.data) return t('Pages.text.orders_by_zip');
 			const total = this.data.zip_breakdown.zip_count;
 			const shown = this.data.zip_breakdown.rows.length;
-			return shown < total ? `Orders by Zip (top ${shown} of ${total})` : 'Orders by Zip';
+			return shown < total ? `Orders by Zip (top ${shown} of ${total})` : t('Pages.text.orders_by_zip');
 		},
 		categoryRows() {
 			if (!this.data) return [];
@@ -79,7 +80,7 @@ export default {
 				const response = await axios.get('/json/sitrep');
 				this.data = response.data;
 			} catch (error) {
-				this.error = 'Could not load the Situation Report.';
+				this.error = t('Pages.text.could_not_load_the_19');
 			} finally {
 				this.loading = false;
 			}
@@ -92,44 +93,43 @@ export default {
 </script>
 
 <template>
-	<Head title="Situation Report" />
+	<Head :title="$t('Commons.title.situation_report')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="sr_container">
 			<div class="sr_topbar">
-				<h2 class="ri_datatable_head">Situation Report</h2>
+				<h2 class="ri_datatable_head">{{ $t('Commons.heading.situation_report', {}) }}</h2>
 				<div class="sr_actions">
 					<span v-if="data" class="sr_generated">
-						As of {{ new Date(data.generated_at).toLocaleString() }}
+						{{ $t('Commons.text.as_of') }} {{ new Date(data.generated_at).toLocaleString() }}
 					</span>
 					<PrintMenu document-key="sitrep" media="report" label="Print / PDF" download-href="/report/sitrep.pdf" />
 				</div>
 			</div>
 			<p class="sr_note">
-				A live, informal snapshot for sharing outside the organization — not the official report.
-				No names or identifying details are included.
+				{{ $t('Pages.text.a_live_informal_snapshot', {}) }}
 			</p>
 
 			<p v-if="error" class="sr_error">{{ error }}</p>
-			<p v-if="loading && !data">Loading...</p>
+			<p v-if="loading && !data">{{ $t('Pages.text.loading', {}) }}</p>
 
 			<div v-if="data" class="sr_grid">
-				<PeriodStatCard title="Orders Fulfilled" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
-				<PeriodStatCard title="Donations Completed" :counts="data.donations_completed" :trend="data.donations_trend" />
+				<PeriodStatCard :title="$t('Commons.title.orders_fulfilled')" :counts="data.orders_fulfilled" :trend="data.orders_trend" />
+				<PeriodStatCard :title="$t('Commons.title.donations_completed')" :counts="data.donations_completed" :trend="data.donations_trend" />
 
-				<BarBreakdownCard title="Donations in Progress" :rows="donationPipelineRows" />
-				<BarBreakdownCard title="Orders in Progress" :rows="orderPipelineRows" />
+				<BarBreakdownCard :title="$t('Pages.title.donations_in_progress')" :rows="donationPipelineRows" />
+				<BarBreakdownCard :title="$t('Pages.title.orders_in_progress')" :rows="orderPipelineRows" />
 
-				<BarBreakdownCard title="Orders by County" :rows="countyRows" empty-text="No orders placed yet." />
+				<BarBreakdownCard :title="$t('Pages.title.orders_by_county')" :rows="countyRows" empty-text="No orders placed yet." />
 				<BarBreakdownCard :title="zipTitle" :rows="zipRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard title="Stock by Category" :rows="categoryRows" empty-text="No stock on hand yet." />
+				<BarBreakdownCard :title="$t('Pages.title.stock_by_category')" :rows="categoryRows" empty-text="No stock on hand yet." />
 
 				<div class="sr_card">
-					<h3>Stock on Hand</h3>
+					<h3>{{ $t('Pages.heading.stock_on_hand', {}) }}</h3>
 					<div class="sr_inv_stats">
-						<div><span class="sr_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="sr_inv_label">Item types stocked</span></div>
-						<div><span class="sr_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="sr_inv_label">Total units on hand</span></div>
+						<div><span class="sr_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="sr_inv_label">{{ $t('Pages.text.item_types_stocked', {}) }}</span></div>
+						<div><span class="sr_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="sr_inv_label">{{ $t('Pages.text.total_units_on_hand', {}) }}</span></div>
 					</div>
 				</div>
 			</div>

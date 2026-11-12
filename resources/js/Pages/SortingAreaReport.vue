@@ -43,31 +43,30 @@ onMounted(load);
 </script>
 
 <template>
-	<Head title="Sorting Area Report" />
+	<Head :title="$t('Pages.title.sorting_area_report')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="sa_page">
 			<h2 class="sa_title">
-				Sorting Area Report
-				<a :href="csvHref" class="ri_defaultbutton sa_csv">Download CSV</a>
+				{{ $t('Pages.heading.sorting_area_report', {}) }}
+				<a :href="csvHref" class="ri_defaultbutton sa_csv">{{ $t('Commons.link.download_csv', {}) }}</a>
 			</h2>
 			<p class="ri_hint">
-				What sorters produced against what has been put on a pallet. "Still in sorting area" is right now — everything on hand
-				that isn't on a pallet, including earlier days — so anything left over at close of day shows here.
+				{{ $t('Pages.text.what_sorters_produced_against', {}) }}
 			</p>
 
 			<form class="sa_toolbar" @submit.prevent="load">
-				<label>From <input type="date" v-model="from" class="ri_forminput" /></label>
-				<label>To <input type="date" v-model="to" class="ri_forminput" /></label>
-				<button type="submit" class="ri_formbutton" :disabled="loading">Run</button>
-				<label class="sa_toggle"><input type="checkbox" v-model="onlyWaiting" /> Only items still in the sorting area</label>
+				<label>{{ $t('Commons.label.from', {}) }} <input type="date" v-model="from" class="ri_forminput" /></label>
+				<label>{{ $t('Commons.label.to', {}) }} <input type="date" v-model="to" class="ri_forminput" /></label>
+				<button type="submit" class="ri_formbutton" :disabled="loading">{{ $t('Commons.button.run', {}) }}</button>
+				<label class="sa_toggle"><input type="checkbox" v-model="onlyWaiting" /> {{ $t('Pages.label.only_items_still_in', {}) }}</label>
 			</form>
 
 			<p v-if="error" class="ri_error">{{ error }}</p>
-			<p v-else-if="!report">Loading…</p>
+			<p v-else-if="!report">{{ $t('Commons.button.loading', {}) }}</p>
 			<div v-else class="sa_wrap">
 				<table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Item #</th><th>Item</th><th>Sorted</th><th>Put on pallets</th><th>Still in sorting area</th><th>Waiting since</th></tr>
+						<tr><th>{{ $t('Commons.text.item', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.sorted', {}) }}</th><th>{{ $t('Pages.text.put_on_pallets', {}) }}</th><th>{{ $t('Pages.text.still_in_sorting_area', {}) }}</th><th>{{ $t('Commons.text.waiting_since', {}) }}</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="r in rows" :key="r.item_id" :class="{ sa_flag: leftBehind(r) }">
@@ -78,11 +77,11 @@ onMounted(load);
 							<td class="sa_num">{{ r.in_area || '' }}</td>
 							<td>{{ r.waiting_since || '' }}</td>
 						</tr>
-						<tr v-if="!rows.length"><td colspan="6">Nothing sorted, moved or waiting in this range.</td></tr>
+						<tr v-if="!rows.length"><td colspan="6">{{ $t('Pages.text.nothing_sorted_moved_or', {}) }}</td></tr>
 					</tbody>
 					<tfoot v-if="rows.length">
 						<tr>
-							<td></td><td><strong>Total</strong></td>
+							<td></td><td><strong>{{ $t('Commons.text.total', {}) }}</strong></td>
 							<td class="sa_num"><strong>{{ report.totals.sorted }}</strong></td>
 							<td class="sa_num"><strong>{{ report.totals.moved }}</strong></td>
 							<td class="sa_num"><strong>{{ report.totals.in_area }}</strong></td>
@@ -90,7 +89,7 @@ onMounted(load);
 						</tr>
 					</tfoot>
 				</table>
-				<p class="ri_hint">Highlighted rows were sorted in this range and some of it is still in the sorting area.</p>
+				<p class="ri_hint">{{ $t('Pages.text.highlighted_rows_were_sorted', {}) }}</p>
 			</div>
 		</div>
 	</AuthenticatedLayout>

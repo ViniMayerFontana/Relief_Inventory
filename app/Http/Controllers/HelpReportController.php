@@ -6,6 +6,7 @@
 namespace App\Http\Controllers;
 
 use App\Support\HelpGuide;
+use App\Support\ReportPaper;
 use Spatie\LaravelPdf\Facades\Pdf;
 use Spatie\LaravelPdf\PdfBuilder;
 
@@ -33,6 +34,12 @@ class HelpReportController extends Controller
         'people' => 'Partner & Donor Info Guide',
     ];
 
+    /** Translated title for a guide slug (lang/{en,pt_BR}/help.php; GUIDES stays the slug registry). */
+    public static function title(string $guide): string
+    {
+        return __('help.guides.'.$guide);
+    }
+
     public function show(string $guide)
     {
         return $this->builder($guide);
@@ -43,9 +50,9 @@ class HelpReportController extends Controller
     {
         abort_unless(array_key_exists($guide, self::GUIDES), 404);
 
-        return Pdf::view('reports.help.guide', ['title' => self::GUIDES[$guide], 'guide' => HelpGuide::load($guide)])
+        return Pdf::view('reports.help.guide', ['title' => self::title($guide), 'guide' => HelpGuide::load($guide)])
             ->driver('weasyprint')
-            ->format('letter')
+            ->format(ReportPaper::size())
             ->name($guide.'-guide.pdf');
     }
 
@@ -62,17 +69,17 @@ class HelpReportController extends Controller
     public function allBuilder(): PdfBuilder
     {
         $guides = [];
-        foreach (self::GUIDES as $slug => $title) {
+        foreach (array_keys(self::GUIDES) as $slug) {
             $guides[] = [
-                'title' => $title,
-                'content' => view('reports.help.guide', ['title' => $title, 'guide' => HelpGuide::load($slug)])
+                'title' => self::title($slug),
+                'content' => view('reports.help.guide', ['title' => self::title($slug), 'guide' => HelpGuide::load($slug)])
                     ->renderSections()['content'],
             ];
         }
 
         return Pdf::view('reports.help.all', ['guides' => $guides])
             ->driver('weasyprint')
-            ->format('letter')
+            ->format(ReportPaper::size())
             ->name('help-guides.pdf');
     }
 }

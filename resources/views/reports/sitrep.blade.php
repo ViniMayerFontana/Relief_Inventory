@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Situation Report</title>
+    <title>{{ __("commons.text.situation_report") }}</title>
     <style>
         /* Margins live on @page (not body padding) so every page of a long county list keeps them. */
-        @page { size: letter; margin: 0.75in 0.6in; }  /* office printers can't print within ~0.5in of the top edge */
+        @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 0.75in 0.6in; }  /* office printers can't print within ~0.5in of the top edge */
         body {
             font-family: Arial, sans-serif;
             color: #222;
@@ -96,20 +96,20 @@
     </style>
 </head>
 <body>
-    <h1>Situation Report</h1>
+    <h1>{{ __("commons.text.situation_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; generated {{ $data['generated_at']->format('F j, Y \a\t g:i A T') }}
+        {{ config('app.name') }} &mdash; {{ __('reports.generated_at', ['date' => $data['generated_at']->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <div class="section">
-        <h2>Movement Summary</h2>
+        <h2>{{ __("commons.text.movement_summary") }}</h2>
         <div class="stat_grid">
             <div class="stat_block">
-                <h3>Orders Fulfilled</h3>
-                <div class="stat_row"><span>Today</span><strong>{{ $data['orders_fulfilled']['today'] }}</strong></div>
-                <div class="stat_row"><span>Last 7 days</span><strong>{{ $data['orders_fulfilled']['last_7_days'] }}</strong></div>
-                <div class="stat_row"><span>Last 30 days</span><strong>{{ $data['orders_fulfilled']['last_30_days'] }}</strong></div>
-                <div class="stat_row"><span>All time</span><strong>{{ $data['orders_fulfilled']['all_time'] }}</strong></div>
+                <h3>{{ __("commons.text.orders_fulfilled") }}</h3>
+                <div class="stat_row"><span>{{ __("commons.text.today") }}</span><strong>{{ $data['orders_fulfilled']['today'] }}</strong></div>
+                <div class="stat_row"><span>{{ __("reports.Sitrep.text.last_7_days") }}</span><strong>{{ $data['orders_fulfilled']['last_7_days'] }}</strong></div>
+                <div class="stat_row"><span>{{ __("reports.Sitrep.text.last_30_days") }}</span><strong>{{ $data['orders_fulfilled']['last_30_days'] }}</strong></div>
+                <div class="stat_row"><span>{{ __("commons.text.all_time") }}</span><strong>{{ $data['orders_fulfilled']['all_time'] }}</strong></div>
                 <div class="trend trend_{{ $data['orders_trend']['direction'] }}">
                     Trend: {{ ucfirst($data['orders_trend']['direction']) }}
                     @if($data['orders_trend']['percent'] !== null) ({{ $data['orders_trend']['percent'] }}%) @endif
@@ -117,11 +117,11 @@
                 </div>
             </div>
             <div class="stat_block">
-                <h3>Donations Completed</h3>
-                <div class="stat_row"><span>Today</span><strong>{{ $data['donations_completed']['today'] }}</strong></div>
-                <div class="stat_row"><span>Last 7 days</span><strong>{{ $data['donations_completed']['last_7_days'] }}</strong></div>
-                <div class="stat_row"><span>Last 30 days</span><strong>{{ $data['donations_completed']['last_30_days'] }}</strong></div>
-                <div class="stat_row"><span>All time</span><strong>{{ $data['donations_completed']['all_time'] }}</strong></div>
+                <h3>{{ __("commons.text.donations_completed") }}</h3>
+                <div class="stat_row"><span>{{ __("commons.text.today") }}</span><strong>{{ $data['donations_completed']['today'] }}</strong></div>
+                <div class="stat_row"><span>{{ __("reports.Sitrep.text.last_7_days") }}</span><strong>{{ $data['donations_completed']['last_7_days'] }}</strong></div>
+                <div class="stat_row"><span>{{ __("reports.Sitrep.text.last_30_days") }}</span><strong>{{ $data['donations_completed']['last_30_days'] }}</strong></div>
+                <div class="stat_row"><span>{{ __("commons.text.all_time") }}</span><strong>{{ $data['donations_completed']['all_time'] }}</strong></div>
                 <div class="trend trend_{{ $data['donations_trend']['direction'] }}">
                     Trend: {{ ucfirst($data['donations_trend']['direction']) }}
                     @if($data['donations_trend']['percent'] !== null) ({{ $data['donations_trend']['percent'] }}%) @endif
@@ -132,10 +132,10 @@
     </div>
 
     <div class="section">
-        <h2>Current Pipeline</h2>
+        <h2>{{ __("commons.text.current_pipeline") }}</h2>
         <div class="stat_grid">
             <div class="stat_col"><table>
-                <thead><tr><th>Donations</th><th class="num">Count</th></tr></thead>
+                <thead><tr><th>{{ __("commons.text.donations") }}</th><th class="num">{{ __("commons.text.count") }}</th></tr></thead>
                 <tbody>
                     @foreach($data['pipeline']['donations'] as $stage => $count)
                         <tr><td>{{ $stage }}</td><td class="num">{{ $count }}</td></tr>
@@ -143,7 +143,7 @@
                 </tbody>
             </table></div>
             <div class="stat_col"><table>
-                <thead><tr><th>Orders</th><th class="num">Count</th></tr></thead>
+                <thead><tr><th>{{ __("commons.text.orders") }}</th><th class="num">{{ __("commons.text.count") }}</th></tr></thead>
                 <tbody>
                     @foreach($data['pipeline']['orders'] as $stage => $count)
                         <tr><td>{{ $stage }}</td><td class="num">{{ $count }}</td></tr>
@@ -160,10 +160,10 @@
     {{-- County and zip side by side so the report stays on one page. --}}
     <div class="stat_grid">
         <div class="section stat_col">
-            <h2>Orders by County</h2>
+            <h2>{{ __("reports.Sitrep.text.orders_by_county") }}</h2>
             @if(count($data['county_breakdown']))
                 <table>
-                    <thead><tr><th>County</th><th class="num">Orders</th></tr></thead>
+                    <thead><tr><th>{{ __("commons.text.county_2") }}</th><th class="num">{{ __("commons.text.orders") }}</th></tr></thead>
                     <tbody>
                         @foreach($data['county_breakdown'] as $row)
                             <tr><td>{{ $row['county'] }}</td><td class="num">{{ $row['count'] }}</td></tr>
@@ -171,14 +171,14 @@
                     </tbody>
                 </table>
             @else
-                <p>No orders placed yet.</p>
+                <p>{{ __("reports.Sitrep.text.no_orders_placed_yet") }}</p>
             @endif
         </div>
         <div class="section stat_col">
             <h2>Orders by Zip @if($zipShown < $zipTotal)(top {{ $zipShown }} of {{ $zipTotal }})@endif</h2>
             @if($zipShown)
                 <table>
-                    <thead><tr><th>Zip</th><th class="num">Orders</th></tr></thead>
+                    <thead><tr><th>{{ __("commons.text.zip") }}</th><th class="num">{{ __("commons.text.orders") }}</th></tr></thead>
                     <tbody>
                         @foreach($data['zip_breakdown']['rows'] as $row)
                             <tr><td>{{ $row['zip'] }}</td><td class="num">{{ $row['count'] }}</td></tr>
@@ -186,18 +186,18 @@
                     </tbody>
                 </table>
             @else
-                <p>No orders placed yet.</p>
+                <p>{{ __("reports.Sitrep.text.no_orders_placed_yet") }}</p>
             @endif
         </div>
     </div>
 
     <div class="section">
-        <h2>Stock on Hand</h2>
-        <div class="stat_row"><span>Item types stocked</span><strong>{{ $data['inventory_summary']['item_types_with_stock'] }}</strong></div>
-        <div class="stat_row"><span>Total units on hand</span><strong>{{ $data['inventory_summary']['total_units_on_hand'] }}</strong></div>
+        <h2>{{ __("reports.Sitrep.text.stock_on_hand") }}</h2>
+        <div class="stat_row"><span>{{ __("reports.Sitrep.text.item_types_stocked") }}</span><strong>{{ $data['inventory_summary']['item_types_with_stock'] }}</strong></div>
+        <div class="stat_row"><span>{{ __("reports.Sitrep.text.total_units_on_hand") }}</span><strong>{{ $data['inventory_summary']['total_units_on_hand'] }}</strong></div>
         @if(count($data['inventory_summary']['top_categories']))
             <table style="margin-top: 8px;">
-                <thead><tr><th>Top Categories</th><th class="num">Units</th></tr></thead>
+                <thead><tr><th>{{ __("commons.text.top_categories") }}</th><th class="num">{{ __("commons.text.units") }}</th></tr></thead>
                 <tbody>
                     @foreach($data['inventory_summary']['top_categories'] as $cat)
                         <tr><td>{{ $cat['category'] }}</td><td class="num">{{ $cat['units'] }}</td></tr>
@@ -208,9 +208,7 @@
     </div>
 
     <div class="disclaimer">
-        This is a live operational snapshot generated at the moment of viewing, not an official or final report.
-        Figures reflect activity currently recorded in the system and may be revised as data entry catches up with
-        physical operations.
+        {{ __("reports.Sitrep.text.this_is_a_live") }}
     </div>
 </body>
 </html>

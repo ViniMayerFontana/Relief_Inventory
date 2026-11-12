@@ -41,8 +41,9 @@ import ScanButton from '@/Components/ScanButton.vue';
 import { playScanError, playScanMatched } from '@/scanSounds';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
-const NEED_LEVEL_LABELS = { critical: 'Critical', moderate: 'Moderate', low: 'Low' };
+const NEED_LEVEL_LABELS = { critical: t('Commons.text.critical'), moderate: t('Commons.text.moderate'), low: t('Commons.text.low') };
 
 export default {
 	components: { AuthenticatedLayout, HelpLink, Head, SearchSelect, ScanButton, PrintMenu },
@@ -150,7 +151,7 @@ export default {
 			return { critical: 0, moderate: 1, low: 2 }[level] ?? 3;
 		},
 		personLabel(person) {
-			if (!person) return '(no partner)';
+			if (!person) return t('Commons.text.no_partner');
 			const name = [person.first_name, person.last_name].filter(Boolean).join(' ');
 			return person.organization ? person.organization + (name ? ' - ' + name : '') : name || '(unnamed)';
 		},
@@ -173,7 +174,7 @@ export default {
 				this.filling = response.data.filling || [];
 				this.seedApprovalDrafts();
 			} catch (error) {
-				this.listError = 'Could not load the filling queue.';
+				this.listError = t('Pages.text.could_not_load_the_3');
 			} finally {
 				this.listLoading = false;
 			}
@@ -204,7 +205,7 @@ export default {
 				await axios.post('/json/order-filling/pallets/' + pallet.id + '/open');
 				await this.fetchPlan();
 			} catch (error) {
-				this.fillError = error.response?.data?.message || 'Could not open that pallet.';
+				this.fillError = error.response?.data?.message || t('Pages.text.could_not_open_that');
 			} finally {
 				this.openingPalletId = null;
 			}
@@ -246,7 +247,7 @@ export default {
 			} catch (error) {
 				this.approvalError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not save approved quantities.';
+					|| t('Pages.text.could_not_save_approved');
 			} finally {
 				this.savingApprovals = false;
 			}
@@ -269,7 +270,7 @@ export default {
 				const response = await axios.patch('/json/order-filling/' + order.id + '/start');
 				await this.openFillScreen(response.data.record.id);
 			} catch (error) {
-				this.listError = error.response?.data?.message || 'Could not start filling that order.';
+				this.listError = error.response?.data?.message || t('Pages.text.could_not_start_filling');
 			}
 		},
 		// Run by PrintMenu on any choice (download or a printer): locks every
@@ -285,7 +286,7 @@ export default {
 				if (!ids.length) return null;
 				return { params: { ids }, downloadHref: this.pickSheetsHref(ids) };
 			} catch (error) {
-				this.listError = error.response?.data?.message || 'Could not print pick sheets.';
+				this.listError = error.response?.data?.message || t('Pages.text.could_not_print_pick');
 				return null;
 			}
 		},
@@ -305,7 +306,7 @@ export default {
 					.find((o) => o.id === orderId);
 				this.order = found || null;
 				if (!this.order) {
-					this.listError = 'Could not open that order.';
+					this.listError = t('Pages.text.could_not_open_that_2');
 					return;
 				}
 				this.orderLines.forEach((line) => {
@@ -314,7 +315,7 @@ export default {
 				this.view = 'fill';
 				await Promise.all([this.fetchStockHints(), this.fetchItems(), this.fetchPlan()]);
 			} catch (error) {
-				this.listError = 'Could not open that order.';
+				this.listError = t('Pages.text.could_not_open_that_2');
 			}
 		},
 		async continueFilling(order) {
@@ -349,7 +350,7 @@ export default {
 				const match = item && this.itemsForItemtype(line.itemtype_id).find((i) => i.id === item.id);
 				if (!match) {
 					playScanError();
-					this.fillError = 'Scanned code did not match an item for this line.';
+					this.fillError = t('Pages.text.scanned_code_did_not');
 					this.$refs['itemSelect_' + line.id]?.[0]?.clearSelection();
 					return;
 				}
@@ -359,7 +360,7 @@ export default {
 				playScanMatched();
 			} catch (error) {
 				playScanError();
-				this.fillError = error.response?.data?.message || 'Could not look up that barcode. Search for the item instead.';
+				this.fillError = error.response?.data?.message || t('Pages.text.could_not_look_up_2');
 			}
 		},
 		async addFill(line) {
@@ -368,12 +369,12 @@ export default {
 			const variants = this.itemsForItemtype(line.itemtype_id);
 			const itemId = variants.length === 1 ? variants[0].id : entry.item_id;
 			if (!itemId) {
-				this.fillError = 'Choose an item for this line first.';
+				this.fillError = t('Pages.text.choose_an_item_for');
 				return;
 			}
 			const qty = entry.qty === '' || entry.qty === null ? null : parseInt(entry.qty, 10);
 			if (qty === null || isNaN(qty) || qty < 0) {
-				this.fillError = 'Enter a quantity of 0 or more.';
+				this.fillError = t('Pages.text.enter_a_quantity_of');
 				return;
 			}
 
@@ -392,7 +393,7 @@ export default {
 			} catch (error) {
 				this.fillError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not record that fill.';
+					|| t('Pages.text.could_not_record_that');
 				this.fetchPlan();
 			}
 		},
@@ -407,7 +408,7 @@ export default {
 				line.item_ledgers = (line.item_ledgers || []).filter((f) => f.id !== fill.id);
 				this.fetchStockHints();
 			} catch (error) {
-				this.fillError = 'Could not delete that fill record.';
+				this.fillError = t('Pages.text.could_not_delete_that');
 			}
 		},
 		allLinesAccounted() {
@@ -422,7 +423,7 @@ export default {
 				});
 				this.backToList();
 			} catch (error) {
-				this.fillError = error.response?.data?.message || 'Could not complete filling this order.';
+				this.fillError = error.response?.data?.message || t('Pages.text.could_not_complete_filling');
 			} finally {
 				this.savingComplete = false;
 			}
@@ -436,43 +437,39 @@ export default {
 </script>
 
 <template>
-	<Head title="Order Filling" />
+	<Head :title="$t('Commons.title.order_filling')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<!-- ======================= QUEUE LIST ======================= -->
 		<div v-if="view === 'list'" class="of_container">
 			<h2 class="ri_datatable_head">
-				Order Filling
-				<HelpLink guide="order-filling">Order Filling Guide</HelpLink>
+				{{ $t('Commons.heading.order_filling', {}) }}
+				<HelpLink guide="order-filling">{{ $t('Pages.text.order_filling_guide', {}) }}</HelpLink>
 				<span class="of_headeractions">
 					<button @click="showAllocation = !showAllocation" class="ri_formbutton">
-						{{ showAllocation ? 'Hide' : 'Review' }} Allocation
+						{{ showAllocation ? $t('Commons.button.hide') : $t('Commons.button.review') }} {{ $t('Commons.button.allocation') }}
 					</button>
-					<PrintMenu document-key="pick-sheets" media="report" label="Print Pick Sheets"
+					<PrintMenu document-key="pick-sheets" media="report" :label="$t('Pages.label.print_pick_sheets')"
 						:disabled="!readyToFill.length" :prepare="preparePickSheets" />
 				</span>
 			</h2>
 
 			<p v-if="listError" class="of_error">{{ listError }}</p>
-			<p v-if="listLoading">Loading…</p>
+			<p v-if="listLoading">{{ $t('Commons.text.loading', {}) }}</p>
 
 			<!-- Allocation Review: optional — approving is what changes the picker's number -->
 			<div v-if="showAllocation" class="of_card">
-				<h3>Allocation Review</h3>
+				<h3>{{ $t('Commons.heading.allocation_review', {}) }}</h3>
 				<p class="of_hint">
-					Items where total requested across Ready-to-Fill orders exceeds on-hand. Suggested quantities
-					are straight-proportional; need level is self-reported context. Saving sets each line's
-					approved quantity — that's what the picker sees on the pick sheet and fill screen (a line
-					approved at 0 is left off). Leave a box blank to give the picker the full request. Nothing
-					here is required before printing or filling.
+					{{ $t('Pages.text.items_where_total_requested', {}) }}
 				</p>
-				<p v-if="!allocationRows.length" class="of_hint">Nothing is currently short.</p>
+				<p v-if="!allocationRows.length" class="of_hint">{{ $t('Pages.text.nothing_is_currently_short', {}) }}</p>
 				<div v-for="row in allocationRows" :key="row.itemtype?.id" class="of_allocation_group">
 					<h4>{{ row.itemtype?.name }} — {{ row.onHand }} on hand, {{ row.totalRequested }} requested</h4>
 					<table class="ri_datatable" border="1">
 						<thead>
-							<tr><th>Order</th><th>Partner</th><th>Requested</th><th>Suggested</th><th>Approve</th><th>Need</th></tr>
+							<tr><th>{{ $t('Commons.text.order_2', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.requested', {}) }}</th><th>{{ $t('Commons.text.suggested', {}) }}</th><th>{{ $t('Commons.button.approve', {}) }}</th><th>{{ $t('Commons.text.need', {}) }}</th></tr>
 						</thead>
 						<tbody>
 							<tr v-for="entry in row.lines" :key="entry.order.id + '-' + entry.line.id">
@@ -485,7 +482,7 @@ export default {
 										v-model="approvalDrafts[entry.line.id]" class="ri_forminput of_qty"
 										@input="approvalSaved = false" />
 									<span v-if="entry.line.qty_approved !== null && entry.line.qty_approved !== undefined"
-										class="of_hint" title="Saved approved quantity">&#10003; {{ entry.line.qty_approved }}</span>
+										class="of_hint" :title="$t('Pages.title.saved_approved_quantity')">&#10003; {{ entry.line.qty_approved }}</span>
 								</td>
 								<td>{{ needLevelLabels[entry.line.need_level] || '—' }}</td>
 							</tr>
@@ -494,46 +491,46 @@ export default {
 				</div>
 				<div v-if="allocationRows.length" class="of_approvalactions">
 					<button @click="saveApprovals" :disabled="savingApprovals" class="ri_defaultbutton">
-						{{ savingApprovals ? 'Saving…' : 'Save Approved Quantities' }}
+						{{ savingApprovals ? $t('Commons.button.saving') : $t('Pages.button.save_approved_quantities') }}
 					</button>
-					<span v-if="approvalSaved" class="of_hint">Saved — pickers will see the approved quantities.</span>
+					<span v-if="approvalSaved" class="of_hint">{{ $t('Pages.text.saved_pickers_will_see', {}) }}</span>
 					<span v-if="approvalError" class="of_error">{{ approvalError }}</span>
 				</div>
 			</div>
 
 			<div class="of_section">
-				<h3>Ready to Fill</h3>
-				<p v-if="!readyToFill.length && !listLoading">Nothing waiting to be filled.</p>
+				<h3>{{ $t('Pages.heading.ready_to_fill', {}) }}</h3>
+				<p v-if="!readyToFill.length && !listLoading">{{ $t('Pages.text.nothing_waiting_to_be', {}) }}</p>
 				<div v-else class="of_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Order</th><th>Partner</th><th>Lines</th><th></th></tr>
+						<tr><th>{{ $t('Commons.text.order_2', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.lines', {}) }}</th><th></th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="order in readyToFill" :key="order.id">
 							<td>#{{ order.id }}</td>
 							<td>{{ personLabel(order.person) }}</td>
 							<td>{{ (order.order_lines || []).length }}</td>
-							<td><button @click="startFilling(order)" class="ri_formbutton">Start Filling</button></td>
+							<td><button @click="startFilling(order)" class="ri_formbutton">{{ $t('Commons.button.start_filling', {}) }}</button></td>
 						</tr>
 					</tbody>
 				</table></div>
 			</div>
 
 			<div class="of_section">
-				<h3>Filling</h3>
-				<p v-if="!filling.length && !listLoading">No orders currently being filled.</p>
+				<h3>{{ $t('Commons.heading.filling', {}) }}</h3>
+				<p v-if="!filling.length && !listLoading">{{ $t('Pages.text.no_orders_currently_being', {}) }}</p>
 				<div v-else class="of_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Order</th><th>Partner</th><th>Progress</th><th></th></tr>
+						<tr><th>{{ $t('Commons.text.order_2', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.progress', {}) }}</th><th></th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="order in filling" :key="order.id">
 							<td>#{{ order.id }}</td>
 							<td>{{ personLabel(order.person) }}</td>
-							<td>{{ orderProgress(order).filled }} of {{ orderProgress(order).total }} lines filled</td>
+							<td>{{ orderProgress(order).filled }} of {{ orderProgress(order).total }} {{ $t('Commons.text.lines_filled') }}</td>
 							<td>
-								<button @click="continueFilling(order)" class="ri_formbutton">Continue</button>
-								<PrintMenu document-key="pick-sheets" media="report" variant="form" label="Print"
+								<button @click="continueFilling(order)" class="ri_formbutton">{{ $t('Commons.button.continue', {}) }}</button>
+								<PrintMenu document-key="pick-sheets" media="report" variant="form" :label="$t('Commons.label.print')"
 									:params="{ ids: [order.id] }" :download-href="pickSheetsHref([order.id])" />
 							</td>
 						</tr>
@@ -546,13 +543,13 @@ export default {
 		<div v-else-if="view === 'fill' && order" class="of_container">
 			<div class="of_topbar">
 				<button @click="backToList" class="ri_formbutton">&larr; Back</button>
-				<span class="of_title">Order #{{ order.id }} — {{ personLabel(order.person) }}</span>
+				<span class="of_title">{{ $t('Commons.text.order') }} {{ order.id }} — {{ personLabel(order.person) }}</span>
 			</div>
 			<p v-if="fillError" class="of_error">{{ fillError }}</p>
 
 			<div class="of_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>Item</th><th>Qty to Pick</th><th>Filled</th><th>On Hand</th><th>Add Fill</th></tr>
+					<tr><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Pages.text.qty_to_pick', {}) }}</th><th>{{ $t('Commons.text.filled', {}) }}</th><th>{{ $t('Commons.text.on_hand', {}) }}</th><th>{{ $t('Commons.text.add_fill', {}) }}</th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="line in pickableLines" :key="line.id">
@@ -572,7 +569,7 @@ export default {
 									:options="itemsForItemtype(line.itemtype_id)"
 									display="name"
 									:searchfields="['name', 'upc', 'description']"
-									placeholder="Scan or search item..."
+									:placeholder="$t('Pages.placeholder.scan_or_search_item')"
 									@selected="(item) => itemChosenForLine(line, item)"
 								/>
 								<ScanButton v-if="itemsForItemtype(line.itemtype_id).length > 1"
@@ -582,53 +579,53 @@ export default {
 									type="number" min="0"
 									v-model="entryByLine[line.id].qty"
 									class="ri_forminput of_qty"
-									placeholder="Qty"
+									:placeholder="$t('Commons.placeholder.qty')"
 									@keydown.enter.prevent="addFill(line)"
 								/>
 								<input
 									type="text"
 									v-model="entryByLine[line.id].pallet_tag"
 									class="ri_forminput of_pallet"
-									placeholder="From open pallet (optional)"
-									title="Leave blank to take from the sorting area, then the oldest open pallets. A sealed pallet must be opened first."
+									:placeholder="$t('Pages.placeholder.from_open_pallet_optional')"
+									:title="$t('Pages.title.leave_blank_to_take')"
 									@keydown.enter.prevent="addFill(line)"
 								/>
-								<button @click="addFill(line)" class="ri_defaultbutton">Add</button>
+								<button @click="addFill(line)" class="ri_defaultbutton">{{ $t('Commons.button.add', {}) }}</button>
 							</div>
 							<div v-if="plans[line.id]" class="of_where">
-								<span class="of_where_title">Pick:</span>
+								<span class="of_where_title">{{ $t('Commons.text.pick', {}) }}</span>
 								<span v-for="(step, i) in plans[line.id].steps" :key="i" class="of_where_chip"
 									:class="{ of_pallet_sealed: step.needs_open }">
 									<template v-if="true">
-										<strong>{{ step.location || 'no location' }}</strong> {{ step.tag }} &times;{{ step.qty }}<span v-if="step.expires_on"> (exp {{ step.expires_on }})</span>
+										<strong>{{ step.location || $t('Commons.text.no_location') }}</strong> {{ step.tag }} &times;{{ step.qty }}<span v-if="step.expires_on"> (exp {{ step.expires_on }})</span>
 										<template v-if="step.status === 'sealed'">
-											<em>{{ step.whole ? 'sealed — take the whole pallet' : 'sealed — open it first' }}</em>
+											<em>{{ step.whole ? $t('Pages.text.sealed_take_the_whole') : $t('Pages.text.sealed_open_it_first') }}</em>
 											<button v-if="!step.whole" type="button" class="ri_formbutton" :disabled="openingPalletId === step.pallet_id"
-												@click="openPallet({ id: step.pallet_id })">Open pallet</button>
+												@click="openPallet({ id: step.pallet_id })">{{ $t('Commons.button.open_pallet', {}) }}</button>
 										</template>
-										<em v-else>open</em>
+										<em v-else>{{ $t('Commons.text.open', {}) }}</em>
 									</template>
 									<button type="button" class="ri_formbutton of_use" :disabled="step.status === 'sealed' && !step.whole"
 										:title="step.status === 'sealed' && !step.whole ? 'Open the pallet first' : 'Fill the entry row from this step'"
-										@click="useStep(line, step)">Use</button>
+										@click="useStep(line, step)">{{ $t('Commons.button.use', {}) }}</button>
 								</span>
 								<template v-if="plans[line.id].pallet_short > 0">
-									<span class="of_hint">{{ plans[line.id].pallet_short }} not on a pallet.</span>
-									<span v-if="plans[line.id].others.length" class="of_hint">Look for others:</span>
+									<span class="of_hint">{{ plans[line.id].pallet_short }} {{ $t('Pages.text.not_on_a_pallet') }}</span>
+									<span v-if="plans[line.id].others.length" class="of_hint">{{ $t('Pages.text.look_for_others', {}) }}</span>
 									<span v-for="(step, i) in plans[line.id].others" :key="'o' + i" class="of_where_chip">
 										Sorting area &times;{{ step.qty }}
-										<button type="button" class="ri_formbutton of_use" @click="useStep(line, step)">Use</button>
+										<button type="button" class="ri_formbutton of_use" @click="useStep(line, step)">{{ $t('Commons.button.use', {}) }}</button>
 									</span>
 								</template>
-								<span v-if="plans[line.id].short > 0" class="of_hint">{{ plans[line.id].short }} not found in stock</span>
+								<span v-if="plans[line.id].short > 0" class="of_hint">{{ plans[line.id].short }} {{ $t('Pages.text.not_found_in_stock') }}</span>
 								<span v-if="!plans[line.id].steps.length && !(plans[line.id].short > 0)" class="of_hint">fully picked</span>
 							</div>
 							<ul v-if="(line.item_ledgers || []).length" class="of_filllist">
 								<li v-for="fill in line.item_ledgers" :key="fill.id">
 									{{ fill.qty_subtracted }} &mdash; {{ fill.item?.name }}
 									<template v-if="confirmingFillKey === fillKey(fill)">
-										<button @click="deleteFill(line, fill)" class="of_confirm_delete">Delete?</button>
-										<button @click="confirmingFillKey = null" class="ri_linkbutton">Keep</button>
+										<button @click="deleteFill(line, fill)" class="of_confirm_delete">{{ $t('Pages.button.delete', {}) }}</button>
+										<button @click="confirmingFillKey = null" class="ri_linkbutton">{{ $t('Commons.button.keep', {}) }}</button>
 									</template>
 									<img v-else src="/img/delete-icon.webp" class="of_delete" @click="deleteFill(line, fill)" />
 								</li>
@@ -636,25 +633,24 @@ export default {
 						</td>
 					</tr>
 					<tr v-if="!pickableLines.length">
-						<td colspan="5">Nothing to pick on this order.</td>
+						<td colspan="5">{{ $t('Pages.text.nothing_to_pick_on', {}) }}</td>
 					</tr>
 				</tbody>
 			</table></div>
 
 			<div class="of_actions">
 				<label class="of_palletlabel">
-					Pallets packed
+					{{ $t('Commons.label.pallets_packed', {}) }}
 					<input type="number" min="1" step="1" v-model.number="palletCount" class="ri_forminput of_palletinput" placeholder="#" />
 				</label>
 				<button :disabled="!allLinesAccounted() || savingComplete" @click="completeFilling" class="ri_defaultbutton">
-					{{ savingComplete ? 'Completing…' : 'Complete Filling' }}
+					{{ savingComplete ? $t('Commons.button.completing') : $t('Commons.button.complete_filling') }}
 				</button>
 				<span v-if="!allLinesAccounted()" class="of_hint">
-					Every line needs at least one fill record (even 0) before this order can be marked Filled.
+					{{ $t('Pages.text.every_line_needs_at', {}) }}
 				</span>
 				<span v-else-if="nothingPicked" class="of_hint">
-					Nothing has been picked — completing will close this request as Unfulfilled instead of
-					sending it to Shipping.
+					{{ $t('Pages.text.nothing_has_been_picked', {}) }}
 				</span>
 			</div>
 		</div>

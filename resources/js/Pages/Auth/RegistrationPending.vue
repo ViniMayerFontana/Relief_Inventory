@@ -2,6 +2,7 @@
 import { computed } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	requested_track: {
@@ -11,24 +12,24 @@ const props = defineProps({
 });
 
 const trackMessages = {
-	volunteer: 'Your volunteer sign-up is pending review. A staff member will follow up once your account is approved.',
-	donor: 'Your donation offer is pending review. A staff member will follow up once your account is approved.',
-	partner: 'Your request to receive supplies is pending review. A staff member will follow up once your account is approved.',
+	volunteer: t('Pages.Auth.text.your_volunteer_sign_up'),
+	donor: t('Pages.Auth.text.your_donation_offer_is'),
+	partner: t('Pages.Auth.text.your_request_to_receive'),
 };
 
-const message = computed(() => trackMessages[props.requested_track] || 'Your account is pending review. A staff member will follow up once it\'s approved.');
+const message = computed(() => trackMessages[props.requested_track] || t('Pages.Auth.text.your_account_is_pending'));
 </script>
 
 <template>
 	<GuestLayout>
-		<Head title="Registration Received" />
+		<Head :title="$t('Commons.title.registration_received')" />
 
 		<div class="mb-4 text-lg font-medium text-gray-900">
-			Thanks for registering!
+			{{ $t('Pages.Auth.text.thanks_for_registering', {}) }}
 		</div>
 
 		<div class="mb-4 text-sm text-gray-600">
-			Your email address has been verified. {{ message }}
+			{{ $t('Pages.Auth.text.your_email_address_has') }} {{ message }}
 		</div>
 
 		<div class="mt-4 flex items-center justify-between">
@@ -37,7 +38,7 @@ const message = computed(() => trackMessages[props.requested_track] || 'Your acc
 				method="post"
 				as="button"
 				class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-				>Log Out</Link
+				>{{ $t('Commons.link.log_out', {}) }}</Link
 			>
 		</div>
 	</GuestLayout>

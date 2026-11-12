@@ -16,6 +16,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, usePage } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: { type: Array },
@@ -58,9 +59,9 @@ watch([maintenanceStart, maintenanceEnd], ([start, end]) => {
 	const endText = formatForMessage(end);
 
 	if (startText && endText) {
-		bannerMessage.value = `Scheduled maintenance from ${startText} to ${endText}. The site may be briefly unavailable during this time.`;
+		bannerMessage.value = t('Pages.text.scheduled_maintenance_from_p0', { p0: startText, p1: endText });
 	} else if (startText) {
-		bannerMessage.value = `Scheduled maintenance starting ${startText}. The site may be briefly unavailable during this time.`;
+		bannerMessage.value = t('Pages.text.scheduled_maintenance_starting_p0', { p0: startText });
 	}
 });
 
@@ -74,7 +75,7 @@ async function saveBanner() {
 		});
 		bannerSavedAt.value = new Date().toLocaleTimeString();
 	} catch (e) {
-		bannerError.value = e.response?.data?.message || 'Could not save banner settings.';
+		bannerError.value = e.response?.data?.message || t('Pages.text.could_not_save_banner');
 	} finally {
 		bannerSaving.value = false;
 	}
@@ -82,42 +83,41 @@ async function saveBanner() {
 </script>
 
 <template>
-	<Head title="Site Banner" />
+	<Head :title="$t('Commons.title.site_banner')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">Site Banner</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Commons.heading.site_banner', {}) }}</h1>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<p class="text-sm text-gray-600">
-					Only one banner shows at a time. Choose a kind, add a message if needed, and save —
-					every user sees it until they dismiss it or you change it again.
+					{{ $t('Pages.text.only_one_banner_shows', {}) }}
 				</p>
 
 				<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 					<label class="block">
 						<span class="text-gray-700">Banner</span>
 						<select v-model="bannerType" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
-							<option value="">None</option>
-							<option value="feedback">Report a Bug/Feature (built-in message)</option>
-							<option value="maintenance">Maintenance Notice</option>
-							<option value="message">General Message</option>
+							<option value="">{{ $t('Commons.text.none', {}) }}</option>
+							<option value="feedback">{{ $t('Pages.text.report_a_bug_feature', {}) }}</option>
+							<option value="maintenance">{{ $t('Commons.text.maintenance_notice', {}) }}</option>
+							<option value="message">{{ $t('Commons.text.general_message', {}) }}</option>
 						</select>
 					</label>
 					<template v-if="bannerType === 'maintenance'">
 						<label class="block">
-							<span class="text-gray-700">Starts</span>
+							<span class="text-gray-700">{{ $t('Commons.text.starts', {}) }}</span>
 							<input type="datetime-local" v-model="maintenanceStart" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 						<label class="block">
-							<span class="text-gray-700">Ends</span>
+							<span class="text-gray-700">{{ $t('Commons.text.ends', {}) }}</span>
 							<input type="datetime-local" v-model="maintenanceEnd" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
 						</label>
 					</template>
 					<label v-if="bannerNeedsMessage" class="block sm:col-span-2">
-						<span class="text-gray-700">Message</span>
+						<span class="text-gray-700">{{ $t('Commons.text.message', {}) }}</span>
 						<textarea v-model="bannerMessage" rows="2" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm"></textarea>
 						<span v-if="bannerType === 'maintenance'" class="text-xs text-gray-500">
-							Auto-filled from the start/end times above — edit freely, it won't be regenerated unless you change those.
+							{{ $t('Pages.text.auto_filled_from_the', {}) }}
 						</span>
 					</label>
 				</div>
@@ -128,14 +128,13 @@ async function saveBanner() {
 
 				<div class="flex items-center gap-3">
 					<PrimaryButton :disabled="bannerSaving" @click="saveBanner">
-						{{ bannerSaving ? 'Saving…' : 'Save Banner' }}
+						{{ bannerSaving ? $t('Commons.button.saving') : $t('Commons.button.save_banner') }}
 					</PrimaryButton>
-					<span v-if="bannerSavedAt" class="text-xs text-gray-500">Saved {{ bannerSavedAt }}</span>
+					<span v-if="bannerSavedAt" class="text-xs text-gray-500">{{ $t('Commons.text.saved') }} {{ bannerSavedAt }}</span>
 				</div>
 
 				<p class="text-xs text-gray-500">
-					Changing the message resets everyone's dismissal, so it shows again for anyone who
-					already closed it.
+					{{ $t('Pages.text.changing_the_message_resets', {}) }}
 				</p>
 			</section>
 		</div>

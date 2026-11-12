@@ -1,0 +1,46 @@
+{
+  "en": {
+    "Errors": {
+      "Maintenance": {
+        "text": {
+          "maintenance": "Maintenance",
+          "back_shortly": "We'll be back shortly",
+          "undergoing": ":app is undergoing some quick maintenance.",
+          "usually_minutes": "This usually only takes a few minutes — thanks for your patience.",
+          "refreshes": "This page will refresh automatically."
+        }
+      },
+      "LinkExpired": {
+        "text": {
+          "link_expired_short": "Link Expired",
+          "link_expired": "This link has expired",
+          "links_valid_short": "Email verification links only stay valid for a short time after they're sent.",
+          "log_in_below": "If you've already set your password, your email is most likely verified already — just log in below.",
+          "go_to_login": "Go to login"
+        }
+      }
+    }
+  },
+  "pt_BR": {
+    "Errors": {
+      "Maintenance": {
+        "text": {
+          "maintenance": "Manutenção",
+          "back_shortly": "Voltamos em instantes",
+          "undergoing": ":app está passando por uma manutenção rápida.",
+          "usually_minutes": "Normalmente leva apenas alguns minutos — obrigado pela paciência.",
+          "refreshes": "Esta página será atualizada automaticamente."
+        }
+      },
+      "LinkExpired": {
+        "text": {
+          "link_expired_short": "Link expirado",
+          "link_expired": "Este link expirou",
+          "links_valid_short": "Links de verificação por e-mail permanecem válidos por pouco tempo após o envio.",
+          "log_in_below": "Se você já definiu sua senha, seu e-mail provavelmente já está verificado — basta fazer login abaixo.",
+          "go_to_login": "Ir para o login"
+        }
+      }
+    }
+  }
+}

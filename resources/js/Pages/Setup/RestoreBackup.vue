@@ -170,11 +170,10 @@ onUnmounted(() => clearInterval(timer));
 		<!-- choose a file -->
 		<div v-if="phase === 'idle'" class="mt-3 space-y-4">
 			<p v-if="own" class="text-sm text-gray-600">
-				Choose a backup file (.zip) of <strong>this warehouse</strong>, made by <strong>Updates &amp; Backups</strong>.
+				{{ $t('Pages.Setup.text.choose_a_backup_file', {}) }} <strong>{{ $t('Commons.heading.this_warehouse', {}) }}</strong>, made by <strong>{{ $t('Pages.Setup.text.updates_backups', {}) }}</strong>.
 			</p>
 			<p v-else class="text-sm text-gray-600">
-				Choose a backup file (.zip) made by <strong>Updates &amp; Backups</strong> in Relief Inventory. The whole system — data
-				and, if the backup included them, uploaded photos and documents — is restored onto this new installation.
+				{{ $t('Pages.Setup.text.choose_a_backup_file_2', {}) }} <strong>{{ $t('Pages.Setup.text.updates_backups', {}) }}</strong> {{ $t('Pages.Setup.text.in_relief_inventory_the', {}) }}
 			</p>
 
 			<div v-if="codeRequired && !own">
@@ -190,103 +189,96 @@ onUnmounted(() => clearInterval(timer));
 			</div>
 
 			<details class="rounded border border-gray-200 p-3 text-sm">
-				<summary class="cursor-pointer text-gray-700">Recovering from a damaged database? Add a separate backup of the files</summary>
+				<summary class="cursor-pointer text-gray-700">{{ $t('Pages.Setup.text.recovering_from_a_damaged', {}) }}</summary>
 				<p class="mt-2 text-xs text-gray-600">
-					If the backup above holds only the database, or you have a newer or more complete copy of the uploaded files
-					(a “files only” or “database + files” backup), choose it here. The uploaded files come from this one; if it also
-					contains a database, that part is ignored.
+					{{ $t('Pages.Setup.text.if_the_backup_above', {}) }}
 				</p>
 				<input id="restore_files_file" type="file" accept=".zip,application/zip" class="mt-2 block w-full text-sm" @change="pickFiles" />
 				<p v-if="filesFile" class="mt-1 text-xs text-gray-500">{{ filesFile.name }} — {{ human(filesFile.size) }}</p>
 			</details>
 
 			<details v-if="!own" class="rounded border border-gray-200 p-3 text-sm">
-				<summary class="cursor-pointer text-gray-700">Key from the old system (so encrypted settings carry over)</summary>
+				<summary class="cursor-pointer text-gray-700">{{ $t('Pages.Setup.text.key_from_the_old', {}) }}</summary>
 				<p class="mt-2 text-xs text-gray-600">
-					A backup never contains the warehouse key. If you wrote it down (Updates &amp; Backups &gt; “Warehouse key” on the old system),
-					paste it here and the settings it encrypted — email password, shared secrets — are restored too. Without it they are cleared
-					and listed afterwards so you can enter them again.
+					{{ $t('Pages.Setup.text.a_backup_never_contains', {}) }}
 				</p>
 				<input id="restore_key" type="text" v-model="warehouseKey" autocomplete="off" spellcheck="false" placeholder="base64:…" class="mt-2 block w-full rounded-md border-gray-300 font-mono text-xs shadow-sm" />
 			</details>
 
 			<div v-if="own" class="rounded border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 space-y-1">
-				<p>This <strong>replaces everything in this warehouse</strong> (its data and its uploaded files) with what the backup holds. The warehouse is out of service while it runs and everyone is signed out.</p>
+				<p>{{ $t('Commons.text.this', {}) }} <strong>{{ $t('Pages.Setup.text.replaces_everything_in_this', {}) }}</strong> {{ $t('Pages.Setup.text.its_data_and_its', {}) }}</p>
 				<p>
-					You stay Administrator. Everyone else in the backup who already has a login elsewhere is <em>invited</em> and joins only when they accept;
-					the Users page lets you send those invitations. A few encrypted settings can't be carried over and are listed afterwards.
+					{{ $t('Pages.Setup.text.you_stay_administrator_everyone', {}) }} <em>invited</em> {{ $t('Pages.Setup.text.and_joins_only_when', {}) }}
 				</p>
 			</div>
 			<div v-else class="rounded border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 space-y-1">
-				<p>This installation must be new and empty — a backup can only be restored onto one that has never been set up.</p>
+				<p>{{ $t('Pages.Setup.text.this_installation_must_be', {}) }}</p>
 				<p>
-					The backup does not contain the warehouse key. Everything works without it, but a few encrypted settings (for
-					example the centralized-feedback shared secret) can't be carried over unless you give the old key above; they are cleared
-					and listed for you afterwards so you can re-enter them, and everyone signs in again.
+					{{ $t('Pages.Setup.text.the_backup_does_not', {}) }}
 				</p>
-				<p>The software here must be the same version as the one that made the backup, or newer — never older.</p>
+				<p>{{ $t('Pages.Setup.text.the_software_here_must', {}) }}</p>
 			</div>
 
 			<div v-if="error" class="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800">{{ error }}</div>
 
 			<div class="flex items-center justify-between">
-				<SecondaryButton type="button" @click="$emit('back')">Back</SecondaryButton>
-				<PrimaryButton type="button" :disabled="!file" @click="begin">Upload and restore</PrimaryButton>
+				<SecondaryButton type="button" @click="$emit('back')">{{ $t('Commons.button.back', {}) }}</SecondaryButton>
+				<PrimaryButton type="button" :disabled="!file" @click="begin">{{ $t('Pages.Setup.button.upload_and_restore', {}) }}</PrimaryButton>
 			</div>
 		</div>
 
 		<!-- uploading -->
 		<div v-else-if="phase === 'uploading'" class="mt-3 space-y-3">
 			<p class="text-sm text-gray-700">
-				Uploading {{ task.file?.name }}…
+				{{ $t('Commons.text.uploading_2') }} {{ task.file?.name }}…
 				<span v-if="filesFile" class="text-gray-500">(file {{ stage === 'main' ? 1 : 2 }} of 2)</span>
 			</p>
 			<div class="h-3 w-full overflow-hidden rounded bg-gray-200"><div class="h-3 bg-blue-600" :style="{ width: percent + '%' }"></div></div>
 			<p class="text-xs text-gray-500">{{ human(task.received) }} of {{ human(task.size) }} ({{ percent }}%). Keep this page open.</p>
 			<div v-if="error" class="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800">{{ error }}</div>
 			<div class="flex items-center gap-3">
-				<PrimaryButton v-if="task.failed && !task.running && task.id" type="button" @click="resumeUpload">Resume</PrimaryButton>
-				<SecondaryButton type="button" @click="cancelUpload">Cancel</SecondaryButton>
+				<PrimaryButton v-if="task.failed && !task.running && task.id" type="button" @click="resumeUpload">{{ $t('Commons.button.resume', {}) }}</PrimaryButton>
+				<SecondaryButton type="button" @click="cancelUpload">{{ $t('Commons.button.cancel', {}) }}</SecondaryButton>
 			</div>
 		</div>
 
 		<!-- the server is restoring -->
 		<div v-else-if="phase === 'restoring'" class="mt-3 space-y-3">
-			<p class="text-sm text-gray-700">Restoring… this can take a while for a large backup. You can leave this page open or come back to it.</p>
+			<p class="text-sm text-gray-700">{{ $t('Pages.Setup.text.restoring_this_can_take', {}) }}</p>
 			<div class="h-3 w-full overflow-hidden rounded bg-gray-200"><div class="h-3 bg-blue-600" :style="{ width: (status.percent || 1) + '%' }"></div></div>
-			<p class="text-xs text-gray-500">{{ status.phase || 'Starting' }}</p>
+			<p class="text-xs text-gray-500">{{ status.phase || $t('Commons.text.starting_2') }}</p>
 		</div>
 
 		<!-- done -->
 		<div v-else-if="phase === 'complete'" class="mt-3 space-y-3">
 			<div class="rounded border border-green-300 bg-green-50 p-3 text-sm text-green-900">
-				The backup was restored<span v-if="status.backup_created_at"> (made {{ new Date(status.backup_created_at).toLocaleString() }})</span>.
+				{{ $t('Pages.Setup.text.the_backup_was_restored', {}) }}<span v-if="status.backup_created_at"> (made {{ new Date(status.backup_created_at).toLocaleString() }})</span>.
 			</div>
 			<div v-if="status.blanked?.length" class="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-				<p class="font-medium">These settings were encrypted with the old system's key and could not be carried over. Re-enter them after signing in:</p>
+				<p class="font-medium">{{ $t('Pages.Setup.text.these_settings_were_encrypted', {}) }}</p>
 				<ul class="mt-1 list-disc pl-5"><li v-for="label in status.blanked" :key="label">{{ label }}</li></ul>
 			</div>
 			<div v-if="status.notes?.length" class="rounded border border-gray-300 bg-gray-50 p-3 text-sm text-gray-700">
 				<p v-for="note in status.notes" :key="note">{{ note }}</p>
 			</div>
-			<div v-if="!status.includes_uploads" class="text-xs text-gray-600">This backup did not include uploaded photos and documents.</div>
+			<div v-if="!status.includes_uploads" class="text-xs text-gray-600">{{ $t('Pages.Setup.text.this_backup_did_not', {}) }}</div>
 			<div v-else-if="status.files_created_at && status.files_created_at !== status.backup_created_at" class="text-xs text-gray-600">
-				Uploaded files are from the backup made {{ new Date(status.files_created_at).toLocaleString() }}.
+				{{ $t('Pages.Setup.text.uploaded_files_are_from') }} {{ new Date(status.files_created_at).toLocaleString() }}.
 			</div>
 			<div v-if="status.admin_missing" class="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
-				The restored data has no administrator account. Continue to create one.
-				<a href="/install" class="block mt-2 underline">Continue to setup</a>
+				{{ $t('Pages.Setup.text.the_restored_data_has', {}) }}
+				<a href="/install" class="block mt-2 underline">{{ $t('Pages.Setup.link.continue_to_setup', {}) }}</a>
 			</div>
-			<a v-else href="/login" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700">Sign in</a>
+			<a v-else href="/login" class="inline-flex items-center rounded-md bg-gray-800 px-4 py-2 text-xs font-semibold uppercase tracking-widest text-white hover:bg-gray-700">{{ $t('Commons.link.sign_in', {}) }}</a>
 		</div>
 
 		<!-- failed -->
 		<div v-else-if="phase === 'failed'" class="mt-3 space-y-3">
 			<div class="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-800">
-				<p class="font-medium">The restore did not finish.</p>
+				<p class="font-medium">{{ $t('Pages.Setup.text.the_restore_did_not', {}) }}</p>
 				<p class="mt-1">{{ status.error }}</p>
 			</div>
-			<PrimaryButton type="button" @click="reset">Try again</PrimaryButton>
+			<PrimaryButton type="button" @click="reset">{{ $t('Commons.button.try_again', {}) }}</PrimaryButton>
 		</div>
 	</div>
 </template>

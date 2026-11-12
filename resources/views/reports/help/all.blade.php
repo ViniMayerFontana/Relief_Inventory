@@ -2,7 +2,7 @@
      guide's own content section on a new page. $guides is [['title', 'content'], ...]. --}}
 @extends('reports.help.layout')
 
-@section('title', 'Help Guides')
+@section('title', __('help.all_guides'))
 
 @section('content')
     <style>
@@ -11,7 +11,7 @@
     </style>
 
     <div class="section">
-        <h2>Contents</h2>
+        <h2>{{ __('help.contents') }}</h2>
         <ol class="contents">
             @foreach ($guides as $guide)
                 <li>{{ $guide['title'] }}</li>

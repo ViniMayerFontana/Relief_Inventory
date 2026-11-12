@@ -14,13 +14,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Donor Report</title>
+    <title>{{ __("commons.text.donor_report") }}</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Donor Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Donor Report — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
             @top-right {
@@ -53,10 +53,9 @@
     </style>
 </head>
 <body>
-    <h1>Donor Report</h1>
+    <h1>{{ __("commons.text.donor_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; what each donor sent and how much was usable, {{ $range }}, generated
-        {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
+        {{ config('app.name') }} &mdash; what each donor sent and how much was usable, {{ $range }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <div class="summary">
@@ -69,13 +68,13 @@
     @if($report['donors']->isEmpty())
         <p>No donations{{ $range === 'all donations' ? '' : ' in this date range' }}.</p>
     @else
-        <h2>Donors</h2>
+        <h2>{{ __("commons.text.donors") }}</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Donor / Donation</th><th>Standing</th><th>Suggested</th><th class="num">Donations</th>
-                    <th class="num">Units</th><th class="num">Usable</th><th class="num">Outdated</th>
-                    <th class="num">Trashed</th><th class="num">Diverted</th><th class="num">Loss %</th>
+                    <th>{{ __("reports.Donors.text.donor_donation") }}</th><th>{{ __("commons.text.standing") }}</th><th>{{ __("commons.text.suggested") }}</th><th class="num">{{ __("commons.text.donations") }}</th>
+                    <th class="num">{{ __("commons.text.units") }}</th><th class="num">{{ __("commons.text.usable") }}</th><th class="num">{{ __("commons.text.outdated") }}</th>
+                    <th class="num">{{ __("commons.text.trashed") }}</th><th class="num">{{ __("commons.text.diverted") }}</th><th class="num">{{ __("commons.text.loss") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,7 +82,7 @@
                     <tr class="donor">
                         <td>{{ $d['name'] }}</td>
                         <td>{{ $d['is_system'] ? '' : ucfirst($d['standing']) }}</td>
-                        <td>{!! $d['is_system'] ? '' : ($d['suggested'] ? ucfirst($d['suggested']) : '<span class="muted">not enough data</span>') !!}</td>
+                        <td>{!! $d['is_system'] ? '' : ($d['suggested'] ? ucfirst($d['suggested']) : '<span class="muted">{{ __("reports.Donors.text.not_enough_data") }}</span>') !!}</td>
                         <td class="num">{{ $d['donations'] }}</td>
                         <td class="num">{{ number_format($d['units']) }}</td>
                         <td class="num">{{ number_format($d['usable']) }}</td>

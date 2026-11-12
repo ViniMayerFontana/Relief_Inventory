@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Outstanding Orders Report</title>
+    <title>{{ __("reports.Orders.text.outstanding_orders_report") }}</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Outstanding Orders Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Outstanding Orders Report — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -95,22 +95,22 @@
     </style>
 </head>
 <body>
-    <h1>Outstanding Orders Report</h1>
+    <h1>{{ __("reports.Orders.text.outstanding_orders_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; every order not yet shipped, generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
+        {{ config('app.name') }} &mdash; every order not yet shipped, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Order #</th>
+                <th>{{ __("commons.text.order") }}</th>
                 <th>Partner</th>
-                <th>Status</th>
-                <th>Order Date</th>
-                <th>Needed By</th>
-                <th>Fulfillment</th>
-                <th class="num">Lines</th>
-                <th class="num">Qty Requested</th>
+                <th>{{ __("commons.text.status_2") }}</th>
+                <th>{{ __("commons.text.order_date") }}</th>
+                <th>{{ __("commons.text.needed_by") }}</th>
+                <th>{{ __("commons.text.fulfillment") }}</th>
+                <th class="num">{{ __("commons.text.lines") }}</th>
+                <th class="num">{{ __("commons.text.qty_requested") }}</th>
             </tr>
         </thead>
         <tbody>
@@ -135,13 +135,13 @@
                     </tr>
                 @endif
             @empty
-                <tr><td colspan="8">No outstanding orders.</td></tr>
+                <tr><td colspan="8">{{ __("reports.Orders.text.no_outstanding_orders") }}</td></tr>
             @endforelse
         </tbody>
     </table>
 
     <div class="disclaimer">
-        Includes every order in New Order, Ready to Fill, Filling, or Filled status — anything not yet Shipped.
+        {{ __("reports.Orders.text.includes_every_order_in") }}
     </div>
 </body>
 </html>

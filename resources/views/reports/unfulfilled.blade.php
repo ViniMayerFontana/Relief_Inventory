@@ -11,13 +11,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Unfulfilled Requests Report</title>
+    <title>{{ __("reports.Unfulfilled.text.unfulfilled_requests_report") }}</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Unfulfilled Requests Report — generated {{ $generatedAt->format('F j, Y \a\t g:i A T') }}";
+                content: "Unfulfilled Requests Report — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -118,10 +118,9 @@
     </style>
 </head>
 <body>
-    <h1>Unfulfilled Requests Report</h1>
+    <h1>{{ __("reports.Unfulfilled.text.unfulfilled_requests_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; what was requested but not filled, {{ $range }}, generated
-        {{ $generatedAt->format('F j, Y \a\t g:i A T') }}
+        {{ config('app.name') }} &mdash; what was requested but not filled, {{ $range }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <div class="summary">
@@ -143,7 +142,7 @@
                     <h2>Not Filled by {{ $label }}</h2>
                     <table>
                         <thead><tr>
-                            <th>{{ $label }}</th><th class="num">Requests</th><th class="num">Item Types</th><th class="num">Not Filled</th>
+                            <th>{{ $label }}</th><th class="num">{{ __("commons.text.requests") }}</th><th class="num">{{ __("commons.text.item_types") }}</th><th class="num">{{ __("commons.text.not_filled") }}</th>
                         </tr></thead>
                         <tbody>
                             @foreach($report['by_'.$field] as $row)
@@ -160,19 +159,19 @@
             @endforeach
         </div>
 
-        <h2>Items Not Filled</h2>
+        <h2>{{ __("reports.Unfulfilled.text.items_not_filled") }}</h2>
         <table>
             <thead>
                 <tr>
-                    <th>Item #</th>
+                    <th>{{ __("commons.text.item") }}</th>
                     <th>Item / County &middot; Zip</th>
-                    <th>Unit</th>
-                    <th class="num">Requests</th>
-                    <th class="num">Requested</th>
-                    <th class="num">Filled</th>
-                    <th class="num">Not Filled</th>
-                    <th class="num">Cut at Allocation</th>
-                    <th class="num">Short at Picking</th>
+                    <th>{{ __("commons.text.unit") }}</th>
+                    <th class="num">{{ __("commons.text.requests") }}</th>
+                    <th class="num">{{ __("commons.text.requested") }}</th>
+                    <th class="num">{{ __("commons.text.filled") }}</th>
+                    <th class="num">{{ __("commons.text.not_filled") }}</th>
+                    <th class="num">{{ __("reports.Unfulfilled.text.cut_at_allocation") }}</th>
+                    <th class="num">{{ __("reports.Unfulfilled.text.short_at_picking") }}</th>
                 </tr>
             </thead>
             <tbody>

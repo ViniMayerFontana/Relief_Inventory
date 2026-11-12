@@ -29,11 +29,11 @@ const statusUrl = computed(() => `/w/${currentWarehouseId() ?? ''}/restore-statu
 </script>
 
 <template>
-	<Head title="Restore this warehouse" />
+	<Head :title="$t('Pages.Setup.title.restore_this_warehouse')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="mx-auto max-w-3xl space-y-4 p-4">
 			<section class="rounded-lg bg-white p-6 shadow">
-				<h1 class="text-lg font-semibold">Restore {{ warehouseName || 'this warehouse' }} from a backup</h1>
+				<h1 class="text-lg font-semibold">{{ $t('Commons.heading.restore') }} {{ warehouseName || $t('Commons.heading.this_warehouse') }} {{ $t('Pages.Setup.heading.from_a_backup') }}</h1>
 
 				<div class="mt-3">
 					<InputLabel for="restore_password" value="Your password (to confirm)" />
@@ -41,7 +41,7 @@ const statusUrl = computed(() => `/w/${currentWarehouseId() ?? ''}/restore-statu
 				</div>
 				<label v-if="instanceAdmin" class="mt-3 flex items-start gap-2 text-sm text-gray-700">
 					<input type="checkbox" v-model="identity.any_lineage" class="mt-1" />
-					<span>This backup is of a different warehouse (clone it into this one). Only instance administrators can do this.</span>
+					<span>{{ $t('Pages.Setup.text.this_backup_is_of', {}) }}</span>
 				</label>
 
 				<RestoreBackup base="/json/warehouse-restore" :status-url="statusUrl" :identity="identity" own @back="back" />

@@ -61,14 +61,14 @@ const packageTypeSort = computed(() => (a, b) =>
 </script>
 
 <template>
-	<Head title="Package Types" />
+	<Head :title="$t('Commons.title.package_types')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<RIForm
-			title="Package Types"
+			:title="$t('Commons.title.package_types')"
 			datasource="/json/packagetypes"
-			newrecordcaption="Add Package Type"
+			:newrecordcaption="$t('Pages.text.add_package_type')"
 			:filter="packageTypeMatchesSearch"
 			:sort="packageTypeSort"
 		>
@@ -77,13 +77,13 @@ const packageTypeSort = computed(() => (a, b) =>
 					type="text"
 					v-model="packageTypeSearch"
 					class="ri_forminput packagetype_search"
-					placeholder="Search by name..."
+					:placeholder="$t('Pages.placeholder.search_by_name')"
 				/>
 			</template>
 
 			<template #thead>
-				<th class="ri_sortable" @click="setSort('singular')">Singular{{ sortArrow('singular') }}</th>
-				<th class="ri_sortable" @click="setSort('plural')">Plural{{ sortArrow('plural') }}</th>
+				<th class="ri_sortable" @click="setSort('singular')">{{ $t('Commons.text.singular') }} {{ sortArrow('singular') }}</th>
+				<th class="ri_sortable" @click="setSort('plural')">{{ $t('Commons.text.plural') }} {{ sortArrow('plural') }}</th>
 			</template>
 			<template #tbody="{ record }">
 				<td>{{ record.singular }}</td>
@@ -92,12 +92,12 @@ const packageTypeSort = computed(() => (a, b) =>
 			<template #default="{ record, editing }">
 				<div class="ri_formtable">
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Singular:</div>
-						<TextInput v-model="record.singular" placeholder="e.g. Case" required autofocus :enabled="editing" />
+						<div class="ri_fieldlabel">{{ $t('Commons.text.singular_2', {}) }}</div>
+						<TextInput v-model="record.singular" :placeholder="$t('Pages.placeholder.e_g_case')" required autofocus :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Plural:</div>
-						<TextInput v-model="record.plural" placeholder="e.g. Cases" required :enabled="editing" />
+						<div class="ri_fieldlabel">{{ $t('Commons.text.plural_2', {}) }}</div>
+						<TextInput v-model="record.plural" :placeholder="$t('Pages.placeholder.e_g_cases')" required :enabled="editing" />
 					</div>
 				</div>
 			</template>

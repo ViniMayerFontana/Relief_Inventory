@@ -75,3 +75,12 @@ rstation/product/image/debs/
 # Personal productivity dashboard (not project files)
 /TASKS.md
 /dashboard.html
+
+# DeepSeek Harness runtime mirrors of agent profiles (canonical, versioned copies live in /Agents)
+/.dsh/
+
+# ai-localizer CLI working files (translate queue + on-disk cache)
+.i18n-cache/
+.i18n-queue/
+# cleanup "unused keys" report (regenerated on every cleanup; unsafe to apply — see Agents/UPSTREAM_ISSUES.md issue 7)
+/scripts/.i18n-unused-report.json

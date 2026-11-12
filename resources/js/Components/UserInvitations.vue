@@ -13,6 +13,7 @@
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
+import { t } from '@/i18n';
 
 const invitations = ref([]);
 const message = ref(null);
@@ -32,7 +33,7 @@ async function act(request) {
 	try {
 		message.value = (await request()).data.message;
 	} catch (e) {
-		message.value = e.response?.data?.message || 'That did not work.';
+		message.value = e.response?.data?.message || t('Components.text.that_did_not_work');
 	} finally {
 		busy.value = false;
 		await load();
@@ -48,10 +49,9 @@ onMounted(load);
 
 <template>
 	<section v-if="invitations.length" class="bg-white shadow rounded-lg p-6 space-y-3">
-		<h2 class="text-lg font-semibold">Waiting for an answer</h2>
+		<h2 class="text-lg font-semibold">{{ $t('Components.heading.waiting_for_an_answer', {}) }}</h2>
 		<p class="text-sm text-gray-600">
-			These people's emails already have a login in another warehouse, so they were invited instead of added.
-			They cannot sign in here until the owner of that login accepts.
+			{{ $t('Components.text.these_people_s_emails', {}) }}
 		</p>
 		<p v-if="message" class="text-sm text-gray-800">{{ message }}</p>
 		<ul class="divide-y">
@@ -65,8 +65,8 @@ onMounted(load);
 					</span>
 				</span>
 				<span class="flex gap-2">
-					<SecondaryButton :disabled="busy" @click="resend(i)">{{ i.source === 'restore' ? 'Email invitation' : 'Resend' }}</SecondaryButton>
-					<SecondaryButton :disabled="busy" @click="withdraw(i)">Withdraw</SecondaryButton>
+					<SecondaryButton :disabled="busy" @click="resend(i)">{{ i.source === 'restore' ? $t('Commons.button.email_invitation') : $t('Commons.button.resend') }}</SecondaryButton>
+					<SecondaryButton :disabled="busy" @click="withdraw(i)">{{ $t('Commons.button.withdraw', {}) }}</SecondaryButton>
 				</span>
 			</li>
 		</ul>

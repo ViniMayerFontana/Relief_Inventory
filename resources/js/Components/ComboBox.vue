@@ -66,7 +66,9 @@
   </div>
 </template>
 
-<script>
+<script>import { t } from '@/i18n';
+
+
 export default {
   name: "ComboBox",
   props: {
@@ -118,7 +120,7 @@ export default {
 	placeholder: {
 		type: String,
 		required: false,
-		default: "Select an option",
+		default: t('Components.text.select_an_option'),
 	},
   },
   data() {

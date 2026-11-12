@@ -29,6 +29,7 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { computed, onMounted, onUnmounted, ref } from 'vue';
 import { uaSummary } from '@/userAgent';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: {
@@ -61,7 +62,7 @@ async function fetchSessions() {
 		lastRefreshed.value = new Date();
 		error.value = '';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load active sessions.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_load_active');
 	} finally {
 		loading.value = false;
 	}
@@ -73,7 +74,7 @@ async function fetchHistory() {
 		history.value = response.data.history;
 		historyError.value = '';
 	} catch (e) {
-		historyError.value = e.response?.data?.message || 'Could not load login history.';
+		historyError.value = e.response?.data?.message || t('Pages.text.could_not_load_login');
 	} finally {
 		historyLoading.value = false;
 	}
@@ -81,9 +82,9 @@ async function fetchHistory() {
 
 function agoText(iso) {
 	const seconds = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
-	if (seconds < 60) return `${seconds}s ago`;
+	if (seconds < 60) return t('Commons.text.p0_s_ago', { p0: seconds });
 	const minutes = Math.round(seconds / 60);
-	return `${minutes}m ago`;
+	return t('Commons.text.p0_m_ago', { p0: minutes });
 }
 
 // Tap-to-expand for the raw user-agent string, keyed by login_history id —
@@ -98,7 +99,7 @@ function toggleUserAgent(id) {
 }
 
 function methodLabel(method) {
-	return method === 'pin' ? 'PIN unlock' : 'Password';
+	return method === 'pin' ? t('Commons.text.pin_unlock') : t('Commons.text.password');
 }
 
 async function toggleExpanded(entry) {
@@ -118,7 +119,7 @@ async function toggleExpanded(entry) {
 		});
 		personHistory.value = response.data.history;
 	} catch (e) {
-		personHistoryError.value = e.response?.data?.message || 'Could not load login history.';
+		personHistoryError.value = e.response?.data?.message || t('Pages.text.could_not_load_login');
 	} finally {
 		personHistoryLoading.value = false;
 	}
@@ -139,34 +140,34 @@ const sortedSessions = computed(() =>
 </script>
 
 <template>
-	<Head title="User Activity" />
+	<Head :title="$t('Commons.title.user_activity')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
-			<h1 class="text-2xl font-bold">User Activity</h1>
+			<h1 class="text-2xl font-bold">{{ $t('Commons.heading.user_activity', {}) }}</h1>
 
 			<div v-if="error" class="rounded bg-red-100 border border-red-400 text-red-800 px-4 py-3">{{ error }}</div>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<div class="flex items-center justify-between">
 					<h2 class="text-lg font-semibold">
-						Active in the last {{ activeWindowMinutes }} minutes
+						{{ $t('Pages.heading.active_in_the_last') }} {{ activeWindowMinutes }} {{ $t('Commons.heading.minutes') }}
 						<span class="text-gray-400 font-normal">({{ sortedSessions.length }})</span>
 					</h2>
 					<span v-if="lastRefreshed" class="text-xs text-gray-400">
-						Updated {{ lastRefreshed.toLocaleTimeString() }}
+						{{ $t('Commons.text.updated') }} {{ lastRefreshed.toLocaleTimeString() }}
 					</span>
 				</div>
 
-				<div v-if="loading" class="text-gray-500">Loading…</div>
-				<div v-else-if="sortedSessions.length === 0" class="text-gray-500">Nobody's currently active.</div>
+				<div v-if="loading" class="text-gray-500">{{ $t('Commons.text.loading', {}) }}</div>
+				<div v-else-if="sortedSessions.length === 0" class="text-gray-500">{{ $t('Pages.text.nobody_s_currently_active', {}) }}</div>
 
 				<table v-else class="min-w-full text-sm">
 					<thead>
 						<tr class="text-left text-gray-500 border-b">
-							<th class="py-2 pr-4">Name</th>
-							<th class="py-2 pr-4">Role</th>
-							<th class="py-2 pr-4">Last Page</th>
-							<th class="py-2 pr-4">Last Active</th>
+							<th class="py-2 pr-4">{{ $t('Commons.button.name', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.text.role', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.text.last_page', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.text.last_active', {}) }}</th>
 							<th class="py-2 pr-4">IP</th>
 						</tr>
 					</thead>
@@ -182,14 +183,13 @@ const sortedSessions = computed(() =>
 				</table>
 
 				<p class="text-xs text-gray-500">
-					Someone who logs out won't disappear from this list instantly — their session just stops
-					updating and ages out of the {{ activeWindowMinutes }}-minute window on its own.
+					{{ $t('Pages.text.someone_who_logs_out') }} {{ activeWindowMinutes }}{{ $t('Pages.text.minute_window_on_its') }}
 				</p>
 			</section>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">
 				<h2 class="text-lg font-semibold">
-					Login History
+					{{ $t('Commons.heading.login_history', {}) }}
 					<span class="text-gray-400 font-normal">({{ history.length }})</span>
 				</h2>
 
@@ -197,16 +197,16 @@ const sortedSessions = computed(() =>
 					{{ historyError }}
 				</div>
 
-				<div v-if="historyLoading" class="text-gray-500">Loading…</div>
-				<div v-else-if="history.length === 0" class="text-gray-500">No logins recorded yet.</div>
+				<div v-if="historyLoading" class="text-gray-500">{{ $t('Commons.text.loading', {}) }}</div>
+				<div v-else-if="history.length === 0" class="text-gray-500">{{ $t('Pages.text.no_logins_recorded_yet', {}) }}</div>
 
 				<table v-else class="min-w-full text-sm">
 					<thead>
 						<tr class="text-left text-gray-500 border-b">
-							<th class="py-2 pr-4">Name</th>
-							<th class="py-2 pr-4">Method</th>
-							<th class="py-2 pr-4">Last Login</th>
-							<th class="py-2 pr-4">Device / Browser</th>
+							<th class="py-2 pr-4">{{ $t('Commons.button.name', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.text.method', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Commons.button.last_login', {}) }}</th>
+							<th class="py-2 pr-4">{{ $t('Pages.text.device_browser', {}) }}</th>
 							<th class="py-2 pr-4">IP</th>
 						</tr>
 					</thead>
@@ -241,13 +241,13 @@ const sortedSessions = computed(() =>
 									<div v-if="personHistoryError" class="text-red-800 text-xs">
 										{{ personHistoryError }}
 									</div>
-									<div v-else-if="personHistoryLoading" class="text-gray-500 text-xs">Loading…</div>
+									<div v-else-if="personHistoryLoading" class="text-gray-500 text-xs">{{ $t('Commons.text.loading', {}) }}</div>
 									<table v-else class="min-w-full text-xs">
 										<thead>
 											<tr class="text-left text-gray-500 border-b">
-												<th class="py-1 pr-4">Method</th>
-												<th class="py-1 pr-4">Logged In</th>
-												<th class="py-1 pr-4">Device / Browser</th>
+												<th class="py-1 pr-4">{{ $t('Commons.text.method', {}) }}</th>
+												<th class="py-1 pr-4">{{ $t('Commons.text.logged_in', {}) }}</th>
+												<th class="py-1 pr-4">{{ $t('Pages.text.device_browser', {}) }}</th>
 												<th class="py-1 pr-4">IP</th>
 											</tr>
 										</thead>

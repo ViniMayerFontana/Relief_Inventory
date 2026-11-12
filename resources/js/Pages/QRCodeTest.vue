@@ -11,8 +11,8 @@ const handleScan = (code) => {
 
 <template>
   <div>
-    <h2>Scan Item QR Code</h2>
+    <h2>{{ $t('Pages.heading.scan_item_qr_code', {}) }}</h2>
     <QrScanner @scanned="handleScan" />
-    <p>Scanned Code: {{ scannedCode }}</p>
+    <p>{{ $t('Commons.text.scanned_code') }} {{ scannedCode }}</p>
   </div>
 </template>

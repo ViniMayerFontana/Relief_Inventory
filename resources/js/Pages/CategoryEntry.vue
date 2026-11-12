@@ -36,15 +36,15 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
 </script>
 
 <template>
-  <Head title="Item Category Entry" />
+  <Head :title="$t('Pages.title.item_category_entry')" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <template #header>
     </template>
 
     <RIForm
-      title="Item Category Management"
+      :title="$t('Pages.title.item_category_management')"
       datasource="/json/categories"
-	  newrecordcaption="Add Category"
+	  :newrecordcaption="$t('Commons.text.add_category')"
 	  :filter="categoryMatchesSearch"
 	  :sort="categorySort">
       <template #listactions>
@@ -52,11 +52,11 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
           type="text"
           v-model="categorySearch"
           class="ri_forminput category_search"
-          placeholder="Search by Category Name..."
+          :placeholder="$t('Pages.placeholder.search_by_category_name')"
         />
       </template>
       <template #thead>
-        <th class="ri_sortable" @click="setSort()">Category Name{{ sortArrow() }}</th>
+        <th class="ri_sortable" @click="setSort()">{{ $t('Commons.text.category_name_2') }} {{ sortArrow() }}</th>
       </template>
       <template #tbody="{ record, index }">
         <td>{{ record.name }}</td>
@@ -64,7 +64,7 @@ const categorySort = computed(() => (a, b) => sortDir.value * String(a.name ?? '
       <template #default="{ record, editing, templates }">
         <div class="ri_formtable">
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Category Name:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.category_name', {}) }}</div>
             <TextInput
               v-model="record.name"
               required

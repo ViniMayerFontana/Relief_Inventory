@@ -33,7 +33,7 @@ const submit = () => {
 
 <template>
     <GuestLayout>
-        <Head title="Reset Password" />
+        <Head :title="$t('Commons.title.reset_password')" />
 
         <form @submit.prevent="submit">
             <div>
@@ -93,7 +93,7 @@ const submit = () => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Reset Password
+                    {{ $t('Commons.button.reset_password', {}) }}
                 </PrimaryButton>
             </div>
         </form>

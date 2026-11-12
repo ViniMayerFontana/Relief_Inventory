@@ -1,0 +1,165 @@
+{
+  "Errors": {
+    "TurnstileMisconfigured": {
+      "text": {
+        "and_set_both": ", and set both",
+        "docker_compose_up_d": "docker compose up -d",
+        "or_give_it_keys": "Or give it keys",
+        "then_run": "; then run:",
+        "this_page_isn_t": "This page isn't set up yet",
+        "this_page_uses_cloudflare": "This page uses Cloudflare Turnstile (a bot check), which is switched on but has no keys. The server's administrator needs to do one of the following, then restart the application:",
+        "turn_it_off": "Turn it off"
+      }
+    }
+  },
+  "Reports": {
+    "Bol": {
+      "text": {
+        "bill_of_lading": "Bill of Lading",
+        "carrier_driver_receipt": "Carrier / Driver Receipt",
+        "no_lines_on_this": "No lines on this order.",
+        "pallet_count_as_packed": "Pallet Count (as packed)",
+        "pallet_count_confirmed_by": "Pallet Count (confirmed by driver)",
+        "received_by_print": "Received By (print):"
+      }
+    },
+    "Donors": {
+      "text": {
+        "donor_donation": "Donor / Donation",
+        "not_enough_data": "not enough data",
+        "units_sorted_overall_loss": "units sorted, overall loss"
+      }
+    },
+    "Flow": {
+      "text": {
+        "adjust": "Adjust.",
+        "adjustments_by_reason": "Adjustments by reason",
+        "closing_on_hand": "= closing on hand",
+        "inventory_flow_report": "Inventory Flow Report",
+        "on_hand_end": "On hand (end)",
+        "opening_on_hand": "Opening on hand"
+      }
+    },
+    "Inventory": {
+      "text": {
+        "generated_at_the_moment": "Generated at the moment of viewing from currently recorded ledger activity. Only item types with recorded usable, outdated, trashed, or diverted quantity are listed; the full catalog is larger.",
+        "no_stock_on_hand": "No stock on hand yet."
+      }
+    },
+    "MailingLabels": {
+      "text": {
+        "no_mailing_labels_nobody": "No mailing labels: nobody selected has a complete address."
+      }
+    },
+    "OrderForm": {
+      "text": {
+        "anything_you_need_that": "Anything you need that isn't listed above:",
+        "date_needed_by": "Date Needed By",
+        "no_items_are_currently": "No items are currently available to request.",
+        "order_request_form": "Order Request Form",
+        "organization_pod_name": "Organization / POD Name",
+        "this_list_reflects_items": "This list reflects items with stock on hand at the time this form was generated and may change before your order is processed. Quantities are not guaranteed until confirmed.",
+        "write_the_quantity_needed": "Write the quantity needed next to each item below, then return this form (email, fax, or in person) to be entered as your order. Items listed here have stock currently available. If you need something not listed, use the \"Other Needs\" section at the bottom."
+      }
+    },
+    "Orders": {
+      "text": {
+        "includes_every_order_in": "Includes every order in New Order, Ready to Fill, Filling, or Filled status — anything not yet Shipped.",
+        "no_outstanding_orders": "No outstanding orders.",
+        "outstanding_orders_report": "Outstanding Orders Report"
+      }
+    },
+    "Partners": {
+      "text": {
+        "partner_request": "Partner / Request"
+      }
+    },
+    "PickSheets": {
+      "text": {
+        "nothing_to_pick_on": "Nothing to pick on this order.",
+        "open_pallet_first": "(open pallet first)",
+        "qty_to_pick": "Qty to Pick",
+        "take_the_whole_pallet": "(take the whole pallet)"
+      }
+    },
+    "ShippingLabel": {
+      "text": {
+        "ship_to_delivery_address": "Ship To / Delivery Address"
+      }
+    },
+    "Sitrep": {
+      "text": {
+        "item_types_stocked": "Item types stocked",
+        "last_30_days": "Last 30 days",
+        "last_7_days": "Last 7 days",
+        "no_orders_placed_yet": "No orders placed yet.",
+        "orders_by_county": "Orders by County",
+        "stock_on_hand": "Stock on Hand",
+        "this_is_a_live": "This is a live operational snapshot generated at the moment of viewing, not an official or final report. Figures reflect activity currently recorded in the system and may be revised as data entry catches up with physical operations.",
+        "total_units_on_hand": "Total units on hand"
+      }
+    },
+    "Training": {
+      "Certificate": {
+        "text": {
+          "certificate_of_completion": "Certificate of Completion",
+          "no_trainee_has_completed": "No trainee has completed all six stations in this range yet.",
+          "this_certifies_that": "This certifies that"
+        }
+      },
+      "ReportCards": {
+        "text": {
+          "each_number_is_how": "Each number is how many actions the trainee recorded at that station.",
+          "no_trainee_activity_in": "No trainee activity in this range.",
+          "training_report_cards": "Training Report Cards"
+        }
+      },
+      "SetupPacket": {
+        "text": {
+          "already_sorted_not_on": "Already sorted, not on a pallet yet — the first team builds a pallet from these and puts it on a table spot.",
+          "contents_slips_cut_apart": "Contents slips — cut apart, one with each spot and load",
+          "how_it_works": "How it works",
+          "in_round_2_each": "In Round 2 each team delivers the load it shipped to its own driver at Station 5.",
+          "nothing_each_team_delivers": "Nothing — each team delivers the load it shipped",
+          "nothing_the_teams_sort": "Nothing — the teams sort what they received",
+          "orders_waiting_to_be": "Orders waiting to be picked (Ready to Fill)",
+          "put_out_boxes_of": "Put out boxes of your own goods to receive; the receiving team matches each delivery to one of these phoned-in offers.",
+          "sorted_goods_on_the": "Sorted goods on the sorting area table",
+          "training_setup_packet": "Training Setup Packet"
+        }
+      },
+      "SignupPoster": {
+        "text": {
+          "scan_with_your_phone": "Scan with your phone camera — it takes less than a minute.",
+          "sign_up_for_training": "Sign Up for Training",
+          "sign_up_for_training_2": "Sign up for training"
+        }
+      },
+      "SpotLabels": {
+        "text": {
+          "table_spot_labels": "Table Spot Labels"
+        }
+      },
+      "TeamSheet": {
+        "text": {
+          "round_1_at_every": "= Round 1 at every station.",
+          "round_1_segment_1": "Round 1 (segment 1)",
+          "round_2_segment_2": "Round 2 (segment 2)",
+          "training_team_sheets": "Training Team Sheets",
+          "when_the_trainer_calls": "when the trainer calls time: go to the next station on the list below (Station 6 goes back to Station 1).",
+          "your_team_driver_station": "Your team driver (Station 6, Driver Portal):"
+        }
+      }
+    },
+    "Unfulfilled": {
+      "text": {
+        "cut_at_allocation": "Cut at Allocation",
+        "item_types_short_across": "item types short across",
+        "items_not_filled": "Items Not Filled",
+        "not_filled_by_label": "Not Filled by {{ $label }}",
+        "short_at_picking": "Short at Picking",
+        "unfulfilled_requests_report": "Unfulfilled Requests Report"
+      }
+    }
+  }
+}

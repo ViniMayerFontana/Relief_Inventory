@@ -28,6 +28,10 @@ x-settings: &settings
   # If you change the port, change the "8080:8080" mapping under `app` too.
   APP_URL: http://localhost:8080
 
+  # UI/e-mail language for this deployment (config/app.php): pt_BR = Brazilian
+  # Portuguese, the default of this fork ('en' is the upstream default).
+  APP_LOCALE: pt_BR
+
   # --- Optional: uncomment and edit what you need ---------------------------
 
   # If this server is reachable from the internet before you've finished the

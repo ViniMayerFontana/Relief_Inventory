@@ -13,6 +13,7 @@ import { ref, computed, nextTick } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	trainees: { type: Array, default: () => [] },
@@ -45,7 +46,7 @@ const groups = computed(() => {
 	}
 	return [...byTeam.entries()]
 		.sort(([a], [b]) => (a || 99) - (b || 99))
-		.map(([key, people]) => ({ label: key ? 'Team ' + key : 'No team yet', people }));
+		.map(([key, people]) => ({ label: key ? t('Commons.text.team') + key : 'No team yet', people }));
 });
 
 function pick(trainee) {
@@ -72,7 +73,7 @@ function back() {
 
 async function submit() {
 	if (!team.value) {
-		error.value = 'Choose your team.';
+		error.value = t('Pages.Auth.text.choose_your_team');
 		return;
 	}
 	busy.value = true;
@@ -83,7 +84,7 @@ async function submit() {
 			: await axios.post('/training-login', { person_id: selected.value.id, team: team.value });
 		window.location.href = response.data.redirect || '/dashboard';
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not log in. Please try again.';
+		error.value = e.response?.data?.message || t('Pages.Auth.text.could_not_log_in');
 	} finally {
 		busy.value = false;
 	}
@@ -91,29 +92,29 @@ async function submit() {
 </script>
 
 <template>
-	<Head title="Training Login" />
+	<Head :title="$t('Commons.title.training_login')" />
 	<GuestLayout>
 		<div class="text-center mb-4">
-			<h1 class="text-xl font-bold text-gray-800">Training Login</h1>
-			<p class="text-sm text-gray-600">Tap your name to start.</p>
+			<h1 class="text-xl font-bold text-gray-800">{{ $t('Commons.heading.training_login', {}) }}</h1>
+			<p class="text-sm text-gray-600">{{ $t('Pages.Auth.text.tap_your_name_to', {}) }}</p>
 		</div>
 
 		<!-- ======================= PICK A NAME ======================= -->
 		<div v-if="!selected && !adding" class="space-y-4">
 			<div class="flex gap-2">
-				<input v-model="search" type="text" placeholder="Find your name..."
+				<input v-model="search" type="text" :placeholder="$t('Pages.Auth.placeholder.find_your_name')"
 					class="flex-1 border-gray-300 rounded-md shadow-sm" />
 				<button type="button" @click="startAdd"
 					class="px-3 py-2 bg-gray-800 text-white rounded-md text-sm font-semibold hover:bg-gray-700">
-					Add New
+					{{ $t('Commons.button.add_new', {}) }}
 				</button>
 			</div>
 
 			<p v-if="!trainees.length" class="text-sm text-gray-500 text-center">
-				No one is on the training list yet — tap Add New.
+				{{ $t('Pages.Auth.text.no_one_is_on', {}) }}
 			</p>
 			<p v-else-if="!filtered.length" class="text-sm text-gray-500 text-center">
-				No name matches. Tap Add New if you're not on the list.
+				{{ $t('Pages.Auth.text.no_name_matches_tap', {}) }}
 			</p>
 
 			<div v-for="group in groups" :key="group.label" class="space-y-2">
@@ -133,14 +134,14 @@ async function submit() {
 
 			<p v-if="selected" class="text-center font-medium text-gray-800">{{ selected.full_name }}</p>
 			<div v-else class="grid grid-cols-2 gap-2">
-				<input ref="firstEl" v-model="firstName" type="text" placeholder="First name" required
+				<input ref="firstEl" v-model="firstName" type="text" :placeholder="$t('Commons.placeholder.first_name')" required
 					class="border-gray-300 rounded-md shadow-sm" />
-				<input v-model="lastName" type="text" placeholder="Last name" required
+				<input v-model="lastName" type="text" :placeholder="$t('Commons.placeholder.last_name')" required
 					class="border-gray-300 rounded-md shadow-sm" />
 			</div>
 
 			<div>
-				<p class="text-sm text-gray-600 text-center mb-2">Your team</p>
+				<p class="text-sm text-gray-600 text-center mb-2">{{ $t('Commons.text.your_team', {}) }}</p>
 				<div class="flex justify-center gap-2">
 					<button v-for="n in teams" :key="n" type="button" @click="team = n"
 						:class="['w-12 h-12 rounded-md border text-lg font-semibold',
@@ -154,14 +155,14 @@ async function submit() {
 
 			<button type="submit" :disabled="busy"
 				class="w-full py-3 bg-blue-600 text-white rounded-md font-semibold hover:bg-blue-700 disabled:opacity-50">
-				{{ busy ? 'Logging in…' : 'Start' }}
+				{{ busy ? $t('Commons.button.logging_in') : $t('Commons.button.start') }}
 			</button>
 		</form>
 
 		<div class="text-center pt-4 mt-4 border-t space-x-4">
-			<span class="text-xs text-gray-500">Staff:</span>
-			<Link v-if="staffPinAvailable" :href="route('unlock')" class="text-sm text-gray-500 underline">Log in with PIN</Link>
-			<Link :href="route('login', { email: 1 })" class="text-sm text-gray-500 underline">Log in with email</Link>
+			<span class="text-xs text-gray-500">{{ $t('Commons.text.staff', {}) }}</span>
+			<Link v-if="staffPinAvailable" :href="route('unlock')" class="text-sm text-gray-500 underline">{{ $t('Pages.Auth.link.log_in_with_pin', {}) }}</Link>
+			<Link :href="route('login', { email: 1 })" class="text-sm text-gray-500 underline">{{ $t('Pages.Auth.link.log_in_with_email', {}) }}</Link>
 		</div>
 	</GuestLayout>
 </template>

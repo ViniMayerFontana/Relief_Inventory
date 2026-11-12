@@ -51,3 +51,4 @@ Read the one for the area you're changing.
 - [ROUTES.md](notes/ROUTES.md): how `routes/web.php` is split into `routes/web/*.php`; where to add a route, which gate to use
 - [FRONTEND.md](notes/FRONTEND.md): RIForm, autosave screens, help guides
 - [SCANNING_INTERFACE_NOTES.md](notes/SCANNING_INTERFACE_NOTES.md): scanner UX rules and checklist
+- [I18N_GLOSSARY.md](notes/I18N_GLOSSARY.md): EN→pt-BR translation glossary and known `@ai-localizer/cli` limitations (i18n-copilot workflow)

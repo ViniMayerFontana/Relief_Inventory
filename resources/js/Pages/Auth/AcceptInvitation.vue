@@ -30,11 +30,10 @@ const submit = () => form.post(route('invitations.accept', props.token), { onFin
 	<GuestLayout>
 		<Head :title="`Join ${warehouseName}`" />
 
-		<h1 class="text-lg font-semibold text-gray-900">Join {{ warehouseName }}</h1>
+		<h1 class="text-lg font-semibold text-gray-900">{{ $t('Commons.heading.join') }} {{ warehouseName }}</h1>
 		<p class="mt-1 text-sm text-gray-600">
-			<template v-if="invitedBy">{{ invitedBy }} has invited</template><template v-else>You have been invited</template>
-			your login <strong>{{ email }}</strong> to join this warehouse. Nothing changes until you accept.
-			Enter that login's password to accept.
+			<template v-if="invitedBy">{{ invitedBy }} {{ $t('Commons.text.has_invited') }}</template><template v-else>{{ $t('Pages.Auth.text.you_have_been_invited', {}) }}</template>
+			{{ $t('Commons.text.your_login', {}) }} <strong>{{ email }}</strong> {{ $t('Pages.Auth.text.to_join_this_warehouse', {}) }}
 		</p>
 
 		<form @submit.prevent="submit">
@@ -44,7 +43,7 @@ const submit = () => form.post(route('invitations.accept', props.token), { onFin
 				<InputError class="mt-2" :message="form.errors.password" />
 			</div>
 			<div class="mt-6 flex justify-end">
-				<PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">Accept and sign in</PrimaryButton>
+				<PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">{{ $t('Pages.Auth.button.accept_and_sign_in', {}) }}</PrimaryButton>
 			</div>
 		</form>
 	</GuestLayout>

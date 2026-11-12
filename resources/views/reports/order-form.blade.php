@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Order Request Form</title>
+    <title>{{ __("reports.OrderForm.text.order_request_form") }}</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Order Request Form — generated {{ $generatedAt->format('F j, Y') }}";
+                content: "Order Request Form — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -135,24 +135,22 @@
     </style>
 </head>
 <body>
-    <h1>Order Request Form</h1>
+    <h1>{{ __("reports.OrderForm.text.order_request_form") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; generated {{ $generatedAt->format('F j, Y') }}
+        {{ config('app.name') }} &mdash; {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')]) }}
     </div>
 
     <div class="instructions">
-        Write the quantity needed next to each item below, then return this form (email, fax, or in person) to be
-        entered as your order. Items listed here have stock currently available. If you need something not listed,
-        use the "Other Needs" section at the bottom.
+        {{ __("reports.OrderForm.text.write_the_quantity_needed") }}
     </div>
 
     <div class="fields">
-        <div class="field"><label>Organization / POD Name</label><div class="line"></div></div>
-        <div class="field"><label>Contact Name</label><div class="line"></div></div>
-        <div class="field"><label>Phone</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("reports.OrderForm.text.organization_pod_name") }}</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("commons.text.contact_name") }}</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("commons.text.phone_2") }}</label><div class="line"></div></div>
         <div class="field"><label>Email</label><div class="line"></div></div>
-        <div class="field"><label>Delivery Address</label><div class="line"></div></div>
-        <div class="field"><label>Date Needed By</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("commons.text.delivery_address") }}</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("reports.OrderForm.text.date_needed_by") }}</label><div class="line"></div></div>
     </div>
 
     @forelse($categories as $category => $items)
@@ -162,10 +160,10 @@
                     <th class="category-heading" colspan="4">{{ $category ?? 'Uncategorized' }}</th>
                 </tr>
                 <tr>
-                    <th>Item #</th>
-                    <th>Name</th>
-                    <th>Unit</th>
-                    <th class="qty">Qty Needed</th>
+                    <th>{{ __("commons.text.item") }}</th>
+                    <th>{{ __("commons.text.name") }}</th>
+                    <th>{{ __("commons.text.unit") }}</th>
+                    <th class="qty">{{ __("commons.text.qty_needed") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -180,20 +178,19 @@
             </tbody>
         </table>
     @empty
-        <p>No items are currently available to request.</p>
+        <p>{{ __("reports.OrderForm.text.no_items_are_currently") }}</p>
     @endforelse
 
     <div class="other-needs">
-        <h2>Other Needs</h2>
-        <p>Anything you need that isn't listed above:</p>
+        <h2>{{ __("commons.text.other_needs") }}</h2>
+        <p>{{ __("reports.OrderForm.text.anything_you_need_that") }}</p>
         <div class="other-line"></div>
         <div class="other-line"></div>
         <div class="other-line"></div>
     </div>
 
     <div class="disclaimer">
-        This list reflects items with stock on hand at the time this form was generated and may change before your
-        order is processed. Quantities are not guaranteed until confirmed.
+        {{ __("reports.OrderForm.text.this_list_reflects_items") }}
     </div>
 </body>
 </html>

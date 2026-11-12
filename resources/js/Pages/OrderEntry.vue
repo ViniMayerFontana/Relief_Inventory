@@ -59,6 +59,7 @@ import TextArea from '@/Components/TextArea.vue';
 import AddressCorrectionCheck from '@/Components/AddressCorrectionCheck.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 function normalizeAddr(s) {
 	return (s || '').toString().trim().toLowerCase().replace(/\s+/g, ' ');
@@ -183,7 +184,7 @@ export default {
 				const response = await axios.get('/json/orders');
 				this.orders = response.data;
 			} catch (error) {
-				this.listError = 'Could not load orders.';
+				this.listError = t('Pages.text.could_not_load_orders');
 			} finally {
 				this.listLoading = false;
 			}
@@ -194,11 +195,11 @@ export default {
 				const response = await axios.get('/json/orders/' + id);
 				this.openOrder(response.data.record);
 			} catch (error) {
-				this.listError = 'Could not open that order.';
+				this.listError = t('Pages.text.could_not_open_that_2');
 			}
 		},
 		personLabel(person) {
-			if (!person) return '(no partner)';
+			if (!person) return t('Commons.text.no_partner');
 			const name = [person.first_name, person.last_name].filter(Boolean).join(' ');
 			return person.organization ? person.organization + (name ? ' - ' + name : '') : name || '(unnamed)';
 		},
@@ -281,7 +282,7 @@ export default {
 			if (!hasName && !hasOrg) {
 				// An order/partner contact may only have an organization known
 				// (no specific person) — that's fine.
-				this.partnerError = 'Enter a name (first and last) or an organization.';
+				this.partnerError = t('Pages.text.enter_a_name_first');
 				return;
 			}
 			this.partnerSaving = true;
@@ -294,7 +295,7 @@ export default {
 			} catch (error) {
 				this.partnerError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not save the new partner.';
+					|| t('Pages.text.could_not_save_the_10');
 			} finally {
 				this.partnerSaving = false;
 			}
@@ -313,7 +314,7 @@ export default {
 			if (!trimmed) return;
 			const state = (target.state || '').trim().toUpperCase();
 			if (state.length !== 2) {
-				this.countyError = 'Enter the partner\'s 2-letter state above before adding a new county.';
+				this.countyError = t('Pages.text.enter_the_partner_s');
 				return;
 			}
 			try {
@@ -323,7 +324,7 @@ export default {
 			} catch (error) {
 				this.countyError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not save the new county.';
+					|| t('Pages.text.could_not_save_the_11');
 			}
 		},
 		// Looks up county/city/state/zip once there's enough to geocode —
@@ -395,7 +396,7 @@ export default {
 				// (offline mode, or no API key configured) — also expected,
 				// not a fault; address entry works fine without it either way.
 				if (![422, 503].includes(error.response?.status)) {
-					this.countyError = error.response?.data?.message || 'Could not look up that address.';
+					this.countyError = error.response?.data?.message || t('Pages.text.could_not_look_up');
 				}
 			}
 		},
@@ -465,9 +466,10 @@ export default {
 		 * endpoint replaces roles/permissions from the payload, so the
 		 * person's existing ones are sent back unchanged.
 		 */
+
 		async confirmPartner() {
 			if (!this.partnerId) {
-				this.partnerError = 'Choose or add a partner first.';
+				this.partnerError = t('Pages.text.choose_or_add_a');
 				return;
 			}
 			this.partnerError = null;
@@ -492,7 +494,7 @@ export default {
 			} catch (error) {
 				this.partnerError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not start the order.';
+					|| t('Pages.text.could_not_start_the_4');
 			} finally {
 				this.partnerSaving = false;
 			}
@@ -566,7 +568,7 @@ export default {
 			} catch (error) {
 				this.reviewError = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Could not complete the order.';
+					|| t('Pages.text.could_not_complete_the');
 			} finally {
 				this.headerSaving = false;
 			}
@@ -597,12 +599,12 @@ export default {
 			this.lineError = null;
 			this.confirmingLineKey = null;
 			if (!this.entry.itemtype_id) {
-				this.lineError = 'Choose an item first.';
+				this.lineError = t('Pages.text.choose_an_item_first');
 				return;
 			}
 			const qty = parseInt(this.entry.qty, 10);
 			if (!qty || qty < 1) {
-				this.lineError = 'Enter a quantity of 1 or more.';
+				this.lineError = t('Pages.text.enter_a_quantity_of_2');
 				return;
 			}
 
@@ -633,7 +635,7 @@ export default {
 				if (idx !== -1) this.lines.splice(idx, 1, { ...response.data.record, status: 'saved' });
 				this.resetEntry();
 			} catch (error) {
-				this.lineError = 'Could not combine with the existing line.';
+				this.lineError = t('Pages.text.could_not_combine_with');
 			}
 		},
 		cancelDuplicate() {
@@ -685,7 +687,7 @@ export default {
 				const idx = this.findLineIndex(line);
 				const errorMessage = error.response?.data?.message
 					|| Object.values(error.response?.data?.errors || {}).flat().join(' ')
-					|| 'Network error';
+					|| t('Commons.text.network_error');
 				if (idx !== -1) {
 					this.lines.splice(idx, 1, { ...line, status: 'failed', errorMessage });
 				}
@@ -709,7 +711,7 @@ export default {
 				await axios.delete('/json/orders/' + this.order.id + '/lines/' + line.id);
 				this.lines = this.lines.filter((entry) => entry !== line);
 			} catch (error) {
-				this.lineError = 'Could not delete the line. Try again.';
+				this.lineError = t('Pages.text.could_not_delete_the');
 			}
 		},
 		retryFailed() {
@@ -750,31 +752,31 @@ export default {
 </script>
 
 <template>
-	<Head title="Order Entry" />
+	<Head :title="$t('Commons.title.order_entry')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<!-- ======================= ORDER LIST ======================= -->
 		<div v-if="view === 'list'" class="oe_container">
 			<h2 class="ri_datatable_head">
-				Order Entry
-				<HelpLink guide="order-entry">Order Entry Guide</HelpLink>
+				{{ $t('Commons.heading.order_entry', {}) }}
+				<HelpLink guide="order-entry">{{ $t('Pages.text.order_entry_guide', {}) }}</HelpLink>
 				<span class="oe_headeractions">
-					<PrintMenu document-key="order-form" media="report" variant="form" label="Offline Order Form"
+					<PrintMenu document-key="order-form" media="report" variant="form" :label="$t('Pages.label.offline_order_form')"
 						download-href="/report/order-form.pdf" />
-					<button @click="startNewOrder" class="ri_defaultbutton">New Order</button>
+					<button @click="startNewOrder" class="ri_defaultbutton">{{ $t('Commons.button.new_order', {}) }}</button>
 				</span>
 			</h2>
 
 			<p v-if="listError" class="oe_error">{{ listError }}</p>
-			<p v-if="listLoading">Loading orders...</p>
+			<p v-if="listLoading">{{ $t('Pages.text.loading_orders', {}) }}</p>
 
 			<div class="oe_section">
-				<h3>Open Orders - tap to open</h3>
-				<p v-if="!orders.open.length && !listLoading">No open orders.</p>
+				<h3>{{ $t('Pages.heading.open_orders_tap_to', {}) }}</h3>
+				<p v-if="!orders.open.length && !listLoading">{{ $t('Pages.text.no_open_orders', {}) }}</p>
 				<div v-else class="oe_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Date</th><th>Partner</th><th>Lines</th><th>Items</th><th>Status</th><th>Entered By</th></tr>
+						<tr><th>{{ $t('Commons.text.date', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.lines', {}) }}</th><th>{{ $t('Commons.text.items', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.entered_by', {}) }}</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in orders.open" :key="record.id"
@@ -791,10 +793,10 @@ export default {
 			</div>
 
 			<div v-if="orders.recent.length" class="oe_section">
-				<h3>Recently Completed</h3>
+				<h3>{{ $t('Commons.heading.recently_completed', {}) }}</h3>
 				<div class="oe_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>Date</th><th>Partner</th><th>Lines</th><th>Items</th><th>Status</th><th>Entered By</th></tr>
+						<tr><th>{{ $t('Commons.text.date', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.lines', {}) }}</th><th>{{ $t('Commons.text.items', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.entered_by', {}) }}</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in orders.recent" :key="record.id"
@@ -816,7 +818,7 @@ export default {
 			<div class="oe_topbar">
 				<button @click="cancelPartnerScreen" class="ri_formbutton">&larr; Back</button>
 				<span class="oe_title">
-					{{ partnerMode === 'change' ? 'Change Partner' : 'New Order — Who is this for?' }}
+					{{ partnerMode === 'change' ? 'Change Partner' : $t('Pages.text.new_order_who_is') }}
 				</span>
 			</div>
 			<p v-if="partnerError" class="oe_error">{{ partnerError }}</p>
@@ -829,7 +831,7 @@ export default {
 					optionsource="/json/people"
 					display="search_label"
 					:searchfields="['full_name', 'organization', 'city']"
-					placeholder="Search by name or organization..."
+					:placeholder="$t('Pages.placeholder.search_by_name_or_2')"
 					:allowcreate="true"
 					@selected="partnerSelected"
 					@create="startNewPartner"
@@ -838,7 +840,7 @@ export default {
 
 			<!-- quick-add: a phone-in partner who isn't in People yet -->
 			<div v-if="creatingPartner" class="oe_card">
-				<h3>New Partner</h3>
+				<h3>{{ $t('Commons.heading.new_partner', {}) }}</h3>
 				<!-- ZIP before Address: geocod.io resolves city/state/county
 				     confidently from street+zip alone (tested rooftop
 				     accuracy), so asking ZIP first (quick to state on a call)
@@ -847,25 +849,25 @@ export default {
 				     confirmation pass over already-filled fields, not the
 				     only source of them. See maybeAutoLookupCounty(). -->
 				<div class="oe_contactgrid" @blur.capture="maybeAutoLookupCounty(newPartner)">
-					<div class="oe_field"><label>First Name:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.first_name', {}) }}</label>
 						<input type="text" v-model="newPartner.first_name" class="ri_forminput"
 							autofocus @keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Last Name:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.last_name', {}) }}</label>
 						<input type="text" v-model="newPartner.last_name" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Organization:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.organization', {}) }}</label>
 						<input type="text" v-model="newPartner.organization" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Phone:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.phone', {}) }}</label>
 						<input type="text" v-model="newPartner.phone" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
 					<div class="oe_field"><label>Email:</label>
 						<input type="email" v-model="newPartner.email" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Zip:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.zip', {}) }}</label>
 						<input type="text" v-model="newPartner.zip" maxlength="10" class="ri_forminput oe_zip"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Address:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.address', {}) }}</label>
 						<input type="text" v-model="newPartner.address" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
 					<AddressCorrectionCheck v-if="addressCheckTarget === newPartner"
@@ -876,18 +878,18 @@ export default {
 						&& !(addressCheckTarget === newPartner && addressCheck.status !== 'idle')" class="oe_hint">
 						<button type="button" class="ri_formbutton" :disabled="$page.props.offlineMode"
 							@click="verifyAddress(newPartner)">
-							{{ $page.props.offlineMode ? "Can't verify address — offline" : 'Verify Address' }}
+							{{ $page.props.offlineMode ? "Can't verify address — offline" : $t('Commons.button.verify_address') }}
 						</button>
 					</p>
-					<div class="oe_field"><label>City:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.city', {}) }}</label>
 						<input type="text" v-model="newPartner.city" class="ri_forminput"
 							:disabled="addressCheckTarget === newPartner && addressCheck.status === 'checking'"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>State:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.state', {}) }}</label>
 						<input type="text" v-model="newPartner.state" maxlength="2" class="ri_forminput oe_state"
 							:disabled="addressCheckTarget === newPartner && addressCheck.status === 'checking'"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>County:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.county', {}) }}</label>
 						<SearchSelect
 							ref="newPartnerCountySelect"
 							v-model="newPartner.county_id"
@@ -896,7 +898,7 @@ export default {
 							secondary="state"
 							:searchfields="['county']"
 							:filter="(c) => !newPartner.state || c.state === newPartner.state.toUpperCase()"
-							placeholder="Search counties..."
+							:placeholder="$t('Pages.placeholder.search_counties')"
 							:allowcreate="true"
 							@create="(name) => createCounty(name, newPartner, 'newPartnerCountySelect')"
 						/></div>
@@ -906,38 +908,38 @@ export default {
 				<div class="oe_actions">
 					<button @click="saveNewPartner" class="ri_defaultbutton"
 						:disabled="partnerSaving || (addressCheckTarget === newPartner && addressCheck.status !== 'idle')">
-						{{ partnerSaving ? 'Saving...'
-							: (addressCheckTarget === newPartner && addressCheck.status === 'checking') ? 'Checking address…'
-							: 'Save Partner' }}
+						{{ partnerSaving ? $t('Pages.button.saving')
+							: (addressCheckTarget === newPartner && addressCheck.status === 'checking') ? $t('Commons.button.checking_address')
+							: $t('Commons.button.save_partner') }}
 					</button>
-					<button @click="creatingPartner = false" class="ri_formbutton">Cancel</button>
+					<button @click="creatingPartner = false" class="ri_formbutton">{{ $t('Commons.button.cancel', {}) }}</button>
 				</div>
 			</div>
 
 			<!-- confirm/update contact & shipping details before starting -->
 			<div v-else-if="contact" class="oe_card">
-				<h3>Confirm Contact &amp; Shipping Details</h3>
-				<p class="oe_hint">Make sure this is up to date — it's where the order ships.</p>
+				<h3>{{ $t('Pages.heading.confirm_contact_shipping_details', {}) }}</h3>
+				<p class="oe_hint">{{ $t('Pages.text.make_sure_this_is', {}) }}</p>
 				<div class="oe_contactgrid" @blur.capture="maybeAutoLookupCounty(contact)">
-					<div class="oe_field"><label>First Name:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.first_name', {}) }}</label>
 						<input type="text" v-model="contact.first_name" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Last Name:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.last_name', {}) }}</label>
 						<input type="text" v-model="contact.last_name" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Organization:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.organization', {}) }}</label>
 						<input type="text" v-model="contact.organization" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Phone:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.phone', {}) }}</label>
 						<input type="text" v-model="contact.phone" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
 					<div class="oe_field"><label>Email:</label>
 						<input type="email" v-model="contact.email" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Zip:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.zip', {}) }}</label>
 						<input type="text" v-model="contact.zip" maxlength="10" class="ri_forminput oe_zip"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Address:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.address', {}) }}</label>
 						<input type="text" v-model="contact.address" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
 					<AddressCorrectionCheck v-if="addressCheckTarget === contact"
@@ -948,18 +950,18 @@ export default {
 						&& !(addressCheckTarget === contact && addressCheck.status !== 'idle')" class="oe_hint">
 						<button type="button" class="ri_formbutton" :disabled="$page.props.offlineMode"
 							@click="verifyAddress(contact)">
-							{{ $page.props.offlineMode ? "Can't verify address — offline" : 'Verify Address' }}
+							{{ $page.props.offlineMode ? "Can't verify address — offline" : $t('Commons.button.verify_address') }}
 						</button>
 					</p>
-					<div class="oe_field"><label>City:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.city', {}) }}</label>
 						<input type="text" v-model="contact.city" class="ri_forminput"
 							:disabled="addressCheckTarget === contact && addressCheck.status === 'checking'"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>State:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.state', {}) }}</label>
 						<input type="text" v-model="contact.state" maxlength="2" class="ri_forminput oe_state"
 							:disabled="addressCheckTarget === contact && addressCheck.status === 'checking'"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>County:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.county', {}) }}</label>
 						<SearchSelect
 							ref="countySelect"
 							v-model="contact.county_id"
@@ -968,7 +970,7 @@ export default {
 							secondary="state"
 							:searchfields="['county']"
 							:filter="(c) => !contact.state || c.state === contact.state.toUpperCase()"
-							placeholder="Search counties..."
+							:placeholder="$t('Pages.placeholder.search_counties')"
 							:allowcreate="true"
 							@create="(name) => createCounty(name, contact, 'countySelect')"
 						/></div>
@@ -978,10 +980,10 @@ export default {
 				<div class="oe_actions">
 					<button @click="confirmPartner" class="ri_defaultbutton"
 						:disabled="partnerSaving || (addressCheckTarget === contact && addressCheck.status !== 'idle')">
-						{{ partnerSaving ? 'Saving...'
-							: (addressCheckTarget === contact && addressCheck.status === 'checking') ? 'Checking address…'
-							: (contactDirty ? 'Save Details & ' : '')
-								+ (partnerMode === 'change' ? 'Use This Partner' : 'Start Order') }} &rarr;
+						{{ partnerSaving ? $t('Pages.button.saving')
+							: (addressCheckTarget === contact && addressCheck.status === 'checking') ? $t('Commons.button.checking_address')
+							: (contactDirty ? $t('Pages.button.save_details') : '')
+								+ (partnerMode === 'change' ? $t('Pages.button.use_this_partner') : $t('Commons.button.start_order')) }} &rarr;
 					</button>
 				</div>
 			</div>
@@ -991,52 +993,52 @@ export default {
 		<div v-else-if="view === 'review' && order && review" class="oe_container oe_partner">
 			<div class="oe_topbar">
 				<button @click="backFromReview" class="ri_formbutton">&larr; Back</button>
-				<span class="oe_title">Review &amp; Confirm — Order #{{ order.id }}</span>
+				<span class="oe_title">{{ $t('Pages.text.review_confirm_order') }} {{ order.id }}</span>
 			</div>
 			<p v-if="reviewError" class="oe_error">{{ reviewError }}</p>
 			<p v-if="headerError" class="oe_error">{{ headerError }}</p>
 
 			<div class="oe_card">
-				<h3>Order Summary</h3>
+				<h3>{{ $t('Commons.heading.order_summary', {}) }}</h3>
 				<p class="oe_hint">
-					{{ personLabel(order.person) }} &mdash; {{ totals.lines }} line(s), {{ totals.qty }} item(s) total.
+					{{ personLabel(order.person) }} &mdash; {{ totals.lines }} line(s), {{ totals.qty }} {{ $t('Pages.text.item_s_total') }}
 				</p>
 			</div>
 
 			<div class="oe_card">
-				<h3>Comments</h3>
-				<TextArea v-model="review.comments" placeholder="Anything the warehouse should know about this order..." />
+				<h3>{{ $t('Commons.heading.comments', {}) }}</h3>
+				<TextArea v-model="review.comments" :placeholder="$t('Pages.placeholder.anything_the_warehouse_should')" />
 			</div>
 
 			<div class="oe_card">
-				<h3>Needed But Not in Catalog</h3>
-				<p class="oe_hint">Anything this partner needs that isn't listed in our items — same as "Other Needs" on the offline order form.</p>
-				<TextArea v-model="review.other_needs" placeholder="Items not available to order..." />
+				<h3>{{ $t('Pages.heading.needed_but_not_in', {}) }}</h3>
+				<p class="oe_hint">{{ $t('Pages.text.anything_this_partner_needs', {}) }}</p>
+				<TextArea v-model="review.other_needs" :placeholder="$t('Pages.placeholder.items_not_available_to')" />
 			</div>
 
 			<div class="oe_card">
-				<h3>Delivery or Pickup</h3>
+				<h3>{{ $t('Pages.heading.delivery_or_pickup', {}) }}</h3>
 				<div class="oe_radiogroup">
-					<label><input type="radio" value="delivery" v-model="review.fulfillment_method" /> Delivery</label>
-					<label><input type="radio" value="pickup" v-model="review.fulfillment_method" /> Pickup</label>
+					<label><input type="radio" value="delivery" v-model="review.fulfillment_method" /> {{ $t('Commons.heading.delivery', {}) }}</label>
+					<label><input type="radio" value="pickup" v-model="review.fulfillment_method" /> {{ $t('Commons.heading.pickup_2', {}) }}</label>
 				</div>
 
 				<div class="oe_field">
-					<label>Needed By Date:</label>
+					<label>{{ $t('Pages.label.needed_by_date', {}) }}</label>
 					<!-- blur on pick: the native picker otherwise leaves focus parked in the field -->
 					<input type="date" v-model="review.needed_by_date" class="ri_forminput" @change="$event.target.blur()" />
 				</div>
 
 				<template v-if="review.fulfillment_method === 'delivery'">
 					<div class="oe_field oe_daysfield">
-						<label>Can Accept Delivery:</label>
+						<label>{{ $t('Pages.label.can_accept_delivery', {}) }}</label>
 						<div class="oe_daypicker">
 							<button
 								type="button"
 								class="oe_daychip"
 								:class="{ oe_daychip_active: review.delivery_days.length === weekDays.length }"
 								@click="selectAllDays"
-							>Any Day</button>
+							>{{ $t('Commons.button.any_day', {}) }}</button>
 							<button
 								v-for="day in weekDays" :key="day"
 								type="button"
@@ -1047,36 +1049,36 @@ export default {
 						</div>
 					</div>
 					<p class="oe_hint">
-						{{ review.delivery_days.length ? 'Available: ' + review.delivery_days.join(', ') : 'No days selected' }}
+						{{ review.delivery_days.length ? $t('Commons.text.available') + review.delivery_days.join(', ') : $t('Pages.text.no_days_selected') }}
 					</p>
 					<div class="oe_field">
-						<label>Preferred Time:</label>
-						<input type="text" v-model="review.preferred_time" class="ri_forminput" placeholder="e.g. 10am - 2pm" />
+						<label>{{ $t('Commons.label.preferred_time', {}) }}</label>
+						<input type="text" v-model="review.preferred_time" class="ri_forminput" :placeholder="$t('Pages.placeholder.e_g_10am_2pm')" />
 					</div>
 				</template>
-				<p v-else class="oe_hint">Pickup days and times are set by the warehouse.</p>
+				<p v-else class="oe_hint">{{ $t('Pages.text.pickup_days_and_times', {}) }}</p>
 			</div>
 
 			<div class="oe_card">
-				<h3>{{ review.fulfillment_method === 'pickup' ? 'Pickup' : 'Delivery' }} Contact</h3>
-				<p class="oe_hint">Defaults to the partner on file — change it if someone else is receiving this order.</p>
+				<h3>{{ review.fulfillment_method === 'pickup' ? $t('Commons.heading.pickup_2') : $t('Commons.heading.delivery') }} {{ $t('Commons.heading.contact') }}</h3>
+				<p class="oe_hint">{{ $t('Pages.text.defaults_to_the_partner', {}) }}</p>
 				<div class="oe_contactgrid">
-					<div class="oe_field"><label>Contact Name:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.contact_name', {}) }}</label>
 						<input type="text" v-model="review.contact_name" class="ri_forminput" /></div>
-					<div class="oe_field"><label>Contact Phone:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.contact_phone', {}) }}</label>
 						<input type="text" v-model="review.contact_phone" class="ri_forminput" /></div>
 				</div>
 			</div>
 
 			<div class="oe_card">
-				<h3>Special Delivery Instructions</h3>
-				<p class="oe_hint">Gate codes, dock location, who to contact on arrival &mdash; carried through to the BOL when this order ships. Not the same as "Needed But Not in Catalog" above.</p>
-				<TextArea v-model="review.special_instructions" placeholder="Instructions for the driver..." />
+				<h3>{{ $t('Pages.heading.special_delivery_instructions', {}) }}</h3>
+				<p class="oe_hint">{{ $t('Pages.text.gate_codes_dock_location', {}) }}</p>
+				<TextArea v-model="review.special_instructions" :placeholder="$t('Pages.placeholder.instructions_for_the_driver')" />
 			</div>
 
 			<div class="oe_actions">
 				<button @click="completeOrder" class="ri_defaultbutton" :disabled="headerSaving">
-					{{ headerSaving ? 'Saving...' : 'Submit Order' }}
+					{{ headerSaving ? $t('Pages.button.saving') : 'Submit Order' }}
 				</button>
 			</div>
 		</div>
@@ -1086,18 +1088,18 @@ export default {
 			<div class="oe_topbar">
 				<button @click="closeOrder" class="ri_formbutton">&larr; All Orders</button>
 				<span class="oe_title">
-					Order #{{ order.id }}<span v-if="order.order_date" class="oe_title_date"> &middot; {{ order.order_date }}</span>
+					{{ $t('Commons.text.order') }} {{ order.id }}<span v-if="order.order_date" class="oe_title_date"> &middot; {{ order.order_date }}</span>
 					<span v-if="readonly" class="oe_status_badge">{{ order.status ? order.status.name : '' }}</span>
 				</span>
 				<span class="oe_savestate" v-if="!readonly">
 					<span v-if="failedLines.length" class="oe_error_inline">
-						{{ failedLines.length }} line(s) failed to save
-						<button @click="retryFailed" class="ri_linkbutton">Retry All</button>
+						{{ failedLines.length }} {{ $t('Pages.text.line_s_failed_to') }}
+						<button @click="retryFailed" class="ri_linkbutton">{{ $t('Commons.button.retry_all', {}) }}</button>
 					</span>
 					<span v-else-if="headerSaving || pendingCount > 0">Saving...</span>
-					<span v-else class="oe_saved">All changes saved</span>
+					<span v-else class="oe_saved">{{ $t('Pages.text.all_changes_saved', {}) }}</span>
 				</span>
-				<button v-if="!readonly" @click="openReview" class="ri_defaultbutton">Complete Order</button>
+				<button v-if="!readonly" @click="openReview" class="ri_defaultbutton">{{ $t('Commons.button.complete_order', {}) }}</button>
 			</div>
 			<p v-if="headerError" class="oe_error">{{ headerError }}</p>
 
@@ -1108,7 +1110,7 @@ export default {
 					{{ [order.person.city, order.person.state].filter(Boolean).join(', ') }}
 				</span>
 				<span v-if="order.person && order.person.phone" class="oe_partner_where">{{ order.person.phone }}</span>
-				<button v-if="!readonly" @click="changePartner" class="ri_linkbutton">Change</button>
+				<button v-if="!readonly" @click="changePartner" class="ri_linkbutton">{{ $t('Commons.button.change', {}) }}</button>
 			</div>
 
 			<p v-if="lineError" class="oe_error">{{ lineError }}</p>
@@ -1127,7 +1129,7 @@ export default {
 				</colgroup>
 				<thead>
 					<tr>
-						<th>Item #</th><th>Qty</th><th>Item</th><th>Unit</th><th>Comments</th><th></th>
+						<th>{{ $t('Commons.text.item', {}) }}</th><th>{{ $t('Commons.placeholder.qty', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.unit', {}) }}</th><th>{{ $t('Commons.heading.comments', {}) }}</th><th></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -1141,7 +1143,7 @@ export default {
 								display="display_number"
 								secondary="name"
 								:searchfields="['display_number', 'name']"
-								placeholder="Item #..."
+								:placeholder="$t('Pages.placeholder.item')"
 								:openOnFocus="false"
 								@selected="itemChosen"
 							/>
@@ -1153,7 +1155,7 @@ export default {
 								min="1"
 								v-model="entry.qty"
 								class="ri_forminput oe_qty"
-								placeholder="Qty"
+								:placeholder="$t('Commons.placeholder.qty')"
 								@keydown.enter.prevent="addLine"
 							/>
 						</td>
@@ -1161,10 +1163,10 @@ export default {
 							{{ entry.itemtype ? entry.itemtype.name : '' }}
 							<span v-if="entryHint" class="oe_entry_hint">&mdash; {{ entryHint }}</span>
 							<select v-if="entryAvailabilityLow" v-model="entry.need_level" class="ri_forminput oe_need_level">
-								<option :value="null">Need level (optional)</option>
-								<option value="critical">Critical</option>
-								<option value="moderate">Moderate</option>
-								<option value="low">Low</option>
+								<option :value="null">{{ $t('Pages.text.need_level_optional', {}) }}</option>
+								<option value="critical">{{ $t('Commons.text.critical', {}) }}</option>
+								<option value="moderate">{{ $t('Commons.text.moderate', {}) }}</option>
+								<option value="low">{{ $t('Commons.text.low', {}) }}</option>
 							</select>
 						</td>
 						<td class="oe_entry_unit">
@@ -1175,11 +1177,11 @@ export default {
 								type="text"
 								v-model="entry.comments"
 								class="ri_forminput oe_entry_comment"
-								placeholder="Line comment (optional)"
+								:placeholder="$t('Pages.placeholder.line_comment_optional')"
 								@keydown.enter.prevent="addLine"
 							/>
 						</td>
-						<td><button @click="addLine" class="ri_defaultbutton">Add</button></td>
+						<td><button @click="addLine" class="ri_defaultbutton">{{ $t('Commons.button.add', {}) }}</button></td>
 					</tr>
 
 					<tr v-for="line in sortedLines" :key="lineKey(line)"
@@ -1195,48 +1197,48 @@ export default {
 						<td class="oe_line_actions">
 							<span v-if="line.status === 'saving'">saving...</span>
 							<template v-else-if="line.status === 'failed'">
-								<span :title="line.errorMessage">failed</span>
-								<button @click="saveLine(line)" class="ri_formbutton">Retry</button>
+								<span :title="line.errorMessage">{{ $t('Commons.heading.failed', {}) }}</span>
+								<button @click="saveLine(line)" class="ri_formbutton">{{ $t('Commons.button.retry', {}) }}</button>
 							</template>
 							<template v-else-if="confirmingLineKey === lineKey(line)">
-								<button @click="deleteLine(line)" class="oe_confirm_delete">Delete?</button>
-								<button @click="confirmingLineKey = null" class="ri_linkbutton">Keep</button>
+								<button @click="deleteLine(line)" class="oe_confirm_delete">{{ $t('Pages.button.delete', {}) }}</button>
+								<button @click="confirmingLineKey = null" class="ri_linkbutton">{{ $t('Commons.button.keep', {}) }}</button>
 							</template>
 							<img v-else-if="!readonly" src="/img/delete-icon.webp" class="oe_delete" @click="deleteLine(line)" />
 						</td>
 					</tr>
 					<tr v-if="!lines.length && readonly">
-						<td colspan="6" class="oe_empty">No items on this order.</td>
+						<td colspan="6" class="oe_empty">{{ $t('Pages.text.no_items_on_this', {}) }}</td>
 					</tr>
 				</tbody>
 			</table></div>
 
 			<div class="oe_totals" v-if="lines.length">
-				<span>Lines: <strong>{{ totals.lines }}</strong></span>
-				<span>Total items: <strong>{{ totals.qty }}</strong></span>
+				<span>{{ $t('Commons.text.lines_2', {}) }} <strong>{{ totals.lines }}</strong></span>
+				<span>{{ $t('Commons.text.total_items', {}) }} <strong>{{ totals.qty }}</strong></span>
 			</div>
 
 			<!-- duplicate item: almost always a re-scan/typo, not an intentional
 			     split order line — the only ways out are Combine or Cancel. -->
 			<div v-if="duplicateOf" class="oe_modal_backdrop" @click.self="cancelDuplicate" @keydown.tab="onDuplicateTab">
 				<div class="oe_modal">
-					<h3>Oops</h3>
-					<p>You already entered this item - here's what you requested:</p>
+					<h3>{{ $t('Commons.heading.oops', {}) }}</h3>
+					<p>{{ $t('Pages.text.you_already_entered_this', {}) }}</p>
 					<table class="oe_modal_table">
 						<thead>
-							<tr><th>Qty</th><th>Item #</th><th>Item</th><th>Unit</th></tr>
+							<tr><th>{{ $t('Commons.placeholder.qty', {}) }}</th><th>{{ $t('Commons.text.item', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.unit', {}) }}</th></tr>
 						</thead>
 						<tbody>
 							<tr>
 								<td>{{ duplicateOf.qty_requested }}</td>
 								<td>{{ duplicateOf.itemtype ? duplicateOf.itemtype.display_number : '' }}</td>
-								<td>{{ duplicateOf.itemtype ? duplicateOf.itemtype.name : 'This item' }}</td>
+								<td>{{ duplicateOf.itemtype ? duplicateOf.itemtype.name : $t('Commons.text.this_item') }}</td>
 								<td>{{ duplicateOf.itemtype && duplicateOf.itemtype.unit ? duplicateOf.itemtype.unit.name : '' }}</td>
 							</tr>
 						</tbody>
 					</table>
 					<div class="oe_modal_qty">
-						<label>Additional qty:</label>
+						<label>{{ $t('Commons.label.additional_qty', {}) }}</label>
 						<input
 							ref="duplicateQtyInput"
 							type="number"
@@ -1247,7 +1249,7 @@ export default {
 						/>
 					</div>
 					<div class="oe_modal_actions">
-						<button ref="cancelDuplicateBtn" @click="cancelDuplicate" class="ri_defaultbutton">Cancel</button>
+						<button ref="cancelDuplicateBtn" @click="cancelDuplicate" class="ri_defaultbutton">{{ $t('Commons.button.cancel', {}) }}</button>
 						<button ref="combineDuplicateBtn" @click="combineDuplicate" class="ri_formbutton" :disabled="!duplicateQty">
 							Combine &rarr; {{ Number(duplicateOf.qty_requested) + duplicateQty }}
 						</button>

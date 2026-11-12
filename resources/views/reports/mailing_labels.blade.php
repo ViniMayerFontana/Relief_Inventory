@@ -18,7 +18,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mailing Labels</title>
+    <title>{{ __("commons.text.mailing_labels") }}</title>
     <style>
         @page { size: letter; margin: 0; }
         body { font-family: Arial, sans-serif; color: #000; margin: 0; }
@@ -32,7 +32,7 @@
 </head>
 <body>
 @if ($count === 0)
-    <div class="empty">No mailing labels: nobody selected has a complete address.</div>
+    <div class="empty">{{ __("reports.MailingLabels.text.no_mailing_labels_nobody") }}</div>
 @endif
 @foreach ($sheets as $sheet)
     @if ($count > 0)

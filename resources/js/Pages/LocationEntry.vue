@@ -60,17 +60,17 @@ const locationSort = computed(() => (a, b) => {
 </script>
 
 <template>
-  <Head title="Location Management" />
+  <Head :title="$t('Commons.title.location_management')" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <RIForm
-		title="Manage Locations"
+		:title="$t('Commons.title.manage_locations')"
 		datasource="/json/locations"
-		newrecordcaption="Add Location"
+		:newrecordcaption="$t('Commons.text.add_location')"
 		:filter="locationMatchesSearch"
 		:sort="locationSort">
 
       <template #titleactions>
-        <Link href="/setup/locations/pick-path" class="ri_formbutton">Pick Path</Link>
+        <Link href="/setup/locations/pick-path" class="ri_formbutton">{{ $t('Commons.link.pick_path', {}) }}</Link>
       </template>
 
       <template #listactions>
@@ -78,19 +78,19 @@ const locationSort = computed(() => (a, b) => {
           type="text"
           v-model="locationSearch"
           class="ri_forminput location_search"
-          placeholder="Search all fields..."
+          :placeholder="$t('Pages.placeholder.search_all_fields')"
         />
       </template>
 
       <template #thead>
-        <th class="ri_sortable" @click="setSort('code')">Code{{ sortArrow('code') }}</th>
-        <th class="ri_sortable" @click="setSort('route')">Route{{ sortArrow('route') }}</th>
-        <th class="ri_sortable" @click="setSort('block')">Block{{ sortArrow('block') }}</th>
-        <th class="ri_sortable" @click="setSort('aisle')">Aisle{{ sortArrow('aisle') }}</th>
-        <th class="ri_sortable" @click="setSort('lane')">Lane{{ sortArrow('lane') }}</th>
-        <th class="ri_sortable" @click="setSort('stack')">Stack{{ sortArrow('stack') }}</th>
-        <th class="ri_sortable" @click="setSort('use')">Use{{ sortArrow('use') }}</th>
-        <th class="ri_sortable" @click="setSort('status')">Status{{ sortArrow('status') }}</th>
+        <th class="ri_sortable" @click="setSort('code')">{{ $t('Commons.text.code_2') }} {{ sortArrow('code') }}</th>
+        <th class="ri_sortable" @click="setSort('route')">{{ $t('Commons.text.route') }} {{ sortArrow('route') }}</th>
+        <th class="ri_sortable" @click="setSort('block')">{{ $t('Commons.text.block') }} {{ sortArrow('block') }}</th>
+        <th class="ri_sortable" @click="setSort('aisle')">{{ $t('Commons.text.aisle') }} {{ sortArrow('aisle') }}</th>
+        <th class="ri_sortable" @click="setSort('lane')">{{ $t('Commons.text.lane') }} {{ sortArrow('lane') }}</th>
+        <th class="ri_sortable" @click="setSort('stack')">{{ $t('Commons.text.stack') }} {{ sortArrow('stack') }}</th>
+        <th class="ri_sortable" @click="setSort('use')">{{ $t('Commons.text.use_2') }} {{ sortArrow('use') }}</th>
+        <th class="ri_sortable" @click="setSort('status')">{{ $t('Commons.button.status') }} {{ sortArrow('status') }}</th>
       </template>
 
       <template #tbody="{ record, index }">
@@ -107,37 +107,37 @@ const locationSort = computed(() => (a, b) => {
       <template #default="{ record, editing }">
         <div class="ri_formtable">
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Code: *</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.code', {}) }}</div>
             <TextInput v-model="record.code" :enabled="editing" required />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Route:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.route_2', {}) }}</div>
             <TextInput v-model="record.Route" :enabled="editing" />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Block:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.block_2', {}) }}</div>
             <TextInput v-model="record.Block" :enabled="editing" />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Aisle:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.aisle_2', {}) }}</div>
             <TextInput v-model="record.Aisle" :enabled="editing" />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Lane:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.lane_2', {}) }}</div>
             <TextInput v-model="record.Lane" :enabled="editing" />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Stack:</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.stack_2', {}) }}</div>
             <TextInput v-model="record.Stack" :enabled="editing" />
           </div>
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Use: *</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.use', {}) }}</div>
             <ComboBox
               v-model:keyValue="record.use_id"
               v-model:updates="record.use"
@@ -148,16 +148,16 @@ const locationSort = computed(() => (a, b) => {
           </div>
 		  
 		  <div class="ri_fieldset">
-		     <div class="ri_fieldlabel">Pull Sequence</div>
+		     <div class="ri_fieldlabel">{{ $t('Commons.text.pull_sequence', {}) }}</div>
 		     <TextInput v-model="record.PullSequence" type="number" :enabled="editing" />
 		   </div>
 
 
           <div class="ri_fieldset">
-            <div class="ri_fieldlabel">Status: *</div>
+            <div class="ri_fieldlabel">{{ $t('Commons.text.status', {}) }}</div>
             <ComboBox 
               v-model="record.status"
-              :options="[{ id: 'active', name: 'Active' }, { id: 'archived', name: 'Archived' }]"
+              :options="[{ id: 'active', name: $t('Commons.text.active') }, { id: 'archived', name: $t('Commons.text.archived') }]"
               :enabled="editing"
             />
           </div>

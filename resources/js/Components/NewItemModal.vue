@@ -22,6 +22,7 @@
 import SearchSelect, { invalidateOptions } from '@/Components/SearchSelect.vue';
 import axios from 'axios';
 import { playScanUnknown } from '@/scanSounds';
+import { t } from '@/i18n';
 
 // show the barcode the way it is printed: UPC-A / EAN-13 without the GTIN-14 padding zeros
 export function displayCode(code) {
@@ -98,7 +99,7 @@ export default {
 		scanNote() {
 			const scan = this.modal.scan;
 			if (scan.suggestion) {
-				return 'Suggested by ' + scan.suggestion.source_name + ' - check it against the product in front of you.';
+				return t('Components.text.suggested_by_placeholder_check', { placeholder: scan.suggestion.source_name });
 			}
 			return {
 				pending: 'Looking up product details online...',
@@ -190,77 +191,77 @@ export default {
 <template>
 	<div class="nim_overlay" @click.self="close">
 		<div class="nim_box" ref="box" tabindex="-1" @keydown.self="onStrayKey">
-			<h3>Add New Item</h3>
+			<h3>{{ $t('Components.heading.add_new_item', {}) }}</h3>
 			<p v-if="error" class="nim_error">{{ error }}</p>
 			<template v-if="modal.scan">
 				<p class="nim_note">{{ scanNote() }}</p>
 				<img v-if="modal.scan.suggestion?.image_url" :src="modal.scan.suggestion.image_url" alt="" class="nim_image" />
 				<div class="nim_field" v-if="allowCarton">
-					<label>This barcode is on:</label>
-					<label class="nim_radio"><input type="radio" value="each" v-model="modal.kind" /> One item</label>
-					<label class="nim_radio"><input type="radio" value="carton" v-model="modal.kind" @change="switchToCarton" /> A case of items already in the list</label>
+					<label>{{ $t('Components.label.this_barcode_is_on', {}) }}</label>
+					<label class="nim_radio"><input type="radio" value="each" v-model="modal.kind" /> {{ $t('Commons.label.one_item', {}) }}</label>
+					<label class="nim_radio"><input type="radio" value="carton" v-model="modal.kind" @change="switchToCarton" /> {{ $t('Components.label.a_case_of_items', {}) }}</label>
 				</div>
 			</template>
 
 			<div class="nim_field">
-				<label>Description:</label>
+				<label>{{ $t('Commons.label.description', {}) }}</label>
 				<input type="text" v-model="modal.description" class="ri_forminput" autofocus />
 			</div>
 			<div class="nim_field">
-				<label>UPC (optional):</label>
-				<input type="text" v-model="modal.upc" class="ri_forminput" placeholder="Scan barcode" />
+				<label>{{ $t('Commons.label.upc_optional', {}) }}</label>
+				<input type="text" v-model="modal.upc" class="ri_forminput" :placeholder="$t('Commons.placeholder.scan_barcode')" />
 			</div>
 
 			<div class="nim_field" v-if="!modal.creatingType">
-				<label>Item Type:</label>
+				<label>{{ $t('Commons.label.item_type', {}) }}</label>
 				<SearchSelect
 					v-model="modal.itemtype_id"
 					optionsource="/json/itemtypes/noitems"
 					display="name"
 					:searchfields="['name', 'display_number']"
-					placeholder="Search item types..."
+					:placeholder="$t('Components.placeholder.search_item_types')"
 					:allowcreate="true"
 					@create="startNewType"
 				/>
 			</div>
 			<template v-else>
 				<div class="nim_field">
-					<label>New Item Type:</label>
-					<input type="text" v-model="modal.newTypeName" class="ri_forminput" placeholder="Type name" />
-					<button @click="modal.creatingType = false" class="ri_formbutton">Pick existing instead</button>
+					<label>{{ $t('Components.label.new_item_type', {}) }}</label>
+					<input type="text" v-model="modal.newTypeName" class="ri_forminput" :placeholder="$t('Commons.placeholder.type_name')" />
+					<button @click="modal.creatingType = false" class="ri_formbutton">{{ $t('Components.button.pick_existing_instead', {}) }}</button>
 				</div>
 				<div class="nim_field">
-					<label>Measured By:</label>
+					<label>{{ $t('Commons.label.measured_by', {}) }}</label>
 					<SearchSelect
 						v-model="modal.unit_id"
 						optionsource="/json/units"
 						display="name"
-						placeholder="Unit (e.g. Each, Pound)..."
+						:placeholder="$t('Components.placeholder.unit_e_g_each')"
 					/>
 				</div>
 				<div class="nim_field" v-if="!modal.creatingCategory">
-					<label>Category:</label>
+					<label>{{ $t('Commons.label.category', {}) }}</label>
 					<SearchSelect
 						v-model="modal.category_id"
 						optionsource="/json/categories"
 						display="name"
-						placeholder="Search categories..."
+						:placeholder="$t('Components.placeholder.search_categories')"
 						:allowcreate="true"
 						@create="startNewCategory"
 					/>
 				</div>
 				<div class="nim_field" v-else>
-					<label>New Category:</label>
-					<input type="text" v-model="modal.newCategoryName" class="ri_forminput" placeholder="Category name" />
-					<button @click="modal.creatingCategory = false" class="ri_formbutton">Pick existing instead</button>
+					<label>{{ $t('Commons.label.new_category', {}) }}</label>
+					<input type="text" v-model="modal.newCategoryName" class="ri_forminput" :placeholder="$t('Commons.placeholder.category_name')" />
+					<button @click="modal.creatingCategory = false" class="ri_formbutton">{{ $t('Components.button.pick_existing_instead', {}) }}</button>
 				</div>
 			</template>
 
 			<div class="nim_buttons">
 				<button @click="save" class="ri_defaultbutton" :disabled="saving">
-					{{ saving ? 'Saving...' : 'Save Item' }}
+					{{ saving ? $t('Components.button.saving') : $t('Commons.button.save_item') }}
 				</button>
-				<button @click="close" class="ri_formbutton">Cancel</button>
+				<button @click="close" class="ri_formbutton">{{ $t('Commons.button.cancel', {}) }}</button>
 			</div>
 		</div>
 	</div>

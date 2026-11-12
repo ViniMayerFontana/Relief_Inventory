@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	requested_track: {
@@ -14,20 +15,20 @@ const tracks = [
 	{
 		value: 'volunteer',
 		icon: '🙋',
-		label: 'Volunteer',
-		description: 'I want to help out at the warehouse.',
+		label: t('Commons.button.volunteer'),
+		description: t('Pages.Auth.text.i_want_to_help'),
 	},
 	{
 		value: 'donor',
 		icon: '📦',
-		label: 'Offer a Donation',
-		description: 'I have goods or services I\'d like to donate.',
+		label: t('Pages.Auth.text.offer_a_donation'),
+		description: t('Pages.Auth.text.i_have_goods_or'),
 	},
 	{
 		value: 'partner',
 		icon: '🏢',
-		label: 'Request Supplies',
-		description: 'Get approved to receive supplies.',
+		label: t('Commons.text.request_supplies'),
+		description: t('Pages.Auth.text.get_approved_to_receive'),
 	},
 ];
 
@@ -50,17 +51,17 @@ const choose = (value) => {
 
 <template>
 	<GuestLayout>
-		<Head title="Welcome" />
+		<Head :title="$t('Commons.title.welcome')" />
 
 		<div class="mb-4 text-sm font-medium text-green-600">
-			Your email is verified — you've taken the first step!
+			{{ $t('Pages.Auth.text.your_email_is_verified', {}) }}
 		</div>
 
 		<div class="mb-2 text-lg font-medium text-gray-900">
-			What brings you here?
+			{{ $t('Pages.Auth.text.what_brings_you_here', {}) }}
 		</div>
 		<div class="mb-6 text-sm text-gray-600">
-			Let us know why you're signing up so we can route your account to the right reviewer.
+			{{ $t('Pages.Auth.text.let_us_know_why', {}) }}
 		</div>
 
 		<div class="choosetrack_grid">
@@ -85,7 +86,7 @@ const choose = (value) => {
 				method="post"
 				as="button"
 				class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-				>Log Out</Link
+				>{{ $t('Commons.link.log_out', {}) }}</Link
 			>
 		</div>
 	</GuestLayout>

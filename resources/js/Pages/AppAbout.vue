@@ -19,55 +19,52 @@ defineProps({
 </script>
 
 <template>
-	<Head title="About This Installation" />
+	<Head :title="$t('Pages.title.about_this_installation')" />
 	<AuthenticatedLayout>
 		<div class="max-w-3xl mx-auto p-6 space-y-6">
-			<h1 class="text-2xl font-semibold">About Relief Inventory</h1>
+			<h1 class="text-2xl font-semibold">{{ $t('Pages.heading.about_relief_inventory', {}) }}</h1>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-3 text-sm text-gray-700">
 				<p>
-					Relief Inventory is a warehouse management system for disaster relief. It tracks
-					donated goods from the moment they arrive, through sorting onto shelves and pallets,
-					to the orders that partner organizations request and the shipments that fill them.
+					{{ $t('Pages.text.relief_inventory_is_a', {}) }}
 				</p>
 				<p>
-					It was originally built with Adventist Community Services.
-					<a href="/about" class="text-blue-700 underline">Project History</a>
-					tells the story of how it started and where it's headed.
+					{{ $t('Pages.text.it_was_originally_built', {}) }}
+					<a href="/about" class="text-blue-700 underline">{{ $t('Commons.link.project_history', {}) }}</a>
+					{{ $t('Pages.text.tells_the_story_of', {}) }}
 				</p>
 			</section>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-2 text-sm text-gray-700">
-				<h2 class="text-lg font-semibold">This installation</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.this_installation', {}) }}</h2>
 				<p>
-					Version:
+					{{ $t('Commons.text.version_2', {}) }}
 					<span v-if="version" class="font-semibold">{{ version }}</span>
 					<span v-else class="text-gray-500">unversioned (installed from source)</span>
 				</p>
-				<p v-if="commit">Commit: <span class="font-mono">{{ commit }}</span></p>
-				<p>Running in: {{ docker ? 'a Docker container' : 'a standard (non-Docker) installation' }}</p>
+				<p v-if="commit">{{ $t('Commons.text.commit_2', {}) }} <span class="font-mono">{{ commit }}</span></p>
+				<p>{{ $t('Commons.text.running_in') }} {{ docker ? $t('Pages.text.a_docker_container') : $t('Pages.text.a_standard_non_docker') }}</p>
 			</section>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-3 text-sm text-gray-700">
-				<h2 class="text-lg font-semibold">Free software</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.free_software', {}) }}</h2>
 				<p>
-					Relief Inventory is free software, licensed under the
+					{{ $t('Pages.text.relief_inventory_is_free', {}) }}
 					<a href="https://www.gnu.org/licenses/gpl-3.0.html" target="_blank" rel="noopener"
-						class="text-blue-700 underline">GNU General Public License, version 3</a>.
+						class="text-blue-700 underline">{{ $t('Pages.link.gnu_general_public_license', {}) }}</a>.
 					You can run your own copy for free, for any purpose, and you can study and modify
 					the source code. If you share a modified version, the same license terms apply to it.
 				</p>
 				<p>
-					The program comes with no warranty, to the extent permitted by law. The full license
-					text is in the LICENSE.md file of the source code.
+					{{ $t('Pages.text.the_program_comes_with', {}) }}
 				</p>
 				<p>
-					Source code, downloads, and installation instructions:
+					{{ $t('Pages.text.source_code_downloads_and', {}) }}
 					<a href="https://github.com/fiforms/reliefinventory" target="_blank" rel="noopener"
 						class="text-blue-700 underline">github.com/fiforms/reliefinventory</a>
 				</p>
 				<p>
-					Project website:
+					{{ $t('Commons.text.project_website', {}) }}
 					<a href="https://reliefinventory.app" target="_blank" rel="noopener"
 						class="text-blue-700 underline">reliefinventory.app</a>
 				</p>

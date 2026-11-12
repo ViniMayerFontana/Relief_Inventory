@@ -5,9 +5,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Training Team Sheets</title>
+    <title>{{ __("reports.Training.TeamSheet.text.training_team_sheets") }}</title>
     <style>
-        @page { size: letter; margin: 0.5in 0.55in; }
+        @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 0.5in 0.55in; }
         body { font-family: Arial, sans-serif; color: #222; margin: 0; font-size: 11.5px; line-height: 1.4; }
         .sheet { page-break-after: always; }
         .sheet:last-child { page-break-after: auto; }
@@ -33,17 +33,17 @@
         <div class="subtitle">{{ config('app.name') }} hands-on training · two segments of {{ \App\Support\TrainingGuide::SEGMENT_MINUTES }} minutes · about 8 minutes per station</div>
 
         <div class="box">
-            <strong>Logging in:</strong> on a station's tablet, tap your name, choose Team {{ $sheet['team'] }}, and tap Start.
+            <strong>{{ __("commons.text.logging_in") }}</strong> on a station's tablet, tap your name, choose Team {{ $sheet['team'] }}, and tap Start.
             Not on the list? Tap Add New. Tap "Staff login" in the yellow strip when you're done, or just hand the tablet to the next team.
-            <strong>Move on</strong> when the trainer calls time: go to the next station on the list below (Station 6 goes back to Station 1).
-            <br><strong>Segment 1</strong> = Round 1 at every station. <strong>Segment 2</strong> = Round 2 at every station, in the same order.
+            <strong>{{ __("commons.text.move_on") }}</strong> when the trainer calls time: go to the next station on the list below (Station 6 goes back to Station 1).
+            <br><strong>{{ __("commons.text.segment_1") }}</strong> = Round 1 at every station. <strong>{{ __("commons.text.segment_2") }}</strong> = Round 2 at every station, in the same order.
             @if (! empty($drivers[$sheet['team']]))
-                <br><strong>Your team driver (Station 6, Driver Portal):</strong> phone {{ $drivers[$sheet['team']]['phone'] }}, PIN {{ $drivers[$sheet['team']]['pin'] }}
+                <br><strong>{{ __("reports.Training.TeamSheet.text.your_team_driver_station") }}</strong> phone {{ $drivers[$sheet['team']]['phone'] }}, PIN {{ $drivers[$sheet['team']]['pin'] }}
             @endif
         </div>
 
         <table class="rotation">
-            <thead><tr><th>Slot</th><th>Minutes</th><th>Station</th><th>Round 1 (segment 1)</th><th>Round 2 (segment 2)</th></tr></thead>
+            <thead><tr><th>{{ __("commons.text.slot") }}</th><th>{{ __("commons.text.minutes") }}</th><th>{{ __("commons.text.station") }}</th><th>{{ __("reports.Training.TeamSheet.text.round_1_segment_1") }}</th><th>{{ __("reports.Training.TeamSheet.text.round_2_segment_2") }}</th></tr></thead>
             <tbody>
                 @foreach ($sheet['slots'] as $slot)
                     <tr>

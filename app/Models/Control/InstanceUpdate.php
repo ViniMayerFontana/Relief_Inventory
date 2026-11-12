@@ -115,7 +115,7 @@ class InstanceUpdate extends Model
             'enabled' => self::enabled(),
             'action' => $this->action,
             'state' => $this->stale() ? 'stalled' : $this->state,
-            'message' => $this->stale() ? 'The updater stopped reporting. Is it running on the host?' : $this->message,
+            'message' => $this->stale() ? __('updates.updater_stopped_reporting') : $this->message,
             'requested_by' => $this->requested_by,
             'requested_at' => $this->requested_at?->toIso8601String(),
             'current_version' => $this->current_version,

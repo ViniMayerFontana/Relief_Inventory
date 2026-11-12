@@ -18,6 +18,7 @@ import ComboBox from '@/Components/ComboBox.vue';
 import RIForm from '@/Components/RIForm.vue';
 import RISubform from '@/Components/RISubform.vue';
 import Checkbox from '@/Components/Checkbox.vue';
+import { t } from '@/i18n';
 
 defineProps({
     breadcrumb: {
@@ -35,20 +36,20 @@ async function openMove(item) {
 	try {
 		move.value.impact = (await axios.get(`/json/items/${item.id}/move-impact`)).data;
 	} catch (e) {
-		move.value.error = e.response?.data?.message || 'Could not load what this item is linked to.';
+		move.value.error = e.response?.data?.message || t('Pages.text.could_not_load_what');
 	}
 }
 
 async function confirmMove() {
 	const m = move.value;
-	if (!m.itemtype_id) { m.error = 'Choose the ACS # to move this item to.'; return; }
+	if (!m.itemtype_id) { m.error = t('Pages.text.choose_the_acs_to'); return; }
 	m.busy = true;
 	m.error = '';
 	try {
 		await axios.post(`/json/items/${m.item.id}/move`, { itemtype_id: m.itemtype_id });
 		window.location.reload(); // the open Item Type record is stale now
 	} catch (e) {
-		m.error = e.response?.data?.message || e.response?.data?.errors?.itemtype_id?.[0] || 'The move failed.';
+		m.error = e.response?.data?.message || e.response?.data?.errors?.itemtype_id?.[0] || t('Pages.text.the_move_failed');
 		m.busy = false;
 	}
 }
@@ -104,7 +105,7 @@ const itemSort = computed(() => (a, b) => {
 
 </script>
 <template>
-  <Head title="Master Item Catalog" />
+  <Head :title="$t('Pages.title.master_item_catalog')" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
 	<template #header>
 	</template>
@@ -113,9 +114,9 @@ const itemSort = computed(() => (a, b) => {
 	     API URL specified in the datasource="" attribute for loading and saving data.
 	  -->
 	<RIForm
-	  title="Master Item List"
+	  :title="$t('Pages.title.master_item_list')"
 	  datasource="/json/itemtypes"
-	  newrecordcaption="Add New Item"
+	  :newrecordcaption="$t('Pages.text.add_new_item')"
 	  :filter="itemMatchesSearch"
 	  :sort="itemSort">
 
@@ -124,17 +125,17 @@ const itemSort = computed(() => (a, b) => {
 		  type="text"
 		  v-model="itemSearch"
 		  class="ri_forminput item_search"
-		  placeholder="Search by ACS Item# or Item Type..."
+		  :placeholder="$t('Pages.placeholder.search_by_acs_item')"
 		/>
-	    <HelpLink guide="items">Master Item List Guide</HelpLink>
+	    <HelpLink guide="items">{{ $t('Pages.text.master_item_list_guide', {}) }}</HelpLink>
 	  </template>
 
 	    <template #thead>
-			<th class="ri_sortable" @click="setSort('category')">Category{{ sortArrow('category') }}</th>
-			<th class="ri_sortable" @click="setSort('number')">ACS Item#{{ sortArrow('number') }}</th>
-			<th class="ri_sortable" @click="setSort('name')">Item Type{{ sortArrow('name') }}</th>
-			<th class="ri_sortable" @click="setSort('unit')">Unit{{ sortArrow('unit') }}</th>
-		    <th class="ri_sortable" style="text-align:center;" @click="setSort('active')">Active{{ sortArrow('active') }}</th>
+			<th class="ri_sortable" @click="setSort('category')">{{ $t('Commons.text.category_2') }} {{ sortArrow('category') }}</th>
+			<th class="ri_sortable" @click="setSort('number')">{{ $t('Commons.text.acs_item') }} {{ sortArrow('number') }}</th>
+			<th class="ri_sortable" @click="setSort('name')">{{ $t('Commons.text.item_type') }} {{ sortArrow('name') }}</th>
+			<th class="ri_sortable" @click="setSort('unit')">{{ $t('Commons.text.unit') }} {{ sortArrow('unit') }}</th>
+		    <th class="ri_sortable" style="text-align:center;" @click="setSort('active')">{{ $t('Commons.text.active') }} {{ sortArrow('active') }}</th>
 		</template>
 		<template #tbody="{ record, index }">
 			<td> {{ record.category.name }} </td>
@@ -146,7 +147,7 @@ const itemSort = computed(() => (a, b) => {
 		<template #default="{ record, editing, templates }">
 		<div class="ri_formtable">
 		  <div class="ri_fieldset">
-			  <div class="ri_fieldlabel">Category</div>
+			  <div class="ri_fieldlabel">{{ $t('Commons.text.category_2', {}) }}</div>
 			  <ComboBox
 			  		v-model:keyValue="record.category_id"
 			  					v-model:updates="record.category"
@@ -155,24 +156,24 @@ const itemSort = computed(() => (a, b) => {
 			    /> 
 		  </div>	
 		  <div class="ri_fieldset">
-		  		<div class="ri_fieldlabel">Family</div>
+		  		<div class="ri_fieldlabel">{{ $t('Commons.text.family', {}) }}</div>
 		  		<TextInput
 		  			    v-model="record.family"
-		  			    placeholder="e.g. 318"
+		  			    :placeholder="$t('Pages.placeholder.e_g_318')"
 		  			    autofocus
 		  				:enabled="editing"
 		  		  />
 		  	  </div>
 		  <div class="ri_fieldset">
-		  		<div class="ri_fieldlabel">Variant (optional)</div>
+		  		<div class="ri_fieldlabel">{{ $t('Commons.text.variant_optional', {}) }}</div>
 		  		<TextInput
 		  			    v-model="record.variant"
-		  			    placeholder="e.g. 90"
+		  			    :placeholder="$t('Pages.placeholder.e_g_90')"
 		  				:enabled="editing"
 		  		  />
 		  	  </div>
 		  <div class="ri_fieldset">
-			<div class="ri_fieldlabel">Item Type Desc</div>
+			<div class="ri_fieldlabel">{{ $t('Pages.text.item_type_desc', {}) }}</div>
 			<TextInput
 				    v-model="record.name"
 				    required
@@ -180,7 +181,7 @@ const itemSort = computed(() => (a, b) => {
 			  /> 
 		  </div>
 		  <div class="ri_fieldset">
-		    <div class="ri_fieldlabel">Default Ordering Unit</div>
+		    <div class="ri_fieldlabel">{{ $t('Pages.text.default_ordering_unit', {}) }}</div>
 		    <ComboBox
 		  		v-model:keyValue="record.unit_id"
 		  					v-model:updates="record.unit"
@@ -189,23 +190,23 @@ const itemSort = computed(() => (a, b) => {
 		    /> 
 		  </div>	
 		  <div class="ri_fieldset">
-			  <div class="ri_fieldlabel">Active</div>
+			  <div class="ri_fieldlabel">{{ $t('Commons.text.active', {}) }}</div>
 			  <Checkbox
 			  		v-model="record.active"
 			  				  	:enabled="editing"
 			    /> 
 		  </div>	 
 			<RISubform 
-					title="Items"  
+					:title="$t('Commons.title.items')"  
 								v-model:records="record.items"
 								:template="templates.items" 
 								:enabled="editing">
 				<template #thead>
-					<th> Plus Code </th>
-					<th>Item Description</th>
-					<th colspan="3">Package</th>
-					<th>Total {{ record.unit.abbreviation }}</th>
-					<th>UPC</th>
+					<th> {{ $t('Commons.placeholder.plus_code', {}) }} </th>
+					<th>{{ $t('Commons.text.item_description', {}) }}</th>
+					<th colspan="3">{{ $t('Commons.text.package', {}) }}</th>
+					<th>{{ $t('Commons.text.total') }} {{ record.unit.abbreviation }}</th>
+					<th>{{ $t('Commons.placeholder.upc', {}) }}</th>
 					<th v-if="canMove"></th>
 				</template>
 				<template #tbody="{ subrecord, index }">
@@ -216,20 +217,20 @@ const itemSort = computed(() => (a, b) => {
 					 <td><span v-if="subrecord.case_qty"> {{ subrecord.case_qty * subrecord.size }}</span>
 					     <span v-else>{{ subrecord.size * 1.0 }}</span></td>	 
 					 <td> {{ subrecord.upc }}</td>
-					 <td v-if="canMove"><button v-if="subrecord.id" type="button" class="ri_formbutton" @click="openMove(subrecord)">Move to ACS #&hellip;</button></td>
+					 <td v-if="canMove"><button v-if="subrecord.id" type="button" class="ri_formbutton" @click="openMove(subrecord)">{{ $t('Pages.button.move_to_acs', {}) }}</button></td>
 				</template>
 				<template #default="{ subrecord, index }">
 				  <td>
 					<TextInput
 						    v-model="subrecord.pluscode"
-							placeholder="Plus Code"
+							:placeholder="$t('Commons.placeholder.plus_code')"
 							:enabled="true"
 					  /> 
 				  </td>
 				  <td>
 	  				<TextInput
 	  					    v-model="subrecord.description"
-	  						placeholder="Description"
+	  						:placeholder="$t('Commons.placeholder.description')"
 	  						:enabled="true"
 	  				  /> 
 				   </td>
@@ -239,7 +240,7 @@ const itemSort = computed(() => (a, b) => {
 						v-model:updates="subrecord.packagetype"
 						optionsource="/json/packagetypes"
 						display="singular"
-						placeholder="Pk Unit"
+						:placeholder="$t('Commons.placeholder.pk_unit')"
 						:enabled="true" />
 				  </td>
 				  <td>
@@ -254,7 +255,7 @@ const itemSort = computed(() => (a, b) => {
 				  <TextInput
 				   		v-model="subrecord.case_qty" 
 					  	type="number"
-						placeholder="Case Qty"
+						:placeholder="$t('Commons.placeholder.case_qty')"
 					  	:enabled="true"
 				   />
 				  </td>
@@ -263,11 +264,11 @@ const itemSort = computed(() => (a, b) => {
 				  <td>
 				  <TextInput
 				  	    v-model="subrecord.upc"
-						placeholder="UPC"
+						:placeholder="$t('Commons.placeholder.upc')"
 				  		:enabled="true"
 				    /> 
 				  </td>
-				  <td v-if="canMove"><button v-if="subrecord.id" type="button" class="ri_formbutton" @click="openMove(subrecord)">Move to ACS #&hellip;</button></td>
+				  <td v-if="canMove"><button v-if="subrecord.id" type="button" class="ri_formbutton" @click="openMove(subrecord)">{{ $t('Pages.button.move_to_acs', {}) }}</button></td>
 				</template>
 			</RISubform>  
 	  </div>
@@ -276,32 +277,31 @@ const itemSort = computed(() => (a, b) => {
 
 	<Modal :show="move.open" max-width="lg" @close="move.open = false">
 		<div class="item_move">
-			<h3>Move item to a different ACS #</h3>
-			<p v-if="move.item"><strong>{{ move.item.description || '(no description)' }}</strong><span v-if="move.impact"> &mdash; now under {{ move.impact.item.acs }} {{ move.impact.item.itemtype }}</span></p>
-			<label>New ACS # / item type:</label>
+			<h3>{{ $t('Pages.heading.move_item_to_a', {}) }}</h3>
+			<p v-if="move.item"><strong>{{ move.item.description || $t('Commons.text.no_description') }}</strong><span v-if="move.impact"> {{ $t('Pages.text.now_under') }} {{ move.impact.item.acs }} {{ move.impact.item.itemtype }}</span></p>
+			<label>{{ $t('Pages.label.new_acs_item_type', {}) }}</label>
 			<SearchSelect
 				v-model="move.itemtype_id"
 				optionsource="/json/itemtypes/noitems"
 				display="name"
 				:searchfields="['name', 'display_number']"
-				placeholder="Search item types..."
+				:placeholder="$t('Pages.placeholder.search_item_types')"
 			/>
 			<div v-if="move.impact" class="item_move_warn">
-				<strong>This changes history, not just the catalog.</strong>
-				Everything recorded against this item moves to the new ACS #: its
+				<strong>{{ $t('Pages.text.this_changes_history_not', {}) }}</strong>
+				{{ $t('Pages.text.everything_recorded_against_this') }}
 				{{ move.impact.ledger_rows }} sorting/fill ledger row(s) (so stock on hand and the inventory and flow reports change),
 				{{ move.impact.pallet_assignments }} pallet stock entr{{ move.impact.pallet_assignments === 1 ? 'y' : 'ies' }}
-				and any carton barcodes pointing at it.
+				{{ $t('Pages.text.and_any_carton_barcodes') }}
 				<span v-if="move.impact.order_fills">
-					{{ move.impact.order_fills }} of its ledger rows are fills for order lines; those lines still request the old item type,
-					so past orders will show goods of a different type than was requested. Orders themselves are not changed.
+					{{ move.impact.order_fills }} {{ $t('Pages.text.of_its_ledger_rows') }}
 				</span>
-				Already-printed inventory labels keep the old number. This cannot be undone automatically &mdash; you would move it back by hand.
+				{{ $t('Pages.text.already_printed_inventory_labels', {}) }}
 			</div>
 			<p v-if="move.error" class="item_move_error">{{ move.error }}</p>
 			<div class="item_move_actions">
-				<button type="button" class="ri_defaultbutton" :disabled="move.busy || !move.impact" @click="confirmMove">{{ move.busy ? 'Moving...' : 'Move item' }}</button>
-				<button type="button" class="ri_formbutton" @click="move.open = false">Cancel</button>
+				<button type="button" class="ri_defaultbutton" :disabled="move.busy || !move.impact" @click="confirmMove">{{ move.busy ? $t('Pages.button.moving') : $t('Commons.button.move_item') }}</button>
+				<button type="button" class="ri_formbutton" @click="move.open = false">{{ $t('Commons.button.cancel', {}) }}</button>
 			</div>
 		</div>
 	</Modal>

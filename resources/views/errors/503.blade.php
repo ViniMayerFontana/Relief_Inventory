@@ -8,12 +8,12 @@
     maintenance mode is exactly the moment those may be mid-rebuild —
     see scripts/update.sh, which wraps the deploy in `artisan down`/`up`.
 -->
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta http-equiv="refresh" content="30">
-    <title>{{ config('app.name', 'Relief Inventory') }} — Maintenance</title>
+    <title>{{ config('app.name', 'Relief Inventory') }} — {{ __("errors.Maintenance.text.maintenance") }}</title>
     <style>
         * { box-sizing: border-box; }
         html, body {
@@ -69,10 +69,10 @@
                 <circle cx="12" cy="12" r="9"></circle>
                 <path d="M12 7v5l3 2"></path>
             </svg>
-            <h1>We'll be back shortly</h1>
-            <p>{{ config('app.name', 'Relief Inventory') }} is undergoing some quick maintenance.</p>
-            <p>This usually only takes a few minutes — thanks for your patience.</p>
-            <p class="note">This page will refresh automatically.</p>
+            <h1>{{ __("errors.Maintenance.text.back_shortly") }}</h1>
+            <p>{{ __("errors.Maintenance.text.undergoing", ['app' => config('app.name', 'Relief Inventory')]) }}</p>
+            <p>{{ __("errors.Maintenance.text.usually_minutes") }}</p>
+            <p class="note">{{ __("errors.Maintenance.text.refreshes") }}</p>
         </div>
     </div>
 </body>

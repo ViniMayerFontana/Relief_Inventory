@@ -23,24 +23,23 @@ defineProps({
 </script>
 
 <template>
-	<Head title="Help" />
+	<Head :title="$t('Commons.title.help')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
 			<div class="flex items-start justify-between gap-4">
 				<div>
-					<h1 class="text-2xl font-bold">Help Guides</h1>
+					<h1 class="text-2xl font-bold">{{ $t('Commons.heading.help_guides', {}) }}</h1>
 					<p class="text-gray-600 mt-1">
-						Step-by-step guides for each part of the warehouse workflow. Each page
-						with a guide also has a "Help: ..." link near its title that opens it.
+						{{ $t('Pages.Help.text.step_by_step_guides', {}) }}
 					</p>
 				</div>
 				<PrintMenu
 					document-key="help-all"
 					media="report"
 					variant="plain"
-					label="Print all guides"
+					:label="$t('Pages.Help.label.print_all_guides')"
 					download-href="/report/help/all"
 					extra-class="shrink-0 px-3 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
 				/>
@@ -67,17 +66,16 @@ defineProps({
 
 			<div class="flex items-start justify-between gap-4 pt-2">
 				<div>
-					<h2 class="text-xl font-bold">Training: Team Activity Sheets</h2>
+					<h2 class="text-xl font-bold">{{ $t('Pages.Help.heading.training_team_activity_sheets', {}) }}</h2>
 					<p class="text-gray-600 mt-1">
-						For a hands-on class: each team's sheet lists its six stations in rotation order, with a
-						Round 1 and a Round 2 activity at each.
+						{{ $t('Pages.Help.text.for_a_hands_on', {}) }}
 					</p>
 				</div>
 				<PrintMenu
 					document-key="training-all-teams"
 					media="report"
 					variant="plain"
-					label="Print all team sheets"
+					:label="$t('Pages.Help.label.print_all_team_sheets')"
 					download-href="/report/training/team-sheets.pdf"
 					extra-class="shrink-0 px-3 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
 				/>
@@ -89,7 +87,7 @@ defineProps({
 					:key="team"
 					class="flex items-center justify-between gap-4 px-6 py-3"
 				>
-					<span>Team {{ team }} activity sheet</span>
+					<span>{{ $t('Commons.text.team') }} {{ team }} {{ $t('Commons.text.activity_sheet') }}</span>
 					<PrintMenu
 						:document-key="'training-team-' + team"
 						media="report"

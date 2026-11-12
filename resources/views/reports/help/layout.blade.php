@@ -2,13 +2,13 @@
      Each guide's own view only supplies its title and content sections, so
      styling and the header/footer stay identical across guides. --}}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="UTF-8">
     <title>@yield('title')</title>
     <style>
         /* Margins live on @page (not body padding) so every page of the guide keeps them. */
-        @page { size: letter; margin: 36px 42px; }
+        @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 36px 42px; }
         body {
             font-family: Arial, sans-serif;
             color: #222;
@@ -78,13 +78,12 @@
 </head>
 <body>
     <h1>@yield('title')</h1>
-    <div class="subtitle">{{ config('app.name') }} &mdash; printed {{ now()->format('F j, Y') }}</div>
+    <div class="subtitle">{{ config('app.name') }} &mdash; {{ __('reports.printed', ['date' => now()->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')]) }}</div>
 
 @yield('content')
 
     <div class="footer">
-        Questions or something not working the way this guide describes? Use Report an Issue from the
-        profile menu in the app.
+        {{ __('help.footer') }}
     </div>
 </body>
 </html>

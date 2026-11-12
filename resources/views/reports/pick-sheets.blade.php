@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Pick Sheets</title>
+    <title>{{ __("commons.text.pick_sheets") }}</title>
     <style>
         @page {
-            size: letter;
+            size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Pick Sheet — generated {{ $generatedAt->format('F j, Y g:ia') }}";
+                content: "Pick Sheet — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y H:i' : 'F j, Y g:ia')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -104,18 +104,18 @@
         <h1>Pick Sheet — Order #{{ $order->id }}</h1>
         <div class="subtitle">
             {{ $order->person?->full_name ?? 'Unknown' }}
-            @if($order->order_date) &mdash; {{ \Illuminate\Support\Carbon::parse($order->order_date)->format('F j, Y') }} @endif
+            @if($order->order_date) &mdash; {{ \Illuminate\Support\Carbon::parse($order->order_date)->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y') }} @endif
         </div>
 
         <table>
             <thead>
                 <tr>
-                    <th>Item #</th>
-                    <th>Name</th>
-                    <th>Unit</th>
-                    <th>Where</th>
-                    <th class="qty">Qty to Pick</th>
-                    <th class="picked">Picked</th>
+                    <th>{{ __("commons.text.item") }}</th>
+                    <th>{{ __("commons.text.name") }}</th>
+                    <th>{{ __("commons.text.unit") }}</th>
+                    <th>{{ __("commons.text.where") }}</th>
+                    <th class="qty">{{ __("reports.PickSheets.text.qty_to_pick") }}</th>
+                    <th class="picked">{{ __("commons.text.picked") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -136,7 +136,7 @@
                                     @if($step['kind'] === 'pool')
                                         Sorting area &times;{{ $step['qty'] }}
                                     @else
-                                        <strong>{{ $step['location'] ?? 'no location' }}</strong> {{ $step['tag'] }} &times;{{ $step['qty'] }}@if(!empty($step['expires_on'])) (exp {{ $step['expires_on'] }})@endif @if(!empty($step['whole'])) <em>(take the whole pallet)</em>@elseif($step['needs_open']) <em>(open pallet first)</em>@endif
+                                        <strong>{{ $step['location'] ?? 'no location' }}</strong> {{ $step['tag'] }} &times;{{ $step['qty'] }}@if(!empty($step['expires_on'])) (exp {{ $step['expires_on'] }})@endif @if(!empty($step['whole'])) <em>{{ __("reports.PickSheets.text.take_the_whole_pallet") }}</em>@elseif($step['needs_open']) <em>{{ __("reports.PickSheets.text.open_pallet_first") }}</em>@endif
                                     @endif
                                 </div>
                             @endforeach
@@ -152,7 +152,7 @@
                         <td class="picked"></td>
                     </tr>
                 @empty
-                    <tr><td colspan="6">Nothing to pick on this order.</td></tr>
+                    <tr><td colspan="6">{{ __("reports.PickSheets.text.nothing_to_pick_on") }}</td></tr>
                 @endforelse
             </tbody>
         </table>

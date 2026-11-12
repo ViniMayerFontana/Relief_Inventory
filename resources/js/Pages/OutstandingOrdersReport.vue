@@ -17,6 +17,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import PrintMenu from '@/Components/PrintMenu.vue';
 import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu },
@@ -63,7 +64,7 @@ export default {
 				const response = await axios.get('/json/reports/orders');
 				this.records = response.data.records;
 			} catch (error) {
-				this.error = 'Could not load the outstanding orders report.';
+				this.error = t('Pages.text.could_not_load_the_15');
 			} finally {
 				this.loading = false;
 			}
@@ -79,30 +80,30 @@ export default {
 </script>
 
 <template>
-	<Head title="Outstanding Orders Report" />
+	<Head :title="$t('Pages.title.outstanding_orders_report')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<div class="oor_container">
 			<h2 class="ri_datatable_head oor_head">
-				Outstanding Orders Report
-				<a :href="$withWarehouse('/report/orders.csv')" class="ri_defaultbutton">Download CSV</a>
+				{{ $t('Pages.heading.outstanding_orders_report', {}) }}
+				<a :href="$withWarehouse('/report/orders.csv')" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
 				<PrintMenu document-key="outstanding-orders" media="report" label="Print / PDF"
 					download-href="/report/orders.pdf" />
 			</h2>
 
 			<p v-if="error" class="oor_error">{{ error }}</p>
-			<p v-if="loading">Loading...</p>
+			<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 
 			<div class="oor_toolbar">
 				<input
 					type="text"
 					v-model="search"
 					class="ri_forminput oor_search"
-					placeholder="Search by order # or partner..."
+					:placeholder="$t('Pages.placeholder.search_by_order_or')"
 				/>
 				<select v-model="statusFilter" class="ri_forminput">
-					<option value="">All statuses</option>
+					<option value="">{{ $t('Commons.text.all_statuses', {}) }}</option>
 					<option v-for="s in statuses" :key="s" :value="s">{{ s }}</option>
 				</select>
 			</div>
@@ -111,14 +112,14 @@ export default {
 				<thead>
 					<tr>
 						<th></th>
-						<th>Order #</th>
-						<th>Partner</th>
-						<th>Status</th>
-						<th>Order Date</th>
-						<th>Needed By</th>
-						<th>Fulfillment</th>
-						<th>Lines</th>
-						<th>Qty Requested</th>
+						<th>{{ $t('Commons.text.order', {}) }}</th>
+						<th>{{ $t('Commons.text.partner', {}) }}</th>
+						<th>{{ $t('Commons.button.status', {}) }}</th>
+						<th>{{ $t('Commons.text.order_date', {}) }}</th>
+						<th>{{ $t('Commons.text.needed_by', {}) }}</th>
+						<th>{{ $t('Commons.text.fulfillment', {}) }}</th>
+						<th>{{ $t('Commons.text.lines', {}) }}</th>
+						<th>{{ $t('Commons.text.qty_requested', {}) }}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -126,7 +127,7 @@ export default {
 						<tr class="oor_rowlink" @click="toggleExpanded(record.id)">
 							<td class="oor_expander">{{ expanded[record.id] ? '−' : '+' }}</td>
 							<td>{{ record.id }}</td>
-							<td>{{ record.partner || '(no partner)' }}</td>
+							<td>{{ record.partner || $t('Commons.text.no_partner') }}</td>
 							<td><span class="oor_status_badge">{{ record.status }}</span></td>
 							<td>{{ record.order_date }}</td>
 							<td>{{ record.needed_by_date || '—' }}</td>
@@ -138,14 +139,14 @@ export default {
 							<td></td>
 							<td colspan="8">
 								<p v-if="record.status === 'Filled'" class="oor_bollink">
-									<PrintMenu document-key="bol" media="report" label="Generate BOL" :params="{ id: record.id }"
+									<PrintMenu document-key="bol" media="report" :label="$t('Commons.label.generate_bol')" :params="{ id: record.id }"
 										:download-href="'/report/bol/' + record.id + '.pdf'" />
-									<PrintMenu document-key="shipping-label" media="label_large" label="Shipping Label" :params="{ id: record.id }"
+									<PrintMenu document-key="shipping-label" media="label_large" :label="$t('Commons.label.shipping_label')" :params="{ id: record.id }"
 										:download-href="'/report/shipping-label/' + record.id + '.pdf'" />
 								</p>
 								<table class="oor_subtable" v-if="record.lines.length">
 									<thead>
-										<tr><th>Item #</th><th>Item</th><th>Qty Requested</th><th>Unit</th></tr>
+										<tr><th>{{ $t('Commons.text.item', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.qty_requested', {}) }}</th><th>{{ $t('Commons.text.unit', {}) }}</th></tr>
 									</thead>
 									<tbody>
 										<tr v-for="(line, idx) in record.lines" :key="idx">
@@ -156,12 +157,12 @@ export default {
 										</tr>
 									</tbody>
 								</table>
-								<p v-else class="oor_empty">No lines on this order.</p>
+								<p v-else class="oor_empty">{{ $t('Pages.text.no_lines_on_this', {}) }}</p>
 							</td>
 						</tr>
 					</template>
 					<tr v-if="!filtered.length && !loading">
-						<td colspan="9" class="oor_empty">No outstanding orders match.</td>
+						<td colspan="9" class="oor_empty">{{ $t('Pages.text.no_outstanding_orders_match', {}) }}</td>
 					</tr>
 				</tbody>
 				<tfoot v-if="filtered.length">

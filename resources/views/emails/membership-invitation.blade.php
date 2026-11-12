@@ -1,19 +1,21 @@
 <!-- This file is part of the Relief Inventory Project (https://reliefinventory.app)
      Licensed under the GNU GPL v. 3. See LICENSE.md for details -->
 
-<p>Hello,</p>
+<p>{{ __('mail.hello') }}</p>
 
 <p>
-    {{ $invitedBy ?: 'An administrator' }} has invited you to join <strong>{{ $warehouse->display_name }}</strong> on {{ config('app.name') }}
-    using your existing login ({{ $email }}).
+    {{ __('mail.invitation_join', ['invitedBy' => $invitedBy ?: __('mail.administrator_fallback')]) }}
+    <strong>{{ $warehouse->display_name }}</strong>
+    {{ __('mail.invitation_join_tail', ['app' => config('app.name'), 'email' => $email]) }}
 </p>
 
 <p>
-    Nothing changes until you accept. To accept, open the link below and enter your password:<br>
+    {{ __('mail.invitation_accept') }}<br>
     <a href="{{ $url }}">{{ $url }}</a>
 </p>
 
 <p>
-    The link works until {{ $expiresAt->toFormattedDateString() }}. If you were not expecting this, ignore this email: your login is not
-    attached to {{ $warehouse->display_name }} unless you accept.
+    {{ __('mail.invitation_expires', ['date' => $expiresAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'd/m/Y' : 'M j, Y')]) }}
+    <strong>{{ $warehouse->display_name }}</strong>
+    {{ __('mail.invitation_unless_accepted') }}
 </p>

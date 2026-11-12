@@ -15,6 +15,7 @@
 
 <script>
 import { onPrintEvent, startPrintRealtime } from '@/realtime';
+import { t } from '@/i18n';
 
 export default {
 	data() {
@@ -43,11 +44,11 @@ export default {
 		// Managers also receive everyone's jobs on the queue channel; only announce mine.
 		onJobChanged(job) {
 			if (job.requested_by !== this.$page.props.auth?.user?.id) return;
-			const where = job.printer_name ? ` on ${job.printer_name}` : '';
+			const where = job.printer_name ? t('Commons.text.on_p0', { p0: job.printer_name }) : '';
 			if (job.status === 'printed') {
 				this.onNotice({ detail: { type: 'ok', text: `“${job.title}” printed${where}.` } });
 			} else if (job.status === 'failed') {
-				this.onNotice({ detail: { type: 'error', text: `“${job.title}” failed${where}${job.error_message ? ': ' + job.error_message : '.'}` } });
+				this.onNotice({ detail: { type: 'error', text: t('Commons.text.p0_failed_p1_p2', { p0: job.title, p1: where, p2: job.error_message ? ': ' + job.error_message : '.' }) } });
 			}
 		},
 		onNotice(event) {
@@ -62,8 +63,8 @@ export default {
 <template>
 	<div v-if="notice" class="pt_toast" :class="'pt_' + notice.type" role="status">
 		<span>{{ notice.text }}</span>
-		<a v-if="canViewQueue && notice.type !== 'error'" href="/print-queue" class="pt_link">View queue</a>
-		<button type="button" class="pt_close" aria-label="Dismiss" @click="notice = null">&times;</button>
+		<a v-if="canViewQueue && notice.type !== 'error'" href="/print-queue" class="pt_link">{{ $t('Commons.link.view_queue', {}) }}</a>
+		<button type="button" class="pt_close" :aria-label="$t('Commons.aria_label.dismiss')" @click="notice = null">&times;</button>
 	</div>
 </template>
 

@@ -6,6 +6,7 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 import { onMounted, watch } from 'vue';
+import { t } from '@/i18n';
 
 const props = defineProps({
 	turnstile_enabled: {
@@ -87,13 +88,13 @@ onMounted(() => {
         script.defer = true;
         document.head.appendChild(script);
     }
-    script.addEventListener('load', renderTurnstile, { once: true });
+    script.addEventListener(t('Commons.text.load'), renderTurnstile, { once: true });
 });
 </script>
 
 <template>
     <GuestLayout>
-        <Head title="Register" />
+        <Head :title="$t('Commons.title.register')" />
 
         <form @submit.prevent="submit">
 			<div>
@@ -188,7 +189,7 @@ onMounted(() => {
                     :href="route('login')"
                     class="rounded-md text-sm text-gray-600 underline hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 >
-                    Already registered?
+                    {{ $t('Pages.Auth.link.already_registered', {}) }}
                 </Link>
 
                 <PrimaryButton
@@ -196,7 +197,7 @@ onMounted(() => {
                     :class="{ 'opacity-25': form.processing }"
                     :disabled="form.processing"
                 >
-                    Register
+                    {{ $t('Commons.button.register', {}) }}
                 </PrimaryButton>
             </div>
         </form>

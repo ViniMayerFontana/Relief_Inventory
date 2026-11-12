@@ -18,7 +18,7 @@
 
       <RIForm ... newrecordcaption="Record an Intake">
         <template #titleactions>
-          <Link href="/related-page" class="ri_defaultbutton">Related Page</Link>
+          <Link href="/related-page" class="ri_defaultbutton">{{ $t('Commons.link.related_page', {}) }}</Link>
         </template>
         ...
       </RIForm>
@@ -180,6 +180,7 @@
 
 <script>
 import axios from "axios";
+import { t } from '@/i18n';
 
 export default {
   props: {
@@ -197,7 +198,7 @@ export default {
     },
     newrecordcaption: {
       type: String,
-      default: "New Record",
+      default: t('Commons.text.new_record'),
     },
     // Optional (record) => boolean predicate narrowing the list view. Pair
     // with the #listactions slot for the filter UI itself — see the doc

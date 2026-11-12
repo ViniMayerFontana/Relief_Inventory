@@ -16,6 +16,7 @@ import { Head } from '@inertiajs/vue3';
 import TextInput from '@/Components/TextInput.vue';
 import ChipSelect from '@/Components/ChipSelect.vue';
 import RIForm from '@/Components/RIForm.vue';
+import { t } from '@/i18n';
 
 defineProps({
 	breadcrumb: {
@@ -24,10 +25,10 @@ defineProps({
 });
 
 const typeOptions = [
-	{ value: 'weight', label: 'Weight' },
-	{ value: 'volume', label: 'Volume' },
-	{ value: 'each', label: 'Each' },
-	{ value: 'other', label: 'Other' },
+	{ value: 'weight', label: t('Commons.text.weight') },
+	{ value: 'volume', label: t('Commons.text.volume') },
+	{ value: 'each', label: t('Commons.text.each') },
+	{ value: 'other', label: t('Commons.text.other_2') },
 ];
 
 const typeLabels = Object.fromEntries(typeOptions.map((o) => [o.value, o.label]));
@@ -75,14 +76,14 @@ const unitSort = computed(() => (a, b) => {
 </script>
 
 <template>
-	<Head title="Default Ordering Units" />
+	<Head :title="$t('Pages.title.default_ordering_units')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<template #header></template>
 
 		<RIForm
-			title="Default Ordering Units"
+			:title="$t('Pages.title.default_ordering_units')"
 			datasource="/json/units"
-			newrecordcaption="Add Unit"
+			:newrecordcaption="$t('Commons.text.add_unit')"
 			:filter="unitMatchesSearch"
 			:sort="unitSort"
 		>
@@ -91,14 +92,14 @@ const unitSort = computed(() => (a, b) => {
 					type="text"
 					v-model="unitSearch"
 					class="ri_forminput unit_search"
-					placeholder="Search by name or abbreviation..."
+					:placeholder="$t('Pages.placeholder.search_by_name_or')"
 				/>
 			</template>
 
 			<template #thead>
-				<th class="ri_sortable" @click="setSort('name')">Name{{ sortArrow('name') }}</th>
+				<th class="ri_sortable" @click="setSort('name')">{{ $t('Commons.button.name') }} {{ sortArrow('name') }}</th>
 				<th class="ri_sortable" @click="setSort('abbreviation')">Abbreviation{{ sortArrow('abbreviation') }}</th>
-				<th class="ri_sortable" @click="setSort('type')">Type{{ sortArrow('type') }}</th>
+				<th class="ri_sortable" @click="setSort('type')">{{ $t('Commons.text.type_2') }} {{ sortArrow('type') }}</th>
 			</template>
 			<template #tbody="{ record }">
 				<td>{{ record.name }}</td>
@@ -108,7 +109,7 @@ const unitSort = computed(() => (a, b) => {
 			<template #default="{ record, editing }">
 				<div class="ri_formtable">
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Name:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.name_2', {}) }}</div>
 						<TextInput v-model="record.name" required autofocus :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
@@ -116,7 +117,7 @@ const unitSort = computed(() => (a, b) => {
 						<TextInput v-model="record.abbreviation" required :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Type:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.text.type_3', {}) }}</div>
 						<ChipSelect v-model="record.type" :options="typeOptions" :enabled="editing" />
 					</div>
 				</div>

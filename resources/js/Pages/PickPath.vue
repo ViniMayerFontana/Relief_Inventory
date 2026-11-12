@@ -10,6 +10,7 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { computed, onMounted, ref } from 'vue';
 import axios from 'axios';
+import { t } from '@/i18n';
 
 defineProps({ breadcrumb: { type: Array } });
 
@@ -27,7 +28,7 @@ onMounted(async () => {
 		const all = (await axios.get('/json/locations')).data.records;
 		locations.value = all.filter((l) => l.status === 'active'); // server already sends them in path order
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not load locations.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_load_locations');
 	} finally {
 		loading.value = false;
 	}
@@ -65,7 +66,7 @@ function autoSnake() {
 	});
 	locations.value = [...ordered, ...without];
 	dirty.value = true;
-	message.value = 'Ordered by aisle, snaking. Drag rows to adjust, then Save.';
+	message.value = t('Pages.text.ordered_by_aisle_snaking');
 }
 
 const unplaced = computed(() => locations.value.filter((l) => l.PullSequence === null || l.PullSequence === undefined).length);
@@ -76,9 +77,9 @@ async function save() {
 	try {
 		await axios.put('/json/locations/order', { ids: locations.value.map((l) => l.id) });
 		dirty.value = false;
-		message.value = 'Pick path saved. Pick sheets and the fill screen use it from now on.';
+		message.value = t('Pages.text.pick_path_saved_pick');
 	} catch (e) {
-		error.value = e.response?.data?.message || 'Could not save the pick path.';
+		error.value = e.response?.data?.message || t('Pages.text.could_not_save_the_12');
 	} finally {
 		saving.value = false;
 	}
@@ -86,25 +87,24 @@ async function save() {
 </script>
 
 <template>
-	<Head title="Pick Path" />
+	<Head :title="$t('Commons.title.pick_path')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<div class="pp_page">
-			<h2>Pick Path</h2>
+			<h2>{{ $t('Commons.heading.pick_path', {}) }}</h2>
 			<p class="ri_hint">
-				The order pickers walk the warehouse. Pick sheets and the fill screen list each item by where it is, in this order.
-				Drag a row to move it, or use the arrows.
+				{{ $t('Pages.text.the_order_pickers_walk', {}) }}
 			</p>
 
 			<div class="pp_actions">
-				<button type="button" class="ri_formbutton" :disabled="!locations.length" @click="autoSnake">Auto-order by aisle (snaking)</button>
-				<button type="button" class="ri_defaultbutton" :disabled="!dirty || saving" @click="save">Save Pick Path</button>
-				<Link href="/setup/locations" class="ri_linkbutton">Back to Locations</Link>
+				<button type="button" class="ri_formbutton" :disabled="!locations.length" @click="autoSnake">{{ $t('Pages.button.auto_order_by_aisle', {}) }}</button>
+				<button type="button" class="ri_defaultbutton" :disabled="!dirty || saving" @click="save">{{ $t('Pages.button.save_pick_path', {}) }}</button>
+				<Link href="/setup/locations" class="ri_linkbutton">{{ $t('Pages.link.back_to_locations', {}) }}</Link>
 			</div>
 			<p v-if="error" class="ri_error">{{ error }}</p>
 			<p v-if="message" class="ri_hint">{{ message }}</p>
-			<p v-if="unplaced && !dirty" class="ri_hint">{{ unplaced }} location(s) aren't on the path yet; they're listed last. Save to place them.</p>
+			<p v-if="unplaced && !dirty" class="ri_hint">{{ unplaced }} {{ $t('Pages.text.location_s_aren_t') }}</p>
 
-			<p v-if="loading">Loading…</p>
+			<p v-if="loading">{{ $t('Commons.button.loading', {}) }}</p>
 			<ol v-else class="pp_list">
 				<li
 					v-for="(l, i) in locations"
@@ -121,16 +121,16 @@ async function save() {
 					<span class="pp_num">{{ i + 1 }}</span>
 					<strong class="pp_code">{{ l.code }}</strong>
 					<span class="pp_detail">
-						<span v-if="l.Aisle">Aisle {{ l.Aisle }}</span>
-						<span v-if="l.Lane">Lane {{ l.Lane }}</span>
-						<span v-if="l.Stack">Stack {{ l.Stack }}</span>
+						<span v-if="l.Aisle">{{ $t('Commons.text.aisle') }} {{ l.Aisle }}</span>
+						<span v-if="l.Lane">{{ $t('Commons.text.lane') }} {{ l.Lane }}</span>
+						<span v-if="l.Stack">{{ $t('Commons.text.stack') }} {{ l.Stack }}</span>
 					</span>
 					<span class="pp_arrows">
-						<button type="button" class="ri_linkbutton" :disabled="i === 0" title="Move up" @click="move(i, i - 1)">▲</button>
-						<button type="button" class="ri_linkbutton" :disabled="i === locations.length - 1" title="Move down" @click="move(i, i + 1)">▼</button>
+						<button type="button" class="ri_linkbutton" :disabled="i === 0" :title="$t('Commons.title.move_up')" @click="move(i, i - 1)">▲</button>
+						<button type="button" class="ri_linkbutton" :disabled="i === locations.length - 1" :title="$t('Commons.title.move_down')" @click="move(i, i + 1)">▼</button>
 					</span>
 				</li>
-				<li v-if="!locations.length" class="pp_empty">No active locations yet.</li>
+				<li v-if="!locations.length" class="pp_empty">{{ $t('Pages.text.no_active_locations_yet', {}) }}</li>
 			</ol>
 		</div>
 	</AuthenticatedLayout>

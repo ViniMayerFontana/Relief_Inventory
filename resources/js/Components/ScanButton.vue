@@ -10,10 +10,11 @@
 import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
 import QrScanner from '@/Components/QrScanner.vue';
 import { injectScan, isTextField } from '@/scanInject';
+import { t } from '@/i18n';
 
 const props = defineProps({
   target: { type: Function, default: null },
-  label: { type: String, default: 'Scan' },
+  label: { type: String, default: t('Commons.text.scan') },
   // Icon only, squared off on the left so it sits flush against the text box to its left.
   compact: { type: Boolean, default: false },
 });
@@ -33,8 +34,8 @@ function begin() {
   error.value = null;
   if (!hasCamera || !secure) {
     error.value = !secure
-      ? 'The camera only works over a secure (https) connection.'
-      : 'This browser has no camera access.';
+      ? t('Components.text.the_camera_only_works')
+      : t('Components.text.this_browser_has_no');
     return;
   }
   open.value = true;
@@ -47,7 +48,7 @@ async function onScanned(code) {
   try { el = props.target ? props.target() : null; } catch (e) { el = null; }
   el = el?.$el?.querySelector?.('input') ?? el; // a component instance → its input
   if (!isTextField(el)) el = lastField && document.contains(lastField) ? lastField : null;
-  if (!injectScan(code, el)) error.value = 'Scanned ' + code + ', but there is no scan field to put it in.';
+  if (!injectScan(code, el)) error.value = t('Components.text.scanned_placeholder_but_there', { placeholder: code });
 }
 
 function onCameraError(message) {
@@ -64,7 +65,7 @@ function onCameraError(message) {
       <div v-if="open" class="scanbtn_overlay" @click.self="open = false">
         <div class="scanbtn_panel">
           <QrScanner @scanned="onScanned" @error="onCameraError" />
-          <button type="button" class="ri_formbutton scanbtn_cancel" @click="open = false">Cancel</button>
+          <button type="button" class="ri_formbutton scanbtn_cancel" @click="open = false">{{ $t('Commons.button.cancel', {}) }}</button>
         </div>
       </div>
     </Teleport>

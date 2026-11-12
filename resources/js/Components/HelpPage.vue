@@ -41,7 +41,7 @@ defineProps({
 					:document-key="'help-' + guide"
 					media="report"
 					variant="plain"
-					label="Print these instructions"
+					:label="$t('Components.label.print_these_instructions')"
 					:download-href="'/report/help/' + guide"
 					extra-class="shrink-0 px-3 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
 				/>
@@ -50,8 +50,8 @@ defineProps({
 			<slot />
 
 			<p class="text-xs text-gray-500">
-				Questions or something not working the way this guide describes? Use
-				<strong>Report an Issue</strong> from the profile menu.
+				{{ $t('Components.text.questions_or_something_not', {}) }}
+				<strong>{{ $t('Components.heading.report_an_issue', {}) }}</strong> {{ $t('Components.text.from_the_profile_menu', {}) }}
 			</p>
 		</div>
 	</AuthenticatedLayout>
