@@ -547,17 +547,19 @@ Happy to contribute a PR (Apache-2.0).
 
 ---
 
-## Checklist de abertura (para quem for colar)
+## Status de abertura (2026-11-12 — publicadas via API por @ViniMayerFontana)
 
-- [ ] Issue 1 (A) — VueReplacer / slots
-- [ ] Issue 2 (B) — Commons alias no Blade
-- [ ] Issue 3 (D) — kind heading/text
-- [ ] Issue 4 — validators Blade
-- [ ] Issue 5 — init `localeLayout` vs `layout`
-- [ ] Issue 6 — extract pega VALUE de select
-- [ ] Issue 7 — cleanup scan não cobre Blade
-- [ ] Issue 8 — mustache: só a 1ª string do ternário
-- [ ] Issue 9 — extract pega ROLE names de arrays
-- [ ] Issue 10 — extract pega strings de comentários
-- [ ] Issue 11 — segundo bloco <script> ignorado
-- Anexar/comentar `dev/notes/I18N_GLOSSARY.md` ("Limitações conhecidas") quando útil.
+Todas as 11 issues foram abertas no repo upstream (github.com/VenMail/localizer):
+
+- [x] Issue 1 (A) — VueReplacer / slots → [#2](https://github.com/VenMail/localizer/issues/2)
+- [x] Issue 2 (B) — Commons alias no Blade → [#3](https://github.com/VenMail/localizer/issues/3)
+- [x] Issue 3 (D) — kind heading/text → [#4](https://github.com/VenMail/localizer/issues/4)
+- [x] Issue 4 — validators Blade → [#5](https://github.com/VenMail/localizer/issues/5)
+- [x] Issue 5 — init `localeLayout` vs `layout` → [#6](https://github.com/VenMail/localizer/issues/6)
+- [x] Issue 6 — extract pega VALUE de select → [#7](https://github.com/VenMail/localizer/issues/7)
+- [x] Issue 7 — cleanup scan não cobre Blade → [#8](https://github.com/VenMail/localizer/issues/8)
+- [x] Issue 8 — mustache: só a 1ª string do ternário → [#9](https://github.com/VenMail/localizer/issues/9)
+- [x] Issue 9 — extract pega ROLE names de arrays → [#10](https://github.com/VenMail/localizer/issues/10)
+- [x] Issue 10 — extract pega strings de comentários → [#11](https://github.com/VenMail/localizer/issues/11)
+- [x] Issue 11 — segundo bloco <script> ignorado → [#12](https://github.com/VenMail/localizer/issues/12)
+- Anexo `dev/notes/I18N_GLOSSARY.md` ("Limitações conhecidas") referenciado nos corpos quando útil.
