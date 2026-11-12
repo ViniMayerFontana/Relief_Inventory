@@ -80,8 +80,9 @@
 
 | Artefato | Onde | Como usar/restaurar |
 |---|---|---|
-| Patch cumulativo da CLI | `dev/patches/localizer/core-round3.patch` (versionado!) | Re-clonar `https://github.com/VenMail/localizer` (HEAD `6d478b3`, usar `git -c http.sslBackend=openssl clone` — schannel quebra no DSH) + `git apply core-round3.patch` + `npm install --ignore-scripts` no clone |
-| Suítes de regressão da CLI | `dev/patches/localizer/test-*.js` (R2 23/23, R3 21/21, R3.1 40/40, Blade 10/10) | Rodar com `node <suite>` **depois** do patch aplicado — CommonJS: rodar fora de pasta com `"type":"module"` |
+| Patch cumulativo da CLI | `dev/patches/localizer/core-round3.patch` (versionado!) | Regravado em UTF-8/LF em 2026-11-12 (o original era UTF-16LE e o `git apply` não o lia). Re-clonar `https://github.com/VenMail/localizer` (HEAD `6d478b3`, usar `git -c http.sslBackend=openssl clone` — schannel quebra no DSH) + `git apply --exclude=package-lock.json core-round3.patch` (o lock do clone diverge do upstream) + `npm install --ignore-scripts` no clone. Nesta máquina o clone vive em `C:\projects\i18n-localizer\localizer`, com junction em `%TEMP%\i18n-localizer\localizer` para as suítes |
+| Suítes de regressão da CLI | `dev/patches/localizer/test-*.js` (R2 23/23, R3 21/21, R3.1 40/40, Blade 10/10) | Rodar com `node <suite>` **depois** do patch aplicado — CommonJS: rodar FORA de pasta com `"type":"module"` (copiar as suítes para fora do repo). Nesta máquina: 4/4 PASS (2026-11-12) |
+| Grants de teste | `dev/patches/localizer/test-grants.sql` (TESTING.md one-time setup) | Aplicar como root no container: `Get-Content ... | docker exec -i ri-test-mariadb mariadb -u root`. Em host Windows+Docker, usar também a variante `@'%'` para o `ri_test_provisioner` (PDO parte do host; o container vê o gateway NAT) |
 | Glossário canônico | `dev/notes/I18N_GLOSSARY.md` | Fonte de verdade das traduções (3 seções + consolidações) |
 | Glossário working copy | `.i18n-queue/GLOSSARY.md` (gitignored, sincroniza pela pasta) | Working detalhado por lote; consolidar no canônico ao fechar fases |
 | Relatórios | `I18N_WORK_REPORT.md`, `I18N_COVERAGE_REPORT.md`, este arquivo | Cobertura por arquivo + dívidas numeradas |
@@ -92,17 +93,19 @@
 
 **Banco de testes (Docker)**: Docker Desktop por usuário (`%LOCALAPPDATA%\Programs\DockerDesktop\Docker Desktop.exe` — iniciar antes de testar, daemon demora ~10s). Container `ri-test-mariadb` (mariadb:11, porta 3306, root sem senha, host `%`) foi criado — se a máquina não o tiver: `docker run -d --name ri-test-mariadb -e MARIADB_ALLOW_EMPTY_ROOT_PASSWORD=1 -e MARIADB_ROOT_HOST=% -e MARIADB_DATABASE=test_reliefinventory -p 3306:3306 mariadb:11` + grants do arquivo `dev/patches/localizer/test-grants.sql` (aplicar com `Get-Content ... | docker exec -i ri-test-mariadb mariadb -u root` — **não** inline: PowerShell estraga os backticks). `.env` mínimo (APP_KEY gerado + DB root@127.0.0.1) já existe no repo local (gitignored).
 
-## 6. O que falta fazer (numerado, priorizado)
+## 6. O que falta fazer (atualizado em 2026-11-12, máquina original)
 
-1. **Rodar a suíte Pest** — requer `mariadb-dump` no host (acima). Depois: separar falhas ambientais (Windows path em testes de arquitetura, WeasyPrint ausente para PDFs) de regressões reais. Suíte leva ~3 min em paralelo (snapshot de schema) após primeira migração (~50s).
-2. **Dívidas da CLI** (todas documentadas em `I18N_COVERAGE_REPORT.md` §Dívidas): pluralização vue-i18n; nó com `>` em atributo (CartonCodes — frase completa já existe traduzida); literais após chain (EmailSettings); `cleanup --apply` segue proibido; literal com `>` em tag — **e principalmente: CHAVES DE OBJETO não devem ser traduzidas** (bug que quebrei o build achando — fix no extractor/replace: literal seguido de `:` em objeto literal é chave de dados, pular — ver commit do handoff).
-3. **statusLabels do UserAdminController + UpdateSender** — server-side, padrão notifications.php (trans() na gravação), lote próprio com diff revisado.
-4. **errors/503 + expired-verification-link** (Blade) — próxima fase.
-5. **PRs upstream** (task-6): fork do usuário em VenMail/localizer + push das branches + colar os corpos de `Agents/UPSTREAM_ISSUES.md` (11 issues).
-6. **Push/PR da branch**: `i18n-pt-br-pilot` tem 27+ commits não-pushados — decisão do usuário (nunca push sem pedido).
+**Sessão de 2026-11-12 (máquina original)**: ambiente reconstruído (PHP 8.4.27 + Composer em `%LOCALAPPDATA%\Programs\php84`, mariadb-dump 11.8.2 em `%LOCALAPPDATA%\Programs\mariadb-client`, Docker Desktop + container `ri-test-mariadb`), CLI parcheada validada **4/4 suítes** (clone em `C:\projects\i18n-localizer\localizer`), **bug de Blade descoberto e corrigido** (as chaves `__()` pontuadas dos 24 blades não tinham arquivo de lang — relatórios renderizavam chave crua em pt-BR; normalizadas para `commons./reports./errors.` + gerador `dev/scripts/i18n-lang-from-auto.cjs`), **bug upstream de Windows descoberto e corrigido** (`DatabaseTools::find()` usava `command -v`, inexistente no cmd.exe — fallback `where`; era a causa das ~1208 falhas em massa da suíte), Lote A (statusLabels + fluxo de updates, server-side) e Lote B (503 + expired-verification-link) concluídos, default pt-BR no provisionamento (.env.example + docker compose), `phpunit.xml` com locale fixo `en` para a suíte.
+
+1. **Suíte Pest** — executada nesta máquina. Run 1 (com o bug de `command -v`): 1208 falhas em massa. Run 2 (pós-fix `DatabaseTools`): **1097 passed / 104 failed**. Das 104: **49 × `ViteManifestNotFoundException`** (testes que renderizam páginas exigem `public/build` — o build trava na quirk Defender×esbuild; **contornado com build dentro de container `node:22`**, manifest gerado), **~15 × PDFs** (WeasyPrint ausente no host — dívida de ambiente), **~11 × provisionamento** (grants aplicados com `@'%'`; o `user_host: 'localhost'` dos usuários criados pelo provisioner não casa com conexões do host via NAT do Docker — pendência de ambiente, não de código) e o restante a triar no re-run pós-manifest.
+2. **Dívidas da CLI** (I18N_COVERAGE_REPORT.md §Dívidas) — pluralização; nó com `>` em atributo (CartonCodes); literais após chain (EmailSettings); `cleanup --apply` PROIBIDO; **nova**: literais `Yes`/`No`/`Never` no CSV de UserAdminController.
+3. ~~statusLabels do UserAdminController + UpdateSender~~ ✅ 2026-11-12 — `lang/{en,pt_BR}/users.php` + `updates.php`, padrão notifications.php.
+4. ~~errors/503 + expired-verification-link~~ ✅ 2026-11-12 — `lang/{en,pt_BR}/errors.php` (overlay do gerador).
+5. **PRs upstream** (task-6) — ação do usuário (fork em VenMail/localizer + `Agents/UPSTREAM_ISSUES.md` tem 11 issues). **+1 candidata**: compatibilidade Windows do `DatabaseTools::find()` (correção já feita aqui — subir o patch junto).
+6. ~~Push da branch~~ ✅ pushado pela máquina PLANCK. **PR para main** — decisão do usuário.
 7. **Validar com a operação**: Stack→Nível; Box/Case→caixa; Receiving→Recebimento.
-8. **Decisão de produto**: default pt-BR no provisionamento (`APP_LOCALE=pt_BR` em `.env.example`/docker) para deploys brasileiros.
-9. **Build local**: quebra no quirk Defender×esbuild ("Acesso negado" na remoção de temp — JS válido, 385 módulos transformam; documentado no glossário). Soluções possíveis: exclusão no Defender (admin), build no WSL, ou aguardar upstream do esbuild/vite. **O build não é pré-requisito para a validade da i18n.**
+8. ~~Default pt-BR no provisionamento~~ ✅ 2026-11-12 — `.env.example` + `docker/compose.yaml` (x-settings).
+9. **Build local**: quirk Defender×esbuild confirmada também nesta máquina ("Acesso negado" na remoção de temp do esbuild — mesmo com postinstall aprovado e binário validado). **Workaround operacional: build dentro de container `node:22`** (`docker run --rm -v .:/proj -w /proj node:22 sh -c "npm install --ignore-scripts && npm run build"` — 34s; ATENÇÃO: o npm do container reescreve `node_modules` com binários Linux — rodar `npm install` no host depois para restaurar). A validade do JS está provada por outros gates; solução definitiva por exclusão no Defender/WSL é decisão do usuário.
 
 ## 7. Como prosseguir (amanhã, outra máquina)
 
