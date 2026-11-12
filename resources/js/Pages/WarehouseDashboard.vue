@@ -24,7 +24,7 @@ import axios from 'axios';
 import { t } from '@/i18n';
 
 const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') };
-const ORDER_STAGE_LABELS = { t('Commons.button.new_order'): t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped'), t('Pages.text.delivered_waiting_on_bol'): t('Pages.text.waiting_on_bol') };
+const ORDER_STAGE_LABELS = { 'New Order': t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped'), 'Delivered — Waiting on BOL': t('Pages.text.waiting_on_bol') };
 
 export default {
 	components: { AuthenticatedLayout, Head, Link, PeriodStatCard, BarBreakdownCard },

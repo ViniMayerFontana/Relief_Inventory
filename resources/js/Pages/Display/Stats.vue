@@ -14,7 +14,7 @@ import { t } from '@/i18n';
 // /json/display/<mode>, open to a paired device with the matching Function — see EnsureDeviceAccess.
 const REFRESH_MS = 60 * 1000;
 const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') };
-const ORDER_STAGE_LABELS = { t('Commons.button.new_order'): t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped') };
+const ORDER_STAGE_LABELS = { 'New Order': t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped') };
 
 export default {
 	components: { DisplayLayout, Head, PeriodStatCard, BarBreakdownCard },
