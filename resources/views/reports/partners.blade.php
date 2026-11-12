@@ -13,7 +13,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __("Commons.text.partner_report") }}</title>
+    <title>{{ __("commons.text.partner_report") }}</title>
     <style>
         @page {
             size: {{ \App\Support\ReportPaper::size() }};
@@ -51,7 +51,7 @@
     </style>
 </head>
 <body>
-    <h1>{{ __("Commons.text.partner_report") }}</h1>
+    <h1>{{ __("commons.text.partner_report") }}</h1>
     <div class="subtitle">
         {{ config('app.name') }} &mdash; what each partner requested and received, {{ $range }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
@@ -68,9 +68,9 @@
     @if($report['partners']->isEmpty())
         <p>No requests{{ $range === 'all orders' && empty($f->county_id) ? '' : ' for these filters' }}.</p>
     @else
-        <h2>{{ __("Commons.text.by_county") }}</h2>
+        <h2>{{ __("commons.text.by_county") }}</h2>
         <table>
-            <thead><tr><th>{{ __("Commons.text.county_2") }}</th><th class="num">Partners</th><th class="num">{{ __("Commons.text.requests") }}</th><th class="num">{{ __("Commons.text.requested") }}</th><th class="num">{{ __("Commons.text.filled") }}</th></tr></thead>
+            <thead><tr><th>{{ __("commons.text.county_2") }}</th><th class="num">Partners</th><th class="num">{{ __("commons.text.requests") }}</th><th class="num">{{ __("commons.text.requested") }}</th><th class="num">{{ __("commons.text.filled") }}</th></tr></thead>
             <tbody>
                 @foreach($report['by_county'] as $row)
                     <tr>
@@ -88,9 +88,9 @@
         <table>
             <thead>
                 <tr>
-                    <th>{{ __("Reports.Partners.text.partner_request") }}</th><th>County &middot; Zip</th><th class="num">{{ __("Commons.text.requests") }}</th>
-                    <th class="num">{{ __("Commons.text.requested") }}</th><th class="num">{{ __("Commons.text.filled") }}</th><th class="num">{{ __("Commons.text.fill_rate") }}</th>
-                    <th class="num">{{ __("Commons.text.shipped") }}</th><th class="num">Delivered</th><th>{{ __("Commons.text.last_request") }}</th>
+                    <th>{{ __("reports.Partners.text.partner_request") }}</th><th>County &middot; Zip</th><th class="num">{{ __("commons.text.requests") }}</th>
+                    <th class="num">{{ __("commons.text.requested") }}</th><th class="num">{{ __("commons.text.filled") }}</th><th class="num">{{ __("commons.text.fill_rate") }}</th>
+                    <th class="num">{{ __("commons.text.shipped") }}</th><th class="num">Delivered</th><th>{{ __("commons.text.last_request") }}</th>
                 </tr>
             </thead>
             <tbody>

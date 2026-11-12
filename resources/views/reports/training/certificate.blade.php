@@ -11,7 +11,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __("Commons.text.training_certificates") }}</title>
+    <title>{{ __("commons.text.training_certificates") }}</title>
     <style>
         @page { size: {{ \App\Support\ReportPaper::size() }} landscape; margin: 0.5in; }
         body { font-family: Georgia, 'Times New Roman', serif; color: #222; margin: 0; }
@@ -37,10 +37,10 @@
     @forelse ($trainees as $t)
         <div class="cert">
             <img class="logo" src="{{ $logo }}" alt="">
-            <h1>{{ __("Reports.Training.Certificate.text.certificate_of_completion") }}</h1>
-            <div class="lead">{{ __("Reports.Training.Certificate.text.this_certifies_that") }}</div>
+            <h1>{{ __("reports.Training.Certificate.text.certificate_of_completion") }}</h1>
+            <div class="lead">{{ __("reports.Training.Certificate.text.this_certifies_that") }}</div>
             <div class="name">{{ $t['name'] }}</div>
-            <div class="lead">{{ __("Commons.text.has_completed") }}</div>
+            <div class="lead">{{ __("commons.text.has_completed") }}</div>
             <div class="event">{{ $eventTitle ?: 'Hands-on Warehouse Training' }}</div>
             <div class="lead">{{ $eventLocation ? 'held at '.$eventLocation.' on ' : 'on ' }}{{ $date }}</div>
             <div class="signers">
@@ -53,7 +53,7 @@
             </div>
         </div>
     @empty
-        <p style="font-family: Arial, sans-serif;">{{ __("Reports.Training.Certificate.text.no_trainee_has_completed") }}</p>
+        <p style="font-family: Arial, sans-serif;">{{ __("reports.Training.Certificate.text.no_trainee_has_completed") }}</p>
     @endforelse
 </body>
 </html>

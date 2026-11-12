@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __("Reports.OrderForm.text.order_request_form") }}</title>
+    <title>{{ __("reports.OrderForm.text.order_request_form") }}</title>
     <style>
         @page {
             size: {{ \App\Support\ReportPaper::size() }};
@@ -135,22 +135,22 @@
     </style>
 </head>
 <body>
-    <h1>{{ __("Reports.OrderForm.text.order_request_form") }}</h1>
+    <h1>{{ __("reports.OrderForm.text.order_request_form") }}</h1>
     <div class="subtitle">
         {{ config('app.name') }} &mdash; {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')]) }}
     </div>
 
     <div class="instructions">
-        {{ __("Reports.OrderForm.text.write_the_quantity_needed") }}
+        {{ __("reports.OrderForm.text.write_the_quantity_needed") }}
     </div>
 
     <div class="fields">
-        <div class="field"><label>{{ __("Reports.OrderForm.text.organization_pod_name") }}</label><div class="line"></div></div>
-        <div class="field"><label>{{ __("Commons.text.contact_name") }}</label><div class="line"></div></div>
-        <div class="field"><label>{{ __("Commons.text.phone_2") }}</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("reports.OrderForm.text.organization_pod_name") }}</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("commons.text.contact_name") }}</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("commons.text.phone_2") }}</label><div class="line"></div></div>
         <div class="field"><label>Email</label><div class="line"></div></div>
-        <div class="field"><label>{{ __("Commons.text.delivery_address") }}</label><div class="line"></div></div>
-        <div class="field"><label>{{ __("Reports.OrderForm.text.date_needed_by") }}</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("commons.text.delivery_address") }}</label><div class="line"></div></div>
+        <div class="field"><label>{{ __("reports.OrderForm.text.date_needed_by") }}</label><div class="line"></div></div>
     </div>
 
     @forelse($categories as $category => $items)
@@ -160,10 +160,10 @@
                     <th class="category-heading" colspan="4">{{ $category ?? 'Uncategorized' }}</th>
                 </tr>
                 <tr>
-                    <th>{{ __("Commons.text.item") }}</th>
-                    <th>{{ __("Commons.text.name") }}</th>
-                    <th>{{ __("Commons.text.unit") }}</th>
-                    <th class="qty">{{ __("Commons.text.qty_needed") }}</th>
+                    <th>{{ __("commons.text.item") }}</th>
+                    <th>{{ __("commons.text.name") }}</th>
+                    <th>{{ __("commons.text.unit") }}</th>
+                    <th class="qty">{{ __("commons.text.qty_needed") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -178,19 +178,19 @@
             </tbody>
         </table>
     @empty
-        <p>{{ __("Reports.OrderForm.text.no_items_are_currently") }}</p>
+        <p>{{ __("reports.OrderForm.text.no_items_are_currently") }}</p>
     @endforelse
 
     <div class="other-needs">
-        <h2>{{ __("Commons.text.other_needs") }}</h2>
-        <p>{{ __("Reports.OrderForm.text.anything_you_need_that") }}</p>
+        <h2>{{ __("commons.text.other_needs") }}</h2>
+        <p>{{ __("reports.OrderForm.text.anything_you_need_that") }}</p>
         <div class="other-line"></div>
         <div class="other-line"></div>
         <div class="other-line"></div>
     </div>
 
     <div class="disclaimer">
-        {{ __("Reports.OrderForm.text.this_list_reflects_items") }}
+        {{ __("reports.OrderForm.text.this_list_reflects_items") }}
     </div>
 </body>
 </html>

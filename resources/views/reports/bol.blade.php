@@ -139,18 +139,18 @@
     </style>
 </head>
 <body>
-    <h1>{{ __("Reports.Bol.text.bill_of_lading") }}</h1>
+    <h1>{{ __("reports.Bol.text.bill_of_lading") }}</h1>
     <div class="subtitle">{{ $order->bol_number }} &mdash; Order #{{ $order->id }}</div>
 
     <div class="section">
-        <h2>{{ __("Commons.text.shipment") }}</h2>
+        <h2>{{ __("commons.text.shipment") }}</h2>
         <div class="grid">
             <div class="field">
-                <div class="label">{{ __("Commons.text.ship_to") }}</div>
+                <div class="label">{{ __("commons.text.ship_to") }}</div>
                 <div class="value">{{ $order->person?->full_name ?? 'Unknown' }}</div>
             </div>
             <div class="field">
-                <div class="label">{{ __("Commons.text.delivery_address") }}</div>
+                <div class="label">{{ __("commons.text.delivery_address") }}</div>
                 <div class="value">
                     @if($order->person?->address || $order->person?->city)
                         {{ $order->person->address }}, {{ $order->person->city }}, {{ $order->person->state }} {{ $order->person->zip }}
@@ -160,50 +160,50 @@
                 </div>
             </div>
             <div class="field">
-                <div class="label">{{ __("Commons.text.fulfillment_method") }}</div>
+                <div class="label">{{ __("commons.text.fulfillment_method") }}</div>
                 <div class="value">{{ ucfirst($order->fulfillment_method ?? '') }}</div>
             </div>
             <div class="field">
-                <div class="label">{{ __("Commons.text.contact") }}</div>
+                <div class="label">{{ __("commons.text.contact") }}</div>
                 <div class="value">{{ $order->contact_name }} @if($order->contact_phone) &mdash; {{ $order->contact_phone }} @endif</div>
             </div>
             <div class="field">
-                <div class="label">{{ __("Commons.text.requested_date") }}</div>
+                <div class="label">{{ __("commons.text.requested_date") }}</div>
                 <div class="value">{{ $order->needed_by_date ? \Illuminate\Support\Carbon::parse($order->needed_by_date)->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y') : '' }}</div>
             </div>
             <div class="field">
-                <div class="label">{{ __("Commons.text.delivery_window") }}</div>
+                <div class="label">{{ __("commons.text.delivery_window") }}</div>
                 <div class="value">{{ $order->preferred_time }}</div>
             </div>
             <div class="field">
-                <div class="label">{{ __("Commons.text.delivery_date") }}</div>
+                <div class="label">{{ __("commons.text.delivery_date") }}</div>
                 <div class="value blank">&nbsp;</div>
             </div>
             <div class="field">
-                <div class="label">{{ __("Reports.Bol.text.pallet_count_as_packed") }}</div>
+                <div class="label">{{ __("reports.Bol.text.pallet_count_as_packed") }}</div>
                 <div class="value">{{ $order->pallet_count ?? '' }}</div>
             </div>
             <div class="field">
-                <div class="label">{{ __("Reports.Bol.text.pallet_count_confirmed_by") }}</div>
+                <div class="label">{{ __("reports.Bol.text.pallet_count_confirmed_by") }}</div>
                 <div class="value blank">&nbsp;</div>
             </div>
         </div>
     </div>
 
     <div class="section">
-        <h2>{{ __("Commons.text.special_instructions") }}</h2>
+        <h2>{{ __("commons.text.special_instructions") }}</h2>
         <div class="instructions">{{ $order->special_instructions ?: '—' }}</div>
     </div>
 
     <div class="section">
-        <h2>{{ __("Commons.text.items") }}</h2>
+        <h2>{{ __("commons.text.items") }}</h2>
         <table>
             <thead>
                 <tr>
-                    <th>{{ __("Commons.text.item") }}</th>
-                    <th>{{ __("Commons.text.name") }}</th>
-                    <th>{{ __("Commons.text.unit") }}</th>
-                    <th class="qty">{{ __("Commons.text.qty_filled") }}</th>
+                    <th>{{ __("commons.text.item") }}</th>
+                    <th>{{ __("commons.text.name") }}</th>
+                    <th>{{ __("commons.text.unit") }}</th>
+                    <th class="qty">{{ __("commons.text.qty_filled") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -215,14 +215,14 @@
                         <td class="qty">{{ $line->itemLedgers->sum('qty_subtracted') }}</td>
                     </tr>
                 @empty
-                    <tr><td colspan="4">{{ __("Reports.Bol.text.no_lines_on_this") }}</td></tr>
+                    <tr><td colspan="4">{{ __("reports.Bol.text.no_lines_on_this") }}</td></tr>
                 @endforelse
             </tbody>
         </table>
     </div>
 
     <div class="signoff">
-        <h2>{{ __("Commons.text.shipper_release") }}</h2>
+        <h2>{{ __("commons.text.shipper_release") }}</h2>
         <div class="row">
             Staff Name: <span class="line"></span>
             Signature: <span class="line"></span>
@@ -231,7 +231,7 @@
     </div>
 
     <div class="signoff">
-        <h2>{{ __("Reports.Bol.text.carrier_driver_receipt") }}</h2>
+        <h2>{{ __("reports.Bol.text.carrier_driver_receipt") }}</h2>
         <div class="row">
             Carrier: <span class="line">{{ $order->driver?->carrier }}</span>
             Driver Name: <span class="line">{{ $order->driver?->name }}</span>
@@ -244,7 +244,7 @@
     </div>
 
     <div class="signoff">
-        <h2>{{ __("Commons.text.delivery_confirmation") }}</h2>
+        <h2>{{ __("commons.text.delivery_confirmation") }}</h2>
         <div class="row">
             Received By (print): <span class="line"></span>
             Signature: <span class="line"></span>

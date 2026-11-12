@@ -25,11 +25,11 @@
 <body>
 <div class="wrap"><div class="card">
     <h1>This page isn't set up yet</h1>
-    <p>{{ __("Errors.TurnstileMisconfigured.text.this_page_uses_cloudflare") }}</p>
-    <p><strong>{{ __("Errors.TurnstileMisconfigured.text.turn_it_off") }}</strong> (fine for a private or offline site) — set <code>CLOUDFLARE_TURNSTILE_ENABLED</code> to <code>false</code>.</p>
-    <p><strong>{{ __("Errors.TurnstileMisconfigured.text.or_give_it_keys") }}</strong> — set <code>CLOUDFLARE_TURNSTILE_ENABLED</code> to <code>true</code>, and set both <code>CLOUDFLARE_TURNSTILE_SITE_KEY</code> and <code>CLOUDFLARE_TURNSTILE_SECRET_KEY</code> (free from the Cloudflare dashboard; the server needs Internet access).</p>
+    <p>{{ __("errors.TurnstileMisconfigured.text.this_page_uses_cloudflare") }}</p>
+    <p><strong>{{ __("errors.TurnstileMisconfigured.text.turn_it_off") }}</strong> (fine for a private or offline site) — set <code>CLOUDFLARE_TURNSTILE_ENABLED</code> to <code>false</code>.</p>
+    <p><strong>{{ __("errors.TurnstileMisconfigured.text.or_give_it_keys") }}</strong> — set <code>CLOUDFLARE_TURNSTILE_ENABLED</code> to <code>true</code>, and set both <code>CLOUDFLARE_TURNSTILE_SITE_KEY</code> and <code>CLOUDFLARE_TURNSTILE_SECRET_KEY</code> (free from the Cloudflare dashboard; the server needs Internet access).</p>
     <p>In Docker, these go in the settings block at the top of <code>compose.yaml</code>; then run:</p>
-    <pre>{{ __("Errors.TurnstileMisconfigured.text.docker_compose_up_d") }}</pre>
+    <pre>{{ __("errors.TurnstileMisconfigured.text.docker_compose_up_d") }}</pre>
 </div></div>
 </body>
 </html>

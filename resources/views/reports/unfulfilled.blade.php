@@ -11,7 +11,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __("Reports.Unfulfilled.text.unfulfilled_requests_report") }}</title>
+    <title>{{ __("reports.Unfulfilled.text.unfulfilled_requests_report") }}</title>
     <style>
         @page {
             size: {{ \App\Support\ReportPaper::size() }};
@@ -118,7 +118,7 @@
     </style>
 </head>
 <body>
-    <h1>{{ __("Reports.Unfulfilled.text.unfulfilled_requests_report") }}</h1>
+    <h1>{{ __("reports.Unfulfilled.text.unfulfilled_requests_report") }}</h1>
     <div class="subtitle">
         {{ config('app.name') }} &mdash; what was requested but not filled, {{ $range }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
@@ -142,7 +142,7 @@
                     <h2>Not Filled by {{ $label }}</h2>
                     <table>
                         <thead><tr>
-                            <th>{{ $label }}</th><th class="num">{{ __("Commons.text.requests") }}</th><th class="num">{{ __("Commons.text.item_types") }}</th><th class="num">{{ __("Commons.text.not_filled") }}</th>
+                            <th>{{ $label }}</th><th class="num">{{ __("commons.text.requests") }}</th><th class="num">{{ __("commons.text.item_types") }}</th><th class="num">{{ __("commons.text.not_filled") }}</th>
                         </tr></thead>
                         <tbody>
                             @foreach($report['by_'.$field] as $row)
@@ -159,19 +159,19 @@
             @endforeach
         </div>
 
-        <h2>{{ __("Reports.Unfulfilled.text.items_not_filled") }}</h2>
+        <h2>{{ __("reports.Unfulfilled.text.items_not_filled") }}</h2>
         <table>
             <thead>
                 <tr>
-                    <th>{{ __("Commons.text.item") }}</th>
+                    <th>{{ __("commons.text.item") }}</th>
                     <th>Item / County &middot; Zip</th>
-                    <th>{{ __("Commons.text.unit") }}</th>
-                    <th class="num">{{ __("Commons.text.requests") }}</th>
-                    <th class="num">{{ __("Commons.text.requested") }}</th>
-                    <th class="num">{{ __("Commons.text.filled") }}</th>
-                    <th class="num">{{ __("Commons.text.not_filled") }}</th>
-                    <th class="num">{{ __("Reports.Unfulfilled.text.cut_at_allocation") }}</th>
-                    <th class="num">{{ __("Reports.Unfulfilled.text.short_at_picking") }}</th>
+                    <th>{{ __("commons.text.unit") }}</th>
+                    <th class="num">{{ __("commons.text.requests") }}</th>
+                    <th class="num">{{ __("commons.text.requested") }}</th>
+                    <th class="num">{{ __("commons.text.filled") }}</th>
+                    <th class="num">{{ __("commons.text.not_filled") }}</th>
+                    <th class="num">{{ __("reports.Unfulfilled.text.cut_at_allocation") }}</th>
+                    <th class="num">{{ __("reports.Unfulfilled.text.short_at_picking") }}</th>
                 </tr>
             </thead>
             <tbody>

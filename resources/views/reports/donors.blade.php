@@ -14,7 +14,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __("Commons.text.donor_report") }}</title>
+    <title>{{ __("commons.text.donor_report") }}</title>
     <style>
         @page {
             size: {{ \App\Support\ReportPaper::size() }};
@@ -53,7 +53,7 @@
     </style>
 </head>
 <body>
-    <h1>{{ __("Commons.text.donor_report") }}</h1>
+    <h1>{{ __("commons.text.donor_report") }}</h1>
     <div class="subtitle">
         {{ config('app.name') }} &mdash; what each donor sent and how much was usable, {{ $range }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
@@ -68,13 +68,13 @@
     @if($report['donors']->isEmpty())
         <p>No donations{{ $range === 'all donations' ? '' : ' in this date range' }}.</p>
     @else
-        <h2>{{ __("Commons.text.donors") }}</h2>
+        <h2>{{ __("commons.text.donors") }}</h2>
         <table>
             <thead>
                 <tr>
-                    <th>{{ __("Reports.Donors.text.donor_donation") }}</th><th>{{ __("Commons.text.standing") }}</th><th>{{ __("Commons.text.suggested") }}</th><th class="num">{{ __("Commons.text.donations") }}</th>
-                    <th class="num">{{ __("Commons.text.units") }}</th><th class="num">{{ __("Commons.text.usable") }}</th><th class="num">{{ __("Commons.text.outdated") }}</th>
-                    <th class="num">{{ __("Commons.text.trashed") }}</th><th class="num">{{ __("Commons.text.diverted") }}</th><th class="num">{{ __("Commons.text.loss") }}</th>
+                    <th>{{ __("reports.Donors.text.donor_donation") }}</th><th>{{ __("commons.text.standing") }}</th><th>{{ __("commons.text.suggested") }}</th><th class="num">{{ __("commons.text.donations") }}</th>
+                    <th class="num">{{ __("commons.text.units") }}</th><th class="num">{{ __("commons.text.usable") }}</th><th class="num">{{ __("commons.text.outdated") }}</th>
+                    <th class="num">{{ __("commons.text.trashed") }}</th><th class="num">{{ __("commons.text.diverted") }}</th><th class="num">{{ __("commons.text.loss") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -82,7 +82,7 @@
                     <tr class="donor">
                         <td>{{ $d['name'] }}</td>
                         <td>{{ $d['is_system'] ? '' : ucfirst($d['standing']) }}</td>
-                        <td>{!! $d['is_system'] ? '' : ($d['suggested'] ? ucfirst($d['suggested']) : '<span class="muted">{{ __("Reports.Donors.text.not_enough_data") }}</span>') !!}</td>
+                        <td>{!! $d['is_system'] ? '' : ($d['suggested'] ? ucfirst($d['suggested']) : '<span class="muted">{{ __("reports.Donors.text.not_enough_data") }}</span>') !!}</td>
                         <td class="num">{{ $d['donations'] }}</td>
                         <td class="num">{{ number_format($d['units']) }}</td>
                         <td class="num">{{ number_format($d['usable']) }}</td>

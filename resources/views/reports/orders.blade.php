@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __("Reports.Orders.text.outstanding_orders_report") }}</title>
+    <title>{{ __("reports.Orders.text.outstanding_orders_report") }}</title>
     <style>
         @page {
             size: {{ \App\Support\ReportPaper::size() }};
@@ -95,7 +95,7 @@
     </style>
 </head>
 <body>
-    <h1>{{ __("Reports.Orders.text.outstanding_orders_report") }}</h1>
+    <h1>{{ __("reports.Orders.text.outstanding_orders_report") }}</h1>
     <div class="subtitle">
         {{ config('app.name') }} &mdash; every order not yet shipped, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
@@ -103,14 +103,14 @@
     <table>
         <thead>
             <tr>
-                <th>{{ __("Commons.text.order") }}</th>
+                <th>{{ __("commons.text.order") }}</th>
                 <th>Partner</th>
-                <th>{{ __("Commons.text.status_2") }}</th>
-                <th>{{ __("Commons.text.order_date") }}</th>
-                <th>{{ __("Commons.text.needed_by") }}</th>
-                <th>{{ __("Commons.text.fulfillment") }}</th>
-                <th class="num">{{ __("Commons.text.lines") }}</th>
-                <th class="num">{{ __("Commons.text.qty_requested") }}</th>
+                <th>{{ __("commons.text.status_2") }}</th>
+                <th>{{ __("commons.text.order_date") }}</th>
+                <th>{{ __("commons.text.needed_by") }}</th>
+                <th>{{ __("commons.text.fulfillment") }}</th>
+                <th class="num">{{ __("commons.text.lines") }}</th>
+                <th class="num">{{ __("commons.text.qty_requested") }}</th>
             </tr>
         </thead>
         <tbody>
@@ -135,13 +135,13 @@
                     </tr>
                 @endif
             @empty
-                <tr><td colspan="8">{{ __("Reports.Orders.text.no_outstanding_orders") }}</td></tr>
+                <tr><td colspan="8">{{ __("reports.Orders.text.no_outstanding_orders") }}</td></tr>
             @endforelse
         </tbody>
     </table>
 
     <div class="disclaimer">
-        {{ __("Reports.Orders.text.includes_every_order_in") }}
+        {{ __("reports.Orders.text.includes_every_order_in") }}
     </div>
 </body>
 </html>

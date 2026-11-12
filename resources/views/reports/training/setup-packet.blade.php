@@ -7,7 +7,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __("Reports.Training.SetupPacket.text.training_setup_packet") }}</title>
+    <title>{{ __("reports.Training.SetupPacket.text.training_setup_packet") }}</title>
     <style>
         @page { size: {{ \App\Support\ReportPaper::size() }}; margin: 0.5in 0.55in; }
         @page sign { size: {{ \App\Support\ReportPaper::size() }} landscape; margin: 0.5in; }
@@ -48,7 +48,7 @@
         }
     @endphp
 
-    <h1>{{ __("Reports.Training.SetupPacket.text.training_setup_packet") }}</h1>
+    <h1>{{ __("reports.Training.SetupPacket.text.training_setup_packet") }}</h1>
     <div class="subtitle">{{ config('app.name') }} — prepared {{ \Carbon\Carbon::parse($summary['prepared_at'])->format('F j, Y g:i A') }}
         — {{ $summary['products']['units'] }} scanned items, {{ $summary['products']['distinct'] }} different products</div>
 
@@ -57,20 +57,20 @@
     @endforeach
 
     <div class="section">
-        <h2>{{ __("Reports.Training.SetupPacket.text.how_it_works") }}</h2>
+        <h2>{{ __("reports.Training.SetupPacket.text.how_it_works") }}</h2>
         <p>Only the first team at each station needs staged goods: teams move from station N to N+1, so after its first stop
             every team works on what it handled itself one station earlier. Receiving uses your own goods (not scanned): put out
             boxes to receive, and the teams sort what they bring in. Stations 3–5 hold the scanned goods, placed
             as listed below. When a team marks a load delivered (Station 6, Round 2), carry that box back to Receiving as a new delivery.</p>
         <table>
-            <thead><tr><th>{{ __("Commons.text.station") }}</th><th>{{ __("Commons.text.put_out") }}</th><th class="num">{{ __("Commons.text.items") }}</th></tr></thead>
+            <thead><tr><th>{{ __("commons.text.station") }}</th><th>{{ __("commons.text.put_out") }}</th><th class="num">{{ __("commons.text.items") }}</th></tr></thead>
             <tbody>
                 <tr><td>1 {{ $stations[1] }}</td><td>Boxes of your own goods to receive ({{ count($summary['offers']) }} offers waiting for them)</td><td class="num">yours</td></tr>
-                <tr><td>2 {{ $stations[2] }}</td><td>{{ __("Reports.Training.SetupPacket.text.nothing_the_teams_sort") }}</td><td class="num">0</td></tr>
-                <tr><td>3 {{ $stations[3] }}</td><td>{{ __("Reports.Training.SetupPacket.text.sorted_goods_on_the") }}</td><td class="num">{{ collect($summary['sorting_area'])->sum('qty') }}</td></tr>
+                <tr><td>2 {{ $stations[2] }}</td><td>{{ __("reports.Training.SetupPacket.text.nothing_the_teams_sort") }}</td><td class="num">0</td></tr>
+                <tr><td>3 {{ $stations[3] }}</td><td>{{ __("reports.Training.SetupPacket.text.sorted_goods_on_the") }}</td><td class="num">{{ collect($summary['sorting_area'])->sum('qty') }}</td></tr>
                 <tr><td>4 {{ $stations[4] }}</td><td>{{ count($summary['warehouse_pallets']) }} sealed trays at table spots, {{ count($summary['orders_to_fill']) }} orders to pick</td><td class="num">{{ collect($summary['warehouse_pallets'])->flatMap(fn ($p) => $p['items'])->sum('qty') }}</td></tr>
                 <tr><td>5 {{ $stations[5] }}</td><td>{{ count($summary['orders_to_ship']) }} picked orders at the door</td><td class="num">{{ collect($summary['orders_to_ship'])->flatMap(fn ($o) => $o['items'])->sum('qty') }}</td></tr>
-                <tr><td>6 {{ $stations[6] }}</td><td>{{ __("Reports.Training.SetupPacket.text.nothing_each_team_delivers") }}</td><td class="num">0</td></tr>
+                <tr><td>6 {{ $stations[6] }}</td><td>{{ __("reports.Training.SetupPacket.text.nothing_each_team_delivers") }}</td><td class="num">0</td></tr>
             </tbody>
         </table>
         <p class="note">Tape the table spot labels (Setup &gt; Training Warehouse &gt; Table Spot Labels) on the tables: {{ implode(', ', $summary['locations']) }}.
@@ -79,9 +79,9 @@
 
     <div class="section">
         <h2>Station 1 — {{ $stations[1] }}: offers waiting for arrival</h2>
-        <p class="note">{{ __("Reports.Training.SetupPacket.text.put_out_boxes_of") }}</p>
+        <p class="note">{{ __("reports.Training.SetupPacket.text.put_out_boxes_of") }}</p>
         <table>
-            <thead><tr><th>{{ __("Commons.text.offer") }}</th><th>{{ __("Commons.text.donor") }}</th><th>{{ __("Commons.text.what_s_coming") }}</th></tr></thead>
+            <thead><tr><th>{{ __("commons.text.offer") }}</th><th>{{ __("commons.text.donor") }}</th><th>{{ __("commons.text.what_s_coming") }}</th></tr></thead>
             <tbody>
                 @foreach ($summary['offers'] as $o)
                     <tr><td>{{ $o['id'] }}</td><td>{{ $o['donor'] }}</td><td>{{ $o['description'] }}</td></tr>
@@ -92,7 +92,7 @@
 
     <div class="section">
         <h2>Station 3 — {{ $stations[3] }}: sorting area table</h2>
-        <p class="note">{{ __("Reports.Training.SetupPacket.text.already_sorted_not_on") }}</p>
+        <p class="note">{{ __("reports.Training.SetupPacket.text.already_sorted_not_on") }}</p>
         <table>
             <tbody>@foreach ($itemRows($summary['sorting_area']) as $r)<tr><td>{{ $r['what'] }}</td><td>{{ $r['acs'] }}</td><td class="num">{{ $r['qty'] }}</td></tr>@endforeach</tbody>
         </table>
@@ -106,9 +106,9 @@
                 <tbody>@foreach ($itemRows($p['items']) as $r)<tr><td>{{ $r['what'] }}</td><td>{{ $r['acs'] }}</td><td class="num">{{ $r['qty'] }}</td></tr>@endforeach</tbody>
             </table>
         @endforeach
-        <h3>{{ __("Reports.Training.SetupPacket.text.orders_waiting_to_be") }}</h3>
+        <h3>{{ __("reports.Training.SetupPacket.text.orders_waiting_to_be") }}</h3>
         <table>
-            <thead><tr><th>{{ __("Commons.text.order") }}</th><th>Partner</th><th>{{ __("Commons.text.lines") }}</th></tr></thead>
+            <thead><tr><th>{{ __("commons.text.order") }}</th><th>Partner</th><th>{{ __("commons.text.lines") }}</th></tr></thead>
             <tbody>
                 @foreach ($summary['orders_to_fill'] as $o)
                     <tr><td>{{ $o['id'] }}</td><td>{{ $o['partner'] }}</td>
@@ -130,9 +130,9 @@
 
     <div class="section">
         <h2>Station 6 — {{ $stations[6] }}: team drivers (Driver Portal logins)</h2>
-        <p class="note">{{ __("Reports.Training.SetupPacket.text.in_round_2_each") }}</p>
+        <p class="note">{{ __("reports.Training.SetupPacket.text.in_round_2_each") }}</p>
         <table>
-            <thead><tr><th>{{ __("Commons.text.team") }}</th><th>{{ __("Commons.text.driver") }}</th><th>{{ __("Commons.text.phone_2") }}</th><th>{{ __("Commons.text.pin") }}</th></tr></thead>
+            <thead><tr><th>{{ __("commons.text.team") }}</th><th>{{ __("commons.text.driver") }}</th><th>{{ __("commons.text.phone_2") }}</th><th>{{ __("commons.text.pin") }}</th></tr></thead>
             <tbody>
                 @foreach ($summary['team_drivers'] as $d)
                     <tr><td>{{ $d['team'] }}</td><td>{{ $d['name'] }}</td><td>{{ $d['phone'] }}</td><td>{{ $d['pin'] }}</td></tr>
@@ -144,7 +144,7 @@
 
     {{-- Contents slips: cut apart; one goes in each box / on each tray. --}}
     <div class="new-page">
-        <h2>{{ __("Reports.Training.SetupPacket.text.contents_slips_cut_apart") }}</h2>
+        <h2>{{ __("reports.Training.SetupPacket.text.contents_slips_cut_apart") }}</h2>
         @foreach ($slips as $slip)
             <div class="slip">
                 <div class="slip-station">Station {{ $slip['station'] }} — {{ $stations[$slip['station']] }}</div>

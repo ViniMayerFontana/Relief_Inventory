@@ -12,11 +12,11 @@
     a dead end. Self-contained like 503.blade.php — no Vite/app layout
     dependency.
 -->
-<html lang="en">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Relief Inventory') }} — Link Expired</title>
+    <title>{{ config('app.name', 'Relief Inventory') }} — {{ __("errors.LinkExpired.text.link_expired_short") }}</title>
     <style>
         * { box-sizing: border-box; }
         html, body {
@@ -80,10 +80,10 @@
                 <circle cx="12" cy="12" r="9"></circle>
                 <path d="M12 7v5l3 2"></path>
             </svg>
-            <h1>This link has expired</h1>
-            <p>Email verification links only stay valid for a short time after they're sent.</p>
-            <p>If you've already set your password, your email is most likely verified already — just log in below.</p>
-            <a class="button" href="{{ route('login') }}">Go to login</a>
+            <h1>{{ __("errors.LinkExpired.text.link_expired") }}</h1>
+            <p>{{ __("errors.LinkExpired.text.links_valid_short") }}</p>
+            <p>{{ __("errors.LinkExpired.text.log_in_below") }}</p>
+            <a class="button" href="{{ route('login') }}">{{ __("errors.LinkExpired.text.go_to_login") }}</a>
         </div>
     </div>
 </body>

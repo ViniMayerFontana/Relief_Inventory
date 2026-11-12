@@ -5,7 +5,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __("Reports.Training.SpotLabels.text.table_spot_labels") }}</title>
+    <title>{{ __("reports.Training.SpotLabels.text.table_spot_labels") }}</title>
     <style>
         @page { size: {{ $paper['width'] }}in {{ $paper['height'] }}in; margin: 0; }
         body { margin: 0; text-align: center; font-family: Arial, sans-serif; }

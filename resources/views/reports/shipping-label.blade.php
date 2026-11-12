@@ -35,7 +35,7 @@
     <div class="barcode">{!! DNS1D::getBarcodeHTML($orderNumber, 'C128', 2, 60) !!}</div>
 
     <div class="field shipto">
-        <div class="k">{{ __("Reports.ShippingLabel.text.ship_to_delivery_address") }}</div>
+        <div class="k">{{ __("reports.ShippingLabel.text.ship_to_delivery_address") }}</div>
         <div class="v">{{ \Illuminate\Support\Str::limit($order->person?->full_name ?? 'Unknown', 40) }}</div>
         @if($order->person?->address || $order->person?->city)
             <div class="v addr">
@@ -45,19 +45,19 @@
         @endif
     </div>
     <div class="field contact">
-        <div class="k">{{ __("Commons.text.contact") }}</div>
+        <div class="k">{{ __("commons.text.contact") }}</div>
         <div class="v">{{ \Illuminate\Support\Str::limit(trim(($order->contact_name ?? '').($order->contact_phone ? ' — '.$order->contact_phone : '')), 60) }}</div>
     </div>
     <div class="row">
-        <div class="field"><div class="k">{{ __("Commons.text.fulfillment_method") }}</div><div class="v">{{ ucfirst($order->fulfillment_method ?? '') }}</div></div>
+        <div class="field"><div class="k">{{ __("commons.text.fulfillment_method") }}</div><div class="v">{{ ucfirst($order->fulfillment_method ?? '') }}</div></div>
         <div class="field"><div class="k">Pallets</div><div class="v pallets">{{ $order->pallet_count ?? '' }}</div></div>
     </div>
     <div class="row">
-        <div class="field"><div class="k">{{ __("Commons.text.date_packed") }}</div><div class="v">{{ $datePacked?->format('M j, Y') }}</div></div>
-        <div class="field"><div class="k">{{ __("Commons.text.requested_date") }}</div><div class="v">{{ $order->needed_by_date ? \Illuminate\Support\Carbon::parse($order->needed_by_date)->format('M j, Y') : '' }}</div></div>
+        <div class="field"><div class="k">{{ __("commons.text.date_packed") }}</div><div class="v">{{ $datePacked?->format('M j, Y') }}</div></div>
+        <div class="field"><div class="k">{{ __("commons.text.requested_date") }}</div><div class="v">{{ $order->needed_by_date ? \Illuminate\Support\Carbon::parse($order->needed_by_date)->format('M j, Y') : '' }}</div></div>
     </div>
     <div class="field instr">
-        <div class="k">{{ __("Commons.text.special_instructions") }}</div>
+        <div class="k">{{ __("commons.text.special_instructions") }}</div>
         <div class="v">{{ \Illuminate\Support\Str::limit(preg_replace('/\s+/', ' ', (string) $order->special_instructions), 200) ?: '—' }}</div>
     </div>
 </div>
