@@ -65,15 +65,23 @@ class UserAdminController extends Controller
     /** Actions the bulk endpoint offers. */
     private const BULK_ACTIONS = ['approve', 'resend_invite', 'require_password_change', 'deactivate', 'reactivate'];
 
-    /** Display labels for status(), in the order the page's filter lists them. */
-    public const STATUS_LABELS = [
-        'active' => 'Active',
-        'must_change_password' => 'Active — must change password',
-        'invited' => 'Invited — pending setup',
-        'pending_approval' => 'Pending approval',
-        'unverified' => 'Pending — email not verified',
-        'deactivated' => 'Deactivated',
-    ];
+    /**
+     * Display labels for status(), in the order the page's filter lists them.
+     * A method rather than a const: constants can't call functions, so the
+     * labels translate here at use time (APP_LOCALE strategy) while the keys
+     * stay technical (they are status() values, never translated).
+     */
+    public static function statusLabels(): array
+    {
+        return [
+            'active' => __('users.status_labels.active'),
+            'must_change_password' => __('users.status_labels.must_change_password'),
+            'invited' => __('users.status_labels.invited'),
+            'pending_approval' => __('users.status_labels.pending_approval'),
+            'unverified' => __('users.status_labels.unverified'),
+            'deactivated' => __('users.status_labels.deactivated'),
+        ];
+    }
 
     /**
      * Retrieve all login-capable people (anyone with a login account).
@@ -86,7 +94,7 @@ class UserAdminController extends Controller
 
         return response()->json([
             'records' => $people,
-            'status_labels' => self::STATUS_LABELS,
+            'status_labels' => self::statusLabels(),
             'templates' => [
                 '_default' => [
                     'first_name' => '',
@@ -127,7 +135,7 @@ class UserAdminController extends Controller
             $csv->insertOne([
                 $p->first_name, $p->last_name, $p->email,
                 $p->roles->pluck('name')->join(', '),
-                self::STATUS_LABELS[$p->status],
+                self::statusLabels()[$p->status],
                 $p->is_volunteer ? 'Yes' : 'No',
                 $p->last_login_at ? Carbon::parse($p->last_login_at)->format('Y-m-d H:i') : 'Never',
                 $p->created_at?->format('Y-m-d H:i'),
@@ -609,7 +617,7 @@ class UserAdminController extends Controller
         return $people;
     }
 
-    /** One of STATUS_LABELS' keys. */
+    /** One of statusLabels()' keys. */
     public static function status(Person $person): string
     {
         if ($person->disabled_at) {
