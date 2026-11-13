@@ -57,12 +57,12 @@ Eyebrows 12px/600/uppercase/letter-spacing 0.08em; H1/H2 700 com letter-spacing
 
 ## 4. Tokens oficiais Planck Tech — VARIANTE CLARA v3 (decisões da usuária, 2026-11-12)
 
-> Evolução do feedback (3 rodadas): tema claro; **ciano e azul REMOVIDOS por
+> Evolução do feedback (4 rodadas): tema claro; **ciano e azul REMOVIDOS por
 > completo**; **letras todas em verde escuro elegante** (`#065F46` títulos,
 > `#047857` labels/links/corpo — nem claro a ponto de colorir a tela, nem escuro a
 > ponto de parecer preto/cinza); **fundo levemente mais saturado**; **barras do topo
-> (nav/header) na cor dos botões (`#10B981`), com letras brancas sobre elas**.
-> Exceção de contraste registrada: texto sobre barra verde = branco.
+> (nav/header) em estilo VAZADO** (v4): fundo verde suave, borda inferior marcada de
+> 2px no verde dos botões, letras verde-escuro — sem exceção de contraste.
 
 ```css
 :root {
@@ -95,11 +95,12 @@ Regras de componente: botão primário `--brand-primary` + `--text-on-brand`, ho
 `--brand-primary-hover`; ghost branco + borda interna verde `rgba(4,120,87,0.35)` +
 letra `--text-secondary`; inputs brancos, borda `--border-subtle`, letra
 `--text-secondary`, foco `--border-focus` + anel `var(--ring-soft)`; barras do topo
-(nav/header) com `background: var(--brand-primary)`, letras BRANCAS sobre a barra
-(exceção de contraste), botão-gatilho branco com letra `--text-secondary`; superfícies
-brancas com `--border-subtle` (verde suave); links/letras sempre verde-escuro; badges =
-fundo semântico a ~10–14%, texto sólido da família, borda ~30% (banner informativo
-torna-se verde, sem azul).
+(nav/header) em estilo **vazado** — fundo suave (nav `var(--bg-secondary)`; header do
+Welcome branco) com borda inferior de 2px `var(--brand-primary)`, letras
+verde-escuro dentro da barra, botão-gatilho branco com letra `--text-secondary`;
+superfícies brancas com `--border-subtle` (verde suave); links/letras sempre
+verde-escuro; badges = fundo semântico a ~10–14%, texto sólido da família, borda ~30%
+(banner informativo torna-se verde, sem azul).
 
 ## 5. Fases
 
@@ -121,10 +122,10 @@ torna-se verde, sem azul).
 2. **NUNCA** quebrar lógica/reatividade Vue: sem tocar em `<script>`, props, emits,
    `v-if`, `v-for`, `v-model`, handlers, `data-testid`. Em `:class` dinâmico, mudar
    só a string de cor/fonte.
-3. **Tema claro aprovado pela usuária** (v3: sem ciano/azul; letras em verde escuro
-   elegante; fundo esverdeado mais saturado; barras do topo na cor dos botões):
+3. **Tema claro aprovado pela usuária** (v3: sem ciano/azul, letras verde-escuro
+   elegante, fundo saturado; v4: barras do topo vazadas com borda verde marcada):
    superfícies e canvas seguem a hierarquia clara da §4; o `--bg-surface` branco é
-   intencional. Texto sobre barra verde = branco (exceção de contraste registrada).
+   intencional. Letras sempre verde-escuro — nenhuma exceção de contraste desde a v4.
 4. **NUNCA** passar da Fase 1 sem aprovação humana explícita.
 5. Verificar integridade do build (`npm.cmd run build`) antes de concluir a fase.
 6. Não criar/injetar logos, ícones ou favicons (SVG/PNG) — assets ficam fora do escopo.

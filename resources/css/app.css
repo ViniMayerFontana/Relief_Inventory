@@ -476,16 +476,12 @@ h2.text-xl {
 /* Bordas */
 .planck-theme .border-gray-100, .planck-theme .border-gray-200,
 .planck-theme .border-gray-300 { border-color: var(--border-subtle); }
-.planck-theme nav.border-gray-100 { background-color: var(--brand-primary); border-bottom-color: var(--brand-primary-hover); } /* barra verde do topo, letras brancas (exceção de contraste da usuária) */
-.planck-theme nav a.text-gray-900, .planck-theme nav a.text-gray-500 { color: #FFFFFF; }
-.planck-theme nav a.hover\:text-gray-700:hover, .planck-theme nav a.hover\:text-gray-500:hover { color: rgba(255, 255, 255, 0.82); }
-.planck-theme nav a.border-indigo-400 { border-color: #FFFFFF; }
-.planck-theme nav a.focus\:border-indigo-700:focus { border-color: rgba(255, 255, 255, 0.85); }
-.planck-theme nav a.hover\:border-gray-300:hover { border-color: rgba(255, 255, 255, 0.6); }
-.planck-theme nav button.text-gray-400 { color: #FFFFFF; }
-.planck-theme nav button.hover\:text-gray-500:hover { color: rgba(255, 255, 255, 0.82); }
-.planck-theme nav button.hover\:bg-gray-100:hover, .planck-theme nav button.focus\:bg-gray-100:focus { background-color: rgba(255, 255, 255, 0.15); }
-.planck-theme .border-indigo-400 { border-color: var(--brand-primary); } /* barra verde do NavLink ativo (fora da barra do topo) */
+/* Barra do topo vazada: fundo verde suave + borda inferior 2px no verde dos
+   botões; letras voltam ao verde-escuro genérico (remaps normais). O
+   `border-bottom: 2px` substitui o `border-b border-gray-100` do layout apenas
+   dentro do escopo. */
+.planck-theme nav.border-gray-100 { background-color: var(--bg-secondary); border-bottom: 2px solid var(--brand-primary); }
+.planck-theme .border-indigo-400 { border-color: var(--brand-primary); } /* barra verde do NavLink ativo */
 .planck-theme .border-indigo-700 { border-color: var(--brand-primary-hover); }
 .planck-theme .hover\:border-gray-300:hover { border-color: var(--brand-primary); }
 .planck-theme .focus\:border-gray-300:focus { border-color: var(--border-subtle); }
