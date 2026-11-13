@@ -55,25 +55,33 @@ técnicos/IDs `'JetBrains Mono'` (dentro do escopo, `font-mono` → JetBrains Mo
 Eyebrows 12px/600/uppercase/letter-spacing 0.08em; H1/H2 700 com letter-spacing
 -0.025em e `--text-primary`; corpo 400/1.6 com `--text-secondary`.
 
-## 4. Tokens oficiais Planck Tech
+## 4. Tokens oficiais Planck Tech — VARIANTE CLARA v2 (decisões da usuária, 2026-11-12)
+
+> A usuária rejeitou o piloto dark-first e pediu, em duas rodadas: **tema claro**;
+> **cor principal = verde `#10B981` e seus sub-tons** (botões, ações primárias, barras,
+> bordas de tiles); **letras e símbolos em ciano** (`#0EA5E9` títulos/ênfase,
+> `#0284C7`/`#0369A1` corpo legível). Mesmos nomes de variáveis; valores trocados.
 
 ```css
 :root {
-  --bg-primary: #060B14;              /* Midnight Navy — canvas principal */
-  --bg-secondary: #0D1525;            /* Seções alternadas, headers de tabela */
-  --bg-surface: #121D33;              /* Cards, modais, painéis */
-  --bg-surface-hover: #182642;        /* Hover de cards e linhas */
-  --bg-glass: rgba(13, 21, 37, 0.78); /* Headers sticky translúcidos */
-  --brand-primary: #0EA5E9;           /* Tech Cyan — botões primários, links ativos, foco */
-  --brand-primary-hover: #0284C7;
-  --brand-secondary: #10B981;         /* Emerald — badges positivos */
-  --brand-gradient: linear-gradient(135deg, #0EA5E9 0%, #10B981 100%);
-  --text-primary: #F8FAFC;            /* Ice White — títulos e copy principal */
-  --text-secondary: #94A3B8;          /* Slate 400 — subtítulos, labels */
-  --text-muted: #64748B;              /* Slate 500 — placeholders, timestamps */
+  --bg-primary: #F1F7F4;              /* canvas claro com tinta verde fria */
+  --bg-secondary: #E6F4EC;            /* bandas/seções alternadas (tinta verde leve) */
+  --bg-surface: #FFFFFF;              /* cards, nav, painéis */
+  --bg-surface-hover: #EFF7F2;        /* hover de cards e linhas (esverdeado claro) */
+  --bg-glass: rgba(255, 255, 255, 0.85);
+  --brand-primary: #10B981;           /* VERDE principal — botões/ações/barras */
+  --brand-primary-hover: #059669;     /* sub-tom verde (hover) */
+  --brand-secondary: #0EA5E9;         /* ciano — letras/símbolos/detalhes secundários */
+  --brand-gradient: linear-gradient(135deg, #10B981 0%, #0EA5E9 100%);
+  --text-primary: #0EA5E9;            /* letras em ciano — títulos, ênfase, símbolos */
+  --text-secondary: #0284C7;          /* ciano profundo — labels, links, corpo */
+  --text-strong: #0369A1;             /* corpo com AA sobre branco */
+  --text-muted: #64A3CC;              /* placeholders, timestamps */
   --text-on-brand: #FFFFFF;
-  --border-subtle: rgba(148, 163, 184, 0.14);
-  --border-focus: rgba(14, 165, 233, 0.55);
+  --border-subtle: rgba(148, 163, 184, 0.35);
+  --border-accent: rgba(16, 185, 129, 0.45); /* barras/detalhes verdes */
+  --border-focus: rgba(16, 185, 129, 0.55);  /* foco de inputs (verde principal) */
+  --ring-soft: rgba(16, 185, 129, 0.18);
   --status-success: #10B981;
   --status-warning: #F59E0B;
   --status-danger: #EF4444;
@@ -81,12 +89,14 @@ Eyebrows 12px/600/uppercase/letter-spacing 0.08em; H1/H2 700 com letter-spacing
 }
 ```
 
-Regras de componente (cores/fontes apenas): botão primário `--brand-primary` +
-`--text-on-brand` (hover `--brand-primary-hover`); secundário/ghost fundo
-`rgba(255,255,255,0.04)` + borda interna `--border-subtle` + `--text-primary`;
-inputs fundo `--bg-primary`, borda `--border-subtle`, foco `--border-focus` + anel
-`0 0 0 3px rgba(14, 165, 233, 0.18)`; superfícies `--bg-surface` com `--border-subtle`;
-badges = fundo semântico a 12%, texto sólido, borda a 25%.
+Regras de componente (cores/fontes apenas): botão primário `--brand-primary` (verde)
++ `--text-on-brand`, hover `--brand-primary-hover`; secundário/ghost fundo branco +
+borda interna `--border-accent` (verde) + texto em ciano `--text-secondary`; inputs
+fundo `--bg-surface` (branco), borda `--border-subtle`, texto `--text-secondary`,
+foco `--border-focus` + anel `0 0 0 3px var(--ring-soft)`; superfícies `--bg-surface`
+com `--border-subtle`; barras de navegação e sublinhados de seção em verde
+(`--border-accent`/`--brand-primary`); links e letras em ciano; badges = fundo
+semântico a ~12%, texto sólido escuro da mesma família, borda a ~30%.
 
 ## 5. Fases
 
@@ -108,8 +118,10 @@ badges = fundo semântico a 12%, texto sólido, borda a 25%.
 2. **NUNCA** quebrar lógica/reatividade Vue: sem tocar em `<script>`, props, emits,
    `v-if`, `v-for`, `v-model`, handlers, `data-testid`. Em `:class` dinâmico, mudar
    só a string de cor/fonte.
-3. **NUNCA** deixar fundo branco puro (`#FFFFFF`) em página inteira de tela client —
-   dentro do escopo, usar `--bg-primary` e a hierarquia dark-first.
+3. **Tema claro aprovado pela usuária** (pivot de 2026-11-12, refinado depois: principal
+   = verde, letras/símbolos = ciano): superfícies e canvas seguem a hierarquia clara da
+   §4; o `--bg-surface` branco é intencional — nada de páginas escuras. Barras e
+   sublinhados de seção em verde (`--border-accent`/`--brand-primary`); letras em ciano.
 4. **NUNCA** passar da Fase 1 sem aprovação humana explícita.
 5. Verificar integridade do build (`npm.cmd run build`) antes de concluir a fase.
 6. Não criar/injetar logos, ícones ou favicons (SVG/PNG) — assets ficam fora do escopo.

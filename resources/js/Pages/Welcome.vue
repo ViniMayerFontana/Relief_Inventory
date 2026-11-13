@@ -65,7 +65,7 @@ function handleImageError() {
               </button>
 	    </a>
 	    <a href="/register">
-              <button class="bg-white/5 text-planck-text-primary px-6 py-3 rounded-lg shadow ring-1 ring-planck-line hover:bg-planck-surface-hover">
+              <button class="bg-white text-planck-brand px-6 py-3 rounded-lg shadow ring-1 ring-planck-line hover:bg-planck-surface-hover">
                 {{ $t('Commons.button.register', {}) }}
               </button>
 	    </a>
@@ -117,7 +117,7 @@ export default {
 	text-decoration: none;
 }
 .welcome_driverportal:hover {
-	background: rgba(255, 255, 255, 0.08);
+	background: rgba(255, 255, 255, 0.75);
 }
 .welcome_driverportal_icon {
 	width: 64px;
@@ -128,7 +128,7 @@ export default {
 .welcome_driverportal_label {
 	font-size: 0.9rem;
 	font-weight: bold;
-	color: var(--text-primary);
+	color: var(--text-secondary);
 }
 </style>
 

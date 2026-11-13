@@ -217,7 +217,7 @@ export default {
   font-weight: bold;
   color: var(--text-secondary);
   text-align: left;
-  border-bottom: 1px solid var(--border-subtle);
+  border-bottom: 1px solid var(--border-accent);
   padding-bottom: 6px;
   margin-bottom: 14px;
 }
@@ -236,7 +236,7 @@ export default {
   cursor: pointer;
   text-align: center;
   padding: 10px;
-  border: 1px solid var(--border-subtle);
+  border: 1px solid rgba(16, 185, 129, 0.30);
   border-radius: 8px;
   background-color: var(--bg-surface-hover);
   width: 120px;
@@ -245,8 +245,8 @@ export default {
 
 .menu-item:hover {
   transform: translateY(-5px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-  border-color: var(--border-focus);
+  box-shadow: 0 6px 12px rgba(16, 185, 129, 0.25);
+  border-color: var(--brand-primary);
 }
 
 .menu-icon {
@@ -258,7 +258,7 @@ export default {
 .menu-text {
   font-size: 0.9rem;
   font-weight: bold;
-  color: var(--text-primary);
+  color: var(--text-secondary);
 }
 
 @media (max-width: 768px) {

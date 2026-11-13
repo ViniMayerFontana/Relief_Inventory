@@ -12,23 +12,24 @@ export default {
 
     theme: {
         extend: {
-            // Tema Planck Tech — NOMES NOVOS apenas (bg-planck-base,
+            // Tema Planck Tech v2 CLARO — NOMES NOVOS apenas (bg-planck-base,
             // text-planck-brand, font-display, font-tech...), aditivo: sans/mono
             // e cores stock ficam intactos para não afetar as demais telas.
+            // Principal verde (#10B981), letras/símbolos ciano (#0EA5E9/#0284C7).
             // Mecanismo opt-in, tokens e guardrails: Agents/PLANCK_UI_THEMER.md.
             colors: {
                 planck: {
-                    base: '#060B14',
-                    secondary: '#0D1525',
-                    surface: '#121D33',
-                    'surface-hover': '#182642',
-                    brand: '#0EA5E9',
-                    'brand-hover': '#0284C7',
-                    accent: '#10B981',
-                    'text-primary': '#F8FAFC',
-                    'text-secondary': '#94A3B8',
-                    muted: '#64748B',
-                    line: 'rgba(148, 163, 184, 0.14)',
+                    base: '#F1F7F4',
+                    secondary: '#E6F4EC',
+                    surface: '#FFFFFF',
+                    'surface-hover': '#EFF7F2',
+                    brand: '#10B981',
+                    'brand-hover': '#059669',
+                    accent: '#0EA5E9',
+                    'text-primary': '#0EA5E9',
+                    'text-secondary': '#0284C7',
+                    muted: '#64A3CC',
+                    line: 'rgba(16, 185, 129, 0.45)',
                 },
             },
             fontFamily: {
