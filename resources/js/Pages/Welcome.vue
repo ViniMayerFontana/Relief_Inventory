@@ -39,11 +39,11 @@ function handleImageError() {
 <template>
   <div class="planck-theme min-h-screen bg-planck-base flex flex-col">
     <!-- Header -->
-    <header class="bg-planck-surface shadow-md border-b-2 border-planck-brand">
+    <header class="bg-planck-deep shadow-md border-b-2 border-planck-brand">
       <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 class="text-xl sm:text-2xl font-bold text-planck-text-secondary whitespace-nowrap">{{ $t('Commons.heading.relief_inventory', {}) }}</h1>
+        <h1 class="text-xl sm:text-2xl font-bold text-planck-glow whitespace-nowrap">{{ $t('Commons.heading.relief_inventory', {}) }}</h1>
         <nav class="whitespace-nowrap">
-          <a href="/login" class="text-planck-text-secondary hover:text-planck-brand">{{ $t('Commons.button.login', {}) }}</a>
+          <a href="/login" class="text-planck-glow">{{ $t('Commons.button.login', {}) }}</a>
         </nav>
       </div>
     </header>
@@ -82,7 +82,7 @@ function handleImageError() {
     </section>
 
     <!-- Footer -->
-    <footer class="bg-planck-surface border-t border-planck-line">
+    <footer class="bg-planck-deep border-t border-planck-brand">
       <div class="container mx-auto px-4 py-6 text-center text-planck-text-secondary">
 	      &copy;  {{ new Date().getFullYear() }} {{ $t('Pages.text.inventory_relief_project') }} 
 	      <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">{{ $t('Pages.link.licensed_under_the_gnu', {}) }}</a>

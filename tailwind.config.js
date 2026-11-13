@@ -12,12 +12,13 @@ export default {
 
     theme: {
         extend: {
-            // Tema Planck Tech v3 (verde exclusivo, sem ciano/azul) — NOMES NOVOS
+            // Tema Planck Tech — verde exclusivo, sem ciano/azul — NOMES NOVOS
             // apenas (bg-planck-base, text-planck-brand, font-display,
             // font-tech...), aditivo: sans/mono e cores stock ficam intactos
             // para não afetar as demais telas. Letras em verde-escuro
-            // (#065F46/#047857); barras do topo verdes com letras brancas.
-            // Mecanismo opt-in, tokens e guardrails: Agents/PLANCK_UI_THEMER.md.
+            // (#065F46/#047857); v5: barras/rodapé escuros + esmeralda
+            // brilhante (--glow). Mecanismo opt-in, tokens e guardrails:
+            // Agents/PLANCK_UI_THEMER.md.
             colors: {
                 planck: {
                     base: '#E9F4EE',
@@ -26,6 +27,8 @@ export default {
                     'surface-hover': '#E2F1E8',
                     brand: '#10B981',
                     'brand-hover': '#059669',
+                    deep: '#065F46',
+                    glow: '#34D399',
                     'text-primary': '#065F46',
                     'text-secondary': '#047857',
                     muted: '#6E9C8B',

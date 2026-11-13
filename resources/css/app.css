@@ -430,8 +430,12 @@ h2.text-xl {
   --brand-primary: #10B981;           /* VERDE principal — botões e barras do topo */
   --brand-primary-hover: #059669;     /* sub-tom (hover) */
   --brand-deep: #047857;              /* verde elegante — bordas fortes/detalhes */
-  --brand-deeper: #065F46;            /* verde profundo — títulos */
+  --brand-deeper: #065F46;            /* verde profundo — títulos e FUNDO das barras/rodapé */
   --brand-gradient: linear-gradient(135deg, #10B981 0%, #047857 100%);
+  --glow: #34D399;                    /* esmeralda clara — letras sobre barras/rodapé escuros */
+  --glow-strong: #6EE7B7;             /* esmeralda mais clara — hover */
+  --glow-shadow: 0 0 8px rgba(110, 231, 183, 0.35);   /* brilho leve */
+  --glow-shadow-strong: 0 0 12px rgba(110, 231, 183, 0.5);
   --text-primary: #065F46;            /* letras — títulos (verde escuro elegante) */
   --text-secondary: #047857;          /* letras — labels, links, corpo */
   --text-strong: #047857;             /* corpo */
@@ -476,11 +480,17 @@ h2.text-xl {
 /* Bordas */
 .planck-theme .border-gray-100, .planck-theme .border-gray-200,
 .planck-theme .border-gray-300 { border-color: var(--border-subtle); }
-/* Barra do topo vazada: fundo verde suave + borda inferior 2px no verde dos
-   botões; letras voltam ao verde-escuro genérico (remaps normais). O
-   `border-bottom: 2px` substitui o `border-b border-gray-100` do layout apenas
-   dentro do escopo. */
-.planck-theme nav.border-gray-100 { background-color: var(--bg-secondary); border-bottom: 2px solid var(--brand-primary); }
+/* Barras do topo e rodapé escuros (v5): fundo verde-escuro = cor das letras;
+   letras/símbolos esmeralda com brilho leve; especificidade (0,2,2)/(0,1,2)
+   vence os remaps genéricos. */
+.planck-theme nav.border-gray-100 { background-color: var(--brand-deeper); border-bottom: 2px solid var(--brand-deep); }
+.planck-theme nav a.text-gray-900, .planck-theme nav a.text-gray-500 { color: var(--glow); text-shadow: var(--glow-shadow); }
+.planck-theme nav a.hover\:text-gray-700:hover, .planck-theme nav a.hover\:text-gray-500:hover { color: var(--glow-strong); text-shadow: var(--glow-shadow-strong); }
+.planck-theme nav a.border-indigo-400 { border-color: var(--glow); }
+.planck-theme nav button.text-gray-400 { color: var(--glow); text-shadow: var(--glow-shadow); }
+.planck-theme nav button.hover\:text-gray-500:hover { color: var(--glow-strong); text-shadow: var(--glow-shadow-strong); }
+.planck-theme header h1 { color: var(--glow); text-shadow: var(--glow-shadow); }
+.planck-theme footer .text-planck-text-secondary, .planck-theme footer a { color: var(--glow); text-shadow: var(--glow-shadow); }
 .planck-theme .border-indigo-400 { border-color: var(--brand-primary); } /* barra verde do NavLink ativo */
 .planck-theme .border-indigo-700 { border-color: var(--brand-primary-hover); }
 .planck-theme .hover\:border-gray-300:hover { border-color: var(--brand-primary); }
