@@ -57,12 +57,14 @@ Eyebrows 12px/600/uppercase/letter-spacing 0.08em; H1/H2 700 com letter-spacing
 
 ## 4. Tokens oficiais Planck Tech — VARIANTE CLARA v3 (decisões da usuária, 2026-11-12)
 
-> Evolução do feedback (6 rodadas): tema claro; **ciano e azul REMOVIDOS por
-> completo**; **letras todas em verde escuro elegante** (`#065F46` títulos,
-> `#047857` labels/links/corpo); **fundo levemente mais saturado**; **barras do topo
-> e rodapé (v5–v6) com fundo verde MUITO escuro `#022C22` (`--brand-darkest`) e
-> letras/símbolos nesses locais em esmeralda `#34D399` com brilho leve** (text-shadow).
-> Botões-gatilho seguem pílulas brancas com letra verde-escuro.
+> Evolução do feedback (7 rodadas): tema claro; **ciano e azul REMOVIDOS por
+> completo**; **letras FORA das barras na mesma cor do fundo delas — `#022C22`**
+> (v7; placeholders seguem `#6E9C8B`); **barras do topo e rodapé (v5–v7) com fundo
+> verde MUITO escuro `#022C22`, SEM bordas decorativas, letras/símbolos em esmeralda
+> `#34D399` com brilho leve** (text-shadow); **painel grande do menu principal
+> também `#022C22`**, com seus textos (título/cabeçalho/subtítulos de grupo) em
+> esmeralda brilhante e os tiles claros com letra `#022C22`. Botões-gatilho seguem
+> pílulas brancas com letra verde-escuro.
 
 ```css
 :root {
@@ -81,9 +83,9 @@ Eyebrows 12px/600/uppercase/letter-spacing 0.08em; H1/H2 700 com letter-spacing
   --glow-strong: #6EE7B7;             /* esmeralda mais clara — hover */
   --glow-shadow: 0 0 8px rgba(110, 231, 183, 0.35);   /* brilho leve */
   --glow-shadow-strong: 0 0 12px rgba(110, 231, 183, 0.5);
-  --text-primary: #065F46;            /* letras — títulos (verde escuro elegante) */
-  --text-secondary: #047857;          /* letras — labels, links, corpo */
-  --text-strong: #047857;             /* corpo */
+  --text-primary: #022C22;            /* letras fora das barras — mesma cor do fundo delas (v7) */
+  --text-secondary: #022C22;          /* idem — labels, links, corpo */
+  --text-strong: #022C22;             /* corpo */
   --text-muted: #6E9C8B;              /* placeholders, timestamps (verde-cinza suave) */
   --text-on-brand: #FFFFFF;           /* texto sobre barra/botão verde */
   --border-subtle: rgba(16, 185, 129, 0.28);
@@ -100,10 +102,11 @@ Regras de componente: botão primário `--brand-primary` + `--text-on-brand`, ho
 `--brand-primary-hover`; ghost branco + borda interna verde `rgba(4,120,87,0.35)` +
 letra `--text-secondary`; inputs brancos, borda `--border-subtle`, letra
 `--text-secondary`, foco `--border-focus` + anel `var(--ring-soft)`; barras do topo e
-rodapé ESCUROS (v5–v6) — fundo `--brand-darkest` (#022C22, bem mais escuro), letras/
-símbolos em `--glow` com `--glow-shadow` (hover `--glow-strong`), borda de delimitação
-em `--brand-deep` (nav, 2px) / `--brand-primary` (header e rodapé do Welcome, linhas
-claras); botão-
+rodapé ESCUROS (v5–v7) — fundo `--brand-darkest` (#022C22) SEM bordas decorativas,
+letras/símbolos em `--glow` com `--glow-shadow` (hover `--glow-strong`); painel do
+menu principal (Dashboard `.menu-page`) também `--brand-darkest`, com menu-title/
+menu-header/menu-group-title em esmeralda brilhante e menu-text escuro sobre os
+tiles claros; botão-
 gatilho pílula branca com letra `--text-secondary`; superfícies brancas com
 `--border-subtle`; links/letras no corpo sempre verde-escuro; badges = fundo
 semântico a ~10–14%, texto sólido da família, borda ~30%.
