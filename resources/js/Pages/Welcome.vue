@@ -39,11 +39,11 @@ function handleImageError() {
 <template>
   <div class="planck-theme min-h-screen bg-planck-base flex flex-col">
     <!-- Header -->
-    <header class="bg-planck-surface shadow-md">
+    <header class="bg-planck-brand shadow-md">
       <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-        <h1 class="text-xl sm:text-2xl font-bold text-planck-brand whitespace-nowrap">{{ $t('Commons.heading.relief_inventory', {}) }}</h1>
+        <h1 class="text-xl sm:text-2xl font-bold text-white whitespace-nowrap">{{ $t('Commons.heading.relief_inventory', {}) }}</h1>
         <nav class="whitespace-nowrap">
-          <a href="/login" class="text-planck-text-secondary hover:text-planck-brand">{{ $t('Commons.button.login', {}) }}</a>
+          <a href="/login" class="text-white hover:text-white/80">{{ $t('Commons.button.login', {}) }}</a>
         </nav>
       </div>
     </header>
@@ -65,7 +65,7 @@ function handleImageError() {
               </button>
 	    </a>
 	    <a href="/register">
-              <button class="bg-white text-planck-brand px-6 py-3 rounded-lg shadow ring-1 ring-planck-line hover:bg-planck-surface-hover">
+              <button class="bg-white text-planck-text-secondary px-6 py-3 rounded-lg shadow ring-1 ring-planck-line hover:bg-planck-surface-hover">
                 {{ $t('Commons.button.register', {}) }}
               </button>
 	    </a>

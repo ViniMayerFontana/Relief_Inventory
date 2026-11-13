@@ -55,48 +55,51 @@ técnicos/IDs `'JetBrains Mono'` (dentro do escopo, `font-mono` → JetBrains Mo
 Eyebrows 12px/600/uppercase/letter-spacing 0.08em; H1/H2 700 com letter-spacing
 -0.025em e `--text-primary`; corpo 400/1.6 com `--text-secondary`.
 
-## 4. Tokens oficiais Planck Tech — VARIANTE CLARA v2 (decisões da usuária, 2026-11-12)
+## 4. Tokens oficiais Planck Tech — VARIANTE CLARA v3 (decisões da usuária, 2026-11-12)
 
-> A usuária rejeitou o piloto dark-first e pediu, em duas rodadas: **tema claro**;
-> **cor principal = verde `#10B981` e seus sub-tons** (botões, ações primárias, barras,
-> bordas de tiles); **letras e símbolos em ciano** (`#0EA5E9` títulos/ênfase,
-> `#0284C7`/`#0369A1` corpo legível). Mesmos nomes de variáveis; valores trocados.
+> Evolução do feedback (3 rodadas): tema claro; **ciano e azul REMOVIDOS por
+> completo**; **letras todas em verde escuro elegante** (`#065F46` títulos,
+> `#047857` labels/links/corpo — nem claro a ponto de colorir a tela, nem escuro a
+> ponto de parecer preto/cinza); **fundo levemente mais saturado**; **barras do topo
+> (nav/header) na cor dos botões (`#10B981`), com letras brancas sobre elas**.
+> Exceção de contraste registrada: texto sobre barra verde = branco.
 
 ```css
 :root {
-  --bg-primary: #F1F7F4;              /* canvas claro com tinta verde fria */
-  --bg-secondary: #E6F4EC;            /* bandas/seções alternadas (tinta verde leve) */
-  --bg-surface: #FFFFFF;              /* cards, nav, painéis */
-  --bg-surface-hover: #EFF7F2;        /* hover de cards e linhas (esverdeado claro) */
+  --bg-primary: #E9F4EE;              /* canvas claro esverdeado (mais saturado) */
+  --bg-secondary: #D7EEE1;            /* bandas/hero (verde mais presente) */
+  --bg-surface: #FFFFFF;              /* cards, painéis, botões brancos */
+  --bg-surface-hover: #E2F1E8;        /* hover de cards e linhas */
   --bg-glass: rgba(255, 255, 255, 0.85);
-  --brand-primary: #10B981;           /* VERDE principal — botões/ações/barras */
-  --brand-primary-hover: #059669;     /* sub-tom verde (hover) */
-  --brand-secondary: #0EA5E9;         /* ciano — letras/símbolos/detalhes secundários */
-  --brand-gradient: linear-gradient(135deg, #10B981 0%, #0EA5E9 100%);
-  --text-primary: #0EA5E9;            /* letras em ciano — títulos, ênfase, símbolos */
-  --text-secondary: #0284C7;          /* ciano profundo — labels, links, corpo */
-  --text-strong: #0369A1;             /* corpo com AA sobre branco */
-  --text-muted: #64A3CC;              /* placeholders, timestamps */
-  --text-on-brand: #FFFFFF;
-  --border-subtle: rgba(148, 163, 184, 0.35);
-  --border-accent: rgba(16, 185, 129, 0.45); /* barras/detalhes verdes */
-  --border-focus: rgba(16, 185, 129, 0.55);  /* foco de inputs (verde principal) */
-  --ring-soft: rgba(16, 185, 129, 0.18);
+  --brand-primary: #10B981;           /* VERDE principal — botões e barras do topo */
+  --brand-primary-hover: #059669;     /* sub-tom (hover) */
+  --brand-deep: #047857;              /* verde elegante — bordas fortes/detalhes */
+  --brand-deeper: #065F46;            /* verde profundo — títulos */
+  --brand-gradient: linear-gradient(135deg, #10B981 0%, #047857 100%);
+  --text-primary: #065F46;            /* letras — títulos (verde escuro elegante) */
+  --text-secondary: #047857;          /* letras — labels, links, corpo */
+  --text-strong: #047857;             /* corpo */
+  --text-muted: #6E9C8B;              /* placeholders, timestamps (verde-cinza suave) */
+  --text-on-brand: #FFFFFF;           /* texto sobre barra/botão verde */
+  --border-subtle: rgba(16, 185, 129, 0.28);
+  --border-accent: rgba(4, 120, 87, 0.45);  /* barras/sublinhados de seção */
+  --border-focus: rgba(5, 150, 105, 0.55);
+  --ring-soft: rgba(5, 150, 105, 0.18);
   --status-success: #10B981;
   --status-warning: #F59E0B;
   --status-danger: #EF4444;
-  --status-info: #38BDF8;
 }
 ```
 
-Regras de componente (cores/fontes apenas): botão primário `--brand-primary` (verde)
-+ `--text-on-brand`, hover `--brand-primary-hover`; secundário/ghost fundo branco +
-borda interna `--border-accent` (verde) + texto em ciano `--text-secondary`; inputs
-fundo `--bg-surface` (branco), borda `--border-subtle`, texto `--text-secondary`,
-foco `--border-focus` + anel `0 0 0 3px var(--ring-soft)`; superfícies `--bg-surface`
-com `--border-subtle`; barras de navegação e sublinhados de seção em verde
-(`--border-accent`/`--brand-primary`); links e letras em ciano; badges = fundo
-semântico a ~12%, texto sólido escuro da mesma família, borda a ~30%.
+Regras de componente: botão primário `--brand-primary` + `--text-on-brand`, hover
+`--brand-primary-hover`; ghost branco + borda interna verde `rgba(4,120,87,0.35)` +
+letra `--text-secondary`; inputs brancos, borda `--border-subtle`, letra
+`--text-secondary`, foco `--border-focus` + anel `var(--ring-soft)`; barras do topo
+(nav/header) com `background: var(--brand-primary)`, letras BRANCAS sobre a barra
+(exceção de contraste), botão-gatilho branco com letra `--text-secondary`; superfícies
+brancas com `--border-subtle` (verde suave); links/letras sempre verde-escuro; badges =
+fundo semântico a ~10–14%, texto sólido da família, borda ~30% (banner informativo
+torna-se verde, sem azul).
 
 ## 5. Fases
 
@@ -118,10 +121,10 @@ semântico a ~12%, texto sólido escuro da mesma família, borda a ~30%.
 2. **NUNCA** quebrar lógica/reatividade Vue: sem tocar em `<script>`, props, emits,
    `v-if`, `v-for`, `v-model`, handlers, `data-testid`. Em `:class` dinâmico, mudar
    só a string de cor/fonte.
-3. **Tema claro aprovado pela usuária** (pivot de 2026-11-12, refinado depois: principal
-   = verde, letras/símbolos = ciano): superfícies e canvas seguem a hierarquia clara da
-   §4; o `--bg-surface` branco é intencional — nada de páginas escuras. Barras e
-   sublinhados de seção em verde (`--border-accent`/`--brand-primary`); letras em ciano.
+3. **Tema claro aprovado pela usuária** (v3: sem ciano/azul; letras em verde escuro
+   elegante; fundo esverdeado mais saturado; barras do topo na cor dos botões):
+   superfícies e canvas seguem a hierarquia clara da §4; o `--bg-surface` branco é
+   intencional. Texto sobre barra verde = branco (exceção de contraste registrada).
 4. **NUNCA** passar da Fase 1 sem aprovação humana explícita.
 5. Verificar integridade do build (`npm.cmd run build`) antes de concluir a fase.
 6. Não criar/injetar logos, ícones ou favicons (SVG/PNG) — assets ficam fora do escopo.

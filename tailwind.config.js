@@ -12,24 +12,24 @@ export default {
 
     theme: {
         extend: {
-            // Tema Planck Tech v2 CLARO — NOMES NOVOS apenas (bg-planck-base,
-            // text-planck-brand, font-display, font-tech...), aditivo: sans/mono
-            // e cores stock ficam intactos para não afetar as demais telas.
-            // Principal verde (#10B981), letras/símbolos ciano (#0EA5E9/#0284C7).
+            // Tema Planck Tech v3 (verde exclusivo, sem ciano/azul) — NOMES NOVOS
+            // apenas (bg-planck-base, text-planck-brand, font-display,
+            // font-tech...), aditivo: sans/mono e cores stock ficam intactos
+            // para não afetar as demais telas. Letras em verde-escuro
+            // (#065F46/#047857); barras do topo verdes com letras brancas.
             // Mecanismo opt-in, tokens e guardrails: Agents/PLANCK_UI_THEMER.md.
             colors: {
                 planck: {
-                    base: '#F1F7F4',
-                    secondary: '#E6F4EC',
+                    base: '#E9F4EE',
+                    secondary: '#D7EEE1',
                     surface: '#FFFFFF',
-                    'surface-hover': '#EFF7F2',
+                    'surface-hover': '#E2F1E8',
                     brand: '#10B981',
                     'brand-hover': '#059669',
-                    accent: '#0EA5E9',
-                    'text-primary': '#0EA5E9',
-                    'text-secondary': '#0284C7',
-                    muted: '#64A3CC',
-                    line: 'rgba(16, 185, 129, 0.45)',
+                    'text-primary': '#065F46',
+                    'text-secondary': '#047857',
+                    muted: '#6E9C8B',
+                    line: 'rgba(4, 120, 87, 0.45)',
                 },
             },
             fontFamily: {
