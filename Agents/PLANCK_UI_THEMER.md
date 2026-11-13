@@ -57,11 +57,11 @@ Eyebrows 12px/600/uppercase/letter-spacing 0.08em; H1/H2 700 com letter-spacing
 
 ## 4. Tokens oficiais Planck Tech — VARIANTE CLARA v3 (decisões da usuária, 2026-11-12)
 
-> Evolução do feedback (5 rodadas): tema claro; **ciano e azul REMOVIDOS por
+> Evolução do feedback (6 rodadas): tema claro; **ciano e azul REMOVIDOS por
 > completo**; **letras todas em verde escuro elegante** (`#065F46` títulos,
 > `#047857` labels/links/corpo); **fundo levemente mais saturado**; **barras do topo
-> e rodapé (v5) com fundo verde-ESCURO `#065F46` — a cor das letras — e letras/
-> símbolos nesses locais em esmeralda `#34D399` com brilho leve** (text-shadow).
+> e rodapé (v5–v6) com fundo verde MUITO escuro `#022C22` (`--brand-darkest`) e
+> letras/símbolos nesses locais em esmeralda `#34D399` com brilho leve** (text-shadow).
 > Botões-gatilho seguem pílulas brancas com letra verde-escuro.
 
 ```css
@@ -74,7 +74,8 @@ Eyebrows 12px/600/uppercase/letter-spacing 0.08em; H1/H2 700 com letter-spacing
   --brand-primary: #10B981;           /* VERDE principal — botões e barras do topo */
   --brand-primary-hover: #059669;     /* sub-tom (hover) */
   --brand-deep: #047857;              /* verde elegante — bordas fortes/detalhes */
-  --brand-deeper: #065F46;            /* verde profundo — títulos e FUNDO das barras/rodapé */
+  --brand-deeper: #065F46;            /* verde profundo — títulos */
+  --brand-darkest: #022C22;           /* verde MUITO escuro — FUNDO das barras/rodapé (v6) */
   --brand-gradient: linear-gradient(135deg, #10B981 0%, #047857 100%);
   --glow: #34D399;                    /* esmeralda clara — letras sobre barras/rodapé escuros */
   --glow-strong: #6EE7B7;             /* esmeralda mais clara — hover */
@@ -99,9 +100,10 @@ Regras de componente: botão primário `--brand-primary` + `--text-on-brand`, ho
 `--brand-primary-hover`; ghost branco + borda interna verde `rgba(4,120,87,0.35)` +
 letra `--text-secondary`; inputs brancos, borda `--border-subtle`, letra
 `--text-secondary`, foco `--border-focus` + anel `var(--ring-soft)`; barras do topo e
-rodapé ESCUROS (v5) — fundo `--brand-deeper`, letras/símbolos em `--glow` com
-`--glow-shadow` (hover `--glow-strong`), borda de delimitação em `--brand-deep`
-(nav, 2px) / `--brand-primary` (header e rodapé do Welcome, linhas claras); botão-
+rodapé ESCUROS (v5–v6) — fundo `--brand-darkest` (#022C22, bem mais escuro), letras/
+símbolos em `--glow` com `--glow-shadow` (hover `--glow-strong`), borda de delimitação
+em `--brand-deep` (nav, 2px) / `--brand-primary` (header e rodapé do Welcome, linhas
+claras); botão-
 gatilho pílula branca com letra `--text-secondary`; superfícies brancas com
 `--border-subtle`; links/letras no corpo sempre verde-escuro; badges = fundo
 semântico a ~10–14%, texto sólido da família, borda ~30%.

@@ -430,7 +430,8 @@ h2.text-xl {
   --brand-primary: #10B981;           /* VERDE principal — botões e barras do topo */
   --brand-primary-hover: #059669;     /* sub-tom (hover) */
   --brand-deep: #047857;              /* verde elegante — bordas fortes/detalhes */
-  --brand-deeper: #065F46;            /* verde profundo — títulos e FUNDO das barras/rodapé */
+  --brand-deeper: #065F46;            /* verde profundo — títulos */
+  --brand-darkest: #022C22;           /* verde MUITO escuro — FUNDO das barras/rodapé (v6) */
   --brand-gradient: linear-gradient(135deg, #10B981 0%, #047857 100%);
   --glow: #34D399;                    /* esmeralda clara — letras sobre barras/rodapé escuros */
   --glow-strong: #6EE7B7;             /* esmeralda mais clara — hover */
@@ -480,10 +481,10 @@ h2.text-xl {
 /* Bordas */
 .planck-theme .border-gray-100, .planck-theme .border-gray-200,
 .planck-theme .border-gray-300 { border-color: var(--border-subtle); }
-/* Barras do topo e rodapé escuros (v5): fundo verde-escuro = cor das letras;
-   letras/símbolos esmeralda com brilho leve; especificidade (0,2,2)/(0,1,2)
-   vence os remaps genéricos. */
-.planck-theme nav.border-gray-100 { background-color: var(--brand-deeper); border-bottom: 2px solid var(--brand-deep); }
+/* Barras do topo e rodapé escuros (v5–v6): fundo verde MUITO escuro
+   (--brand-darkest); letras/símbolos esmeralda com brilho leve;
+   especificidade (0,2,2)/(0,1,2) vence os remaps genéricos. */
+.planck-theme nav.border-gray-100 { background-color: var(--brand-darkest); border-bottom: 2px solid var(--brand-deep); }
 .planck-theme nav a.text-gray-900, .planck-theme nav a.text-gray-500 { color: var(--glow); text-shadow: var(--glow-shadow); }
 .planck-theme nav a.hover\:text-gray-700:hover, .planck-theme nav a.hover\:text-gray-500:hover { color: var(--glow-strong); text-shadow: var(--glow-shadow-strong); }
 .planck-theme nav a.border-indigo-400 { border-color: var(--glow); }

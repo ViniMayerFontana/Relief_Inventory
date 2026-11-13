@@ -16,9 +16,10 @@ export default {
             // apenas (bg-planck-base, text-planck-brand, font-display,
             // font-tech...), aditivo: sans/mono e cores stock ficam intactos
             // para não afetar as demais telas. Letras em verde-escuro
-            // (#065F46/#047857); v5: barras/rodapé escuros + esmeralda
-            // brilhante (--glow). Mecanismo opt-in, tokens e guardrails:
-            // Agents/PLANCK_UI_THEMER.md.
+            // (#065F46/#047857); v5: esmeralda brilhante (--glow) sobre as
+            // barras/rodapé escuros; v6: fundo dessas barras/rodapé é o verde
+            // MUITO escuro #022C22 (darkest). Mecanismo opt-in, tokens e
+            // guardrails: Agents/PLANCK_UI_THEMER.md.
             colors: {
                 planck: {
                     base: '#E9F4EE',
@@ -29,6 +30,7 @@ export default {
                     'brand-hover': '#059669',
                     deep: '#065F46',
                     glow: '#34D399',
+                    darkest: '#022C22',
                     'text-primary': '#065F46',
                     'text-secondary': '#047857',
                     muted: '#6E9C8B',
