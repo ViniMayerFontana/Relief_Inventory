@@ -185,14 +185,13 @@ export default {
   padding: 20px;
 }
 
-/* v7: painel escuro, textos esmeralda via app.css */
 .menu-page {
   max-width: 1024px; /* Locks maximum width */
   width: 100%; /* Ensures it scales responsively */
   border: 1px solid var(--border-subtle);
   border-radius: 8px;
   padding: 20px;
-  background-color: var(--brand-darkest);
+  background-color: var(--bg-surface);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center; /* Centers the text elements inside */
 }

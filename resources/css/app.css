@@ -413,12 +413,11 @@ h2.text-xl {
       }
 }
 
-/* ── Tema Planck Tech: tokens (v7 — VERDE EXCLUSIVO) ───────────────────────
-   Tema claro (7 rodadas de feedback, 2026-11-12): ciano e azul REMOVIDOS por
-   completo; letras FORA das barras/tiles em #022C22 — a mesma cor do fundo
-   das barras (v7); placeholders seguem #6E9C8B; barras do topo, rodapé e
-   painel do menu em verde MUITO escuro (#022C22 via --brand-darkest), com
-   letras/símbolos em esmeralda #34D399 e brilho leve (text-shadow).
+/* ── Tema Planck Tech: tokens (v3 — VERDE EXCLUSIVO) ───────────────────────
+   Tema claro v3 (3ª rodada de feedback, 2026-11-12): ciano e azul REMOVIDOS
+   por completo; letras TODAS em verde escuro elegante (#065F46 títulos,
+   #047857 labels/links/corpo); fundo levemente mais saturado; barras do topo
+   (nav/header) na cor dos botões (#10B981) com letras BRANCAS sobre elas.
    Estes tokens são INERTES: nenhuma regra fora do escopo `.planck-theme`
    abaixo os referencia, então as telas sem a classe opt-in seguem com o
    visual padrão intacto. Mecanismo, tokens e guardrails: Agents/PLANCK_UI_THEMER.md (§3, §4). */
@@ -438,9 +437,9 @@ h2.text-xl {
   --glow-strong: #6EE7B7;             /* esmeralda mais clara — hover */
   --glow-shadow: 0 0 8px rgba(110, 231, 183, 0.35);   /* brilho leve */
   --glow-shadow-strong: 0 0 12px rgba(110, 231, 183, 0.5);
-  --text-primary: #022C22;            /* letras fora das barras — mesma cor do fundo delas (v7) */
-  --text-secondary: #022C22;          /* idem — labels, links, corpo */
-  --text-strong: #022C22;             /* corpo */
+  --text-primary: #065F46;            /* letras — títulos (verde escuro elegante) */
+  --text-secondary: #047857;          /* letras — labels, links, corpo */
+  --text-strong: #047857;             /* corpo */
   --text-muted: #6E9C8B;              /* placeholders, timestamps (verde-cinza suave) */
   --text-on-brand: #FFFFFF;           /* texto sobre barra/botão verde */
   --border-subtle: rgba(16, 185, 129, 0.28);
@@ -482,11 +481,9 @@ h2.text-xl {
 /* Bordas */
 .planck-theme .border-gray-100, .planck-theme .border-gray-200,
 .planck-theme .border-gray-300 { border-color: var(--border-subtle); }
-/* Barras do topo e rodapé escuros (v5–v7): fundo verde MUITO escuro
-   (--brand-darkest), sem bordas decorativas (v7) — o border-bottom-color
-   transparent mantém os 1px do layout sem geometria nova; letras/símbolos
-   esmeralda com brilho leve; especificidade (0,2,2)/(0,1,2) vence os remaps
-   genéricos. */
+/* Barras do topo e rodapé escuros (v5–v6): fundo verde MUITO escuro
+   (--brand-darkest); letras/símbolos esmeralda com brilho leve;
+   especificidade (0,2,2)/(0,1,2) vence os remaps genéricos. */
 .planck-theme nav.border-gray-100 { background-color: var(--brand-darkest); border-bottom-color: transparent; }
 .planck-theme nav a.text-gray-900, .planck-theme nav a.text-gray-500 { color: var(--glow); text-shadow: var(--glow-shadow); }
 .planck-theme nav a.hover\:text-gray-700:hover, .planck-theme nav a.hover\:text-gray-500:hover { color: var(--glow-strong); text-shadow: var(--glow-shadow-strong); }
@@ -495,12 +492,6 @@ h2.text-xl {
 .planck-theme nav button.hover\:text-gray-500:hover { color: var(--glow-strong); text-shadow: var(--glow-shadow-strong); }
 .planck-theme header h1 { color: var(--glow); text-shadow: var(--glow-shadow); }
 .planck-theme footer .text-planck-text-secondary, .planck-theme footer a { color: var(--glow); text-shadow: var(--glow-shadow); }
-
-/* Painel do menu principal escuro (v7): textos do painel em esmeralda
-   brilhante — (0,3,0) vence o estilo scoped do Dashboard; o menu-text dos
-   tiles fica escuro via remaps genéricos. */
-.planck-theme .menu-page .menu-title, .planck-theme .menu-page .menu-header { color: var(--glow); text-shadow: var(--glow-shadow); }
-.planck-theme .menu-page .menu-group-title { color: var(--glow); text-shadow: var(--glow-shadow); border-bottom-color: rgba(52, 211, 153, 0.4); }
 .planck-theme .border-indigo-400 { border-color: var(--brand-primary); } /* barra verde do NavLink ativo */
 .planck-theme .border-indigo-700 { border-color: var(--brand-primary-hover); }
 .planck-theme .hover\:border-gray-300:hover { border-color: var(--brand-primary); }
@@ -524,7 +515,7 @@ h2.text-xl {
 /* Badges/banners semânticos (fundo a 12%, borda a 25%, texto sólido) */
 .planck-theme .bg-blue-50 { background-color: rgba(16, 185, 129, 0.10); }
 .planck-theme .border-blue-300 { border-color: rgba(16, 185, 129, 0.30); }
-.planck-theme .text-blue-900 { color: #022C22; }
+.planck-theme .text-blue-900 { color: #065F46; }
 .planck-theme .bg-amber-50 { background-color: rgba(245, 158, 11, 0.12); }
 .planck-theme .border-amber-400 { border-color: rgba(245, 158, 11, 0.35); }
 .planck-theme .bg-amber-100 { background-color: rgba(245, 158, 11, 0.14); }

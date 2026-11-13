@@ -15,10 +15,11 @@ export default {
             // Tema Planck Tech — verde exclusivo, sem ciano/azul — NOMES NOVOS
             // apenas (bg-planck-base, text-planck-brand, font-display,
             // font-tech...), aditivo: sans/mono e cores stock ficam intactos
-            // para não afetar as demais telas. v7: letras fora das barras na
-            // cor do fundo das barras (#022C22); esmeralda brilhante (--glow)
-            // sobre as barras/rodapé escuros (sem bordas decorativas).
-            // Mecanismo opt-in, tokens e guardrails: Agents/PLANCK_UI_THEMER.md.
+            // para não afetar as demais telas. Letras em verde-escuro
+            // (#065F46/#047857); v5: esmeralda brilhante (--glow) sobre as
+            // barras/rodapé escuros; v6: fundo dessas barras/rodapé é o verde
+            // MUITO escuro #022C22 (darkest). Mecanismo opt-in, tokens e
+            // guardrails: Agents/PLANCK_UI_THEMER.md.
             colors: {
                 planck: {
                     base: '#E9F4EE',
@@ -30,8 +31,8 @@ export default {
                     deep: '#065F46',
                     glow: '#34D399',
                     darkest: '#022C22',
-                    'text-primary': '#022C22',
-                    'text-secondary': '#022C22',
+                    'text-primary': '#065F46',
+                    'text-secondary': '#047857',
                     muted: '#6E9C8B',
                     line: 'rgba(4, 120, 87, 0.45)',
                 },
