@@ -88,3 +88,11 @@ management commands: `instance:status` is the overview; the table is in `dev/not
   cookies, emailed links or anything assuming one database, read the rules in the `WarehouseContext` class comment and
   `dev/notes/MULTI_WAREHOUSE_NOTES.md`.**
 - **Training warehouse:** a warehouse of its own, not a mode. → `dev/notes/TRAINING_WAREHOUSE.md`
+
+## Code Navigation & Context Economy (MANDATORY)
+This repository uses **CodeGraph** (`@colbymchenry/codegraph`) for semantic indexing and dependency mapping. To minimize token usage and avoid blind context loading, you MUST follow these rules on every task:
+
+1. **No Blind Scanning:** Never run broad `find`, `ls -R`, recursive `grep`, or read entire files just to discover where symbols, routes, components, or functions live.
+2. **Query CodeGraph First:** Before opening or editing any file, query CodeGraph first (via MCP tool if connected, or via `npm run codegraph:query -- "<symbol_or_term>"` in CLI) to locate exact file paths, definitions, callers, and impacted dependencies.
+3. **Surgical File Reads:** Open and read only the specific files and line ranges identified by CodeGraph.
+4. **Keep the Graph Updated:** Whenever you create new files, rename components, or modify function signatures/imports, run `npm run codegraph:index` at the end of your task to keep the local graph synchronized.

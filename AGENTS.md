@@ -1,0 +1,1 @@
+You must read and follow all rules and instructions contained in CLAUDE.md.

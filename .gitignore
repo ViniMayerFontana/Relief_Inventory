@@ -84,3 +84,4 @@ rstation/product/image/debs/
 .i18n-queue/
 # cleanup "unused keys" report (regenerated on every cleanup; unsafe to apply — see Agents/UPSTREAM_ISSUES.md issue 7)
 /scripts/.i18n-unused-report.json
+.codegraph/
