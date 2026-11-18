@@ -153,3 +153,16 @@ Dívidas documentadas da fase (todas não bloqueantes): relatório completo em `
 - 4.6 guarda de prosa no `isCodeContent` (≥5 palavras sem estrutura JS não é código); attrRegex com pairing de aspas por classe (apóstrofo em valor); entidades &larr;/&rarr;/&harr;/&middot;.
 
 **Dívidas round 3.2 registradas (lead: NÃO contornar à mão — guardrail 2):** literais em bindings ternários `:title="cond ? 'X' : ''"` (PalletLocation :697/:698); "Mark all read" e "Invitations ({{n}})" ×2 no AuthenticatedLayout (v-if com `>`); layout :61 "Without it, an automatic backup…" (paridade de apóstrofos no extractor); breadcrumb `menu_items.link_text` do banco.
+
+## Sessão 2026-11-18 — Round 3.2 (aprovado e executado)
+
+**Patches CLI round 3.2** (cumulativo regenerado: `.i18n-cache/cli-patches/core-round4-cumulative.patch`, 108.951 bytes, 9/9 probes):
+- Máscara state-machine de `<`/`>` dentro de valores de atributo no `replaceInTemplate` (sentinels \u0005/\u0006 1:1, restaurados no fim) — resolve o "nó engolido por `>` em v-if".
+- Pass 6 `boundTernaryRegex`: literais UI em bindings ternários `:title/:placeholder/:aria-label/:label/:alt` (guards: sem `===`/`!==`, sem args de $t(), sem key-shaped). **Armadilha registrada: regex LITERAL não processa `\\s` como `\s`** — escrever `/\s/`, não `/\\s/`.
+- `hasBalancedDelimiters`: apóstrofo de possessivo plural ("warehouses'") não conta como aspa; regra simétrica de UM ")" inicial (cauda após `</code>`).
+
+**Trocas aplicadas (replace: 20 em 8/8 arquivos):** AuthenticatedLayout 4 (Mark all read, Invitations ×2, Without it…) · PalletLocation 3 (Adjust inventory + :title ×2) · OrderEntry 3 (← Back ×2, Saving…→Salvando…) · OrderFilling 5 (Partner→Parceiro ×3, ← Back, fully picked→totalmente separado) · TrainingLogin 2 (← Back, No team yet→Ainda sem equipe) · Unlock 1 · Training 1 (cauda "); os dados são mantidos até a redefinição.") · RIForm 1 (Back to List→Voltar à lista, via nova chave `Components.button.back_to_list` — o replacer só cai para Commons em textos curtos, então chaves para componentes precisam existir no namespace do componente).
+
+**Chaves novas:** `Layouts.text.without_it_an_automatic` = "Sem isso, um backup automático não consegue restaurar as configurações criptografadas dos armazéns depois de um desastre." · `Pages.text.finish_or_clear_items` = "Conclua ou limpe os itens preparados para adicionar primeiro" · `Pages.text.finish_or_clear_adjustment` = "Conclua ou limpe o ajuste primeiro" · `Pages.text.larr_back` = "← Voltar" · `Pages.text.change_partner` = "Alterar parceiro" (registrada, injection futuro) · `Pages.Setup.text.its_data_is_kept` = "); os dados são mantidos até a redefinição." (lead "\\@" inicial incluído no valor, igual aos leads com "(").
+
+**Status final:** 3093 chaves EN, pt_BR 2971 traduzidas (96%; 122 verbatims EN===pt; faltantes reais = 0). Conferência 4.5 re-executada: apenas RIForm divergia (corrigido). Breadcrumb do banco: o LEAD fará a tradução na camada de apresentação (MenuItem::getBreadcrumb / tiles) — copiloto só cria chaves se solicitado. Branch de commit do lead: `2-colors-implementation`.

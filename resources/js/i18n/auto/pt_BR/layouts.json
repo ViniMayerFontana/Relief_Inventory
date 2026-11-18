@@ -16,7 +16,8 @@
       "relief_inventory_dashboard": "Painel do Relief Inventory",
       "set_up_your_recovery": "Configure sua chave de recuperação.",
       "training_warehouse_everything_here": "Armazém de treinamento — tudo aqui é dado de prática",
-      "who_s_in_the": "Quem está no prédio"
+      "who_s_in_the": "Quem está no prédio",
+      "without_it_an_automatic": "Sem isso, um backup automático não consegue restaurar as configurações criptografadas dos armazéns depois de um desastre."
     }
   }
 }

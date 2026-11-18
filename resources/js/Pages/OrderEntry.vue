@@ -816,7 +816,7 @@ export default {
 		<!-- ======================= PARTNER SCREEN ======================= -->
 		<div v-else-if="view === 'partner'" class="oe_container oe_partner">
 			<div class="oe_topbar">
-				<button @click="cancelPartnerScreen" class="ri_formbutton">&larr; Back</button>
+				<button @click="cancelPartnerScreen" class="ri_formbutton">{{ $t('Pages.text.larr_back', {}) }}</button>
 				<span class="oe_title">
 					{{ partnerMode === 'change' ? 'Change Partner' : $t('Pages.text.new_order_who_is') }}
 				</span>
@@ -992,7 +992,7 @@ export default {
 		<!-- ======================= REVIEW & CONFIRM ======================= -->
 		<div v-else-if="view === 'review' && order && review" class="oe_container oe_partner">
 			<div class="oe_topbar">
-				<button @click="backFromReview" class="ri_formbutton">&larr; Back</button>
+				<button @click="backFromReview" class="ri_formbutton">{{ $t('Pages.text.larr_back', {}) }}</button>
 				<span class="oe_title">{{ $t('Pages.text.review_confirm_order') }} {{ order.id }}</span>
 			</div>
 			<p v-if="reviewError" class="oe_error">{{ reviewError }}</p>
@@ -1096,7 +1096,7 @@ export default {
 						{{ failedLines.length }} {{ $t('Pages.text.line_s_failed_to') }}
 						<button @click="retryFailed" class="ri_linkbutton">{{ $t('Commons.button.retry_all', {}) }}</button>
 					</span>
-					<span v-else-if="headerSaving || pendingCount > 0">Saving...</span>
+					<span v-else-if="headerSaving || pendingCount > 0">{{ $t('Pages.button.saving', {}) }}</span>
 					<span v-else class="oe_saved">{{ $t('Pages.text.all_changes_saved', {}) }}</span>
 				</span>
 				<button v-if="!readonly" @click="openReview" class="ri_defaultbutton">{{ $t('Commons.button.complete_order', {}) }}</button>

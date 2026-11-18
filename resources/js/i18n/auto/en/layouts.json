@@ -16,7 +16,8 @@
       "relief_inventory_dashboard": "Relief Inventory Dashboard",
       "set_up_your_recovery": "Set up your recovery key.",
       "training_warehouse_everything_here": "Training warehouse — everything here is practice data.",
-      "who_s_in_the": "Who's In The Building"
+      "who_s_in_the": "Who's In The Building",
+      "without_it_an_automatic": "Without it, an automatic backup can't restore the warehouses' encrypted settings after a disaster."
     }
   }
 }

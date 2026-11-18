@@ -46,7 +46,7 @@ const groups = computed(() => {
 	}
 	return [...byTeam.entries()]
 		.sort(([a], [b]) => (a || 99) - (b || 99))
-		.map(([key, people]) => ({ label: key ? t('Commons.text.team') + key : 'No team yet', people }));
+		.map(([key, people]) => ({ label: key ? t('Commons.text.team') + key : t('Pages.Auth.text.no_team_yet'), people }));
 });
 
 function pick(trainee) {
@@ -130,7 +130,7 @@ async function submit() {
 
 		<!-- ======================= CONFIRM TEAM (and name, when adding) ======================= -->
 		<form v-else class="space-y-4" @submit.prevent="submit">
-			<button type="button" @click="back" class="text-sm text-gray-500">&larr; Back</button>
+			<button type="button" @click="back" class="text-sm text-gray-500">{{ $t('Pages.text.larr_back', {}) }}</button>
 
 			<p v-if="selected" class="text-center font-medium text-gray-800">{{ selected.full_name }}</p>
 			<div v-else class="grid grid-cols-2 gap-2">

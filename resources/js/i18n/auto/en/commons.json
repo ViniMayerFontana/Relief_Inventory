@@ -71,6 +71,7 @@
       "confirm": "Confirm",
       "confirm_cancel": "Confirm cancel",
       "confirm_clear": "Confirm clear",
+      "confirm_delete_cannot_undo": "Confirm Delete — cannot be undone",
       "confirm_reject": "Confirm Reject",
       "confirm_remove": "Confirm remove",
       "confirm_remove_2": "Confirm Remove",
@@ -234,8 +235,7 @@
       "warehouse_users": "Warehouse Users",
       "wide": "Wide",
       "withdraw": "Withdraw",
-      "working": "Working…",
-      "confirm_delete_cannot_undo": "Confirm Delete — cannot be undone"
+      "working": "Working…"
     },
     "heading": {
       "account": "Account —",

@@ -19,7 +19,8 @@
       "keep_as_typed": "Keep As Typed",
       "pick_existing_instead": "Pick existing instead",
       "report_it_here": "Report it here",
-      "saving": "Saving..."
+      "saving": "Saving...",
+      "back_to_list": "Back to List"
     },
     "heading": {
       "add_new_item": "Add New Item",

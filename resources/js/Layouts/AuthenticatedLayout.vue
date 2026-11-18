@@ -58,7 +58,7 @@ async function markAllNotificationsRead() {
             <div v-if="$page.props.recoveryKey" class="bg-red-100 text-red-900 text-sm px-4 py-2 border-b border-red-300">
                 <template v-if="$page.props.recoveryKey.state === 'none'">
                     <strong>{{ $t('Layouts.text.set_up_your_recovery', {}) }}</strong>
-                    Without it, an automatic backup can't restore the warehouses' encrypted settings after a disaster.
+                    {{ $t('Layouts.text.without_it_an_automatic', {}) }}
                 </template>
                 <template v-else>
                     <strong>{{ $t('Layouts.text.confirm_your_recovery_key', {}) }}</strong>
@@ -124,7 +124,7 @@ async function markAllNotificationsRead() {
                                                 type="button"
                                                 class="text-xs font-normal text-indigo-600 hover:underline"
                                                 @click.stop="markAllNotificationsRead"
-                                            >Mark all read</button>
+                                            >{{ $t('Layouts.button.mark_all_read', {}) }}</button>
                                         </div>
                                         <div class="max-h-96 overflow-y-auto">
                                             <p v-if="!notificationsLoaded" class="px-4 py-3 text-sm text-gray-500">{{ $t('Commons.button.loading', {}) }}</p>
@@ -208,7 +208,7 @@ async function markAllNotificationsRead() {
                                             {{ $t('Commons.text.switch_user', {}) }}
                                         </DropdownLink>
                                         <DropdownLink v-if="$page.props.pendingInvitations > 0" :href="route('account.invitations')">
-                                            Invitations ({{ $page.props.pendingInvitations }})
+                                            {{ $t('Commons.text.invitations') }}{{ $page.props.pendingInvitations }})
                                         </DropdownLink>
                                         <DropdownLink href="/this-device">
                                             {{ $t('Layouts.text.pin_login_on_this', {}) }}
@@ -324,7 +324,7 @@ async function markAllNotificationsRead() {
                                 {{ $t('Layouts.text.who_s_in_the', {}) }}
                             </ResponsiveNavLink>
                             <ResponsiveNavLink v-if="$page.props.pendingInvitations > 0" :href="route('account.invitations')">
-                                Invitations ({{ $page.props.pendingInvitations }})
+                                {{ $t('Commons.text.invitations') }}{{ $page.props.pendingInvitations }})
                             </ResponsiveNavLink>
                             <ResponsiveNavLink href="/this-device">
                                 {{ $t('Layouts.text.pin_login_on_this', {}) }}

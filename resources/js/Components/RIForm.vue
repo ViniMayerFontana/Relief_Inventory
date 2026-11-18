@@ -171,7 +171,7 @@
             {{ confirmingDelete ? 'Confirm Delete — cannot be undone' : $t('Commons.button.delete') }}
           </button>
           <button v-if="editing && confirmingDelete" @click="confirmingDelete = false" class="ri_linkbutton">{{ $t('Commons.button.keep_record', {}) }}</button>
-          <button v-if="!editing" @click="cancelRecord()" class="ri_defaultbutton">Back to List</button>
+          <button v-if="!editing" @click="cancelRecord()" class="ri_defaultbutton">{{ $t('Components.button.back_to_list', {}) }}</button>
         </div>
       </slot>
     </div>

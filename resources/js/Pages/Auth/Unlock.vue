@@ -170,7 +170,7 @@ async function submitBadge() {
 
 		<!-- ======================= PIN ENTRY ======================= -->
 		<div v-else class="space-y-4 text-center">
-			<button @click="cancelSelection" class="text-sm text-gray-500">&larr; Back</button>
+			<button @click="cancelSelection" class="text-sm text-gray-500">{{ $t('Pages.text.larr_back', {}) }}</button>
 			<p class="text-sm text-gray-600">{{ selectedPerson.full_name }}</p>
 			<p class="text-xs text-gray-500">{{ $t('Pages.Auth.text.enter_your_pin', {}) }}</p>
 

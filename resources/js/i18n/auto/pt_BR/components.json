@@ -15,6 +15,7 @@
     },
     "button": {
       "add_note": "+ Adicionar nota",
+      "back_to_list": "Voltar à lista",
       "enable_kiosk_mode": "Ativar modo quiosque",
       "keep_as_typed": "Manter como digitado",
       "pick_existing_instead": "Escolher um existente em vez disso",

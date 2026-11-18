@@ -201,7 +201,7 @@ onMounted(async () => {
 					<h2 class="text-lg font-semibold">{{ $t('Pages.Setup.heading.this_is_a_training', {}) }}</h2>
 					<p class="text-sm text-gray-700">
 						{{ $t('Pages.Setup.text.everything_entered_here_is', {}) }}
-						<strong>tap-your-name</strong> {{ $t('Pages.Setup.text.login_for_trainees_no', {}) }}<span class="font-mono">{{ $t('Pages.Setup.text.php_artisan_warehouse_training', {}) }}</span>); its data is kept until it is reset.
+						<strong>tap-your-name</strong> {{ $t('Pages.Setup.text.login_for_trainees_no', {}) }}<span class="font-mono">{{ $t('Pages.Setup.text.php_artisan_warehouse_training', {}) }}</span>{{ $t('Pages.Setup.text.its_data_is_kept', {}) }}
 					</p>
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<div class="border rounded p-3">

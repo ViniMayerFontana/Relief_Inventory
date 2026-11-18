@@ -469,7 +469,7 @@ export default {
 					<h4>{{ row.itemtype?.name }} — {{ row.onHand }} on hand, {{ row.totalRequested }} requested</h4>
 					<table class="ri_datatable" border="1">
 						<thead>
-							<tr><th>{{ $t('Commons.text.order_2', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.requested', {}) }}</th><th>{{ $t('Commons.text.suggested', {}) }}</th><th>{{ $t('Commons.button.approve', {}) }}</th><th>{{ $t('Commons.text.need', {}) }}</th></tr>
+							<tr><th>{{ $t('Commons.text.order_2', {}) }}</th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.text.requested', {}) }}</th><th>{{ $t('Commons.text.suggested', {}) }}</th><th>{{ $t('Commons.button.approve', {}) }}</th><th>{{ $t('Commons.text.need', {}) }}</th></tr>
 						</thead>
 						<tbody>
 							<tr v-for="entry in row.lines" :key="entry.order.id + '-' + entry.line.id">
@@ -503,7 +503,7 @@ export default {
 				<p v-if="!readyToFill.length && !listLoading">{{ $t('Pages.text.nothing_waiting_to_be', {}) }}</p>
 				<div v-else class="of_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>{{ $t('Commons.text.order_2', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.lines', {}) }}</th><th></th></tr>
+						<tr><th>{{ $t('Commons.text.order_2', {}) }}</th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.text.lines', {}) }}</th><th></th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="order in readyToFill" :key="order.id">
@@ -521,7 +521,7 @@ export default {
 				<p v-if="!filling.length && !listLoading">{{ $t('Pages.text.no_orders_currently_being', {}) }}</p>
 				<div v-else class="of_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>{{ $t('Commons.text.order_2', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.progress', {}) }}</th><th></th></tr>
+						<tr><th>{{ $t('Commons.text.order_2', {}) }}</th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.text.progress', {}) }}</th><th></th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="order in filling" :key="order.id">
@@ -542,7 +542,7 @@ export default {
 		<!-- ======================= FILL SCREEN ======================= -->
 		<div v-else-if="view === 'fill' && order" class="of_container">
 			<div class="of_topbar">
-				<button @click="backToList" class="ri_formbutton">&larr; Back</button>
+				<button @click="backToList" class="ri_formbutton">{{ $t('Pages.text.larr_back', {}) }}</button>
 				<span class="of_title">{{ $t('Commons.text.order') }} {{ order.id }} — {{ personLabel(order.person) }}</span>
 			</div>
 			<p v-if="fillError" class="of_error">{{ fillError }}</p>
@@ -618,7 +618,7 @@ export default {
 									</span>
 								</template>
 								<span v-if="plans[line.id].short > 0" class="of_hint">{{ plans[line.id].short }} {{ $t('Pages.text.not_found_in_stock') }}</span>
-								<span v-if="!plans[line.id].steps.length && !(plans[line.id].short > 0)" class="of_hint">fully picked</span>
+								<span v-if="!plans[line.id].steps.length && !(plans[line.id].short > 0)" class="of_hint">{{ $t('Commons.text.fully_picked', {}) }}</span>
 							</div>
 							<ul v-if="(line.item_ledgers || []).length" class="of_filllist">
 								<li v-for="fill in line.item_ledgers" :key="fill.id">

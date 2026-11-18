@@ -694,8 +694,8 @@ onMounted(() => {
 
 				<!-- put stock from the sorting area onto this (or a new) Warehouse pallet -->
 				<div v-if="canAdjust" class="pm_modes">
-					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'add' }]" :disabled="adjPending" :title="adjPending ? 'Finish or clear the adjustment first' : ''" @click="setMode('add')">{{ $t('Pages.button.add_from_sorting_area', {}) }}</button>
-					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'adjust' }]" :disabled="fill.lines.length > 0" :title="fill.lines.length ? 'Finish or clear the items staged to add first' : ''" @click="setMode('adjust')">Adjust inventory</button>
+					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'add' }]" :disabled="adjPending" :title="adjPending ? $t('Pages.text.finish_or_clear_adjustment') : ''" @click="setMode('add')">{{ $t('Pages.button.add_from_sorting_area', {}) }}</button>
+					<button type="button" :class="['ri_formbutton', { pm_active: mode === 'adjust' }]" :disabled="fill.lines.length > 0" :title="fill.lines.length ? $t('Pages.text.finish_or_clear_items') : ''" @click="setMode('adjust')">{{ $t('Commons.button.adjust_inventory', {}) }}</button>
 				</div>
 
 				<!-- adjust what is on an unsealed, placed pallet -->
