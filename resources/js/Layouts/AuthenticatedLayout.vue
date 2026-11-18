@@ -12,6 +12,7 @@ import NavLink from '@/Components/NavLink.vue';
 import PrintToast from '@/Components/PrintToast.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import { t } from '@/i18n';
 
 const showingNavigationDropdown = ref(false);
 const showingFeedbackModal = ref(false);
@@ -23,12 +24,12 @@ const notificationsLoaded = ref(false);
 
 function timeAgo(value) {
     const seconds = Math.max(0, Math.round((Date.now() - new Date(value)) / 1000));
-    if (seconds < 60) return 'just now';
+    if (seconds < 60) return t('Commons.text.just_now');
     const minutes = Math.round(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
+    if (minutes < 60) return t('Commons.text.p0_m_ago', { p0: minutes });
     const hours = Math.round(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    return `${Math.round(hours / 24)}d ago`;
+    if (hours < 24) return t('Commons.text.p0_h_ago', { p0: hours });
+    return t('Commons.text.p0_d_ago', { p0: Math.round(hours / 24) });
 }
 
 async function loadNotifications() {
@@ -51,19 +52,19 @@ async function markAllNotificationsRead() {
             <Banner @open-feedback="showingFeedbackModal = true" />
             <!-- A training warehouse (MULTI_WAREHOUSE.md §12): practice data, never real stock -->
             <div v-if="$page.props.warehouse?.training" class="bg-amber-100 text-amber-900 text-sm px-4 py-1">
-                Training warehouse &mdash; everything here is practice data.
+                {{ $t('Layouts.text.training_warehouse_everything_here', {}) }}
             </div>
             <!-- Instance administrators, until the instance has a recovery key and they have confirmed storing it (HandleInertiaRequests::recoveryKeyProps) -->
             <div v-if="$page.props.recoveryKey" class="bg-red-100 text-red-900 text-sm px-4 py-2 border-b border-red-300">
                 <template v-if="$page.props.recoveryKey.state === 'none'">
-                    <strong>Set up your recovery key.</strong>
+                    <strong>{{ $t('Layouts.text.set_up_your_recovery', {}) }}</strong>
                     Without it, an automatic backup can't restore the warehouses' encrypted settings after a disaster.
                 </template>
                 <template v-else>
-                    <strong>Confirm your recovery key is stored.</strong>
-                    It was made but never confirmed. If the printout wasn't kept, make a new one.
+                    <strong>{{ $t('Layouts.text.confirm_your_recovery_key', {}) }}</strong>
+                    {{ $t('Layouts.text.it_was_made_but', {}) }}
                 </template>
-                <a href="/setup/instance?tab=backups" class="underline font-semibold ml-1">Open Instance Admin</a>
+                <a href="/setup/instance?tab=backups" class="underline font-semibold ml-1">{{ $t('Layouts.link.open_instance_admin', {}) }}</a>
             </div>
             <PrintToast />
 
@@ -85,7 +86,7 @@ async function markAllNotificationsRead() {
                                     :href="route('dashboard')"
                                     :active="fullroute == '/dashboard' || fullroute == '/dashboard#main'"
                                 >
-                                    Relief Inventory Dashboard
+                                    {{ $t('Layouts.text.relief_inventory_dashboard', {}) }}
                                 </NavLink>
 								<NavLink
 								    v-for="crumb in breadcrumb"
@@ -117,7 +118,7 @@ async function markAllNotificationsRead() {
 
                                     <template #content>
                                         <div class="flex items-center justify-between px-4 py-2 text-sm font-semibold text-gray-700">
-                                            <span>Notifications</span>
+                                            <span>{{ $t('Commons.text.notifications', {}) }}</span>
                                             <button
                                                 v-if="unreadCount > 0"
                                                 type="button"
@@ -126,9 +127,9 @@ async function markAllNotificationsRead() {
                                             >Mark all read</button>
                                         </div>
                                         <div class="max-h-96 overflow-y-auto">
-                                            <p v-if="!notificationsLoaded" class="px-4 py-3 text-sm text-gray-500">Loading…</p>
+                                            <p v-if="!notificationsLoaded" class="px-4 py-3 text-sm text-gray-500">{{ $t('Commons.button.loading', {}) }}</p>
                                             <p v-else-if="notificationRecords.length === 0" class="px-4 py-3 text-sm text-gray-500">
-                                                No notifications yet.
+                                                {{ $t('Layouts.text.no_notifications_yet', {}) }}
                                             </p>
                                             <div
                                                 v-for="notification in notificationRecords"
@@ -177,26 +178,26 @@ async function markAllNotificationsRead() {
 
                                     <template #content>
                                         <div v-if="$page.props.warehouse?.name" class="border-b border-gray-200 px-4 py-2">
-                                            <div class="text-xs text-gray-500">Warehouse</div>
+                                            <div class="text-xs text-gray-500">{{ $t('Commons.text.warehouse', {}) }}</div>
                                             <div class="break-words text-sm font-medium text-gray-800">{{ $page.props.warehouse.name }}</div>
                                         </div>
                                         <DropdownLink
                                             :href="route('profile.edit')"
                                         >
-                                            Profile
+                                            {{ $t('Commons.heading.profile', {}) }}
                                         </DropdownLink>
                                         <button
                                             type="button"
                                             class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 transition duration-150 ease-in-out hover:bg-gray-100 focus:bg-gray-100 focus:outline-none"
                                             @click="showingFeedbackModal = true"
                                         >
-                                            Report an Issue
+                                            {{ $t('Layouts.button.report_an_issue', {}) }}
                                         </button>
                                         <DropdownLink
                                             v-if="$page.props.buildingSafety.canView"
                                             href="/building-safety"
                                         >
-                                            Who's In The Building
+                                            {{ $t('Layouts.text.who_s_in_the', {}) }}
                                         </DropdownLink>
                                         <DropdownLink
                                             v-if="$page.props.pinLogin.switchUserAvailable"
@@ -204,23 +205,23 @@ async function markAllNotificationsRead() {
                                             method="post"
                                             as="button"
                                         >
-                                            Switch User
+                                            {{ $t('Commons.text.switch_user', {}) }}
                                         </DropdownLink>
                                         <DropdownLink v-if="$page.props.pendingInvitations > 0" :href="route('account.invitations')">
                                             Invitations ({{ $page.props.pendingInvitations }})
                                         </DropdownLink>
                                         <DropdownLink href="/this-device">
-                                            PIN Login on This Device
+                                            {{ $t('Layouts.text.pin_login_on_this', {}) }}
                                         </DropdownLink>
                                         <DropdownLink href="/about-this-install">
-                                            About
+                                            {{ $t('Commons.text.about', {}) }}
                                         </DropdownLink>
                                         <DropdownLink
                                             :href="route('logout')"
                                             method="post"
                                             as="button"
                                         >
-                                            Log Out
+                                            {{ $t('Commons.link.log_out', {}) }}
                                         </DropdownLink>
                                     </template>
                                 </Dropdown>
@@ -283,7 +284,7 @@ async function markAllNotificationsRead() {
                             :href="route('dashboard')"
                             :active="route().current('dashboard')"
                         >
-                            Dashboard
+                            {{ $t('Commons.text.dashboard', {}) }}
                         </ResponsiveNavLink>
                     </div>
 
@@ -301,32 +302,32 @@ async function markAllNotificationsRead() {
                                 {{ $page.props.auth.user.email }}
                             </div>
                             <div v-if="$page.props.warehouse?.name" class="mt-1 text-sm text-gray-500">
-                                Warehouse: {{ $page.props.warehouse.name }}
+                                {{ $t('Commons.text.warehouse_2') }} {{ $page.props.warehouse.name }}
                             </div>
                         </div>
 
                         <div class="mt-3 space-y-1">
                             <ResponsiveNavLink :href="route('profile.edit')">
-                                Profile
+                                {{ $t('Commons.heading.profile', {}) }}
                             </ResponsiveNavLink>
                             <button
                                 type="button"
                                 class="block w-full ps-3 pe-4 py-2 text-start text-base font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-800 focus:outline-none"
                                 @click="showingFeedbackModal = true"
                             >
-                                Report an Issue
+                                {{ $t('Layouts.button.report_an_issue', {}) }}
                             </button>
                             <ResponsiveNavLink
                                 v-if="$page.props.buildingSafety.canView"
                                 href="/building-safety"
                             >
-                                Who's In The Building
+                                {{ $t('Layouts.text.who_s_in_the', {}) }}
                             </ResponsiveNavLink>
                             <ResponsiveNavLink v-if="$page.props.pendingInvitations > 0" :href="route('account.invitations')">
                                 Invitations ({{ $page.props.pendingInvitations }})
                             </ResponsiveNavLink>
                             <ResponsiveNavLink href="/this-device">
-                                PIN Login on This Device
+                                {{ $t('Layouts.text.pin_login_on_this', {}) }}
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 v-if="$page.props.pinLogin.switchUserAvailable"
@@ -334,17 +335,17 @@ async function markAllNotificationsRead() {
                                 method="post"
                                 as="button"
                             >
-                                Switch User
+                                {{ $t('Commons.text.switch_user', {}) }}
                             </ResponsiveNavLink>
                             <ResponsiveNavLink href="/about-this-install">
-                                About
+                                {{ $t('Commons.text.about', {}) }}
                             </ResponsiveNavLink>
                             <ResponsiveNavLink
                                 :href="route('logout')"
                                 method="post"
                                 as="button"
                             >
-                                Log Out
+                                {{ $t('Commons.link.log_out', {}) }}
                             </ResponsiveNavLink>
                         </div>
                     </div>
@@ -371,7 +372,9 @@ async function markAllNotificationsRead() {
     </div>
 </template>
 
-<script>
+<script>import { t } from '@/i18n';
+
+
 export default {
 	props: {
 		breadcrumb: {
@@ -387,7 +390,7 @@ export default {
 	},
 	created() {
 		this.fullroute = window.location.href.substring(window.location.origin.length);
-		console.log('fullroute is ' + this.fullroute)
+		console.log(t('Layouts.text.fullroute_is_placeholder', { placeholder: this.fullroute }))
 		window.addEventListener(
 		  "hashchange",
 		  () => {

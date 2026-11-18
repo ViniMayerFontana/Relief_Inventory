@@ -1,0 +1,22 @@
+{
+  "Layouts": {
+    "button": {
+      "mark_all_read": "Mark all read",
+      "report_an_issue": "Report an Issue"
+    },
+    "link": {
+      "open_instance_admin": "Open Instance Admin"
+    },
+    "text": {
+      "confirm_your_recovery_key": "Confirm your recovery key is stored.",
+      "fullroute_is_placeholder": "fullroute is {placeholder}",
+      "it_was_made_but": "It was made but never confirmed. If the printout wasn't kept, make a new one.",
+      "no_notifications_yet": "No notifications yet.",
+      "pin_login_on_this": "PIN Login on This Device",
+      "relief_inventory_dashboard": "Relief Inventory Dashboard",
+      "set_up_your_recovery": "Set up your recovery key.",
+      "training_warehouse_everything_here": "Training warehouse — everything here is practice data.",
+      "who_s_in_the": "Who's In The Building"
+    }
+  }
+}

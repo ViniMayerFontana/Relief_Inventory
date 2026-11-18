@@ -165,12 +165,12 @@
         :keepRecord="() => (confirmingDelete = false)"
       >
         <div class="ri_formactions">
-          <button v-if="editing" @click="saveRecord()" class="ri_defaultbutton">Save</button>
-          <button v-if="editing" @click="cancelRecord()" class="ri_formbutton">Cancel Changes</button>
+          <button v-if="editing" @click="saveRecord()" class="ri_defaultbutton">{{ $t('Commons.button.save', {}) }}</button>
+          <button v-if="editing" @click="cancelRecord()" class="ri_formbutton">{{ $t('Commons.button.cancel_changes', {}) }}</button>
           <button v-if="editing" @click="deleteRecord()" class="ri_deletebutton" :class="{ ri_confirming: confirmingDelete }">
-            {{ confirmingDelete ? 'Confirm Delete — cannot be undone' : 'Delete' }}
+            {{ confirmingDelete ? 'Confirm Delete — cannot be undone' : $t('Commons.button.delete') }}
           </button>
-          <button v-if="editing && confirmingDelete" @click="confirmingDelete = false" class="ri_linkbutton">Keep Record</button>
+          <button v-if="editing && confirmingDelete" @click="confirmingDelete = false" class="ri_linkbutton">{{ $t('Commons.button.keep_record', {}) }}</button>
           <button v-if="!editing" @click="cancelRecord()" class="ri_defaultbutton">Back to List</button>
         </div>
       </slot>

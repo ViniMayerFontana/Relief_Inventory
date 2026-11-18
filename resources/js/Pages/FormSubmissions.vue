@@ -92,7 +92,7 @@ async function confirmCompose() {
 		<div class="max-w-4xl mx-auto p-4 space-y-6">
 			<div class="flex items-center justify-between">
 				<h1 class="text-2xl font-bold">{{ form?.name || $t('Commons.heading.submissions') }}</h1>
-				<Link href="/setup/forms" class="text-sm text-blue-600 underline">&larr; Back to Forms</Link>
+				<Link href="/setup/forms" class="text-sm text-blue-600 underline">{{ $t('Pages.text.back_to_forms', {}) }}</Link>
 			</div>
 
 			<section class="bg-white shadow rounded-lg p-6 space-y-4">

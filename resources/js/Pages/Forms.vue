@@ -195,7 +195,7 @@ async function moveQuestion(record, index, direction) {
 				<td>{{ record.name }}</td>
 				<td>{{ record.status }}</td>
 				<td>{{ record.access_mode }}</td>
-				<td>{{ record.requires_approval ? 'Required' : $t('Commons.text.none') }}</td>
+				<td>{{ record.requires_approval ? $t('Commons.label.required') : $t('Commons.text.none') }}</td>
 				<td>{{ record.submissions_count }}</td>
 			</template>
 
@@ -229,7 +229,7 @@ async function moveQuestion(record, index, direction) {
 					<div class="ri_fieldset">
 						<div class="ri_fieldlabel">{{ $t('Commons.text.requires_approval', {}) }}</div>
 						<Checkbox v-model="record.requires_approval" :enabled="editing" />
-						<span class="text-xs text-gray-500 ml-2">Off = just collect the answers, no decision needed.</span>
+						<span class="text-xs text-gray-500 ml-2">{{ $t('Pages.text.off_just_collect', {}) }}</span>
 					</div>
 					<div class="ri_fieldset" v-if="record.requires_approval">
 						<div class="ri_fieldlabel">{{ $t('Commons.text.on_approval', {}) }}</div>
@@ -270,7 +270,7 @@ async function moveQuestion(record, index, direction) {
 									:placeholder="$t('Pages.placeholder.one_choice_per_line')"
 								/>
 								<label class="flex items-center gap-1 text-xs">
-									<Checkbox v-model="editQuestionForm.required" enabled /> Required
+									<Checkbox v-model="editQuestionForm.required" enabled /> {{ $t('Commons.label.required', {}) }}
 								</label>
 								<div class="flex gap-2">
 									<PrimaryButton @click="saveEditQuestion(record, question)">{{ $t('Commons.button.save', {}) }}</PrimaryButton>
@@ -300,7 +300,7 @@ async function moveQuestion(record, index, direction) {
 					<div class="border rounded p-3 space-y-2">
 						<h4 class="font-medium text-sm">{{ $t('Pages.heading.add_preset_questions', {}) }}</h4>
 						<div v-for="(group, category) in presetsByCategory" :key="category">
-							<div class="text-xs uppercase text-gray-400 mt-2">{{ category === 'basic_info' ? 'Basic Information' : $t('Commons.text.other_2') }}</div>
+							<div class="text-xs uppercase text-gray-400 mt-2">{{ category === 'basic_info' ? $t('Commons.text.basic_information') : $t('Commons.text.other_2') }}</div>
 							<label v-for="preset in group" :key="preset.key" class="flex items-center gap-2 text-sm py-0.5"
 								:class="{ 'opacity-40': existingPresetKeys(record).has(preset.key) }">
 								<input
@@ -331,7 +331,7 @@ async function moveQuestion(record, index, direction) {
 							:placeholder="$t('Pages.placeholder.one_choice_per_line')"
 						/>
 						<label class="flex items-center gap-1 text-xs">
-							<Checkbox v-model="newQuestion.required" enabled /> Required
+							<Checkbox v-model="newQuestion.required" enabled /> {{ $t('Commons.label.required', {}) }}
 						</label>
 						<PrimaryButton @click="addQuestion(record)">{{ $t('Commons.button.add_question', {}) }}</PrimaryButton>
 					</div>

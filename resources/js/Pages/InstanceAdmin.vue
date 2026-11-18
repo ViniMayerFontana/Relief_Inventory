@@ -223,7 +223,7 @@ const dialogError = ref('');
 const dialogBusy = ref(false);
 const result = ref(null); // a setup code to show once
 const statusNames = {
-	provisioning: t('Commons.text.being_created'), awaiting_setup: t('Pages.text.waiting_for_setup'), active: t('Commons.button.active'), maintenance: 'Maintenance', restoring: t('Commons.text.restoring'),
+	provisioning: t('Commons.text.being_created'), awaiting_setup: t('Pages.text.waiting_for_setup'), active: t('Commons.button.active'), maintenance: t('Commons.button.maintenance'), restoring: t('Commons.text.restoring'),
 	upgrading: t('Commons.text.upgrading'), held: t('Commons.text.held'), suspended: t('Commons.text.suspended'), archived: t('Commons.text.archived'),
 };
 const statusClass = (st) => ({
@@ -387,7 +387,7 @@ async function copyCode() {
 // ---- Full Instance Backups (Docker) ----
 const instBackups = ref(null);   // the server's payload: { available, schedule, backups, activity, working }
 const instForm = ref(null);
-const weekdays = [t('Commons.text.sunday'), t('Commons.text.monday'), t('Commons.text.tuesday'), 'Wednesday', t('Commons.text.thursday'), t('Commons.text.friday'), t('Commons.text.saturday')];
+const weekdays = [t('Commons.text.sunday'), t('Commons.text.monday'), t('Commons.text.tuesday'), t('Commons.text.wednesday'), t('Commons.text.thursday'), t('Commons.text.friday'), t('Commons.text.saturday')];
 let instTimer = null;
 
 const instFormOf = (sc) => ({
@@ -753,7 +753,7 @@ onUnmounted(() => {
 
 						<div class="flex gap-2 flex-wrap items-center text-xs">
 							<span class="text-gray-500">{{ $t('Commons.text.hostnames', {}) }}</span>
-							<span v-if="!w.domains.length" class="text-gray-400">none (reached by the shared address)</span>
+							<span v-if="!w.domains.length" class="text-gray-400">{{ $t('Pages.text.none_shared', {}) }}</span>
 							<span v-for="d in w.domains" :key="d.hostname" class="inline-flex items-center gap-1 rounded bg-gray-100 px-2 py-0.5 font-mono">
 								{{ d.hostname }}<span v-if="d.primary" class="text-gray-500 font-sans">(primary)</span>
 								<button class="text-red-600 font-sans" :title="`Remove ${d.hostname}`" @click="removeHostname(w, d.hostname)">×</button>
@@ -765,7 +765,7 @@ onUnmounted(() => {
 							<button class="underline text-indigo-700" @click="editWarehouse(w)">{{ $t('Commons.button.edit', {}) }}</button>
 							<template v-if="w.status === 'active'">
 								<button class="underline text-amber-700" @click="suspendWarehouse(w, false)">{{ $t('Commons.button.suspend', {}) }}</button>
-								<button class="underline text-amber-700" @click="suspendWarehouse(w, true)">Maintenance</button>
+								<button class="underline text-amber-700" @click="suspendWarehouse(w, true)">{{ $t('Commons.button.maintenance', {}) }}</button>
 							</template>
 							<button v-if="w.status === 'suspended' || w.status === 'maintenance'" class="underline text-green-700" @click="activateWarehouse(w)">{{ $t('Commons.button.activate', {}) }}</button>
 							<button v-if="w.status === 'restoring'" class="underline text-green-700" @click="resumeWarehouse(w)">{{ $t('Commons.button.resume', {}) }}</button>
@@ -914,9 +914,9 @@ onUnmounted(() => {
 						<div v-for="c in instBackups.clients" :key="c.id" class="border rounded p-3 text-sm flex flex-wrap items-center justify-between gap-3">
 							<div>
 								<span class="font-medium">{{ c.name }}</span>
-								<span class="ml-2 rounded px-2 py-0.5 text-xs" :class="c.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'">{{ c.status === 'approved' ? 'Paired' : $t('Commons.text.revoked') }}</span>
+								<span class="ml-2 rounded px-2 py-0.5 text-xs" :class="c.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-700'">{{ c.status === 'approved' ? $t('Commons.text.paired') : $t('Commons.text.revoked') }}</span>
 								<div class="text-xs text-gray-500">
-									Paired {{ instWhen(c.approved_at) }}<span v-if="c.last_seen_at"> {{ $t('Pages.text.last_seen') }} {{ instWhen(c.last_seen_at) }}<span v-if="c.last_seen_ip"> from {{ c.last_seen_ip }}</span></span><span v-else> {{ $t('Pages.text.never_connected', {}) }}</span>
+									{{ $t('Commons.text.paired') }} {{ instWhen(c.approved_at) }}<span v-if="c.last_seen_at"> {{ $t('Pages.text.last_seen') }} {{ instWhen(c.last_seen_at) }}<span v-if="c.last_seen_ip"> from {{ c.last_seen_ip }}</span></span><span v-else> {{ $t('Pages.text.never_connected', {}) }}</span>
 								</div>
 							</div>
 							<button v-if="c.status === 'approved'" @click="revokeBackupClient(c)"
@@ -939,7 +939,7 @@ onUnmounted(() => {
 							</div>
 							<a v-if="z.downloadable" :href="$withWarehouse(`/json/instance/backups/${z.name}/download`)"
 								class="inline-flex items-center px-4 py-2 rounded-md font-semibold text-xs uppercase tracking-widest text-white bg-gray-800 hover:bg-gray-700">{{ $t('Commons.button.download', {}) }}</a>
-							<span v-else class="text-xs text-gray-500">Not readable here: copy it from the server's backup folder (<span class="font-mono">instance/</span>)</span>
+							<span v-else class="text-xs text-gray-500">{{ $t('Pages.text.not_readable_here_copy', {}) }}<span class="font-mono">instance/</span>)</span>
 						</div>
 						<p class="text-xs text-gray-500">
 							{{ $t('Pages.text.to_restore_one_onto', {}) }}

@@ -16,9 +16,9 @@ defineProps({
 });
 
 const kindOptions = [
-	{ id: 'R', name: 'Receiving' },
-	{ id: 'W', name: 'Warehouse' },
-	{ id: 'S', name: 'Shipping' },
+	{ id: 'R', name: t('Commons.title.receiving') },
+	{ id: 'W', name: t('Commons.text.warehouse') },
+	{ id: 'S', name: t('Commons.text.shipping') },
 	{ id: 'H', name: 'Hold' },
 	{ id: 'Q', name: 'Quarantine' },
 ];
@@ -35,19 +35,19 @@ const statusOptions = (kind) =>
 	[...(statusesByKind[kind] || []), 'missing'].map((s) => ({ id: s, name: s.charAt(0).toUpperCase() + s.slice(1) }));
 
 const containerTypeOptions = [
-	{ id: 'pallet', name: 'Pallet' },
+	{ id: 'pallet', name: t('Commons.text.pallet') },
 	{ id: 'gaylord', name: t('Commons.text.gaylord') },
 	{ id: 'box', name: t('Commons.text.box') },
-	{ id: 'bag', name: 'Bag' },
+	{ id: 'bag', name: t('Commons.text.bag') },
 	{ id: 'tote', name: t('Commons.text.tote') },
 ];
 </script>
 
 <template>
-  <Head title="Pallet Management" />
+  <Head :title="$t('Commons.title.pallet_management')" />
   <AuthenticatedLayout :breadcrumb="breadcrumb">
     <RIForm
-      title="Pallet Management"
+      :title="$t('Commons.title.pallet_management')"
       datasource="/json/pallets"
 	  :precreate="false"
 	  >

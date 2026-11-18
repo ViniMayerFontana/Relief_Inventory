@@ -46,6 +46,8 @@ COPY config ./config
 COPY database ./database
 COPY routes ./routes
 COPY resources/views ./resources/views
+# Translation files (lang/pt_BR, lang/en): the app's locale files, read at runtime.
+COPY lang ./lang
 # Help guide sources (App\Support\HelpGuide reads them at request time).
 COPY resources/help ./resources/help
 COPY public ./public

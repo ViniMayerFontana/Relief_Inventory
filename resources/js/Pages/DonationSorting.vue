@@ -951,7 +951,7 @@ export default {
 				<h3>{{ $t('Pages.heading.ready_to_sort_tap', {}) }}</h3>
 				<div class="sort_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>{{ $t('Commons.text.date_received', {}) }}</th><th>{{ $t('Commons.text.donor', {}) }}</th><th>Manifest</th></tr>
+						<tr><th>{{ $t('Commons.text.date_received', {}) }}</th><th>{{ $t('Commons.text.donor', {}) }}</th><th>{{ $t('Commons.text.manifest', {}) }}</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in sessions.receivable" :key="record.id"
@@ -994,7 +994,7 @@ export default {
 		<!-- ======================= ACTIVE SESSION ======================= -->
 		<div v-else-if="session" class="sort_container">
 			<div class="sort_topbar">
-				<button @click="leaveSession" class="ri_formbutton">&larr; All Sessions</button>
+				<button @click="leaveSession" class="ri_formbutton">{{ $t('Pages.text.all_sessions_back', {}) }}</button>
 				<span class="sort_title">
 					{{ $t('Pages.text.sorting_session') }} {{ session.order_date }}
 					<span v-if="readonly" class="sort_completed_badge">{{ $t('Commons.text.completed', {}) }}</span>
@@ -1130,7 +1130,7 @@ export default {
 				<template v-else>
 					<!-- one optional observation tap; final QC stays with a supervisor -->
 					<span class="sort_pallet_label">
-						Pallet <strong>{{ palletTagStr(pallet.id) }}</strong> {{ $t('Pages.text.finished_how_did_it', {}) }}
+						{{ $t('Commons.text.pallet', {}) }} <strong>{{ palletTagStr(pallet.id) }}</strong> {{ $t('Pages.text.finished_how_did_it', {}) }}
 					</span>
 					<button @click="markPalletEmpty('ok')" class="ri_defaultbutton">{{ $t('Pages.button.pallet_looks_ok', {}) }}</button>
 					<button @click="markPalletEmpty('damaged')" class="ri_deletebutton">{{ $t('Pages.button.set_aside_damaged', {}) }}</button>
@@ -1222,7 +1222,7 @@ export default {
 			<div class="sort_tablewrap"><table class="ri_datatable sort_lines" border="1">
 				<thead>
 					<tr>
-						<th>{{ $t('Commons.text.acs', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.placeholder.qty', {}) }}</th><th>{{ $t('Commons.text.expires', {}) }}</th><th>{{ $t('Commons.text.disposition', {}) }}</th><th>Pallet</th><th></th>
+						<th>{{ $t('Commons.text.acs', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.placeholder.qty', {}) }}</th><th>{{ $t('Commons.text.expires', {}) }}</th><th>{{ $t('Commons.text.disposition', {}) }}</th><th>{{ $t('Commons.text.pallet', {}) }}</th><th></th>
 					</tr>
 				</thead>
 				<tbody>

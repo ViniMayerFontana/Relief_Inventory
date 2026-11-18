@@ -1,0 +1,22 @@
+{
+  "Layouts": {
+    "button": {
+      "mark_all_read": "Marcar todas como lidas",
+      "report_an_issue": "Reportar um problema"
+    },
+    "link": {
+      "open_instance_admin": "Abrir Administração da Instância"
+    },
+    "text": {
+      "confirm_your_recovery_key": "Confirme que sua chave de recuperação está guardada.",
+      "fullroute_is_placeholder": "fullroute is {placeholder}",
+      "it_was_made_but": "Foi criada, mas nunca confirmada. Se a impressão não foi guardada, crie uma nova.",
+      "no_notifications_yet": "Nenhuma notificação ainda.",
+      "pin_login_on_this": "Login por PIN neste dispositivo",
+      "relief_inventory_dashboard": "Painel do Relief Inventory",
+      "set_up_your_recovery": "Configure sua chave de recuperação.",
+      "training_warehouse_everything_here": "Armazém de treinamento — tudo aqui é dado de prática",
+      "who_s_in_the": "Quem está no prédio"
+    }
+  }
+}

@@ -9,6 +9,7 @@
 !database
 !public
 !resources
+!lang
 !routes
 !artisan
 !composer.json

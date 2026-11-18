@@ -29,7 +29,7 @@ import { Head } from '@inertiajs/vue3';
 </script>
 
 <template>
-	<Head title="Who's In The Building" />
+	<Head :title="$t('Pages.title.who_s_in_the')" />
 	<AuthenticatedLayout>
 		<div class="bs_page">
 			<h1 class="bs_title">{{ $t('Pages.heading.who_s_in_the', {}) }}</h1>

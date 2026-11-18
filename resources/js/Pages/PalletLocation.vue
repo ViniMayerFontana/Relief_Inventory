@@ -529,7 +529,7 @@ onMounted(() => {
 			<h2 class="pm_title">{{ $t('Commons.heading.inventory_movement', {}) }} <HelpLink guide="inventory-movement">{{ $t('Pages.text.inventory_movement_guide', {}) }}</HelpLink></h2>
 
 			<div class="pm_tabs">
-				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'pallet' }]" @click="show('pallet')">Pallets</button>
+				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'pallet' }]" @click="show('pallet')">{{ $t('Commons.button.pallets', {}) }}</button>
 				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'locations' }]" @click="show('locations')">{{ $t('Commons.button.locations', {}) }}</button>
 				<button type="button" :class="['ri_formbutton', { pm_active: tab === 'recent' }]" @click="show('recent')">{{ $t('Commons.button.recent_movements', {}) }}</button>
 			</div>
@@ -547,7 +547,7 @@ onMounted(() => {
 						<thead>
 							<tr>
 								<th>{{ $t('Commons.text.location', {}) }}</th>
-								<th>Pallets</th>
+								<th>{{ $t('Commons.button.pallets', {}) }}</th>
 								<th v-for="s in statusColumns" :key="s" class="pm_status_head">{{ s }}</th>
 							</tr>
 						</thead>
@@ -564,7 +564,7 @@ onMounted(() => {
 										<p v-else-if="!openLocation.pallets">{{ $t('Commons.text.loading', {}) }}</p>
 										<table v-else class="ri_datatable" border="1">
 											<thead>
-												<tr><th>Pallet</th><th>{{ $t('Commons.text.type_2', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.last_moved', {}) }}</th></tr>
+												<tr><th>{{ $t('Commons.text.pallet', {}) }}</th><th>{{ $t('Commons.text.type_2', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.last_moved', {}) }}</th></tr>
 											</thead>
 											<tbody>
 												<tr v-for="p in openLocation.pallets" :key="p.id">
@@ -585,7 +585,7 @@ onMounted(() => {
 						</tbody>
 					</table>
 				</div>
-				<p class="ri_hint">Click a location to list its pallets. Click a pallet number to see its history and contents. Counts are live pallets only — emptied, shipped, collected, released, condemned and missing pallets aren't included.</p>
+				<p class="ri_hint">{{ $t('Pages.text.click_a_location_hint', {}) }}</p>
 			</div>
 
 			<!-- Pallets: one scan-driven screen -->
@@ -736,7 +736,7 @@ onMounted(() => {
 							<span class="ri_fieldlabel">{{ $t('Commons.text.notes', {}) }}<span v-if="adj.reason === 'other'"> (required)</span>:</span>
 							<input v-model="adj.notes" class="ri_forminput" />
 						</label>
-						<button type="button" class="ri_defaultbutton" :disabled="adjusting || !adjChanges.length" @click="submitAdjust">Record Adjustment ({{ adjChanges.length }})</button>
+						<button type="button" class="ri_defaultbutton" :disabled="adjusting || !adjChanges.length" @click="submitAdjust">{{ $t('Pages.button.record_adjustment') }}{{ adjChanges.length }})</button>
 						<button type="button" class="ri_formbutton" :disabled="!adjPending" @click="resetAdjust">{{ $t('Commons.button.clear', {}) }}</button>
 					</div>
 				</div>
@@ -763,7 +763,7 @@ onMounted(() => {
 					<div class="pm_fillrow">
 						<label class="pm_fillfield">
 							<span class="ri_fieldlabel">{{ $t('Commons.text.location_2', {}) }}</span>
-							<input v-model="fill.locationCode" class="ri_forminput" list="pm_locations" placeholder="Where it's going" />
+							<input v-model="fill.locationCode" class="ri_forminput" list="pm_locations" :placeholder="$t('Pages.placeholder.where_it_s_going')" />
 						</label>
 						<label class="pm_fillfield">
 							<span class="ri_fieldlabel">{{ $t('Commons.text.expires_2', {}) }}</span>
@@ -838,7 +838,7 @@ onMounted(() => {
 				<p v-if="!recent">{{ $t('Commons.text.loading', {}) }}</p>
 				<div v-else class="pm_tablewrap">
 					<table class="ri_datatable" border="1">
-						<thead><tr><th>{{ $t('Commons.text.date', {}) }}</th><th>Pallet</th><th>{{ $t('Commons.text.location', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.notes', {}) }}</th></tr></thead>
+						<thead><tr><th>{{ $t('Commons.text.date', {}) }}</th><th>{{ $t('Commons.text.pallet', {}) }}</th><th>{{ $t('Commons.text.location', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.notes', {}) }}</th></tr></thead>
 						<tbody>
 							<tr v-for="r in recent" :key="r.id">
 								<td>{{ formatDate(r.created_at) }}</td>

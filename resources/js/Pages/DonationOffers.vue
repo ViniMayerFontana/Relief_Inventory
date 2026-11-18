@@ -51,18 +51,18 @@ defineProps({
 
 const contactMethodOptions = [
 	{ value: 'phone', label: t('Commons.text.phone_2') },
-	{ value: 'email', label: 'Email' },
+	{ value: 'email', label: t('Commons.button.email') },
 	{ value: 'in_person', label: t('Commons.text.in_person_2') },
 	{ value: 'other', label: t('Commons.button.other') },
 ];
 
 const statusLabels = {
-	offered: 'Offered',
+	offered: t('Commons.text.offered'),
 	pending: t('Commons.text.pending_arrival'),
 	refused: t('Commons.text.refused'),
 	diverted: t('Commons.text.diverted'),
 	cancelled: t('Commons.text.cancelled'),
-	received: 'Received',
+	received: t('Commons.text.received_2'),
 };
 
 const statusClasses = {
@@ -93,7 +93,7 @@ const statusClasses = {
 					<input type="checkbox" v-model="pendingOnly" />
 					{{ $t('Pages.label.pending_eta_sorted_only', {}) }}
 				</label>
-				<Link href="/receiving" class="don_backlink">&larr; Back to Receiving</Link>
+				<Link href="/receiving" class="don_backlink">{{ $t('Pages.text.back_to_receiving', {}) }}</Link>
 				<HelpLink guide="donation-offers">{{ $t('Pages.text.donation_offers_guide', {}) }}</HelpLink>
 			</template>
 
@@ -206,7 +206,7 @@ const statusClasses = {
 							<select v-model="record.contact_method" class="ri_forminput" :disabled="!editing">
 								<option :value="null">{{ $t('Commons.text.not_recorded', {}) }}</option>
 								<option value="phone">{{ $t('Commons.text.phone_2', {}) }}</option>
-								<option value="email">Email</option>
+								<option value="email">{{ $t('Commons.button.email', {}) }}</option>
 								<option value="in_person">{{ $t('Commons.text.in_person', {}) }}</option>
 								<option value="other">{{ $t('Commons.button.other', {}) }}</option>
 							</select>
@@ -519,7 +519,7 @@ export default {
 			return `${startLabel} – ${this.formatLocalDate(end)}`;
 		},
 		contactMethodLabel(value) {
-			return { phone: t('Commons.text.phone_2'), email: 'Email', in_person: t('Commons.text.in_person_2'), other: t('Commons.button.other') }[value] || value;
+			return { phone: t('Commons.text.phone_2'), email: t('Commons.button.email'), in_person: t('Commons.text.in_person_2'), other: t('Commons.button.other') }[value] || value;
 		},
 		// A logNote() entry (follow-up call, no decision made) has
 		// from_status === to_status — distinguish that from the initial
@@ -530,12 +530,12 @@ export default {
 		// scope and can't see its top-level consts).
 		logHeadline(log) {
 			const labels = {
-				offered: 'Offered',
+				offered: t('Commons.text.offered'),
 				pending: t('Commons.text.pending_arrival'),
 				refused: t('Commons.text.refused'),
 				diverted: t('Commons.text.diverted'),
 				cancelled: t('Commons.text.cancelled'),
-				received: 'Received',
+				received: t('Commons.text.received_2'),
 			};
 			if (!log.from_status) return t('Pages.text.logged_as_p0', { p0: labels[log.to_status] });
 			if (log.from_status === log.to_status) return t('Pages.text.update_p0', { p0: labels[log.to_status] });

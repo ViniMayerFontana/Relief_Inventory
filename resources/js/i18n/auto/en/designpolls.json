@@ -1,0 +1,18 @@
+{
+  "DesignPolls": {
+    "DeliveryDays": {
+      "Days": {
+        "text": {
+          "can_accept_tue_wed": "Can accept: Tue, Wed, Thu · Preferred: Tue",
+          "no_days_chosen_yet": "No days chosen yet"
+        }
+      },
+      "text": {
+        "can_accept_delivery": "Can Accept Delivery:",
+        "make_p0_not_preferred": "Make {p0} not preferred",
+        "make_p0_preferred": "Make {p0} preferred",
+        "tap_again_to_change": "Tap again to change"
+      }
+    }
+  }
+}

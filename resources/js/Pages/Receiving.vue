@@ -65,13 +65,13 @@ const yesNoOptions = [
 // checklist below it since a mixed load can be boxes AND bags AND totes
 // AND/OR loose all at once.
 const arrivalModeOptions = [
-	{ value: 'pallet', label: 'Pallets' },
+	{ value: 'pallet', label: t('Commons.button.pallets') },
 	{ value: 'other', label: t('Commons.text.other_2') },
 ];
 
 const otherContainerTypeOptions = [
 	{ value: 'box', label: t('Commons.text.boxes') },
-	{ value: 'bag', label: 'Bags' },
+	{ value: 'bag', label: t('Commons.text.bags') },
 	{ value: 'tote', label: t('Commons.text.totes') },
 	{ value: 'loose', label: t('Commons.text.loose') },
 ];
@@ -91,20 +91,20 @@ const arrivalMethodOptions = [
 ];
 
 const containerTypeOptions = [
-	{ value: 'pallet', label: 'Pallet' },
+	{ value: 'pallet', label: t('Commons.text.pallet') },
 	{ value: 'gaylord', label: t('Commons.text.gaylord') },
 	{ value: 'box', label: t('Commons.text.box') },
-	{ value: 'bag', label: 'Bag' },
+	{ value: 'bag', label: t('Commons.text.bag') },
 	{ value: 'tote', label: t('Commons.text.tote') },
 ];
 </script>
 
 <template>
-	<Head title="Receiving" />
+	<Head :title="$t('Commons.title.receiving')" />
 	<AuthenticatedLayout :breadcrumb="breadcrumb">
 		<RIForm
 			ref="riform"
-			title="Receiving"
+			:title="$t('Commons.title.receiving')"
 			datasource="/json/receiving"
 			:newrecordcaption="$t('Pages.text.record_an_intake')"
 			:filter="receivingFilter"
@@ -161,7 +161,7 @@ const containerTypeOptions = [
 				<th>{{ $t('Commons.text.category_2', {}) }}</th>
 				<th>{{ $t('Commons.button.status', {}) }}</th>
 				<th>{{ $t('Pages.text.container_est', {}) }}</th>
-				<th>Pallets</th>
+				<th>{{ $t('Commons.button.pallets', {}) }}</th>
 			</template>
 
 			<template #tbody="{ record, index }">

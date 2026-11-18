@@ -201,9 +201,7 @@ onMounted(async () => {
 					<h2 class="text-lg font-semibold">{{ $t('Pages.Setup.heading.this_is_a_training', {}) }}</h2>
 					<p class="text-sm text-gray-700">
 						{{ $t('Pages.Setup.text.everything_entered_here_is', {}) }}
-						<strong>tap-your-name</strong> login for trainees &mdash; no password &mdash; and a trainee can do what the Trainee
-						role grants (station work and reports; nothing in Setup). To close this warehouse after the class, ask the person who runs the
-						instance to turn it off (<span class="font-mono">{{ $t('Pages.Setup.text.php_artisan_warehouse_training', {}) }}</span>); its data is kept until it is reset.
+						<strong>tap-your-name</strong> {{ $t('Pages.Setup.text.login_for_trainees_no', {}) }}<span class="font-mono">{{ $t('Pages.Setup.text.php_artisan_warehouse_training', {}) }}</span>); its data is kept until it is reset.
 					</p>
 					<div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
 						<div class="border rounded p-3">

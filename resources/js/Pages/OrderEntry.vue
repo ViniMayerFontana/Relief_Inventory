@@ -776,7 +776,7 @@ export default {
 				<p v-if="!orders.open.length && !listLoading">{{ $t('Pages.text.no_open_orders', {}) }}</p>
 				<div v-else class="oe_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>{{ $t('Commons.text.date', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.lines', {}) }}</th><th>{{ $t('Commons.text.items', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.entered_by', {}) }}</th></tr>
+						<tr><th>{{ $t('Commons.text.date', {}) }}</th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.text.lines', {}) }}</th><th>{{ $t('Commons.text.items', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.entered_by', {}) }}</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in orders.open" :key="record.id"
@@ -796,7 +796,7 @@ export default {
 				<h3>{{ $t('Commons.heading.recently_completed', {}) }}</h3>
 				<div class="oe_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
-						<tr><th>{{ $t('Commons.text.date', {}) }}</th><th>Partner</th><th>{{ $t('Commons.text.lines', {}) }}</th><th>{{ $t('Commons.text.items', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.entered_by', {}) }}</th></tr>
+						<tr><th>{{ $t('Commons.text.date', {}) }}</th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.text.lines', {}) }}</th><th>{{ $t('Commons.text.items', {}) }}</th><th>{{ $t('Commons.button.status', {}) }}</th><th>{{ $t('Commons.text.entered_by', {}) }}</th></tr>
 					</thead>
 					<tbody>
 						<tr v-for="record in orders.recent" :key="record.id"
@@ -824,7 +824,7 @@ export default {
 			<p v-if="partnerError" class="oe_error">{{ partnerError }}</p>
 
 			<div class="oe_field">
-				<label>Partner:</label>
+				<label>{{ $t('Commons.label.partner', {}) }}</label>
 				<SearchSelect
 					ref="partnerSelect"
 					v-model="partnerId"
@@ -861,7 +861,7 @@ export default {
 					<div class="oe_field"><label>{{ $t('Commons.label.phone', {}) }}</label>
 						<input type="text" v-model="newPartner.phone" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Email:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.email', {}) }}</label>
 						<input type="email" v-model="newPartner.email" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
 					<div class="oe_field"><label>{{ $t('Commons.label.zip', {}) }}</label>
@@ -933,7 +933,7 @@ export default {
 					<div class="oe_field"><label>{{ $t('Commons.label.phone', {}) }}</label>
 						<input type="text" v-model="contact.phone" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
-					<div class="oe_field"><label>Email:</label>
+					<div class="oe_field"><label>{{ $t('Commons.label.email', {}) }}</label>
 						<input type="email" v-model="contact.email" class="ri_forminput"
 							@keydown.enter.prevent="focusNextField($event)" /></div>
 					<div class="oe_field"><label>{{ $t('Commons.label.zip', {}) }}</label>
@@ -1086,7 +1086,7 @@ export default {
 		<!-- ======================= LINE ENTRY ======================= -->
 		<div v-else-if="order" class="oe_container">
 			<div class="oe_topbar">
-				<button @click="closeOrder" class="ri_formbutton">&larr; All Orders</button>
+				<button @click="closeOrder" class="ri_formbutton">{{ $t('Pages.text.all_orders_back', {}) }}</button>
 				<span class="oe_title">
 					{{ $t('Commons.text.order') }} {{ order.id }}<span v-if="order.order_date" class="oe_title_date"> &middot; {{ order.order_date }}</span>
 					<span v-if="readonly" class="oe_status_badge">{{ order.status ? order.status.name : '' }}</span>

@@ -288,7 +288,7 @@ export default {
 			<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 			<p class="ship_helplink"><HelpLink guide="shipping">{{ $t('Commons.text.shipping_guide', {}) }}</HelpLink></p>
 
-			<h2 class="ri_datatable_head">Filled — Ready to Assign a Driver ({{ filled.length }})</h2>
+			<h2 class="ri_datatable_head">{{ $t('Pages.heading.filled_ready_to_assign') }}{{ filled.length }})</h2>
 			<p class="ship_hint">{{ $t('Pages.text.assigning_a_driver_moves', {}) }}</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
@@ -318,7 +318,7 @@ export default {
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Ready to Ship ({{ readyToShip.length }})</h2>
+			<h2 class="ri_datatable_head ship_sectionhead">{{ $t('Pages.heading.ready_to_ship') }}{{ readyToShip.length }})</h2>
 			<p class="ship_hint">{{ $t('Pages.text.a_driver_is_assigned', {}) }}</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
@@ -345,7 +345,7 @@ export default {
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Shipped ({{ shipped.length }})</h2>
+			<h2 class="ri_datatable_head ship_sectionhead">{{ $t('Commons.heading.shipped') }}{{ shipped.length }})</h2>
 			<p class="ship_hint">{{ $t('Pages.text.left_the_dock_waiting', {}) }}</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
@@ -365,11 +365,11 @@ export default {
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Delivered — Pending Review ({{ delivered.length }})</h2>
+			<h2 class="ri_datatable_head ship_sectionhead">{{ $t('Pages.heading.delivered_pending_review') }}{{ delivered.length }})</h2>
 			<p class="ship_hint">{{ $t('Pages.text.signed_bol_uploaded_by', {}) }}</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>{{ $t('Commons.text.order', {}) }}</th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.text.driver', {}) }}</th><th>Delivered</th><th></th></tr>
+					<tr><th>{{ $t('Commons.text.order', {}) }}</th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.text.driver', {}) }}</th><th>{{ $t('Commons.text.delivered', {}) }}</th><th></th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="order in delivered" :key="order.id">
@@ -383,11 +383,11 @@ export default {
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Delivered — Waiting on BOL ({{ awaitingBol.length }})</h2>
+			<h2 class="ri_datatable_head ship_sectionhead">{{ $t('Pages.heading.delivered_waiting_on_bol') }}{{ awaitingBol.length }})</h2>
 			<p class="ship_hint">{{ $t('Pages.text.delivered_but_the_uploaded', {}) }}</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
-					<tr><th>{{ $t('Commons.text.order', {}) }}</th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.text.driver', {}) }}</th><th>Rejected</th><th>{{ $t('Commons.text.reason', {}) }}</th></tr>
+					<tr><th>{{ $t('Commons.text.order', {}) }}</th><th>{{ $t('Commons.text.partner', {}) }}</th><th>{{ $t('Commons.text.driver', {}) }}</th><th>{{ $t('Commons.text.rejected', {}) }}</th><th>{{ $t('Commons.text.reason', {}) }}</th></tr>
 				</thead>
 				<tbody>
 					<tr v-for="order in awaitingBol" :key="order.id">
@@ -401,7 +401,7 @@ export default {
 				</tbody>
 			</table></div>
 
-			<h2 class="ri_datatable_head ship_sectionhead">Recently Completed ({{ completed.length }})</h2>
+			<h2 class="ri_datatable_head ship_sectionhead">{{ $t('Pages.heading.recently_completed') }}{{ completed.length }})</h2>
 			<p class="ship_hint">{{ $t('Pages.text.signed_bol_approved_most', {}) }}</p>
 			<div class="ship_tablewrap"><table class="ri_datatable" border="1">
 				<thead>
@@ -461,7 +461,7 @@ export default {
 						</div>
 					</div>
 					<div v-else class="ship_reviewactions">
-						<button class="ship_rejectbutton ri_defaultbutton" @click="showRejectForm = true">Reject</button>
+						<button class="ship_rejectbutton ri_defaultbutton" @click="showRejectForm = true">{{ $t('Commons.button.reject', {}) }}</button>
 						<button class="ri_defaultbutton" :disabled="reviewApproving" @click="approveReview">
 							{{ reviewApproving ? $t('Pages.button.approving') : (hasCropSelection ? $t('Commons.button.approve_cropped') : $t('Commons.button.approve')) }}
 						</button>
@@ -515,7 +515,7 @@ export default {
 					<tr v-if="!drivers.length"><td colspan="4" class="ship_empty">{{ $t('Pages.text.no_drivers_in_the', {}) }}</td></tr>
 				</tbody>
 			</table></div>
-			<p class="ship_hint">Give a driver their phone number + PIN so they can sign into <a href="/driver-portal">{{ $t('Pages.link.the_driver_portal', {}) }}</a> {{ $t('Pages.text.and_upload_a_signed', {}) }}</p>
+			<p class="ship_hint">{{ $t('Pages.text.give_a_driver_their', {}) }} <a href="/driver-portal">{{ $t('Pages.link.the_driver_portal', {}) }}</a> {{ $t('Pages.text.and_upload_a_signed', {}) }}</p>
 		</div>
 	</AuthenticatedLayout>
 </template>
