@@ -6,6 +6,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
+use App\Support\MenuText;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -36,6 +37,12 @@ class MenuController extends Controller
             $page->setRelation('menuItems', $page->menuItems->filter(
                 fn ($item) => ! $item->permission_key || isset($allowed[$item->permission_key])
             )->values());
+        });
+
+        // link_text is seeded English (upstream-compatible); the dashboard tiles are
+        // display-only, so translate at presentation (app/Support/MenuText, lang/*/menu.php).
+        $pages->each(function ($page) {
+            $page->menuItems->each(fn ($item) => $item->link_text = MenuText::translate($item->link_text));
         });
 
         // Return the data as a JSON response

@@ -5,6 +5,7 @@
 
 namespace App\Models;
 
+use App\Support\MenuText;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -45,9 +46,11 @@ class MenuItem extends Model
 
         // A page can exist without a menu entry (reachable by URL only, e.g. /pallet-management): show its
         // path-derived name rather than crashing the page render.
+        // link_text and menu_title are seeded English (upstream-compatible); the
+        // breadcrumb is display-only, so both go through MenuText (menu.php locale).
         $breadcrumbs = [[
             'href' => $url,
-            'title' => $menuItem?->link_text ?? Str::headline(basename($url)),
+            'title' => MenuText::translate($menuItem?->link_text ?? Str::headline(basename($url))),
         ]];
 
         $page = $menuItem?->page;
@@ -56,7 +59,7 @@ class MenuItem extends Model
 
             array_unshift($breadcrumbs, [
                 'href' => '/dashboard#'.$page->hashtag,
-                'title' => $page->menu_title,
+                'title' => MenuText::translate($page->menu_title),
             ]);
 
             $linkingmenu = self::where('link_url', '#'.$page->hashtag)->first();

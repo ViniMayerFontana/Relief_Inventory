@@ -22,6 +22,10 @@ Tom: profissional, logístico, adequado a operações de defesa civil e governo.
 | This page isn't set up yet | Esta página ainda não está configurada | `<h1>` da página de erro |
 | dashboard | painel/dashboard | "dashboard do Cloudflare" quando referente ao produto |
 
+## Tiles/breadcrumbs de menu (dado semeado — camada de apresentação, 2026-11-18)
+
+`menu_items.link_text` e `pages.menu_title` ficam em inglês no banco (compatibilidade upstream); a tradução é feita na apresentação por `App\Support\MenuText` via `lang/pt_BR/menu.php` (chave = Str::slug do texto EN; texto sem chave renderiza em inglês). Tile → Exibir como: Shipping→Expedição · Donation Sorting→Triagem de doações · Order Entry→Entrada de pedidos · Order Filling→Atendimento de pedidos · Inventory Movement→Movimentação de estoque · Receiving→Recebimento · Sign-in Kiosk→Quiosque de acesso · Training Warehouse→Armazém de treinamento · Instance Admin→Administração da instância · Warehouse Dashboard→Painel do armazém · Situation Report→Relatório de situação · Partner Report→Relatório de parceiros · Driver Portal→Portal do motorista · Print Queue→Fila de impressão · Return→Voltar · Help→Ajuda (lista completa no próprio menu.php).
+
 ## Limitações conhecidas da CLI `@ai-localizer/cli` v0.1.1 (achadas no piloto 2026-11-09)
 
 1. **Falso positivo**: o comando `docker compose up -d` virou chave
