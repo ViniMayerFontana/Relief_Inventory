@@ -62,6 +62,8 @@ return [
     'unfulfilled-requests' => 'Solicitações não atendidas',
     'user-activity' => 'Atividade de usuários',
     'user-administration' => 'Administração de usuários',
+    'warehouse-administration' => 'Administração do armazém',
+    'system-administration' => 'Administração do sistema',
     'warehouse-backups' => 'Backups do armazém',
     'warehouse-dashboard' => 'Painel do armazém',
 ];

@@ -1,3 +1,9 @@
+/**
+ * BACKUP EN (não-executável) — migration 2026_09_09_000000_add_more_default_ordering_units
+ * movida integralmente para cá na migração pt-BR (2026-11-19); substituída por
+ * 2026_11_19_000003_seed_ordering_units_extra_pt_br.php. Fica em disabled_en/ e
+ * nunca é carregada pelo migrator (glob não-recursivo).
+ */
 <?php
 
 use Illuminate\Database\Migrations\Migration;

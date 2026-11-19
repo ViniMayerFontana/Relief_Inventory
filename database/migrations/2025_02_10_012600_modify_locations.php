@@ -20,12 +20,9 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Insert predefined use types
-        DB::table('uses')->insert([
-            ['use' => 'Staging', 'created_at' => now(), 'updated_at' => now()],
-            ['use' => 'Long-Term Storage', 'created_at' => now(), 'updated_at' => now()],
-            ['use' => 'Sorting', 'created_at' => now(), 'updated_at' => now()],
-        ]);
+        // Os usos pré-definidos migram para pt-BR em
+        // 2026_11_19_000002_seed_location_uses_pt_br.php (legado EN em
+        // disabled_en/backup_en_uses.php).
 
         // Modify the "locations" table
         Schema::table('locations', function (Blueprint $table) {

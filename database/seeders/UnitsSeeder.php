@@ -15,41 +15,43 @@ class UnitsSeeder extends Seeder
      */
     public function run(): void
     {
-        // Sample data for the `items` table
+        // Sample data for the `items` table — pt-BR (2026-11-19): apenas o
+        // campo `name` é traduzido; `abbreviation` e `type` são técnicos
+        // (referenciados por selects/relatórios e pela UI) e permanecem.
         $units = [
             [
                 'abbreviation' => 'lb',
-                'name' => 'pound',
+                'name' => 'libra',
                 'type' => 'weight',
             ],
             [
                 'abbreviation' => 'oz',
-                'name' => 'ounce',
+                'name' => 'onça',
                 'type' => 'weight',
             ],
             [
                 'abbreviation' => 'kg',
-                'name' => 'kilogram',
+                'name' => 'quilograma',
                 'type' => 'weight',
             ],
             [
                 'abbreviation' => 'g',
-                'name' => 'gram',
+                'name' => 'grama',
                 'type' => 'weight',
             ],
             [
                 'abbreviation' => 'gal',
-                'name' => 'gallon',
+                'name' => 'galão',
                 'type' => 'volume',
             ],
             [
                 'abbreviation' => 'each',
-                'name' => 'each',
+                'name' => 'unidade',
                 'type' => 'each',
             ],
             [
                 'abbreviation' => 'unknown',
-                'name' => 'unknown',
+                'name' => 'desconhecida',
                 'type' => 'other',
             ],
         ];

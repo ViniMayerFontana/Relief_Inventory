@@ -1,3 +1,9 @@
+/**
+ * BACKUP EN (não-executável) — migration 2026_08_30_120007_seed_partner_intake_form
+ * movida integralmente para cá na migração pt-BR (2026-11-19); substituída por
+ * 2026_11_19_000008_seed_partner_intake_form_pt_br.php. Fica em disabled_en/ e
+ * nunca é carregada pelo migrator (glob não-recursivo).
+ */
 <?php
 
 // This file is part of the Relief Inventory Project (https://reliefinventory.app)

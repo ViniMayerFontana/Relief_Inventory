@@ -39,10 +39,13 @@ class MenuController extends Controller
             )->values());
         });
 
-        // link_text is seeded English (upstream-compatible); the dashboard tiles are
-        // display-only, so translate at presentation (app/Support/MenuText, lang/*/menu.php).
+        // link_text and group_label are seeded English (upstream-compatible); the dashboard
+        // tiles are display-only, so translate at presentation (app/Support/MenuText, lang/*/menu.php).
         $pages->each(function ($page) {
-            $page->menuItems->each(fn ($item) => $item->link_text = MenuText::translate($item->link_text));
+            $page->menuItems->each(function ($item) {
+                $item->link_text = MenuText::translate($item->link_text);
+                $item->group_label = $item->group_label ? MenuText::translate($item->group_label) : null;
+            });
         });
 
         // Return the data as a JSON response

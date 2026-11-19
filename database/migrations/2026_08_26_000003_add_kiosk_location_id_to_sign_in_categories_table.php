@@ -39,14 +39,9 @@ return new class extends Migration
             $table->unique(['kiosk_location_id', 'name']);
         });
 
-        foreach (['Maintenance/Repair', 'FEMA', 'State'] as $name) {
-            DB::table('sign_in_categories')->insertOrIgnore([
-                'kiosk_location_id' => 1,
-                'name' => $name,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-        }
+        // Os Guest Types iniciais migram para pt-BR em
+        // 2026_11_19_000004_seed_sign_in_categories_pt_br.php (legado EN em
+        // disabled_en/backup_en_sign_in_categories.php).
     }
 
     public function down(): void
