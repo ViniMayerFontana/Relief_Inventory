@@ -175,3 +175,10 @@ Dívidas documentadas da fase (todas não bloqueantes): relatório completo em `
 - **Menu:** NÃO migrar — MenuText (lang/pt_BR/menu.php por slug EN) já traduz link_text/menu_title na apresentação; wheres por link_text em migrations posteriores reforçam manter EN. Lacunas: menu_items.group_label não passa pelo MenuText (lead estende MenuController/menu.php); pages.text não existe no schema atual.
 - **Novos arquivos:** 8 migrations 2026_11_19_000001–000008 + 5 backups em disabled_en + UnitsSeeder pt. php -l 17/17.
 - **Reativação do EN NÃO é `migrate --path=database/migrations/disabled_en`** (os backups não são migrations executáveis e o padrão `*_*.php` os carregaria com erro fatal): restaurar os originais via git (histórico anterior aos moves) e remover as migrations pt 2026_11_19_*.
+
+### Fix do reset (2026-11-19, commitado pelo lead) — 3 bugs de SHAPE nas migrations pt
+
+- **000001 presets:** `options` ia como array PHP via `DB::table` (sem cast do Model) → "Array to string conversion"; corrigido com `json_encode`. **Regra: via DB::table, todo campo JSON precisa de json_encode explícito.**
+- **000003 units extras:** inseria `created_at/updated_at` que a tabela `units` não tem; voltou ao shape exato do legado EN.
+- **000007 itemtype Unknown:** usava `item_number` que não existe no schema reconstruído do `itemtypes`; corrigido para update por `name='Unknown'` (display, sem refs lógicas; no-op natural no fresh porque o insert EN é condicional e antecede o seeder de categorias).
+- **LIÇÃO registrada pelo lead:** em migration de dados, copiar o SHAPE EXATO de colunas do arquivo original (ou validar com SHOW COLUMNS em banco vivo) — os 3 bugs eram disso. Backups pré-reset preservados em `backups/pre_ptbr_seed_reset/`.
