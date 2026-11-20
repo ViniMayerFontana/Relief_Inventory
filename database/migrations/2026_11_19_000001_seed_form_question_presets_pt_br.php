@@ -38,6 +38,10 @@ return new class extends Migration
     public function up(): void
     {
         foreach (self::PRESETS as $preset) {
+            // DB::table bypasses the model's JSON cast on `options`, so encode here.
+            if (array_key_exists('options', $preset)) {
+                $preset['options'] = json_encode($preset['options']);
+            }
             DB::table('form_question_presets')->insert(array_merge($preset, [
                 'created_at' => now(),
                 'updated_at' => now(),

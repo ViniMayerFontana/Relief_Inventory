@@ -24,12 +24,8 @@ return new class extends Migration
 
     public function up(): void
     {
-        foreach (self::UNITS as $unit) {
-            DB::table('units')->insertOrIgnore(array_merge($unit, [
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]));
-        }
+        // Mesmas colunas do legado EN (a tabela units não tem timestamps).
+        DB::table('units')->insertOrIgnore(self::UNITS);
     }
 
     public function down(): void
