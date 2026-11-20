@@ -17,7 +17,7 @@ return new class extends Migration
     {
         MenuItem::create([
             'page_id' => 1,
-            'link_text' => 'Print Queue',
+            'link_text' => 'Fila de impressão',
             'link_url' => '/print-queue',
             'graphic_url' => '/img/printing-reports.webp',
             'order' => 58,

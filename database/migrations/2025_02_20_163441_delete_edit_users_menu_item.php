@@ -20,7 +20,7 @@ return new class extends Migration
     {
         DB::table('menu_items')->insert([
             'page_id' => 3,
-            'link_text' => 'Edit Users',
+            'link_text' => 'Editar usuários',
             'link_url' => '/setup/users',
             'submenu_page_id' => null,
             'graphic_url' => '/img/edit-users-icon.webp',

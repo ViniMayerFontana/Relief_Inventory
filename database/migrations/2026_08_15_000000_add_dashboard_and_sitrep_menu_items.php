@@ -15,7 +15,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $reportsMenu->id,
-            'link_text' => 'Warehouse Dashboard',
+            'link_text' => 'Painel do armazém',
             'link_url' => '/reports/dashboard',
             'graphic_url' => '/img/warehouse.webp',
             'order' => 5,
@@ -24,7 +24,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $reportsMenu->id,
-            'link_text' => 'Situation Report',
+            'link_text' => 'Relatório de situação',
             'link_url' => '/reports/sitrep',
             'graphic_url' => '/img/printing-reports.webp',
             'order' => 6,

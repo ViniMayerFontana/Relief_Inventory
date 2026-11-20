@@ -18,7 +18,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $sibling->page_id,
-            'link_text' => 'Carton Barcodes',
+            'link_text' => 'Códigos de barras de caixas',
             'link_url' => '/setup/carton-codes',
             'graphic_url' => $sibling->graphic_url,
             'order' => $sibling->order + 1,

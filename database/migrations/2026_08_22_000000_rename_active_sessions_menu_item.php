@@ -11,7 +11,7 @@ return new class extends Migration
     public function up(): void
     {
         MenuItem::where('link_url', '/setup/active-sessions')->update([
-            'link_text' => 'User Activity',
+            'link_text' => 'Atividade de usuários',
         ]);
     }
 

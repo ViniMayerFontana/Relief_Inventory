@@ -1,0 +1,33 @@
+BACKUP EN integral (pré-tradução na fonte, 2026-11-19) de 2025_02_20_163441_delete_edit_users_menu_item.php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        DB::table('menu_items')->where('link_url', '/setup/users')->delete();
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        DB::table('menu_items')->insert([
+            'page_id' => 3,
+            'link_text' => 'Editar usuários',
+            'link_url' => '/setup/users',
+            'submenu_page_id' => null,
+            'graphic_url' => '/img/edit-users-icon.webp',
+            'order' => 50,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    }
+};

@@ -18,7 +18,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $sibling->page_id,
-            'link_text' => 'Sorting Area',
+            'link_text' => 'Área de triagem',
             'link_url' => '/reports/sorting-area',
             'graphic_url' => '/img/printing-reports.webp',
             'order' => 26,

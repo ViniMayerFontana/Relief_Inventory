@@ -22,7 +22,7 @@ return new class extends Migration
         // Between Trust Console (68) and Feedback & Bug Reports (70).
         MenuItem::create([
             'page_id' => $setup->id,
-            'link_text' => 'Signs',
+            'link_text' => 'Placas',
             'link_url' => '/setup/signs',
             'graphic_url' => '/img/signs-icon.webp',
             'order' => 69,

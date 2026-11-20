@@ -17,7 +17,7 @@ return new class extends Migration
         // anyone without admin-system — hidden, not grayed out.
         MenuItem::create([
             'page_id' => $setupMenu->id,
-            'link_text' => 'System Administration',
+            'link_text' => 'Administração do sistema',
             'link_url' => '/setup/system',
             'graphic_url' => '/img/settings-icon.webp',
             'order' => 60,

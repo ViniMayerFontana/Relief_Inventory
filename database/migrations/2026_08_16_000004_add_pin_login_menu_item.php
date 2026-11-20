@@ -25,7 +25,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $setupMenu->id,
-            'link_text' => 'PIN Login',
+            'link_text' => 'Login por PIN',
             'link_url' => '/setup/pin-login',
             'graphic_url' => '/img/edit-padlock-icon.webp',
             'order' => 65,

@@ -26,11 +26,11 @@ return new class extends Migration
     public function up(): void
     {
         MenuItem::whereIn('link_url', self::WAREHOUSE_ITEMS)->update([
-            'group_label' => 'Warehouse Administration',
+            'group_label' => 'Administração do armazém',
         ]);
 
         MenuItem::whereIn('link_url', self::SYSTEM_ITEMS)->update([
-            'group_label' => 'System Administration',
+            'group_label' => 'Administração do sistema',
         ]);
     }
 

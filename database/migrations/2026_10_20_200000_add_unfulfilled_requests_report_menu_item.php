@@ -21,7 +21,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $sibling->page_id,
-            'link_text' => 'Unfulfilled Requests',
+            'link_text' => 'Solicitações não atendidas',
             'link_url' => '/reports/unfulfilled',
             'graphic_url' => '/img/printing-reports.webp',
             'order' => 25,

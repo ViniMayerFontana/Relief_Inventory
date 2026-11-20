@@ -28,7 +28,7 @@ return new class extends Migration
         $devices = MenuItem::where('link_url', '/setup/devices')->first();
         if ($devices && ! MenuItem::where('link_url', '/setup/trust')->exists()) {
             MenuItem::create([
-                'page_id' => $devices->page_id, 'link_text' => 'Trust Console', 'link_url' => '/setup/trust',
+                'page_id' => $devices->page_id, 'link_text' => 'Console de confiança', 'link_url' => '/setup/trust',
                 'graphic_url' => $devices->graphic_url, 'order' => 68, 'group_label' => $devices->group_label,
                 'permission_key' => 'manage-trusts',
             ]);

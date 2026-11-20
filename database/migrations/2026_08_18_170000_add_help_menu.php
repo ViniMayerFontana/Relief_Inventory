@@ -16,7 +16,7 @@ return new class extends Migration
         // Sits between Reports (order 80) and Setup (order 90) on the main menu.
         MenuItem::create([
             'page_id' => $mainMenu->id,
-            'link_text' => 'Help',
+            'link_text' => 'Ajuda',
             'link_url' => '#help',
             'graphic_url' => '/img/reports.webp',
             'order' => 85,
@@ -28,14 +28,14 @@ return new class extends Migration
         // everyone" rule.
         $helpMenu = Page::create([
             'hashtag' => 'help',
-            'menu_title' => 'Help',
-            'header_text' => 'Step-by-Step Guides',
-            'content' => 'Pick a stage of the warehouse workflow for a walkthrough of that page.',
+            'menu_title' => 'Ajuda',
+            'header_text' => 'Guias passo a passo',
+            'content' => 'Escolha uma etapa do fluxo do armazém para ver o passo a passo dessa página.',
         ]);
 
         MenuItem::create([
             'page_id' => $helpMenu->id,
-            'link_text' => 'Receiving',
+            'link_text' => 'Recebimento',
             'link_url' => '/help/receiving',
             'graphic_url' => '/img/donation-entry-icon.webp',
             'order' => 10,
@@ -43,7 +43,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $helpMenu->id,
-            'link_text' => 'Return',
+            'link_text' => 'Voltar',
             'link_url' => '#main',
             'graphic_url' => '/img/back-arrow.webp',
             'order' => 99,

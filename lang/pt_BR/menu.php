@@ -4,11 +4,12 @@
 // Licensed under the GNU GPL v. 3. See LICENSE.md for details
 
 /*
- * Presentation translations for menu text seeded in English into the database
- * (`menu_items.link_text`, `pages.menu_title`) — looked up by slug via
- * App\Support\MenuText. Keys are Str::slug() of the English text, so the seed
- * data itself stays upstream-compatible: a new menu item renders in English
- * until a key is added here. Choices follow dev/notes/I18N_GLOSSARY.md.
+ * Traduções de apresentação do texto de menu. DESDE 2026-11-19 os seeds
+ * (`menu_items.link_text`, `pages.menu_title`/`header_text`/`content`)
+ * nascem em pt-BR na fonte — este arquivo é agora um FALLBACK para installs
+ * antigas (banco ainda EN), consultado por slug via App\Support\MenuText.
+ * Keys são Str::slug() do texto EN. Escolhas seguem
+ * dev/notes/I18N_GLOSSARY.md.
  */
 
 return [

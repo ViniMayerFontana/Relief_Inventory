@@ -11,14 +11,14 @@ return new class extends Migration
     public function up(): void
     {
         MenuItem::where('link_url', '/setup/system')->update([
-            'link_text' => 'Updates & Backups',
+            'link_text' => 'Atualizações e backups',
         ]);
     }
 
     public function down(): void
     {
         MenuItem::where('link_url', '/setup/system')->update([
-            'link_text' => 'System Administration',
+            'link_text' => 'Administração do sistema',
         ]);
     }
 };

@@ -21,7 +21,7 @@ return new class extends Migration
             $table->dropColumn(['enabled', 'enabled_at', 'enabled_by', 'reset_point_file', 'reset_point_at']);
         });
 
-        DB::table('menu_items')->where('link_url', '/setup/training')->update(['link_text' => 'Training Warehouse']);
+        DB::table('menu_items')->where('link_url', '/setup/training')->update(['link_text' => 'Armazém de treinamento']);
 
         if (! TrainingMode::active()) {
             DB::table('roles')->where('name', TrainingMode::ROLE)->update(['visible_in_user_admin' => false]);

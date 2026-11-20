@@ -15,7 +15,7 @@ return new class extends Migration
         $reports = DB::table('pages')->where('hashtag', 'reports')->value('id');
         if ($reports && ! DB::table('menu_items')->where('link_url', '/reports/mailing-labels')->exists()) {
             DB::table('menu_items')->insert([
-                'page_id' => $reports, 'link_text' => 'Mailing Labels', 'link_url' => '/reports/mailing-labels',
+                'page_id' => $reports, 'link_text' => 'Etiquetas de correspondência', 'link_url' => '/reports/mailing-labels',
                 'graphic_url' => '/img/printing-reports.webp', 'order' => 65, 'permission_key' => 'manage-people',
                 'created_at' => now(), 'updated_at' => now(),
             ]);

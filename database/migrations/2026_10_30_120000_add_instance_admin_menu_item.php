@@ -19,12 +19,12 @@ return new class extends Migration
             return;
         }
 
-        $system->update(['link_text' => 'Warehouse Backups']);
+        $system->update(['link_text' => 'Backups do armazém']);
 
         if (! MenuItem::where('link_url', '/setup/instance')->exists()) {
             MenuItem::create([
                 'page_id' => $system->page_id,
-                'link_text' => 'Instance Admin',
+                'link_text' => 'Administração da instância',
                 'link_url' => '/setup/instance',
                 'graphic_url' => $system->graphic_url,
                 'order' => $system->order - 1,
@@ -37,6 +37,6 @@ return new class extends Migration
     public function down(): void
     {
         MenuItem::where('link_url', '/setup/instance')->delete();
-        MenuItem::where('link_url', '/setup/system')->update(['link_text' => 'Updates & Backups']);
+        MenuItem::where('link_url', '/setup/system')->update(['link_text' => 'Atualizações e backups']);
     }
 };

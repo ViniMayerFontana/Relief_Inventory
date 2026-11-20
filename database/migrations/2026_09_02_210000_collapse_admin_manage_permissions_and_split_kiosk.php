@@ -98,8 +98,8 @@ return new class extends Migration
 
         DB::table('menu_items')
             ->where('link_url', '/volunteers/kiosk')
-            ->where('link_text', 'Volunteer Kiosk')
-            ->update(['link_text' => 'Sign-in Kiosk', 'permission_key' => 'operate-kiosk']);
+            ->where('link_text', 'Quiosque de voluntários')
+            ->update(['link_text' => 'Quiosque de acesso', 'permission_key' => 'operate-kiosk']);
 
         DB::table('menu_items')
             ->where('link_url', '/setup/kiosk-settings')
@@ -114,8 +114,8 @@ return new class extends Migration
 
         DB::table('menu_items')
             ->where('link_url', '/volunteers/kiosk')
-            ->where('link_text', 'Sign-in Kiosk')
-            ->update(['link_text' => 'Volunteer Kiosk', 'permission_key' => 'operate-volunteer-kiosk']);
+            ->where('link_text', 'Quiosque de acesso')
+            ->update(['link_text' => 'Quiosque de voluntários', 'permission_key' => 'operate-volunteer-kiosk']);
 
         DB::table('permissions')->where('key', 'manage-kiosk')->delete();
 

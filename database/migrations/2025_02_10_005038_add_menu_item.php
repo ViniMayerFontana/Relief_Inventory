@@ -12,7 +12,7 @@ return new class extends Migration
     {
         MenuItem::create([
             'page_id' => 3,
-            'link_text' => 'Edit Location Names',
+            'link_text' => 'Editar nomes de localizações',
             'link_url' => '/setup/locations',
             'graphic_url' => '/img/edit-statuses-icon.webp',
             'order' => 33,

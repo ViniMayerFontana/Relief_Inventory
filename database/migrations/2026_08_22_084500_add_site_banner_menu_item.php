@@ -18,11 +18,11 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $setupMenu->id,
-            'link_text' => 'Site Banner',
+            'link_text' => 'Banner do site',
             'link_url' => '/setup/banner',
             'graphic_url' => '/img/settings-icon.webp',
             'order' => 68,
-            'group_label' => 'System Administration',
+            'group_label' => 'Administração do sistema',
             'permission_key' => 'manage-feedback',
         ]);
     }

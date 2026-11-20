@@ -15,7 +15,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $helpMenu->id,
-            'link_text' => 'Sorting',
+            'link_text' => 'Triagem',
             'link_url' => '/help/sorting',
             'graphic_url' => '/img/donation-sorting-icon.webp',
             'order' => 20,

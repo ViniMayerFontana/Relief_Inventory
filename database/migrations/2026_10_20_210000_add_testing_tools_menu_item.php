@@ -18,7 +18,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $sibling->page_id,
-            'link_text' => 'Testing Tools',
+            'link_text' => 'Ferramentas de teste',
             'link_url' => '/setup/testing',
             'graphic_url' => $sibling->graphic_url,
             'order' => $sibling->order + 1,

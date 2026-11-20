@@ -182,3 +182,11 @@ Dívidas documentadas da fase (todas não bloqueantes): relatório completo em `
 - **000003 units extras:** inseria `created_at/updated_at` que a tabela `units` não tem; voltou ao shape exato do legado EN.
 - **000007 itemtype Unknown:** usava `item_number` que não existe no schema reconstruído do `itemtypes`; corrigido para update por `name='Unknown'` (display, sem refs lógicas; no-op natural no fresh porque o insert EN é condicional e antecede o seeder de categorias).
 - **LIÇÃO registrada pelo lead:** em migration de dados, copiar o SHAPE EXATO de colunas do arquivo original (ou validar com SHOW COLUMNS em banco vivo) — os 3 bugs eram disso. Backups pré-reset preservados em `backups/pre_ptbr_seed_reset/`.
+
+### Fonte pt-BR nos seeds de menu (2026-11-19, diretriz do usuário — prevalece sobre MenuText)
+
+- pages/menu_items agora NASCEM pt-BR na fonte: fill_menu_tables + ~40 migrations de menu com link_text/menu_title/header_text/content/group_label traduzidos (valores exatos de lang/pt_BR/menu.php + novos: Relatório de clientes, Etiquetas de impressão, Atualizações e backups, Arquivos de backup, Quem está conectado, Quiosque de voluntários, Modo de treinamento, Guias passo a passo).
+- Wheres por link_text em renames (2026_10_14, 2026_09_02_201632, 2026_09_02_210000) convertidos para link_url ou alinhados aos valores pt da própria chain (valores intermediários EN nunca existem mais). 2026_09_02_201632 é no-op histórico (where com /volunteers/kiosk?enable=1 não casa desde o revert 2026_08_24_130000 — pré-existente, não tocado).
+- MenuText NÃO removido: vira fallback para installs antigas (banco EN); header do lang/pt_BR/menu.php atualizado. group_label agora também nasce pt (Administração do armazém/sistema).
+- Teste atualizado: BreadcrumbTest espera Quiosque de acesso (valor pt final da chain). Pallet Management (fallback Str::headline, sem registro) intocado. HelpGuidePdfTest usa constantes de código — intocado.
+- Backups EN integrais: disabled_en/backup_en_menu_<nome>.php (~40 arquivos).

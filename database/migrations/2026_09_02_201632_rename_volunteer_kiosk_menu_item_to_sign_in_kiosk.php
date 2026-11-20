@@ -16,14 +16,14 @@ return new class extends Migration
     public function up(): void
     {
         MenuItem::where('link_url', '/volunteers/kiosk?enable=1')
-            ->where('link_text', 'Volunteer Kiosk')
-            ->update(['link_text' => 'Sign-in Kiosk']);
+            ->where('link_text', 'Quiosque de voluntários')
+            ->update(['link_text' => 'Quiosque de acesso']);
     }
 
     public function down(): void
     {
         MenuItem::where('link_url', '/volunteers/kiosk?enable=1')
-            ->where('link_text', 'Sign-in Kiosk')
-            ->update(['link_text' => 'Volunteer Kiosk']);
+            ->where('link_text', 'Quiosque de acesso')
+            ->update(['link_text' => 'Quiosque de voluntários']);
     }
 };

@@ -24,21 +24,21 @@ return new class extends Migration
     {
         MenuItem::create([
             'page_id' => 3,
-            'link_text' => 'Default Ordering Units',
+            'link_text' => 'Unidades de pedido padrão',
             'link_url' => '/setup/units',
             'graphic_url' => '/img/edit-statuses-icon.webp',
             'order' => 34,
-            'group_label' => 'Warehouse Administration',
+            'group_label' => 'Administração do armazém',
             'permission_key' => 'manage-units',
         ]);
 
         MenuItem::create([
             'page_id' => 3,
-            'link_text' => 'Package Types',
+            'link_text' => 'Tipos de embalagem',
             'link_url' => '/setup/package-types',
             'graphic_url' => '/img/edit-statuses-icon.webp',
             'order' => 35,
-            'group_label' => 'Warehouse Administration',
+            'group_label' => 'Administração do armazém',
             'permission_key' => 'manage-packagetypes',
         ]);
     }

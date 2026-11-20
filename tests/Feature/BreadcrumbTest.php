@@ -15,7 +15,7 @@ test('the breadcrumb still finds a menu item whose link_url carries a query stri
 
     $breadcrumb = MenuItem::getBreadcrumb('/volunteers/kiosk');
 
-    expect(collect($breadcrumb)->last())->toBe(['href' => '/volunteers/kiosk', 'title' => 'Sign-in Kiosk']);
+    expect(collect($breadcrumb)->last())->toBe(['href' => '/volunteers/kiosk', 'title' => 'Quiosque de acesso']);
 });
 
 test('a page with no menu entry still gets a breadcrumb instead of crashing', function () {

@@ -36,12 +36,12 @@ return new class extends Migration
         $devices = MenuItem::where('link_url', '/setup/devices')->first();
         if ($devices) {
             MenuItem::create([
-                'page_id' => $devices->page_id, 'link_text' => 'R Station Firmware', 'link_url' => '/setup/firmware',
+                'page_id' => $devices->page_id, 'link_text' => 'Firmware R Station', 'link_url' => '/setup/firmware',
                 'graphic_url' => $devices->graphic_url, 'order' => 66, 'group_label' => $devices->group_label,
                 'permission_key' => 'manage-firmware',
             ]);
             MenuItem::create([
-                'page_id' => $devices->page_id, 'link_text' => 'Printers', 'link_url' => '/setup/printers',
+                'page_id' => $devices->page_id, 'link_text' => 'Impressoras', 'link_url' => '/setup/printers',
                 'graphic_url' => '/img/printing-reports.webp', 'order' => 67, 'group_label' => $devices->group_label,
                 'permission_key' => 'manage-devices',
             ]);

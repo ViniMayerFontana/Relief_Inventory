@@ -9,13 +9,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::table('menu_items')->where('link_url', '/setup/devices')->where('link_text', 'Kiosk Devices')
-            ->update(['link_text' => 'R Station Devices']);
+        DB::table('menu_items')->where('link_url', '/setup/devices')
+            ->update(['link_text' => 'Dispositivos R Station']);
     }
 
     public function down(): void
     {
-        DB::table('menu_items')->where('link_url', '/setup/devices')->where('link_text', 'R Station Devices')
-            ->update(['link_text' => 'Kiosk Devices']);
+        DB::table('menu_items')->where('link_url', '/setup/devices')
+            ->update(['link_text' => 'Dispositivos R Station']);
     }
 };

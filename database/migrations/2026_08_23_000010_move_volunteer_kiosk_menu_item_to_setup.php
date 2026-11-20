@@ -24,7 +24,7 @@ return new class extends Migration
 
         MenuItem::where('link_url', '/volunteers/kiosk')->update([
             'page_id' => $setupMenu->id,
-            'group_label' => 'System Administration',
+            'group_label' => 'Administração do sistema',
             'order' => 63,
         ]);
     }

@@ -29,7 +29,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $mainMenu->id,
-            'link_text' => 'Help',
+            'link_text' => 'Ajuda',
             'link_url' => '#help',
             'graphic_url' => '/img/help-icon.webp',
             'order' => 85,
@@ -37,14 +37,14 @@ return new class extends Migration
 
         $help = Page::create([
             'hashtag' => 'help',
-            'menu_title' => 'Help',
-            'header_text' => 'Step-by-Step Guides',
-            'content' => 'Pick a stage of the warehouse workflow for a walkthrough of that page.',
+            'menu_title' => 'Ajuda',
+            'header_text' => 'Guias passo a passo',
+            'content' => 'Escolha uma etapa do fluxo do armazém para ver o passo a passo dessa página.',
         ]);
 
-        foreach ([['Receiving', '/help/receiving', '/img/donation-entry-icon.webp', 10],
-            ['Sorting', '/help/sorting', '/img/donation-sorting-icon.webp', 20],
-            ['Return', '#main', '/img/back-arrow.webp', 99]] as [$text, $url, $img, $order]) {
+        foreach ([['Recebimento', '/help/receiving', '/img/donation-entry-icon.webp', 10],
+            ['Triagem', '/help/sorting', '/img/donation-sorting-icon.webp', 20],
+            ['Voltar', '#main', '/img/back-arrow.webp', 99]] as [$text, $url, $img, $order]) {
             MenuItem::create(['page_id' => $help->id, 'link_text' => $text, 'link_url' => $url, 'graphic_url' => $img, 'order' => $order]);
         }
     }

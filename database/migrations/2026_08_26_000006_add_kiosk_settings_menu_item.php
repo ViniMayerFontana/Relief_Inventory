@@ -20,7 +20,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $kioskTile->page_id,
-            'link_text' => 'Kiosk Settings',
+            'link_text' => 'Configurações do quiosque',
             'link_url' => '/setup/kiosk-settings',
             'graphic_url' => '/img/edit-users-icon.webp',
             'order' => 64,

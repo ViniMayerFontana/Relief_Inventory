@@ -24,7 +24,7 @@ return new class extends Migration
 
         if ($existing) {
             $existing->update([
-                'link_text' => 'User Administration',
+                'link_text' => 'Administração de usuários',
                 'permission_key' => 'manage-users',
             ]);
 
@@ -35,7 +35,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $setupMenu->id,
-            'link_text' => 'User Administration',
+            'link_text' => 'Administração de usuários',
             'link_url' => '/setup/users',
             'graphic_url' => '/img/edit-users-icon.webp',
             'order' => 50,
@@ -46,7 +46,7 @@ return new class extends Migration
     public function down(): void
     {
         MenuItem::where('link_url', '/setup/users')->update([
-            'link_text' => 'Edit Users',
+            'link_text' => 'Editar usuários',
             'permission_key' => 'general-access',
         ]);
     }

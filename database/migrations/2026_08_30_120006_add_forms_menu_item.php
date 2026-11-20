@@ -21,11 +21,11 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $setupMenu->id,
-            'link_text' => 'Forms & Surveys',
+            'link_text' => 'Formulários e pesquisas',
             'link_url' => '/setup/forms',
             'graphic_url' => '/img/settings-icon.webp',
             'order' => 71,
-            'group_label' => 'System Administration',
+            'group_label' => 'Administração do sistema',
             'permission_key' => 'manage-forms',
         ]);
     }

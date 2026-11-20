@@ -38,7 +38,7 @@ return new class extends Migration
         $system = MenuItem::where('link_url', '/setup/system')->first();
         if ($system && ! MenuItem::where('link_url', '/setup/backups')->exists()) {
             MenuItem::create([
-                'page_id' => $system->page_id, 'link_text' => 'Backup Files', 'link_url' => '/setup/backups',
+                'page_id' => $system->page_id, 'link_text' => 'Arquivos de backup', 'link_url' => '/setup/backups',
                 'graphic_url' => $system->graphic_url, 'order' => 81, 'group_label' => $system->group_label,
                 'permission_key' => 'manage-backups',
             ]);

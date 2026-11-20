@@ -19,7 +19,7 @@ return new class extends Migration
     {
         MenuItem::create([
             'page_id' => 1,
-            'link_text' => 'Volunteer Kiosk',
+            'link_text' => 'Quiosque de voluntários',
             'link_url' => '/volunteers/kiosk',
             'graphic_url' => '/img/edit-users-icon.webp',
             'order' => 65,

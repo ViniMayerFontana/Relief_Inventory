@@ -9,7 +9,7 @@ return new class extends Migration
     {
         MenuItem::create([
             'page_id' => 1,
-            'link_text' => 'Receiving',
+            'link_text' => 'Recebimento',
             'link_url' => '/receiving',
             'graphic_url' => '/img/donation-entry-icon.webp',
             'order' => 25,

@@ -18,7 +18,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $sibling->page_id,
-            'link_text' => 'Email Settings',
+            'link_text' => 'Configurações de e-mail',
             'link_url' => '/setup/email',
             'graphic_url' => $sibling->graphic_url,
             'order' => $sibling->order - 1,

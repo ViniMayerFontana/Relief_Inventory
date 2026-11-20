@@ -98,7 +98,7 @@ return new class extends Migration
         if ($kioskSettings) {
             MenuItem::create([
                 'page_id' => $kioskSettings->page_id,
-                'link_text' => 'R Station Devices',
+                'link_text' => 'Dispositivos R Station',
                 'link_url' => '/setup/devices',
                 'graphic_url' => '/img/edit-users-icon.webp',
                 'order' => 65,

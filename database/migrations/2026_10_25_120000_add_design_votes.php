@@ -64,7 +64,7 @@ return new class extends Migration
         $setup = DB::table('pages')->where('hashtag', 'setup')->value('id');
         if ($setup && ! DB::table('menu_items')->where('link_url', '/setup/design-votes')->exists()) {
             DB::table('menu_items')->insert([
-                'page_id' => $setup, 'link_text' => 'Design Votes', 'link_url' => '/setup/design-votes',
+                'page_id' => $setup, 'link_text' => 'Votos de design', 'link_url' => '/setup/design-votes',
                 'graphic_url' => '/img/printing-reports.webp', 'order' => 83, 'permission_key' => 'manage-design-votes',
                 'created_at' => now(), 'updated_at' => now(),
             ]);

@@ -30,8 +30,8 @@ return new class extends Migration
             'description' => 'Organization or distribution-site contact receiving relief supplies',
         ]);
 
-        MenuItem::where('link_url', '/reports/customers')->update(['link_text' => 'Partner Report']);
-        MenuItem::where('link_url', '/setup/people')->update(['link_text' => 'Partner & Donor Info']);
+        MenuItem::where('link_url', '/reports/customers')->update(['link_text' => 'Relatório de parceiros']);
+        MenuItem::where('link_url', '/setup/people')->update(['link_text' => 'Informações de parceiros e doadores']);
     }
 
     public function down(): void
@@ -41,7 +41,7 @@ return new class extends Migration
             'description' => 'Person receiving relief supplies',
         ]);
 
-        MenuItem::where('link_url', '/reports/customers')->update(['link_text' => 'Customer Report']);
-        MenuItem::where('link_url', '/setup/people')->update(['link_text' => 'Customer & Donor Info']);
+        MenuItem::where('link_url', '/reports/customers')->update(['link_text' => 'Relatório de clientes']);
+        MenuItem::where('link_url', '/setup/people')->update(['link_text' => 'Informações de clientes e doadores']);
     }
 };

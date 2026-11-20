@@ -16,7 +16,7 @@ return new class extends Migration
     {
         MenuItem::create([
             'page_id' => 1,
-            'link_text' => 'Shipping',
+            'link_text' => 'Expedição',
             'link_url' => '/shipping',
             'graphic_url' => '/img/truck-delivery-icon.webp',
             'order' => 55,
@@ -25,7 +25,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => 1,
-            'link_text' => 'Driver Portal',
+            'link_text' => 'Portal do motorista',
             'link_url' => '/driver-portal',
             'graphic_url' => '/img/truck-box-icon.webp',
             'order' => 57,

@@ -15,7 +15,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $setupMenu->id,
-            'link_text' => 'Feedback & Bug Reports',
+            'link_text' => 'Feedback e relatórios de erros',
             'link_url' => '/setup/feedback',
             'graphic_url' => '/img/settings-icon.webp',
             'order' => 70,

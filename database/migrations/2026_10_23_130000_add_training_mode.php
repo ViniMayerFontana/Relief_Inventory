@@ -96,7 +96,7 @@ return new class extends Migration
         $setup = DB::table('pages')->where('hashtag', 'setup')->value('id');
         if ($setup && ! DB::table('menu_items')->where('link_url', '/setup/training')->exists()) {
             DB::table('menu_items')->insert([
-                'page_id' => $setup, 'link_text' => 'Training Mode', 'link_url' => '/setup/training',
+                'page_id' => $setup, 'link_text' => 'Modo de treinamento', 'link_url' => '/setup/training',
                 'graphic_url' => '/img/help-icon.webp', 'order' => 82, 'permission_key' => 'manage-training',
                 'created_at' => now(), 'updated_at' => now(),
             ]);
@@ -104,7 +104,7 @@ return new class extends Migration
         $reports = DB::table('pages')->where('hashtag', 'reports')->value('id');
         if ($reports && ! DB::table('menu_items')->where('link_url', '/reports/training')->exists()) {
             DB::table('menu_items')->insert([
-                'page_id' => $reports, 'link_text' => 'Training Report Cards', 'link_url' => '/reports/training',
+                'page_id' => $reports, 'link_text' => 'Cartões de relatório de treinamento', 'link_url' => '/reports/training',
                 'graphic_url' => '/img/printing-reports.webp', 'order' => 70, 'permission_key' => 'manage-training',
                 'created_at' => now(), 'updated_at' => now(),
             ]);

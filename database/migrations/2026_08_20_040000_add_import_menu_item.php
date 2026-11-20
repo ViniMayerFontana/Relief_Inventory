@@ -15,7 +15,7 @@ return new class extends Migration
 
         MenuItem::create([
             'page_id' => $setupMenu->id,
-            'link_text' => 'Data Import',
+            'link_text' => 'Importação de dados',
             'link_url' => '/setup/import',
             'graphic_url' => '/img/settings-icon.webp',
             'order' => 72,

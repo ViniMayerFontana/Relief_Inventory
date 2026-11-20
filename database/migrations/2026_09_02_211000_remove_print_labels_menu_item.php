@@ -27,7 +27,7 @@ return new class extends Migration
     {
         DB::table('menu_items')->updateOrInsert(
             ['link_url' => '/reports/labels'],
-            ['page_id' => 2, 'link_text' => 'Print Labels', 'permission_key' => 'manage-items', 'order' => 10]
+            ['page_id' => 2, 'link_text' => 'Etiquetas de impressão', 'permission_key' => 'manage-items', 'order' => 10]
         );
     }
 };

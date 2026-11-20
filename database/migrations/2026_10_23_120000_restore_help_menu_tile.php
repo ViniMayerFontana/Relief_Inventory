@@ -23,7 +23,7 @@ return new class extends Migration
         // Between Reports (70) and Setup (90).
         MenuItem::create([
             'page_id' => $mainMenu->id,
-            'link_text' => 'Help',
+            'link_text' => 'Ajuda',
             'link_url' => '/help',
             'graphic_url' => '/img/help-icon.webp',
             'order' => 85,
