@@ -195,6 +195,10 @@ services:
       - db-data:/var/lib/mysql
       - secrets:/secrets:ro
       - admin-secrets:/admin-secrets:ro
+    # Expose MariaDB to the host (for database clients like DbVisualizer).
+    # 127.0.0.1 keeps it local-only; remove the prefix to allow other machines.
+    ports:
+      - "127.0.0.1:3306:3306"
     depends_on:
       init:
         condition: service_completed_successfully
