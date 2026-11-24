@@ -201,3 +201,30 @@ Dívidas documentadas da fase (todas não bloqueantes): relatório completo em `
 - **Chaves novas:** Commons.text.received_3, Commons.text.receiving, Pages.text.database_plus_files, Pages.text.orders_by_zip_top (EN+pt).
 - **Pendência flaggada (não editada):** FormSubmissions.vue:131 template literal "Moved to …" dentro de interpolação de template (EN residual visível no log de status) — precisa de chave própria com p0; ficou fora do lote por envolver template expression.
 - Patch cumulativo regenerado: `.i18n-cache/cli-patches/core-round4-cumulative.patch` (108.976 bytes, 10/10 probes). Deleções acidentais de arquivos-raiz do clone restauradas antes do diff (não eram mudanças nossas).
+
+## Sessão 2026-11-24 — Lote "100% pt" (transversais + varredura /setup)
+
+- **Print / PDF (7 relatórios):** `Commons.button.print_pdf` = "Imprimir / PDF" → `:label="$t(...)"` no PrintMenu.
+- **Prop defaults congelados (7 componentes! causa raiz do "Select an option"):** `default: t(...)` avaliado 1× no load do módulo → `default: () => t(...)` (por instância) em ChartCanvas (label), ComboBox (select_an_option), BarBreakdownCard (emptyText), PrintMenu (label "Print"), RIForm (newrecordcaption), ScanButton, SearchSelect (placeholder). **Regra: prop default com t() DEVE ser factory function.**
+- **empty-text:** ver lote 2026-11-23 (chaves Reports.Sitrep/Inventory reutilizadas).
+- **Etiquetas dinâmicas:** "Print/Reprint/Print Item Labels (N)" → `Pages.label.print_all_labels/reprint_all_labels/print_item_labels` com {p0}.
+- **Date range:** DonationOffers `<span>to</span>` ×4 → `Commons.text.to` = "a" · ETA header → `Pages.label.eta_date_range` = "ETA (período de datas)" · **Status header mantém "Status"** (decisão de glossário anterior: Situação descartado).
+- **Blade (relatórios PDF):** "donations/orders dated X to Y" (donors/partners/unfulfilled blades) e flow "X to Y, by N" — PENDENTE (blade scope, fazer com __()/reports.php em lote separado, mesmo protocolo do task-8).
+- **Dashboard:** chips de qualidade → keys existentes (Utilizável/Vencido/Descarte/Redirecionado — lead sugeriu "Redirecionada", mantido "Redirecionado" do glossário, reportar) · "View full Inventory Report →" → `Pages.text.view_full_inventory` · links "Receiving"/"Situation Report →" → keys.
+- **DriverPortal:** "Current Loads (N)" → `Pages.heading.current_loads` = "Cargas atuais ({p0})".
+- **People:** prosa staff/login → `Pages.text.staff_login_access` · **checkboxes Partner/Donor (MultiSelect com optionsource /json/roles): PAUSADO — precisa de decisão** (backend traduz display_name no /json/roles como statusLabels, ou prop de label-map no MultiSelect).
+- **RIForm:** "- Details" → `Commons.text.details` = "Detalhes" · "Flagged only" → `Commons.label.flagged_only`.
+- **Receiving modal:** How many?→Quantas? · Container type→Tipo de contêiner (Pages.label.*) · Pallet/Gaylord/Tote mantidos EN (glossário) — confirmado.
+- **FlowReport:** Received ×3 (card, th, dataset do gráfico) → `Commons.text.received` = "Recebido" (chave nova; recebida fem = received_2) · chips outdated/trashed/diverted → keys existentes · "cut at allocation" → `Pages.text.cut_at_allocation` existente.
+- **DonorReport:** intro inteira → `Pages.text.donor_report_intro` com p0/p1 (min doações/unidades) · dataset "Loss % (outdated + trashed)" → `Pages.text.loss_percent_label` · title attr → `Pages.text.recent_loss_title`.
+- **OrderEntry hint:** "~N usable on hand"/"none on hand" → `Pages.text.usable_on_hand/none_on_hand`.
+- **Conversão em massa (83 attrs em 23 arquivos):** value="Label" → `:value="$t(...)"` reutilizando chaves existentes (Password→Senha, Email→E-mail, First Name→Nome, Zip Code→CEP etc.) + 22 chaves novas (Commons.label.confirm_new_password/current_password/remove_pin_note/organization/zip_code/setup_code/backup_file/email_used_to_sign_in/confirm_password_lower/your_password_to_confirm/carrier_trucking/flagged_only + Pages.VolunteerKiosk.label.* ×8 + Pages.text.change_pallet/print_a_pdf).
+- **Outros:** PrinterManagement "Print a PDF"→Imprimir um PDF · DonationSorting "Change Pallet"→Trocar pallet · DisplayLayout "Log in"→Entrar · DesignPolls CycleDays/StarDays "Can accept"→Pode receber · "Tap again to change"→Toque novamente para alterar (chave designpolls existente).
+- **Residual final: 5 itens, todos OK por decisão:** 2 falsos positivos do scanner (código em attr bound), 2 verbatims de formato (placeholders ABCDE-FGHJK / RIFED1-…), 1 comentário de uso (HelpLink). **VERBATIM reportado ao usuário:** chip "Donor Unknown" (Receiving) é pessoa semeada — mantido EN por decisão de glossário.
+- Build node:22 ✓ (38s). Pendências: pausas (roles checkbox, blade "dated X to Y", verbatim Unknown Donor ao usuário).
+
+### (α)+(β) executados (2026-11-24)
+
+- **(α) Roles label na UI:** People.vue MultiSelect de roles agora `display="label"` (backend /json/roles manda label com fallback=name, feito pelo lead); chips de roles em People e os 3 pontos de UI em Users.vue (select do formulário, coluna da tabela, chip do botão) usam `role.label ?? role.name`. Lógica (inTab/sortValue/filtros) permanece com `name` técnico.
+- **(β) Blade "dated X to Y":** donors/partners/unfulfilled/flow blades agora usam `__()` com chaves novas `Reports.<Stem>.text.*` (donations_dated_from_to/_from/_to/all_donations; orders_dated_*; all_orders; Flow.text.period_by ":from a :to, por :bucket") — EN+pt nos auto views.json e lang/{en,pt_BR}/reports.php REGENERADO via `dev/scripts/i18n-lang-from-auto.cjs` (gerado, nunca à mão). php -l 10/10.
+- **Resto dos blades EN (pendência reportada):** flow/partners/donors/unfulfilled blades têm MUITO mais texto EN além do range (ex.: flow "Opening on hand + received…") — lote blade dedicado futuro.

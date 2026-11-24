@@ -126,7 +126,7 @@ export default {
 		display: { type: String, default: "name" },
 		secondary: { type: String, default: null },
 		searchfields: { type: Array, default: null },
-		placeholder: { type: String, default: t('Components.text.search') },
+		placeholder: { type: String, default: () => t('Components.text.search') },
 		enabled: { type: Boolean, default: true },
 		allowcreate: { type: Boolean, default: false },
 		autofocus: { type: Boolean, default: false },

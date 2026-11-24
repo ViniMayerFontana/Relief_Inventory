@@ -189,11 +189,11 @@ defineProps({
 					<p class="vk_hint">{{ $t('Pages.text.first_time_here_enter', {}) }}</p>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="First Name" />
+						<InputLabel :value="$t('Commons.text.first_name_2')" />
 						<TextInput v-model="newPerson.first_name" autocomplete="off" />
 					</div>
 					<div class="ri_formcontrol">
-						<InputLabel value="Last Name" />
+						<InputLabel :value="$t('Commons.text.last_name_2')" />
 						<TextInput v-model="newPerson.last_name" autocomplete="off" />
 					</div>
 					<p v-if="addPersonError" class="vk_error">{{ addPersonError }}</p>
@@ -234,22 +234,22 @@ defineProps({
 					<p class="vk_hint">{{ $t('Pages.text.for_visitors_inspectors_and', {}) }}</p>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="First Name" />
+						<InputLabel :value="$t('Commons.text.first_name_2')" />
 						<TextInput v-model="newGuest.first_name" autocomplete="off" />
 					</div>
 					<div class="ri_formcontrol">
-						<InputLabel value="Last Name" />
+						<InputLabel :value="$t('Commons.text.last_name_2')" />
 						<TextInput v-model="newGuest.last_name" autocomplete="off" />
 					</div>
 					<div class="ri_formcontrol">
-						<InputLabel value="Guest Type" />
+						<InputLabel :value="$t('Pages.VolunteerKiosk.label.guest_type')" />
 						<select v-model="newGuest.other_category_id" class="ri_forminput">
 							<option :value="null">{{ $t('Pages.text.choose_or_type_below', {}) }}</option>
 							<option v-for="cat in otherCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
 						</select>
 					</div>
 					<div class="ri_formcontrol">
-						<InputLabel value="Or describe (free text)" />
+						<InputLabel :value="$t('Pages.VolunteerKiosk.label.or_describe')" />
 						<TextInput v-model="newGuest.other_category_text" :placeholder="$t('Pages.placeholder.e_g_state_representative')" />
 					</div>
 					<p v-if="guestError" class="vk_error">{{ guestError }}</p>
@@ -278,7 +278,7 @@ defineProps({
 					<h2 class="vk_confirm_title">{{ $t('Pages.heading.sign_in') }} {{ personName(selected) }}</h2>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Category" />
+						<InputLabel :value="$t('Commons.label.category_2')" />
 						<div class="vk_category_choice">
 							<button
 								type="button"
@@ -297,20 +297,20 @@ defineProps({
 
 					<template v-if="form.category === 'other'">
 						<div class="ri_formcontrol">
-							<InputLabel value="Other category" />
+							<InputLabel :value="$t('Pages.VolunteerKiosk.label.other_category')" />
 							<select v-model="form.other_category_id" class="ri_forminput">
 								<option :value="null">{{ $t('Pages.text.choose_or_type_below', {}) }}</option>
 								<option v-for="cat in otherCategories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
 							</select>
 						</div>
 						<div class="ri_formcontrol">
-							<InputLabel value="Or describe (free text)" />
+							<InputLabel :value="$t('Pages.VolunteerKiosk.label.or_describe')" />
 							<TextInput v-model="form.other_category_text" :placeholder="$t('Pages.placeholder.e_g_state_representative')" />
 						</div>
 					</template>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Agency" />
+						<InputLabel :value="$t('Commons.heading.agency')" />
 						<input v-model="form.agency" list="vk_agency_suggestions" class="ri_forminput" :placeholder="$t('Pages.placeholder.e_g_american_red')" />
 						<datalist id="vk_agency_suggestions">
 							<option v-for="s in agencySuggestions" :key="s.id" :value="s.value" />
@@ -318,7 +318,7 @@ defineProps({
 					</div>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Title / Function (optional — professional services only)" />
+						<InputLabel :value="$t('Pages.VolunteerKiosk.label.title_function')" />
 						<input v-model="form.title_function" list="vk_task_suggestions" class="ri_forminput" />
 						<datalist id="vk_task_suggestions">
 							<option v-for="s in taskSuggestions" :key="s.id" :value="s.value" />
@@ -326,17 +326,17 @@ defineProps({
 					</div>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Work Site" />
+						<InputLabel :value="$t('Pages.VolunteerKiosk.label.work_site')" />
 						<TextInput v-model="form.work_site" />
 					</div>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Description of Work" />
+						<InputLabel :value="$t('Pages.VolunteerKiosk.label.description_of_work')" />
 						<TextArea v-model="form.description_of_work" />
 					</div>
 
 					<div v-if="form.category === 'other'" class="ri_formcontrol">
-						<InputLabel value="Expected departure (optional)" />
+						<InputLabel :value="$t('Pages.VolunteerKiosk.label.expected_departure')" />
 						<input v-model="form.expected_departure_at" type="datetime-local" class="ri_forminput" />
 					</div>
 
@@ -390,7 +390,7 @@ defineProps({
 					</p>
 
 					<div class="ri_formcontrol">
-						<InputLabel value="Time You Left" />
+						<InputLabel :value="$t('Pages.VolunteerKiosk.label.time_you_left')" />
 						<input v-model="forgottenSignOutAt" type="datetime-local" class="ri_forminput" />
 					</div>
 

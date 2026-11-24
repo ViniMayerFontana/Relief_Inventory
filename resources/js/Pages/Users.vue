@@ -536,7 +536,7 @@ function setPasswordChangeRequired(required) {
             <span class="text-gray-700">{{ $t('Commons.text.role', {}) }}</span>
             <select v-model="roleFilter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
               <option value="">{{ $t('Commons.text.all_roles', {}) }}</option>
-              <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+              <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.label ?? role.name }}</option>
               <option value="none">{{ $t('Commons.text.no_role', {}) }}</option>
             </select>
           </label>
@@ -633,7 +633,7 @@ function setPasswordChangeRequired(required) {
                 </td>
                 <td class="py-1 pr-2">{{ record.first_name }} {{ record.last_name }}</td>
                 <td class="py-1 pr-2">{{ record.email }}</td>
-                <td class="py-1 pr-2">{{ (record.roles || []).map((r) => r.name).join(', ') }}</td>
+                <td class="py-1 pr-2">{{ (record.roles || []).map((r) => r.label ?? r.name).join(', ') }}</td>
                 <td class="py-1 pr-2">{{ statusLabel(record) }}</td>
                 <td class="py-1 pr-2 whitespace-nowrap" :class="{ 'text-gray-400': !record.last_login_at }">
                   {{ record.last_login_at ? formatDateTime(record.last_login_at) : $t('Commons.text.never') }}
@@ -731,7 +731,7 @@ function setPasswordChangeRequired(required) {
               :class="{ 'role-chip-active': roleAssigned(selected, role.id) }"
               :title="(role.permissions || []).map((p) => p.key).join(', ')"
               @click="selectRole(selected, role)"
-            >{{ role.name }} <span class="role-chip-count">({{ (role.permissions || []).length }})</span></button>
+            >{{ role.label ?? role.name }} <span class="role-chip-count">({{ (role.permissions || []).length }})</span></button>
           </div>
           <p class="text-xs text-gray-500 mt-1">
             {{ $t('Pages.text.partner_accounts_can_log', {}) }}

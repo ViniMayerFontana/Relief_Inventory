@@ -12,6 +12,9 @@ return [
         'text' => [
             'and_set_both' => ', and set both',
             'docker_compose_up_d' => 'docker compose up -d',
+            'fine_for_a_private' => '(fine for a private or offline site) — set',
+            'free_from_the_cloudflare' => '(free from the Cloudflare dashboard; the server needs Internet access).',
+            'in_docker_these_go' => 'In Docker, these go in the settings block at the top of',
             'or_give_it_keys' => 'Or give it keys',
             'then_run' => '; then run:',
             'this_page_isn_t' => 'This page isn\'t set up yet',

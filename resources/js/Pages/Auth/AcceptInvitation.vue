@@ -38,7 +38,7 @@ const submit = () => form.post(route('invitations.accept', props.token), { onFin
 
 		<form @submit.prevent="submit">
 			<div class="mt-4">
-				<InputLabel for="password" value="Password" />
+				<InputLabel for="password" :value="$t('Commons.placeholder.password')" />
 				<TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" autofocus autocomplete="current-password" />
 				<InputError class="mt-2" :message="form.errors.password" />
 			</div>

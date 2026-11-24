@@ -28,7 +28,7 @@ Chart.defaults.font.family = "Figtree, 'RI Emoji', ui-sans-serif, system-ui, san
 export default {
 	props: {
 		config: { type: Object, required: true },
-		label: { type: String, default: t('Commons.text.chart') },
+		label: { type: String, default: () => t('Commons.text.chart') },
 		height: { type: Number, default: 260 },
 	},
 	data() {

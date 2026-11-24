@@ -12,6 +12,9 @@ return [
         'text' => [
             'and_set_both' => ', e defina tanto',
             'docker_compose_up_d' => 'docker compose up -d',
+            'fine_for_a_private' => '(aceitável para um site privado ou offline) — defina',
+            'free_from_the_cloudflare' => '(gratuitamente no dashboard do Cloudflare; o servidor precisa de acesso à Internet).',
+            'in_docker_these_go' => 'No Docker, essas chaves vão no bloco de configurações no topo do',
             'or_give_it_keys' => 'Ou forneça as chaves',
             'then_run' => '; então execute:',
             'this_page_isn_t' => 'Esta página ainda não está configurada',

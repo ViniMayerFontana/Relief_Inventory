@@ -147,7 +147,7 @@ async function submit() {
 
 						<div v-else-if="question.type === 'yes_no'" class="flex gap-4">
 							<label class="flex items-center gap-1 text-sm">
-								<input type="radio" :name="`q${question.id}`" v-model="answers[question.id]" value="Yes" /> {{ $t('Commons.label.yes', {}) }}
+								<input type="radio" :name="`q${question.id}`" v-model="answers[question.id]" :value="$t('Commons.label.yes')" /> {{ $t('Commons.label.yes', {}) }}
 							</label>
 							<label class="flex items-center gap-1 text-sm">
 								<input type="radio" :name="`q${question.id}`" v-model="answers[question.id]" value="No" /> {{ $t('Commons.label.no', {}) }}

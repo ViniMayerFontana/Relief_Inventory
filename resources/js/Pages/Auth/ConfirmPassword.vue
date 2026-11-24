@@ -27,7 +27,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" :value="$t('Commons.placeholder.password')" />
                 <TextInput
                     id="password"
                     type="password"

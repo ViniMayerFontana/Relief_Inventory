@@ -70,7 +70,7 @@ const removePin = () => {
 
 		<form @submit.prevent="updatePin" class="mt-6 space-y-6">
 			<div>
-				<InputLabel for="pin_current_password" value="Current Password" />
+				<InputLabel for="pin_current_password" :value="$t('Commons.label.current_password')" />
 
 				<TextInput
 					id="pin_current_password"
@@ -102,7 +102,7 @@ const removePin = () => {
 			</div>
 
 			<div>
-				<InputLabel for="pin_confirmation" value="Confirm PIN" />
+				<InputLabel for="pin_confirmation" :value="$t('Commons.placeholder.confirm_pin')" />
 
 				<TextInput
 					id="pin_confirmation"
@@ -131,7 +131,7 @@ const removePin = () => {
 		</form>
 
 		<div v-if="hasPin" class="mt-6 pt-6 border-t">
-			<InputLabel for="pin_remove_password" value="Remove PIN (requires current password)" />
+			<InputLabel for="pin_remove_password" :value="$t('Commons.label.remove_pin_note')" />
 			<div class="flex items-end gap-3 mt-1">
 				<TextInput
 					id="pin_remove_password"

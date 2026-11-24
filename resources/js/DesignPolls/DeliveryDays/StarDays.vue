@@ -32,7 +32,7 @@ function toggleStar(day) {
 			</span>
 		</div>
 		<div class="dd_legend">
-			<span><span class="dd_swatch dd_ok"></span>Can accept</span>
+			<span><span class="dd_swatch dd_ok"></span>{{ $t('Commons.text.can_accept') }}</span>
 			<span><span class="dd_swatch dd_pref"></span>★ Preferred</span>
 		</div>
 	</DemoFrame>

@@ -613,7 +613,7 @@ onMounted(() => {
 					<PrintMenu v-if="fillResult.isNew" document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="form" :label="$t('Pages.label.print_pallet_label')"
 						:params="{ id: fillResult.id }" :download-href="'/report/pallet/' + fillResult.id" />
 					<PrintMenu v-if="fillResult.assignmentIds?.length" document-key="inventory-labels" :media="$page.props.printing.inventoryLabelMedia" variant="form"
-						:label="'Print Item Labels (' + fillResult.assignmentIds.length + ')'"
+						:label="$t('Pages.label.print_item_labels', { p0: fillResult.assignmentIds.length })"
 						:params="{ ids: fillResult.assignmentIds }" :download-href="'/report/inventory-labels?ids=' + fillResult.assignmentIds.join(',')" />
 				</div>
 

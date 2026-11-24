@@ -133,7 +133,7 @@ export default {
 				{{ $t('Commons.heading.partner_report', {}) }}
 				<span class="ptr_exports">
 					<a :href="$withWarehouse('/report/partners.csv' + query)" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
-					<PrintMenu document-key="partner-report" media="report" label="Print / PDF"
+					<PrintMenu document-key="partner-report" media="report" :label="$t('Commons.button.print_pdf')"
 						:params="appliedParams" :download-href="'/report/partners.pdf' + query" />
 				</span>
 			</h2>

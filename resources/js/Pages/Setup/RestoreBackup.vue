@@ -177,13 +177,13 @@ onUnmounted(() => clearInterval(timer));
 			</p>
 
 			<div v-if="codeRequired && !own">
-				<InputLabel for="restore_code" value="Setup code" />
+				<InputLabel for="restore_code" :value="$t('Commons.label.setup_code')" />
 				<TextInput id="restore_code" type="password" class="mt-1 block w-full" v-model="setupCode" autocomplete="off" />
 				<InputError class="mt-2" :message="codeError" />
 			</div>
 
 			<div>
-				<InputLabel for="restore_file" value="Backup file" />
+				<InputLabel for="restore_file" :value="$t('Commons.label.backup_file')" />
 				<input id="restore_file" type="file" accept=".zip,application/zip" class="mt-1 block w-full text-sm" @change="pick" />
 				<p v-if="file" class="mt-1 text-xs text-gray-500">{{ file.name }} — {{ human(file.size) }}</p>
 			</div>

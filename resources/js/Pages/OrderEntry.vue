@@ -160,7 +160,7 @@ export default {
 		entryHint() {
 			if (!this.entry.itemtype_id) return null;
 			const onHand = Number(this.stockHints[this.entry.itemtype_id] ?? 0);
-			return onHand > 0 ? '~' + onHand + ' usable on hand' : 'none on hand';
+			return onHand > 0 ? t('Pages.text.usable_on_hand', { p0: onHand }) : t('Pages.text.none_on_hand');
 		},
 		// Three-state availability (dev/FACILITY_NETWORK.md) drives whether
 		// the need-level field shows at all — never on healthy-stock items, so

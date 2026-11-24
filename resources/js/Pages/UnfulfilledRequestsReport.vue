@@ -105,7 +105,7 @@ export default {
 				{{ $t('Pages.heading.unfulfilled_requests_report', {}) }}
 				<span class="urr_exports">
 					<a :href="$withWarehouse('/report/unfulfilled.csv' + query)" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
-					<PrintMenu document-key="unfulfilled-requests" media="report" label="Print / PDF"
+					<PrintMenu document-key="unfulfilled-requests" media="report" :label="$t('Commons.button.print_pdf')"
 						:params="appliedParams" :download-href="'/report/unfulfilled.pdf' + query" />
 				</span>
 			</h2>
@@ -134,7 +134,7 @@ export default {
 					<div class="urr_card"><span>{{ $t('Commons.text.filled', {}) }}</span><strong>{{ n(totals.filled) }}</strong></div>
 					<div class="urr_card urr_card_short">
 						<span>{{ $t('Commons.text.not_filled_2', {}) }}</span><strong>{{ n(totals.not_filled) }}</strong>
-						<small>{{ n(totals.cut_at_allocation) }} cut at allocation · {{ n(totals.short_at_picking) }} {{ $t('Pages.text.short_at_picking') }}</small>
+						<small>{{ n(totals.cut_at_allocation) }} {{ $t('Pages.text.cut_at_allocation') }} · {{ n(totals.short_at_picking) }} {{ $t('Pages.text.short_at_picking') }}</small>
 					</div>
 				</div>
 

@@ -202,7 +202,7 @@ export default {
 				<p v-if="loadError" class="dp_error">{{ loadError }}</p>
 				<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 
-				<h2 class="dp_sectionhead">Current Loads ({{ current.length }})</h2>
+				<h2 class="dp_sectionhead">{{ $t('Pages.heading.current_loads', { p0: current.length }) }}</h2>
 				<div v-for="order in current" :key="order.id" class="dp_card">
 					<div class="dp_cardhead">
 						<span class="dp_ordernum">{{ $t('Commons.text.order') }} {{ order.id }}</span>

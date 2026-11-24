@@ -47,7 +47,7 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
 		<div>
-		    <InputLabel for="first_name" value="First Name" />
+		    <InputLabel for="first_name" :value="$t('Commons.text.first_name_2')" />
 
 		    <TextInput
 		        id="first_name"
@@ -62,7 +62,7 @@ const form = useForm({
 		    <InputError class="mt-2" :message="form.errors.first_name" />
 		</div>
 		<div>
-		    <InputLabel for="last_name" value="Last Name" />
+		    <InputLabel for="last_name" :value="$t('Commons.text.last_name_2')" />
 
 		    <TextInput
 		        id="last_name"
@@ -77,7 +77,7 @@ const form = useForm({
 		</div>
 
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="$t('Commons.button.email')" />
 
                 <TextInput
                     id="email"
@@ -114,7 +114,7 @@ const form = useForm({
 
 			<!-- Organization -->
 			<div>
-			    <InputLabel for="organization" value="Organization" />
+			    <InputLabel for="organization" :value="$t('Commons.label.organization')" />
 			    <TextInput
 			        id="organization"
 			        type="text"
@@ -128,7 +128,7 @@ const form = useForm({
 			
 			    <!-- Address -->
 			    <div>
-			        <InputLabel for="address" value="Address" />
+			        <InputLabel for="address" :value="$t('Commons.text.address_3')" />
 			        <TextInput
 			            id="address"
 			            type="text"
@@ -142,7 +142,7 @@ const form = useForm({
 
 			    <!-- City -->
 			    <div>
-			        <InputLabel for="city" value="City" />
+			        <InputLabel for="city" :value="$t('Commons.placeholder.city')" />
 			        <TextInput
 			            id="city"
 			            type="text"
@@ -156,7 +156,7 @@ const form = useForm({
 
 			    <!-- State -->
 			    <div>
-			        <InputLabel for="state" value="State" />
+			        <InputLabel for="state" :value="$t('Commons.placeholder.state')" />
 			        <TextInput
 			            id="state"
 			            type="text"
@@ -170,7 +170,7 @@ const form = useForm({
 
 			    <!-- Zip Code -->
 			    <div>
-			        <InputLabel for="zip" value="Zip Code" />
+			        <InputLabel for="zip" :value="$t('Commons.label.zip_code')" />
 			        <TextInput
 			            id="zip"
 			            type="text"
@@ -184,7 +184,7 @@ const form = useForm({
 
 			    <!-- County -->
 			    <div>
-			        <InputLabel for="county_id" value="County" />
+			        <InputLabel for="county_id" :value="$t('Commons.label.county_2')" />
 			        <!-- <TextInput
 			            id="county_id"
 			            type="text"
@@ -197,7 +197,7 @@ const form = useForm({
 
 			    <!-- Phone -->
 			    <div>
-			        <InputLabel for="phone" value="Phone" />
+			        <InputLabel for="phone" :value="$t('Commons.placeholder.phone')" />
 			        <TextInput
 			            id="phone"
 			            type="tel"

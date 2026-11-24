@@ -67,7 +67,7 @@ const closeModal = () => {
                 <div class="mt-6">
                     <InputLabel
                         for="password"
-                        value="Password"
+                        :value="$t('Commons.placeholder.password')"
                         class="sr-only"
                     />
 

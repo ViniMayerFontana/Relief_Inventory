@@ -36,7 +36,7 @@ const statusUrl = computed(() => `/w/${currentWarehouseId() ?? ''}/restore-statu
 				<h1 class="text-lg font-semibold">{{ $t('Commons.heading.restore') }} {{ warehouseName || $t('Commons.heading.this_warehouse') }} {{ $t('Pages.Setup.heading.from_a_backup') }}</h1>
 
 				<div class="mt-3">
-					<InputLabel for="restore_password" value="Your password (to confirm)" />
+					<InputLabel for="restore_password" :value="$t('Commons.label.your_password_to_confirm')" />
 					<TextInput id="restore_password" type="password" class="mt-1 block w-full" v-model="identity.password" autocomplete="current-password" />
 				</div>
 				<label v-if="instanceAdmin" class="mt-3 flex items-start gap-2 text-sm text-gray-700">

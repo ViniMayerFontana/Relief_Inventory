@@ -470,7 +470,8 @@
       "where_devices_look_for": "Onde os dispositivos buscam software",
       "where_this_is_headed": "Para onde isto caminha",
       "who_s_in_the": "Quem está no prédio",
-      "write_down_this_warehouse": "Anote a chave deste armazém — os backups não a contêm"
+      "write_down_this_warehouse": "Anote a chave deste armazém — os backups não a contêm",
+      "current_loads": "Cargas atuais ({p0})"
     },
     "label": {
       "can_accept_delivery": "Pode receber entrega:",
@@ -502,7 +503,13 @@
       "suggestion_differs_from_standing": "Sugestão difere da situação",
       "units_on_hand_at": "Unidades em estoque no fim de cada período",
       "units_received_and_picked": "Unidades recebidas e separadas por período",
-      "units_requested_and_filled": "Unidades solicitadas e atendidas por condado"
+      "units_requested_and_filled": "Unidades solicitadas e atendidas por condado",
+      "how_many": "Quantas?",
+      "container_type": "Tipo de contêiner",
+      "eta_date_range": "ETA (período de datas)",
+      "reprint_all_labels": "Reimprimir todas as etiquetas ({p0})",
+      "print_all_labels": "Imprimir todas as etiquetas ({p0})",
+      "print_item_labels": "Imprimir etiquetas dos itens ({p0})"
     },
     "link": {
       "approve_the_device_you": "Aprovar o dispositivo em que está",
@@ -1556,7 +1563,16 @@
       "your_password_to_confirm": "Sua senha, para confirmar",
       "database_plus_files": "database + arquivos",
       "orders_by_zip_top": "Pedidos por CEP (top {p0} de {p1})",
-      "moved_to": "Movido para {p0}"
+      "moved_to": "Movido para {p0}",
+      "view_full_inventory": "Ver o Relatório de estoque completo",
+      "staff_login_access": "Acesso de equipe/login (Administrador, Escritório etc.) e permissões são gerenciados em Configurações → Administração de usuários, não aqui.",
+      "loss_percent_label": "Perda % (vencido + descarte)",
+      "recent_loss_title": "Perda % das últimas três doações triadas do doador",
+      "donor_report_intro": "O que cada doador enviou e quanto disso não pôde ser utilizado. A perda % é vencido + descarte sobre tudo o que foi triado (bens redirecionados não contam contra o doador). Uma situação sugerida precisa de pelo menos {p0} doações triadas e {p1} unidades.",
+      "usable_on_hand": "~{p0} utilizáveis em estoque",
+      "none_on_hand": "nenhuma em estoque",
+      "change_pallet": "Trocar pallet",
+      "print_a_pdf": "Imprimir um PDF"
     },
     "title": {
       "about_this_installation": "Sobre esta instalação",
@@ -1600,6 +1616,18 @@
       "usable_goods_recorded_as": "Bens utilizáveis registrados como Novo na triagem (todo o período — o estoque é agrupado após a triagem, então não é uma contagem de itens novos ainda na prateleira)",
       "usable_goods_recorded_as_2": "Bens utilizáveis registrados como Novo na triagem, todo o período",
       "who_s_in_the": "Quem está no prédio"
+    },
+    "VolunteerKiosk": {
+      "label": {
+        "guest_type": "Tipo de visitante",
+        "or_describe": "Ou descreva (texto livre)",
+        "other_category": "Outra categoria",
+        "title_function": "Cargo / Função (opcional — apenas serviços profissionais)",
+        "work_site": "Local de trabalho",
+        "description_of_work": "Descrição do trabalho",
+        "expected_departure": "Saída prevista (opcional)",
+        "time_you_left": "Horário da saída"
+      }
     }
   }
 }

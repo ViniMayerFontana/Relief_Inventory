@@ -3,10 +3,10 @@
     $t = $report['totals'];
     $rate = fn ($v) => $v === null ? '—' : $v.'%';
     $range = match (true) {
-        ! empty($f->from) && ! empty($f->to) => 'orders dated '.$f->from.' to '.$f->to,
-        ! empty($f->from) => 'orders dated '.$f->from.' or later',
-        ! empty($f->to) => 'orders dated '.$f->to.' or earlier',
-        default => 'all orders',
+        ! empty($f->from) && ! empty($f->to) => __('reports.Partners.text.orders_dated_from_to', ['from' => $f->from, 'to' => $f->to]),
+        ! empty($f->from) => __('reports.Partners.text.orders_dated_from', ['from' => $f->from]),
+        ! empty($f->to) => __('reports.Partners.text.orders_dated_to', ['to' => $f->to]),
+        default => __('reports.Partners.text.all_orders'),
     };
 @endphp
 <!DOCTYPE html>

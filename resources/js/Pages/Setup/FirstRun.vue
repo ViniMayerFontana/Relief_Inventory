@@ -122,37 +122,37 @@ const stepTitle = computed(() => (step.value === 1 ? t('Pages.Setup.text.create_
 
 				<div class="mt-4 grid grid-cols-2 gap-3">
 					<div>
-						<InputLabel for="first_name" value="First name" />
+						<InputLabel for="first_name" :value="$t('Commons.placeholder.first_name')" />
 						<TextInput id="first_name" type="text" class="mt-1 block w-full" v-model="form.first_name" autofocus autocomplete="given-name" />
 						<InputError class="mt-2" :message="err('first_name')" />
 					</div>
 					<div>
-						<InputLabel for="last_name" value="Last name" />
+						<InputLabel for="last_name" :value="$t('Commons.placeholder.last_name')" />
 						<TextInput id="last_name" type="text" class="mt-1 block w-full" v-model="form.last_name" autocomplete="family-name" />
 						<InputError class="mt-2" :message="err('last_name')" />
 					</div>
 				</div>
 
 				<div class="mt-4">
-					<InputLabel for="email" value="Email (used to sign in)" />
+					<InputLabel for="email" :value="$t('Commons.label.email_used_to_sign_in')" />
 					<TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" autocomplete="username" />
 					<InputError class="mt-2" :message="err('email')" />
 				</div>
 
 				<div class="mt-4">
-					<InputLabel for="password" value="Password" />
+					<InputLabel for="password" :value="$t('Commons.placeholder.password')" />
 					<TextInput id="password" type="password" class="mt-1 block w-full" v-model="form.password" autocomplete="new-password" />
 					<InputError class="mt-2" :message="err('password')" />
 				</div>
 
 				<div class="mt-4">
-					<InputLabel for="password_confirmation" value="Confirm password" />
+					<InputLabel for="password_confirmation" :value="$t('Commons.label.confirm_password_lower')" />
 					<TextInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" autocomplete="new-password" />
 					<InputError class="mt-2" :message="err('password_confirmation')" />
 				</div>
 
 				<div v-if="codeRequired" class="mt-4">
-					<InputLabel for="setup_code" value="Setup code" />
+					<InputLabel for="setup_code" :value="$t('Commons.label.setup_code')" />
 					<TextInput id="setup_code" type="password" class="mt-1 block w-full" v-model="form.setup_code" autocomplete="off" />
 					<p class="mt-1 text-xs text-gray-500">{{ $t('Pages.Setup.text.this_server_needs_a', {}) }}</p>
 					<InputError class="mt-2" :message="err('setup_code')" />

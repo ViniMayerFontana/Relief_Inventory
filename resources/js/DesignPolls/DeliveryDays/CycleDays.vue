@@ -26,9 +26,9 @@ const days = blankDays();
 		</div>
 		<div class="dd_legend">
 			<span><span class="dd_swatch"></span>Cannot</span>
-			<span><span class="dd_swatch dd_ok"></span>Can accept</span>
+			<span><span class="dd_swatch dd_ok"></span>{{ $t('Commons.text.can_accept') }}</span>
 			<span><span class="dd_swatch dd_pref"></span>★ Preferred</span>
-			<span>Tap again to change</span>
+			<span>{{ $t('DesignPolls.DeliveryDays.text.tap_again_to_change') }}</span>
 		</div>
 	</DemoFrame>
 </template>

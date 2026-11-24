@@ -470,7 +470,8 @@
       "where_devices_look_for": "Where devices look for software",
       "where_this_is_headed": "Where this is headed",
       "who_s_in_the": "Who's In The Building",
-      "write_down_this_warehouse": "Write down this warehouse's key — backups do not contain it"
+      "write_down_this_warehouse": "Write down this warehouse's key — backups do not contain it",
+      "current_loads": "Current Loads ({p0})"
     },
     "label": {
       "can_accept_delivery": "Can Accept Delivery:",
@@ -502,7 +503,13 @@
       "suggestion_differs_from_standing": "Suggestion differs from standing",
       "units_on_hand_at": "Units on hand at the end of each period",
       "units_received_and_picked": "Units received and picked per period",
-      "units_requested_and_filled": "Units requested and filled per county"
+      "units_requested_and_filled": "Units requested and filled per county",
+      "how_many": "How many?",
+      "container_type": "Container type",
+      "eta_date_range": "ETA (Date Range)",
+      "reprint_all_labels": "Reprint All Labels ({p0})",
+      "print_all_labels": "Print All Labels ({p0})",
+      "print_item_labels": "Print Item Labels ({p0})"
     },
     "link": {
       "approve_the_device_you": "Approve the device you're on",
@@ -1556,7 +1563,16 @@
       "finish_or_clear_adjustment": "Finish or clear the adjustment first",
       "database_plus_files": "database + files",
       "orders_by_zip_top": "Orders by Zip (top {p0} of {p1})",
-      "moved_to": "Moved to {p0}"
+      "moved_to": "Moved to {p0}",
+      "view_full_inventory": "View full Inventory Report",
+      "staff_login_access": "Staff/login access (Administrator, Office, etc.) and permission overrides are managed from Setup → User Administration, not here.",
+      "loss_percent_label": "Loss % (outdated + trashed)",
+      "recent_loss_title": "Loss % of the donor's last three sorted donations",
+      "donor_report_intro": "What each donor sent and how much of it couldn't be used. Loss % is outdated + trashed over everything sorted (diverted goods aren't counted against a donor). A suggested standing needs at least {p0} sorted donations and {p1} units.",
+      "usable_on_hand": "~{p0} usable on hand",
+      "none_on_hand": "none on hand",
+      "change_pallet": "Change Pallet",
+      "print_a_pdf": "Print a PDF"
     },
     "title": {
       "about_this_installation": "About This Installation",
@@ -1600,6 +1616,18 @@
       "usable_goods_recorded_as": "Usable goods recorded as New at sorting (all-time — stock is pooled once sorted, so this isn't a count of new items still on the shelf)",
       "usable_goods_recorded_as_2": "Usable goods recorded as New at sorting, all-time",
       "who_s_in_the": "Who's In The Building"
+    },
+    "VolunteerKiosk": {
+      "label": {
+        "guest_type": "Guest Type",
+        "or_describe": "Or describe (free text)",
+        "other_category": "Other category",
+        "title_function": "Title / Function (optional — professional services only)",
+        "work_site": "Work Site",
+        "description_of_work": "Description of Work",
+        "expected_departure": "Expected departure (optional)",
+        "time_you_left": "Time You Left"
+      }
     }
   }
 }

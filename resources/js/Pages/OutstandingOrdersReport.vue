@@ -88,7 +88,7 @@ export default {
 			<h2 class="ri_datatable_head oor_head">
 				{{ $t('Pages.heading.outstanding_orders_report', {}) }}
 				<a :href="$withWarehouse('/report/orders.csv')" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
-				<PrintMenu document-key="outstanding-orders" media="report" label="Print / PDF"
+				<PrintMenu document-key="outstanding-orders" media="report" :label="$t('Commons.button.print_pdf')"
 					download-href="/report/orders.pdf" />
 			</h2>
 

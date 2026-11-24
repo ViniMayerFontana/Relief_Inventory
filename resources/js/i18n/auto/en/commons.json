@@ -235,7 +235,8 @@
       "warehouse_users": "Warehouse Users",
       "wide": "Wide",
       "withdraw": "Withdraw",
-      "working": "Working…"
+      "working": "Working…",
+      "print_pdf": "Print / PDF"
     },
     "heading": {
       "account": "Account —",
@@ -466,7 +467,18 @@
       "view_bol": "View BOL",
       "weekly": "Weekly",
       "yes": "Yes",
-      "zip": "Zip:"
+      "zip": "Zip:",
+      "confirm_new_password": "Confirm New Password",
+      "current_password": "Current Password",
+      "remove_pin_note": "Remove PIN (requires current password)",
+      "zip_code": "Zip Code",
+      "setup_code": "Setup code",
+      "backup_file": "Backup file",
+      "email_used_to_sign_in": "Email (used to sign in)",
+      "confirm_password_lower": "Confirm password",
+      "your_password_to_confirm": "Your password (to confirm)",
+      "carrier_trucking": "Carrier (if a trucking company, not a personal vehicle)",
+      "flagged_only": "Flagged only"
     },
     "link": {
       "all_printers": "All printers",
@@ -1238,7 +1250,7 @@
       "thursday": "Thursday",
       "time": "Time",
       "times": "Times",
-      "to": "To",
+      "to": "to",
       "today": "Today",
       "top_categories": "Top Categories",
       "total": "Total",
@@ -1333,7 +1345,8 @@
       "zip_2": ", zip:",
       "zip_code": "ZIP Code:",
       "received_3": "Received",
-      "receiving": "Receiving"
+      "receiving": "Receiving",
+      "details": "Details"
     },
     "title": {
       "carton_barcodes": "Carton Barcodes",

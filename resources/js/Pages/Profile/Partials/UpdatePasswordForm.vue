@@ -47,7 +47,7 @@ const updatePassword = () => {
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
             <div>
-                <InputLabel for="current_password" value="Current Password" />
+                <InputLabel for="current_password" :value="$t('Commons.label.current_password')" />
 
                 <TextInput
                     id="current_password"
@@ -65,7 +65,7 @@ const updatePassword = () => {
             </div>
 
             <div>
-                <InputLabel for="password" value="New Password" />
+                <InputLabel for="password" :value="$t('Commons.text.new_password')" />
 
                 <TextInput
                     id="password"
@@ -82,7 +82,7 @@ const updatePassword = () => {
             <div>
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    :value="$t('Commons.title.confirm_password')"
                 />
 
                 <TextInput

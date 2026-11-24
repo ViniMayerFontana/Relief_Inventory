@@ -60,7 +60,7 @@ defineProps({
           <div class="people_line2">
             <span>{{ $t('Commons.text.phone') }} {{ record.phone || 'N/A' }}</span>
             <span :title="record.email || ''">Email: {{ shortenEmail(record.email) }}</span>
-            <span>{{ $t('Commons.text.roles') }} {{ (record.roles || []).map((r) => r.name).join(', ') || $t('Commons.text.none') }}</span>
+            <span>{{ $t('Commons.text.roles') }} {{ (record.roles || []).map((r) => r.label ?? r.name).join(', ') || $t('Commons.text.none') }}</span>
             <span>{{ $t('Commons.text.volunteer') }} {{ record.is_volunteer ? $t('Commons.text.yes') : $t('Commons.text.no') }}</span>
           </div>
         </td>
@@ -258,12 +258,11 @@ defineProps({
 				optionsource="/json/roles?context=people"
                 :enabled="canEditRecord(record, editing)"
 				fk_field="role_id"
-				display="name"
+				display="label"
             />
           </div>
           <p class="ri_fieldhint">
-            Staff/login access (Administrator, Office, etc.) and permission overrides are
-            managed from Setup &rarr; User Administration, not here.
+            {{ $t('Pages.text.staff_login_access') }}
           </p>
 
           <div v-if="record.id && record.roles?.some((r) => r.name === 'Partner')" class="ri_fieldset">

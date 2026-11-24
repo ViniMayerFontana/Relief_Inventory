@@ -98,7 +98,7 @@ onMounted(() => {
 
         <form @submit.prevent="submit">
 			<div>
-			    <InputLabel for="first_name" value="First Name" />
+			    <InputLabel for="first_name" :value="$t('Commons.text.first_name_2')" />
 
 			    <TextInput
 			        id="first_name"
@@ -113,7 +113,7 @@ onMounted(() => {
 			    <InputError class="mt-2" :message="form.errors.first_name" />
 			</div>
 			<div>
-			    <InputLabel for="last_name" value="Last Name" />
+			    <InputLabel for="last_name" :value="$t('Commons.text.last_name_2')" />
 
 			    <TextInput
 			        id="last_name"
@@ -129,7 +129,7 @@ onMounted(() => {
 			</div>
 
             <div class="mt-4">
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="$t('Commons.button.email')" />
 
                 <TextInput
                     id="email"
@@ -144,7 +144,7 @@ onMounted(() => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <InputLabel for="password" :value="$t('Commons.placeholder.password')" />
 
                 <TextInput
                     id="password"
@@ -161,7 +161,7 @@ onMounted(() => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm Password"
+                    :value="$t('Commons.title.confirm_password')"
                 />
 
                 <TextInput

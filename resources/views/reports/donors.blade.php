@@ -4,10 +4,10 @@
     $c = $report['thresholds'];
     $pct = fn ($v) => $v === null ? '—' : $v.'%';
     $range = match (true) {
-        ! empty($f->from) && ! empty($f->to) => 'donations dated '.$f->from.' to '.$f->to,
-        ! empty($f->from) => 'donations dated '.$f->from.' or later',
-        ! empty($f->to) => 'donations dated '.$f->to.' or earlier',
-        default => 'all donations',
+        ! empty($f->from) && ! empty($f->to) => __('reports.Donors.text.donations_dated_from_to', ['from' => $f->from, 'to' => $f->to]),
+        ! empty($f->from) => __('reports.Donors.text.donations_dated_from', ['from' => $f->from]),
+        ! empty($f->to) => __('reports.Donors.text.donations_dated_to', ['to' => $f->to]),
+        default => __('reports.Donors.text.all_donations'),
     };
 @endphp
 <!DOCTYPE html>

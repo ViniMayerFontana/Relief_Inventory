@@ -25,6 +25,10 @@ return [
             'donor_donation' => 'Donor / Donation',
             'not_enough_data' => 'not enough data',
             'units_sorted_overall_loss' => 'units sorted, overall loss',
+            'donations_dated_from_to' => 'donations dated :from to :to',
+            'donations_dated_from' => 'donations dated :from or later',
+            'donations_dated_to' => 'donations dated :to or earlier',
+            'all_donations' => 'all donations',
         ],
     ],
     'Flow' => [
@@ -35,6 +39,7 @@ return [
             'inventory_flow_report' => 'Inventory Flow Report',
             'on_hand_end' => 'On hand (end)',
             'opening_on_hand' => 'Opening on hand',
+            'period_by' => ':from to :to, by :bucket',
         ],
     ],
     'Inventory' => [
@@ -69,6 +74,10 @@ return [
     'Partners' => [
         'text' => [
             'partner_request' => 'Partner / Request',
+            'orders_dated_from_to' => 'orders dated :from to :to',
+            'orders_dated_from' => 'orders dated :from or later',
+            'orders_dated_to' => 'orders dated :to or earlier',
+            'all_orders' => 'all orders',
         ],
     ],
     'PickSheets' => [
@@ -156,6 +165,10 @@ return [
             'not_filled_by_label' => 'Not Filled by {{ $label }}',
             'short_at_picking' => 'Short at Picking',
             'unfulfilled_requests_report' => 'Unfulfilled Requests Report',
+            'orders_dated_from_to' => 'orders dated :from to :to',
+            'orders_dated_from' => 'orders dated :from or later',
+            'orders_dated_to' => 'orders dated :to or earlier',
+            'all_orders' => 'all orders',
         ],
     ],
 ];

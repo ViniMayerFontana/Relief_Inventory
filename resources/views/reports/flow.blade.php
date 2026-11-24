@@ -44,7 +44,7 @@
 <body>
     <h1>{{ __("reports.Flow.text.inventory_flow_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; {{ $f->from }} to {{ $f->to }}, by {{ $f->bucket }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
+        {{ config('app.name') }} &mdash; {{ __('reports.Flow.text.period_by', ['from' => $f->from, 'to' => $f->to, 'bucket' => $f->bucket]) }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <div class="summary">

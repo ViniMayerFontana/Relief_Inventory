@@ -1,9 +1,9 @@
 @php
     $range = match (true) {
-        ! empty($filters['from']) && ! empty($filters['to']) => 'orders dated '.$filters['from'].' to '.$filters['to'],
-        ! empty($filters['from']) => 'orders dated '.$filters['from'].' or later',
-        ! empty($filters['to']) => 'orders dated '.$filters['to'].' or earlier',
-        default => 'all orders',
+        ! empty($filters['from']) && ! empty($filters['to']) => __('reports.Unfulfilled.text.orders_dated_from_to', ['from' => $filters['from'], 'to' => $filters['to']]),
+        ! empty($filters['from']) => __('reports.Unfulfilled.text.orders_dated_from', ['from' => $filters['from']]),
+        ! empty($filters['to']) => __('reports.Unfulfilled.text.orders_dated_to', ['to' => $filters['to']]),
+        default => __('reports.Unfulfilled.text.all_orders'),
     };
     $totals = $report['totals'];
 @endphp

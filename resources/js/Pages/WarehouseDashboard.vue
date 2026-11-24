@@ -114,16 +114,16 @@ export default {
 						<div><span class="wd_inv_value">{{ data.inventory_summary.item_types_with_stock }}</span><span class="wd_inv_label">{{ $t('Pages.text.item_types_stocked', {}) }}</span></div>
 						<div><span class="wd_inv_value">{{ data.inventory_summary.total_units_on_hand }}</span><span class="wd_inv_label">{{ $t('Pages.text.total_units_on_hand', {}) }}</span></div>
 					</div>
-					<Link href="/reports/inventory" class="ri_linkbutton">View full Inventory Report &rarr;</Link>
+					<Link href="/reports/inventory" class="ri_linkbutton">{{ $t('Pages.text.view_full_inventory') }} &rarr;</Link>
 				</div>
 
 				<div class="wd_card wd_donorquality">
 					<h3>{{ $t('Pages.heading.donor_quality_last_30', {}) }}</h3>
 					<div class="wd_dq_stats">
-						<span class="wd_dq_usable">{{ data.donor_quality.usable }} usable</span>
-						<span class="wd_dq_loss">{{ data.donor_quality.outdated }} outdated</span>
-						<span class="wd_dq_loss">{{ data.donor_quality.trashed }} trashed</span>
-						<span class="wd_dq_diverted">{{ data.donor_quality.diverted }} diverted</span>
+						<span class="wd_dq_usable">{{ data.donor_quality.usable }} {{ $t('Commons.text.usable') }}</span>
+						<span class="wd_dq_loss">{{ data.donor_quality.outdated }} {{ $t('Commons.text.outdated') }}</span>
+						<span class="wd_dq_loss">{{ data.donor_quality.trashed }} {{ $t('Commons.text.trashed') }}</span>
+						<span class="wd_dq_diverted">{{ data.donor_quality.diverted }} {{ $t('Commons.text.diverted') }}</span>
 					</div>
 					<p v-if="data.donor_quality.loss_rate_percent !== null" class="wd_dq_rate">
 						{{ $t('Commons.text.loss_rate', {}) }} <strong>{{ data.donor_quality.loss_rate_percent }}%</strong>
@@ -134,9 +134,9 @@ export default {
 			<div v-if="data" class="wd_links">
 				<Link href="/order-entry" class="ri_formbutton">{{ $t('Commons.heading.order_entry', {}) }}</Link>
 				<Link href="/donation-sorting" class="ri_formbutton">{{ $t('Commons.heading.donation_sorting', {}) }}</Link>
-				<Link href="/receiving" class="ri_formbutton">Receiving</Link>
+				<Link href="/receiving" class="ri_formbutton">{{ $t('Commons.text.receiving') }}</Link>
 				<Link href="/reports/inventory" class="ri_formbutton">{{ $t('Commons.heading.inventory_report', {}) }}</Link>
-				<Link href="/reports/sitrep" class="ri_formbutton">Situation Report &rarr;</Link>
+				<Link href="/reports/sitrep" class="ri_formbutton">{{ $t('Commons.heading.situation_report') }} &rarr;</Link>
 			</div>
 		</div>
 	</AuthenticatedLayout>

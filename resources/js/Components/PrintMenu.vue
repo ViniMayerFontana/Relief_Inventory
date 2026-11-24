@@ -67,7 +67,7 @@ export default {
 		params: { type: Object, default: () => ({}) },
 		downloadHref: { type: String, default: null },
 		prepare: { type: Function, default: null },
-		label: { type: String, default: t('Commons.button.print') },
+		label: { type: String, default: () => t('Commons.button.print') },
 		variant: { type: String, default: 'button' },
 		copies: { type: Number, default: 1 },
 		disabled: { type: Boolean, default: false },

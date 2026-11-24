@@ -122,11 +122,11 @@ const containerTypeOptions = [
 							{{ $t('Pages.text.print_a_batch_of', {}) }}
 						</p>
 						<div>
-							<InputLabel value="How many?" />
+							<InputLabel :value="$t('Pages.label.how_many')" />
 							<TextInput v-model.number="preprintCount" type="number" min="1" max="300" class="mt-1 block w-full" autofocus />
 						</div>
 						<div>
-							<InputLabel value="Container type" />
+							<InputLabel :value="$t('Pages.label.container_type')" />
 							<ChipSelect v-model="preprintContainerType" :options="containerTypeOptions" />
 						</div>
 						<p v-if="preprintError" class="text-sm text-red-700">{{ preprintError }}</p>
@@ -255,15 +255,15 @@ const containerTypeOptions = [
 							<div class="p-6 space-y-4">
 								<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_driver', {}) }}</h2>
 								<div>
-									<InputLabel value="Name" />
+									<InputLabel :value="$t('Commons.button.name')" />
 									<TextInput v-model="newDriver.name" class="mt-1 block w-full" autofocus />
 								</div>
 								<div>
-									<InputLabel value="Phone" />
+									<InputLabel :value="$t('Commons.placeholder.phone')" />
 									<TextInput v-model="newDriver.phone" class="mt-1 block w-full" />
 								</div>
 								<div>
-									<InputLabel value="Carrier (if a trucking company, not a personal vehicle)" />
+									<InputLabel :value="$t('Commons.label.carrier_trucking')" />
 									<TextInput v-model="newDriver.carrier" class="mt-1 block w-full" />
 								</div>
 								<p v-if="driverError" class="text-sm text-red-700">{{ driverError }}</p>
@@ -337,15 +337,15 @@ const containerTypeOptions = [
 							<div class="p-6 space-y-4">
 								<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_donor', {}) }}</h2>
 								<div>
-									<InputLabel value="First Name" />
+									<InputLabel :value="$t('Commons.text.first_name_2')" />
 									<TextInput v-model="newDonor.first_name" class="mt-1 block w-full" autofocus />
 								</div>
 								<div>
-									<InputLabel value="Last Name" />
+									<InputLabel :value="$t('Commons.text.last_name_2')" />
 									<TextInput v-model="newDonor.last_name" class="mt-1 block w-full" />
 								</div>
 								<div>
-									<InputLabel value="Organization" />
+									<InputLabel :value="$t('Commons.label.organization')" />
 									<TextInput v-model="newDonor.organization" class="mt-1 block w-full" />
 								</div>
 								<p v-if="donorError" class="text-sm text-red-700">{{ donorError }}</p>
@@ -384,15 +384,15 @@ const containerTypeOptions = [
 								<div class="p-6 space-y-4">
 									<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_contact', {}) }}</h2>
 									<div>
-										<InputLabel value="First Name" />
+										<InputLabel :value="$t('Commons.text.first_name_2')" />
 										<TextInput v-model="newContact.first_name" class="mt-1 block w-full" autofocus />
 									</div>
 									<div>
-										<InputLabel value="Last Name" />
+										<InputLabel :value="$t('Commons.text.last_name_2')" />
 										<TextInput v-model="newContact.last_name" class="mt-1 block w-full" />
 									</div>
 									<div>
-										<InputLabel value="Phone" />
+										<InputLabel :value="$t('Commons.placeholder.phone')" />
 										<TextInput v-model="newContact.phone" class="mt-1 block w-full" />
 									</div>
 									<p v-if="contactError" class="text-sm text-red-700">{{ contactError }}</p>
@@ -462,7 +462,7 @@ const containerTypeOptions = [
 							</table>
 						</div>
 						<PrintMenu document-key="donation-pallet-labels" :media="$page.props.printing.palletLabelMedia" variant="form"
-							:label="'Reprint All Labels (' + (record.pallets || []).length + ')'"
+							:label="$t('Pages.label.reprint_all_labels', { p0: (record.pallets || []).length })"
 							:params="{ id: record.id }" :download-href="'/report/pallets/donation/' + record.id" />
 					</template>
 
@@ -565,7 +565,7 @@ const containerTypeOptions = [
 							</table>
 						</div>
 						<PrintMenu document-key="donation-pallet-labels" :media="$page.props.printing.palletLabelMedia" variant="form"
-							:label="'Print All Labels (' + (record.pallets || []).length + ')'"
+							:label="$t('Pages.label.print_all_labels', { p0: (record.pallets || []).length })"
 							:params="{ id: record.id }" :download-href="'/report/pallets/donation/' + record.id" />
 					</template>
 					<p v-else>{{ $t('Pages.text.no_labels_created_for', {}) }}</p>

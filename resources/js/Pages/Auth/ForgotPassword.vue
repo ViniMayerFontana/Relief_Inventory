@@ -74,7 +74,7 @@ onMounted(() => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <InputLabel for="email" :value="$t('Commons.button.email')" />
 
                 <TextInput
                     id="email"

@@ -100,7 +100,7 @@ const statusClasses = {
 			<template #thead>
 				<th>{{ $t('Commons.text.donor', {}) }}</th>
 				<th>{{ $t('Commons.button.status', {}) }}</th>
-				<th>ETA (Date Range)</th>
+				<th>{{ $t('Pages.label.eta_date_range') }}</th>
 				<th>{{ $t('Commons.placeholder.description', {}) }}</th>
 			</template>
 
@@ -135,15 +135,15 @@ const statusClasses = {
 						<div class="p-6 space-y-4">
 							<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_donor', {}) }}</h2>
 							<div>
-								<InputLabel value="First Name" />
+								<InputLabel :value="$t('Commons.text.first_name_2')" />
 								<TextInput v-model="newDonor.first_name" class="mt-1 block w-full" autofocus />
 							</div>
 							<div>
-								<InputLabel value="Last Name" />
+								<InputLabel :value="$t('Commons.text.last_name_2')" />
 								<TextInput v-model="newDonor.last_name" class="mt-1 block w-full" />
 							</div>
 							<div>
-								<InputLabel value="Organization" />
+								<InputLabel :value="$t('Commons.label.organization')" />
 								<TextInput v-model="newDonor.organization" class="mt-1 block w-full" />
 							</div>
 							<p v-if="donorError" class="text-sm text-red-700">{{ donorError }}</p>
@@ -173,15 +173,15 @@ const statusClasses = {
 							<div class="p-6 space-y-4">
 								<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_contact', {}) }}</h2>
 								<div>
-									<InputLabel value="First Name" />
+									<InputLabel :value="$t('Commons.text.first_name_2')" />
 									<TextInput v-model="newContact.first_name" class="mt-1 block w-full" autofocus />
 								</div>
 								<div>
-									<InputLabel value="Last Name" />
+									<InputLabel :value="$t('Commons.text.last_name_2')" />
 									<TextInput v-model="newContact.last_name" class="mt-1 block w-full" />
 								</div>
 								<div>
-									<InputLabel value="Phone" />
+									<InputLabel :value="$t('Commons.placeholder.phone')" />
 									<TextInput v-model="newContact.phone" class="mt-1 block w-full" />
 								</div>
 								<p v-if="contactError" class="text-sm text-red-700">{{ contactError }}</p>
@@ -226,7 +226,7 @@ const statusClasses = {
 								class="ri_forminput"
 								:disabled="!editing"
 							/>
-							<span>to</span>
+							<span>{{ $t('Commons.text.to') }}</span>
 							<input
 								type="date"
 								v-model.lazy="record.eta_end"
@@ -246,7 +246,7 @@ const statusClasses = {
 									class="ri_forminput"
 									:disabled="!editing"
 								/>
-								<span>to</span>
+								<span>{{ $t('Commons.text.to') }}</span>
 								<input
 									type="date"
 									v-model.lazy="record.eta_end"
@@ -384,7 +384,7 @@ const statusClasses = {
 						<div class="ri_fieldlabel">{{ $t('Commons.text.eta_window', {}) }}</div>
 						<div class="ri_formcontrol don_etarange">
 							<input type="date" v-model.lazy="decision.eta_start" class="ri_forminput" />
-							<span>to</span>
+							<span>{{ $t('Commons.text.to') }}</span>
 							<input type="date" v-model.lazy="decision.eta_end" class="ri_forminput" />
 						</div>
 					</div>
@@ -397,7 +397,7 @@ const statusClasses = {
 						<div class="ri_fieldlabel">{{ $t('Pages.text.eta_window_start_required', {}) }}</div>
 						<div class="ri_formcontrol don_etarange">
 							<input type="date" v-model.lazy="decision.eta_start" class="ri_forminput" />
-							<span>to</span>
+							<span>{{ $t('Commons.text.to') }}</span>
 							<input type="date" v-model.lazy="decision.eta_end" class="ri_forminput" />
 						</div>
 					</div>

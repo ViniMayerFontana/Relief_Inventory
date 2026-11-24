@@ -237,7 +237,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onPageClick));
 				<section class="bg-white shadow rounded-lg p-6 space-y-3">
 					<div class="flex flex-wrap items-center gap-2">
 						<input ref="scanInput" v-model="scanText" type="text" autocomplete="off" inputmode="numeric"
-							class="ri_forminput flex-1 min-w-[14rem] text-lg" placeholder="Scan an item's barcode"
+							class="ri_forminput flex-1 min-w-[14rem] text-lg" :placeholder="$t('Pages.Setup.placeholder.scan_an_item_s')"
 							@keydown.enter.prevent="submitScan" />
 						<button type="button" class="ri_defaultbutton" :disabled="busy" @click="submitScan">{{ $t('Commons.button.count', {}) }}</button>
 						<ScanButton :target="() => scanInput" />

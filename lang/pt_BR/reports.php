@@ -25,6 +25,10 @@ return [
             'donor_donation' => 'Doador / Doação',
             'not_enough_data' => 'dados insuficientes',
             'units_sorted_overall_loss' => 'unidades triadas, quebra geral',
+            'donations_dated_from_to' => 'doações com data de :from a :to',
+            'donations_dated_from' => 'doações com data de :from em diante',
+            'donations_dated_to' => 'doações com data até :to',
+            'all_donations' => 'todas as doações',
         ],
     ],
     'Flow' => [
@@ -35,6 +39,7 @@ return [
             'inventory_flow_report' => 'Relatório de movimentação de estoque',
             'on_hand_end' => 'Saldo (final)',
             'opening_on_hand' => 'Saldo inicial',
+            'period_by' => ':from a :to, por :bucket',
         ],
     ],
     'Inventory' => [
@@ -69,6 +74,10 @@ return [
     'Partners' => [
         'text' => [
             'partner_request' => 'Parceiro / Solicitação',
+            'orders_dated_from_to' => 'pedidos com data de :from a :to',
+            'orders_dated_from' => 'pedidos com data de :from em diante',
+            'orders_dated_to' => 'pedidos com data até :to',
+            'all_orders' => 'todos os pedidos',
         ],
     ],
     'PickSheets' => [
@@ -156,6 +165,10 @@ return [
             'not_filled_by_label' => 'Não atendidos por {{ $label }}',
             'short_at_picking' => 'Faltando na separação',
             'unfulfilled_requests_report' => 'Relatório de solicitações não atendidas',
+            'orders_dated_from_to' => 'pedidos com data de :from a :to',
+            'orders_dated_from' => 'pedidos com data de :from em diante',
+            'orders_dated_to' => 'pedidos com data até :to',
+            'all_orders' => 'todos os pedidos',
         ],
     ],
 ];

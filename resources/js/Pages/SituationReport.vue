@@ -105,7 +105,7 @@ export default {
 					<span v-if="data" class="sr_generated">
 						{{ $t('Commons.text.as_of') }} {{ new Date(data.generated_at).toLocaleString() }}
 					</span>
-					<PrintMenu document-key="sitrep" media="report" label="Print / PDF" download-href="/report/sitrep.pdf" />
+					<PrintMenu document-key="sitrep" media="report" :label="$t('Commons.button.print_pdf')" download-href="/report/sitrep.pdf" />
 				</div>
 			</div>
 			<p class="sr_note">

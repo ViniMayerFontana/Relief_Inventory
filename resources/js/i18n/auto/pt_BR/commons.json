@@ -235,7 +235,8 @@
       "warehouse_users": "Usuários do armazém",
       "wide": "Paisagem",
       "withdraw": "Retirar",
-      "working": "Trabalhando…"
+      "working": "Trabalhando…",
+      "print_pdf": "Imprimir / PDF"
     },
     "heading": {
       "account": "Conta —",
@@ -466,7 +467,18 @@
       "view_bol": "Ver BOL",
       "weekly": "Semanal",
       "yes": "Sim",
-      "zip": "CEP:"
+      "zip": "CEP:",
+      "confirm_new_password": "Confirme a nova senha",
+      "current_password": "Senha atual",
+      "remove_pin_note": "Remover PIN (requer senha atual)",
+      "zip_code": "CEP",
+      "setup_code": "Código de configuração",
+      "backup_file": "Arquivo de backup",
+      "email_used_to_sign_in": "E-mail (usado para entrar)",
+      "confirm_password_lower": "Confirme a senha",
+      "your_password_to_confirm": "Sua senha (para confirmar)",
+      "carrier_trucking": "Transportadora (se for empresa de transporte, não veículo próprio)",
+      "flagged_only": "Somente sinalizados"
     },
     "link": {
       "all_printers": "Todas as impressoras",
@@ -1238,7 +1250,7 @@
       "thursday": "Quinta-feira",
       "time": "Hora",
       "times": "Vezes",
-      "to": "Para",
+      "to": "a",
       "today": "Hoje",
       "top_categories": "Principais categorias",
       "total": "Total",
@@ -1333,6 +1345,7 @@
       "zip_2": ", CEP:",
       "zip_code": "CEP:",
       "received_3": "Recebidas",
+      "details": "Detalhes",
       "receiving": "Recebimento"
     },
     "title": {

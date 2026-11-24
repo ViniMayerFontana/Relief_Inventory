@@ -452,7 +452,7 @@ export default {
 					<p v-if="reviewError" class="ship_error">{{ reviewError }}</p>
 
 					<div v-if="showRejectForm" class="ship_rejectform">
-						<textarea v-model="rejectReason" class="ri_forminput" rows="2" placeholder="What's wrong with it? (shown to the driver)"></textarea>
+						<textarea v-model="rejectReason" class="ri_forminput" rows="2" :placeholder="$t('Pages.placeholder.what_s_wrong_with')"></textarea>
 						<div class="ship_reviewactions">
 							<button class="ship_pinlink" @click="showRejectForm = false">{{ $t('Commons.button.cancel', {}) }}</button>
 							<button class="ri_defaultbutton ship_rejectbutton" :disabled="reviewRejecting" @click="rejectReview">

@@ -8,6 +8,7 @@ namespace App\Http\Controllers;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class RoleController extends Controller
 {
@@ -41,6 +42,13 @@ class RoleController extends Controller
             default => Role::query(),
         };
         $roles = $roles->with('permissions:id,key')->get();
+        // `name` stays the technical value (RBAC whereIn's); `label` is the
+        // display name (lang/<locale>/roles.php by slug, fallback to the raw
+        // name) — same presentation-translation pattern as MenuText.
+        $roles->each(function ($role) {
+            $key = 'roles.'.Str::slug($role->name);
+            $role->label = trans($key) === $key ? $role->name : trans($key);
+        });
         $templates = [
             '_default' => [
                 'name' => '',

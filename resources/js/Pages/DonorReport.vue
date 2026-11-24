@@ -81,7 +81,7 @@ export default {
 				data: {
 					labels: rows.map((d) => d.name),
 					datasets: [{
-						label: 'Loss % (outdated + trashed)', data: rows.map((d) => d.loss_percent),
+						label: t('Pages.text.loss_percent_label'), data: rows.map((d) => d.loss_percent),
 						backgroundColor: '#eb6834', borderRadius: 4,
 					}],
 				},
@@ -180,15 +180,13 @@ export default {
 				{{ $t('Commons.heading.donor_report', {}) }}
 				<span class="dnr_exports">
 					<a :href="$withWarehouse('/report/donors.csv' + query)" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
-					<PrintMenu document-key="donor-report" media="report" label="Print / PDF"
+					<PrintMenu document-key="donor-report" media="report" :label="$t('Commons.button.print_pdf')"
 						:params="appliedParams" :download-href="'/report/donors.pdf' + query" />
 				</span>
 			</h2>
 
 			<p class="dnr_intro">
-				What each donor sent and how much of it couldn't be used. Loss % is outdated + trashed over
-				everything sorted (diverted goods aren't counted against a donor). A suggested standing needs
-				at least {{ thresholds.min_donations }} sorted donations and {{ thresholds.min_units }} {{ $t('Pages.text.units_it_is_only') }}
+				{{ $t('Pages.text.donor_report_intro', { p0: thresholds.min_donations, p1: thresholds.min_units }) }}
 			</p>
 
 			<form class="dnr_toolbar" @submit.prevent="fetchReport">
@@ -232,7 +230,7 @@ export default {
 							<tr>
 								<th></th><th>{{ $t('Commons.text.donor', {}) }}</th><th>{{ $t('Commons.label.standing', {}) }}</th><th>{{ $t('Commons.text.suggested', {}) }}</th><th>{{ $t('Commons.heading.donations', {}) }}</th><th>{{ $t('Commons.text.units', {}) }}</th>
 								<th>{{ $t('Commons.text.usable', {}) }}</th><th>{{ $t('Commons.text.outdated', {}) }}</th><th>{{ $t('Commons.text.trashed', {}) }}</th><th>{{ $t('Commons.text.diverted', {}) }}</th>
-								<th>{{ $t('Commons.text.loss', {}) }}</th><th title="Loss % of the donor's last three sorted donations">{{ $t('Pages.text.recent_loss', {}) }}</th><th>{{ $t('Commons.text.last_donation', {}) }}</th>
+								<th>{{ $t('Commons.text.loss', {}) }}</th><th :title="$t('Pages.text.recent_loss_title')">{{ $t('Pages.text.recent_loss', {}) }}</th><th>{{ $t('Commons.text.last_donation', {}) }}</th>
 							</tr>
 						</thead>
 						<tbody>

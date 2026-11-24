@@ -14,7 +14,7 @@ import { t } from '@/i18n';
 
 const props = defineProps({
   target: { type: Function, default: null },
-  label: { type: String, default: t('Commons.text.scan') },
+  label: { type: String, default: () => t('Commons.text.scan') },
   // Icon only, squared off on the left so it sits flush against the text box to its left.
   compact: { type: Boolean, default: false },
 });

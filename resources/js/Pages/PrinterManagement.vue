@@ -244,7 +244,7 @@ onUnmounted(() => clearInterval(timer));
 			</section>
 
 			<section v-if="canUploadPdf" class="bg-white shadow rounded-lg p-6 space-y-3">
-				<h2 class="text-lg font-semibold">Print a PDF</h2>
+				<h2 class="text-lg font-semibold">{{ $t('Pages.text.print_a_pdf') }}</h2>
 				<p class="text-sm text-gray-600">
 					{{ $t('Pages.text.upload_any_pdf_and', {}) }}
 				</p>

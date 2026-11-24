@@ -1064,15 +1064,15 @@ export default {
 						<div class="p-6 space-y-4">
 							<h2 class="text-lg font-semibold">{{ $t('Commons.heading.new_donor', {}) }}</h2>
 							<div>
-								<InputLabel value="First Name" />
+								<InputLabel :value="$t('Commons.text.first_name_2')" />
 								<TextInput v-model="newDonor.first_name" class="mt-1 block w-full" autofocus />
 							</div>
 							<div>
-								<InputLabel value="Last Name" />
+								<InputLabel :value="$t('Commons.text.last_name_2')" />
 								<TextInput v-model="newDonor.last_name" class="mt-1 block w-full" />
 							</div>
 							<div>
-								<InputLabel value="Organization" />
+								<InputLabel :value="$t('Commons.label.organization')" />
 								<TextInput v-model="newDonor.organization" class="mt-1 block w-full" />
 							</div>
 							<p v-if="donorError" class="text-sm text-red-700">{{ donorError }}</p>
@@ -1125,7 +1125,7 @@ export default {
 						<span v-if="palletContents(pallet)" class="sort_pallet_contents">&mdash; {{ palletContents(pallet) }}</span>
 					</span>
 					<button @click="emptyingPallet = true" class="ri_defaultbutton">{{ $t('Commons.button.pallet_empty', {}) }}</button>
-					<button @click="clearPallet" class="ri_formbutton">Change Pallet</button>
+					<button @click="clearPallet" class="ri_formbutton">{{ $t('Pages.text.change_pallet') }}</button>
 				</template>
 				<template v-else>
 					<!-- one optional observation tap; final QC stays with a supervisor -->

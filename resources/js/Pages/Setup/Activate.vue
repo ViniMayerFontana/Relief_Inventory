@@ -67,7 +67,7 @@ const submit = () => form.post(route('activate.setup'), { onFinish: () => form.r
 				{{ $t('Pages.Setup.text.this_warehouse_is_ready', {}) }}
 			</p>
 			<div class="mt-4">
-				<InputLabel for="code" value="Setup code" />
+				<InputLabel for="code" :value="$t('Commons.label.setup_code')" />
 				<TextInput id="code" type="text" class="mt-1 block w-full font-mono uppercase" v-model="codeForm.code" autofocus autocomplete="off" placeholder="ABCDE-FGHJK" />
 				<InputError class="mt-2" :message="codeForm.errors.code" />
 				<p v-if="locked && !codeForm.errors.code" class="mt-2 text-xs text-amber-800">{{ $t('Pages.Setup.text.too_many_wrong_tries', {}) }}</p>
@@ -94,19 +94,19 @@ const submit = () => form.post(route('activate.setup'), { onFinish: () => form.r
 
 			<div class="mt-4 grid grid-cols-2 gap-3">
 				<div>
-					<InputLabel for="first_name" value="First name" />
+					<InputLabel for="first_name" :value="$t('Commons.placeholder.first_name')" />
 					<TextInput id="first_name" type="text" class="mt-1 block w-full" v-model="form.first_name" autofocus autocomplete="given-name" />
 					<InputError class="mt-2" :message="form.errors.first_name" />
 				</div>
 				<div>
-					<InputLabel for="last_name" value="Last name" />
+					<InputLabel for="last_name" :value="$t('Commons.placeholder.last_name')" />
 					<TextInput id="last_name" type="text" class="mt-1 block w-full" v-model="form.last_name" autocomplete="family-name" />
 					<InputError class="mt-2" :message="form.errors.last_name" />
 				</div>
 			</div>
 
 			<div class="mt-4">
-				<InputLabel for="email" value="Email (used to sign in)" />
+				<InputLabel for="email" :value="$t('Commons.label.email_used_to_sign_in')" />
 				<TextInput id="email" type="email" class="mt-1 block w-full" v-model="form.email" autocomplete="username" />
 				<InputError class="mt-2" :message="form.errors.email" />
 			</div>
@@ -118,7 +118,7 @@ const submit = () => form.post(route('activate.setup'), { onFinish: () => form.r
 			</div>
 
 			<div v-if="form.login === 'new'" class="mt-4">
-				<InputLabel for="password_confirmation" value="Confirm password" />
+				<InputLabel for="password_confirmation" :value="$t('Commons.label.confirm_password_lower')" />
 				<TextInput id="password_confirmation" type="password" class="mt-1 block w-full" v-model="form.password_confirmation" autocomplete="new-password" />
 			</div>
 

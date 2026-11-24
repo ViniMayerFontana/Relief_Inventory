@@ -78,7 +78,7 @@ export default {
 				data: {
 					labels: this.labels,
 					datasets: [
-						{ label: 'Received', data: b.map((x) => x.received), backgroundColor: BLUE, borderRadius: 4 },
+						{ label: t('Commons.text.received'), data: b.map((x) => x.received), backgroundColor: BLUE, borderRadius: 4 },
 						{ label: t('Commons.text.picked'), data: b.map((x) => x.picked), backgroundColor: ORANGE, borderRadius: 4 },
 					],
 				},
@@ -163,7 +163,7 @@ export default {
 				{{ $t('Pages.heading.inventory_flow_report', {}) }}
 				<span class="flr_exports">
 					<a :href="$withWarehouse('/report/flow.csv' + query)" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
-					<PrintMenu document-key="inventory-flow" media="report" label="Print / PDF"
+					<PrintMenu document-key="inventory-flow" media="report" :label="$t('Commons.button.print_pdf')"
 						:params="appliedParams" :download-href="'/report/flow.pdf' + query" />
 				</span>
 			</h2>
@@ -203,14 +203,14 @@ export default {
 			<template v-if="report && !loading">
 				<div class="flr_cards">
 					<div class="flr_card"><span>{{ $t('Pages.text.opening_on_hand', {}) }}</span><strong>{{ n(totals.opening) }}</strong></div>
-					<div class="flr_card"><span>Received</span><strong>{{ n(totals.received) }}</strong></div>
+					<div class="flr_card"><span>{{ $t('Commons.text.received') }}</span><strong>{{ n(totals.received) }}</strong></div>
 					<div class="flr_card"><span>{{ $t('Commons.text.picked', {}) }}</span><strong>{{ n(totals.picked) }}</strong></div>
 					<div class="flr_card"><span>{{ $t('Commons.text.adjustments', {}) }}</span><strong>{{ signed(totals.adjustments) }}</strong></div>
 					<div class="flr_card"><span>{{ $t('Pages.text.closing_on_hand', {}) }}</span><strong>{{ n(totals.closing) }}</strong></div>
 					<div class="flr_card flr_card_lost">
 						<span>{{ $t('Pages.text.lost_at_sorting', {}) }}</span>
 						<strong>{{ n(totals.outdated + totals.trashed + totals.diverted) }}</strong>
-						<small>{{ n(totals.outdated) }} outdated · {{ n(totals.trashed) }} trashed · {{ n(totals.diverted) }} diverted</small>
+						<small>{{ n(totals.outdated) }} {{ $t('Commons.text.outdated') }} · {{ n(totals.trashed) }} {{ $t('Commons.text.trashed') }} · {{ n(totals.diverted) }} {{ $t('Commons.text.diverted') }}</small>
 					</div>
 				</div>
 
@@ -229,7 +229,7 @@ export default {
 				<div class="flr_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
 						<tr>
-							<th>{{ $t('Commons.text.period_starting', {}) }}</th><th>Received</th><th>{{ $t('Commons.text.picked', {}) }}</th><th>{{ $t('Commons.text.adjustments', {}) }}</th>
+							<th>{{ $t('Commons.text.period_starting', {}) }}</th><th>{{ $t('Commons.text.received') }}</th><th>{{ $t('Commons.text.picked', {}) }}</th><th>{{ $t('Commons.text.adjustments', {}) }}</th>
 							<th>{{ $t('Pages.text.on_hand_end', {}) }}</th><th>{{ $t('Commons.text.outdated', {}) }}</th><th>{{ $t('Commons.text.trashed', {}) }}</th><th>{{ $t('Commons.text.diverted', {}) }}</th>
 						</tr>
 					</thead>
@@ -267,7 +267,7 @@ export default {
 				<div class="flr_tablewrap"><table class="ri_datatable" border="1">
 					<thead>
 						<tr>
-							<th>{{ $t('Commons.text.item', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.unit', {}) }}</th><th>{{ $t('Commons.text.opening', {}) }}</th><th>Received</th><th>{{ $t('Commons.text.picked', {}) }}</th>
+							<th>{{ $t('Commons.text.item', {}) }}</th><th>{{ $t('Commons.text.item_2', {}) }}</th><th>{{ $t('Commons.text.unit', {}) }}</th><th>{{ $t('Commons.text.opening', {}) }}</th><th>{{ $t('Commons.text.received') }}</th><th>{{ $t('Commons.text.picked', {}) }}</th>
 							<th>{{ $t('Commons.text.adjustments', {}) }}</th><th>{{ $t('Commons.text.closing', {}) }}</th><th>{{ $t('Commons.text.outdated', {}) }}</th><th>{{ $t('Commons.text.trashed', {}) }}</th><th>{{ $t('Commons.text.diverted', {}) }}</th>
 						</tr>
 					</thead>

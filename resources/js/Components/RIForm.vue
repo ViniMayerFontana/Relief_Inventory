@@ -30,7 +30,7 @@
 
       <RIForm ... :filter="(r) => !onlyFlagged || r.flagged">
         <template #listactions>
-          <label><input type="checkbox" v-model="onlyFlagged" /> Flagged only</label>
+          <label><input type="checkbox" v-model="onlyFlagged" /> {{ $t('Commons.label.flagged_only') }}</label>
         </template>
         ...
       </RIForm>
@@ -150,7 +150,7 @@
     <div v-else class="ri_dataform_container">
       <h2 class="ri_dataform_head">
         <img :src="editing ? '/img/edit-icon.webp' : '/img/edit-padlock-icon.webp'" style="width: 1.5em; float: right; cursor:pointer;" @click="toggleEdit()" />
-        {{ title }} - Details
+        {{ title }} - {{ $t('Commons.text.details') }}
       </h2>
       <slot :editing="editing" :record="record" :templates="templates"></slot>
       <p v-if="saveError" class="ri_error">{{ saveError }}</p>
@@ -198,7 +198,7 @@ export default {
     },
     newrecordcaption: {
       type: String,
-      default: t('Commons.text.new_record'),
+      default: () => t('Commons.text.new_record'),
     },
     // Optional (record) => boolean predicate narrowing the list view. Pair
     // with the #listactions slot for the filter UI itself — see the doc

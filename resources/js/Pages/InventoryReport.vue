@@ -101,7 +101,7 @@ export default {
 			<h2 class="ri_datatable_head inv_head">
 				{{ $t('Commons.heading.inventory_report', {}) }}
 				<a :href="$withWarehouse('/report/inventory.csv')" class="ri_defaultbutton">{{ $t('Commons.link.download_csv', {}) }}</a>
-				<PrintMenu document-key="inventory-report" media="report" label="Print / PDF"
+				<PrintMenu document-key="inventory-report" media="report" :label="$t('Commons.button.print_pdf')"
 					download-href="/report/inventory.pdf" />
 			</h2>
 
@@ -123,7 +123,7 @@ export default {
 					<input type="checkbox" v-model="showAll" />
 					{{ $t('Pages.label.show_full_catalog_including', {}) }}
 				</label>
-				<label class="inv_toggle" title="Usable goods recorded as New at sorting (all-time — stock is pooled once sorted, so this isn't a count of new items still on the shelf)">
+				<label class="inv_toggle" :title="$t('Pages.title.usable_goods_recorded_as')">
 					<input type="checkbox" v-model="newOnly" />
 					{{ $t('Pages.label.only_items_received_new', {}) }}
 				</label>

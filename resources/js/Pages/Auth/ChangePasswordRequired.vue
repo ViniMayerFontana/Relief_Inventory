@@ -42,7 +42,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="password" value="New Password" />
+                <InputLabel for="password" :value="$t('Commons.text.new_password')" />
 
                 <TextInput
                     id="password"
@@ -60,7 +60,7 @@ const submit = () => {
             <div class="mt-4">
                 <InputLabel
                     for="password_confirmation"
-                    value="Confirm New Password"
+                    :value="$t('Commons.label.confirm_new_password')"
                 />
 
                 <TextInput

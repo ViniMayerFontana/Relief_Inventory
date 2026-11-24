@@ -120,7 +120,7 @@ export default {
 	placeholder: {
 		type: String,
 		required: false,
-		default: t('Components.text.select_an_option'),
+		default: () => t('Components.text.select_an_option'),
 	},
   },
   data() {
