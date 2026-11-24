@@ -264,3 +264,10 @@ Dívidas documentadas da fase (todas não bloqueantes): relatório completo em `
 - **3d unidades:** 5 pontos de EXIBIÇÃO trocados para preferir `units.name` (pt) com fallback abbreviation: OrderController:335 (COALESCE invertido), FlowReport:283, InventoryReport:141, OutstandingOrders:109, Unfulfilled:127. **Verificado: nenhum lugar envia abbreviation como valor de formulário/filtro/CSV** (UnitController recebe abbreviation só na página admin de unidades — intocado). php -l 5/5.
 - **3c bloqueado:** `storage/app/Items.csv` NÃO EXISTE no workspace (fora do git, vive na instância). O lead precisa copiar o CSV da instância para eu gerar o rascunho `.i18n-queue/items_pt_draft.md`. Migration por item_number segue o plano aprovado após o rascunho.
 - Diff recursivo de tipos en↔pt nos 9 JSONs: **0 problemas** (classe 0).
+
+### 3c concluído (2026-11-24) — catálogo pt
+
+- Correção da revisão do lead aplicada: "Floor tile" → "Piso (genérico)"; "Floor tile, vinyl" → "Piso de vinil"; "Floor tile, ceramic" → "Piso cerâmico"; "Flooring, wood" → "Piso de madeira". Variantes conferidas no catálogo: só essas 4.
+- Draft final: `.i18n-queue/items_pt_draft.md` — 455 descrições únicas (456 linhas; todas "GENERIC ITEM"), 0 sem tradução, **0 colisões de pt** (update/down por description é seguro).
+- Migration `2026_11_24_000003_translate_items_catalog_pt_br.php` gerada: update por description EN → pt com sufixo " GENERIC ITEM" preservado; down restaura EN por description pt; php -l OK. Installs fresh não têm catálogo (comportamento inalterado).
+- Regra futura registrada: ao traduzir pares "X" / "X, qualifier", garantir pt distinto (genérico com "(genérico)" ou "Piso de X").
