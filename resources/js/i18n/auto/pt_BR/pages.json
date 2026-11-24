@@ -1595,7 +1595,10 @@
       "status_completed": "Concluído",
       "status_closed_unfulfilled": "Encerrado — não atendido",
       "labels_selected_count": "{p0} etiqueta(s) selecionada(s)",
-      "sheets_count": "{p0} folha(s)"
+      "sheets_count": "{p0} folha(s)",
+      "access_staff_only_short": "Somente equipe",
+      "access_public_short": "Público",
+      "access_both_short": "Ambos"
     },
     "title": {
       "about_this_installation": "Sobre esta instalação",
