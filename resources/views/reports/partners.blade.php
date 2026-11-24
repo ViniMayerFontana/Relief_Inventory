@@ -9,6 +9,21 @@
         default => __('reports.Partners.text.all_orders'),
     };
 @endphp
+@php
+    $statusLabels = [
+        'Shopping Cart' => __('reports.Common.status.shopping_cart'),
+        'New Order' => __('reports.Common.status.new_order'),
+        'Filling' => __('reports.Common.status.filling'),
+        'Ready to Fill' => __('reports.Common.status.ready_to_fill'),
+        'Filled' => __('reports.Common.status.filled'),
+        'Ready to Ship' => __('reports.Common.status.ready_to_ship'),
+        'Shipped' => __('reports.Common.status.shipped'),
+        'Delivered' => __('reports.Common.status.delivered'),
+        'Delivered — Waiting on BOL' => __('reports.Common.status.awaiting_bol'),
+        'Completed' => __('reports.Common.status.completed'),
+        'Closed - Unfulfilled' => __('reports.Common.status.closed_unfulfilled'),
+    ];
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -19,7 +34,7 @@
             size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Partner Report — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
+                content: "{{ __('reports.Partners.text.header_name') }} — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
             @top-right {
@@ -53,24 +68,19 @@
 <body>
     <h1>{{ __("commons.text.partner_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; what each partner requested and received, {{ $range }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
+        {{ config('app.name') }} &mdash; {{ __('reports.Partners.text.subtitle', ['range' => $range]) }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <div class="summary">
-        <strong>{{ $t['partners'] }}</strong> partner{{ $t['partners'] === 1 ? '' : 's' }},
-        <strong>{{ $t['requests'] }}</strong> request{{ $t['requests'] === 1 ? '' : 's' }}:
-        <strong>{{ number_format($t['requested']) }}</strong> requested,
-        <strong>{{ number_format($t['filled']) }}</strong> filled
-        (fill rate on finished requests {{ $rate($t['fill_rate']) }});
-        {{ $t['shipped'] }} shipped, {{ $t['delivered'] }} delivered.
+        {{ __('reports.Partners.text.partners_summary', ['p0' => $t['partners'], 'p1' => $t['requests'], 'p2' => number_format($t['requested']), 'p3' => number_format($t['filled']), 'p4' => $rate($t['fill_rate']), 'p5' => $t['shipped'], 'p6' => $t['delivered']]) }}
     </div>
 
     @if($report['partners']->isEmpty())
-        <p>No requests{{ $range === 'all orders' && empty($f->county_id) ? '' : ' for these filters' }}.</p>
+        <p>{{ __('reports.Partners.text.no_requests') }}{{ $range === __('reports.Partners.text.all_orders') && empty($f->county_id) ? '' : __('reports.Partners.text.no_requests_filters') }}.</p>
     @else
         <h2>{{ __("commons.text.by_county") }}</h2>
         <table>
-            <thead><tr><th>{{ __("commons.text.county_2") }}</th><th class="num">Partners</th><th class="num">{{ __("commons.text.requests") }}</th><th class="num">{{ __("commons.text.requested") }}</th><th class="num">{{ __("commons.text.filled") }}</th></tr></thead>
+            <thead><tr><th>{{ __("commons.text.county_2") }}</th><th class="num">{{ __('reports.Partners.text.partners_count') }}</th><th class="num">{{ __("commons.text.requests") }}</th><th class="num">{{ __("commons.text.requested") }}</th><th class="num">{{ __("commons.text.filled") }}</th></tr></thead>
             <tbody>
                 @foreach($report['by_county'] as $row)
                     <tr>
@@ -84,13 +94,13 @@
             </tbody>
         </table>
 
-        <h2>Partners</h2>
+        <h2>{{ __('reports.Partners.text.partners_count') }}</h2>
         <table>
             <thead>
                 <tr>
-                    <th>{{ __("reports.Partners.text.partner_request") }}</th><th>County &middot; Zip</th><th class="num">{{ __("commons.text.requests") }}</th>
+                    <th>{{ __("reports.Partners.text.partner_request") }}</th><th>{{ __('reports.Partners.text.county_zip') }}</th><th class="num">{{ __("commons.text.requests") }}</th>
                     <th class="num">{{ __("commons.text.requested") }}</th><th class="num">{{ __("commons.text.filled") }}</th><th class="num">{{ __("commons.text.fill_rate") }}</th>
-                    <th class="num">{{ __("commons.text.shipped") }}</th><th class="num">Delivered</th><th>{{ __("commons.text.last_request") }}</th>
+                    <th class="num">{{ __("commons.text.shipped") }}</th><th class="num">{{ __('reports.Partners.text.delivered') }}</th><th>{{ __("commons.text.last_request") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -108,7 +118,7 @@
                     </tr>
                     @foreach($p['orders'] as $o)
                         <tr class="order">
-                            <td class="indent">#{{ $o['id'] }} &middot; {{ $o['status'] }}</td>
+                            <td class="indent">#{{ $o['id'] }} &middot; {{ $statusLabels[$o['status']] ?? $o['status'] }}</td>
                             <td>{{ $o['order_date'] }}</td>
                             <td></td>
                             <td class="num">{{ number_format($o['requested']) }}</td>
@@ -122,9 +132,7 @@
     @endif
 
     <div class="disclaimer">
-        Every request counts toward requests and requested, whatever its status. Fill rate = filled &divide;
-        requested over requests whose filling is finished. County and zip are the partner's. Quantities are in each
-        item's own unit, so totals mix units. See the Unfulfilled Requests Report for what was short and why.
+        {{ __('reports.Partners.text.disclaimer') }}
     </div>
 </body>
 </html>

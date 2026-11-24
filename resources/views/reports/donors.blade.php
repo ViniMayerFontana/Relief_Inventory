@@ -10,6 +10,21 @@
         default => __('reports.Donors.text.all_donations'),
     };
 @endphp
+@php
+    $statusLabels = [
+        'Shopping Cart' => __('reports.Common.status.shopping_cart'),
+        'New Order' => __('reports.Common.status.new_order'),
+        'Filling' => __('reports.Common.status.filling'),
+        'Ready to Fill' => __('reports.Common.status.ready_to_fill'),
+        'Filled' => __('reports.Common.status.filled'),
+        'Ready to Ship' => __('reports.Common.status.ready_to_ship'),
+        'Shipped' => __('reports.Common.status.shipped'),
+        'Delivered' => __('reports.Common.status.delivered'),
+        'Delivered — Waiting on BOL' => __('reports.Common.status.awaiting_bol'),
+        'Completed' => __('reports.Common.status.completed'),
+        'Closed - Unfulfilled' => __('reports.Common.status.closed_unfulfilled'),
+    ];
+@endphp
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,11 +35,11 @@
             size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Donor Report — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
+                content: "{{ __('reports.Donors.text.header_with_date', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \\d\\e F \\d\\e Y \\à\\s H:i T' : 'F j, Y \\a\\t g:i A T')]) }}";
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "{{ __('reports.Common.text.page') }} " counter(page) " {{ __('reports.Common.text.of') }} " counter(pages);
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
         }
@@ -55,18 +70,16 @@
 <body>
     <h1>{{ __("commons.text.donor_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; what each donor sent and how much was usable, {{ $range }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
+        {{ config('app.name') }} &mdash; {{ __('reports.Donors.text.subtitle', ['range' => $range]) }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <div class="summary">
-        <strong>{{ $t['donors'] }}</strong> donor{{ $t['donors'] === 1 ? '' : 's' }},
-        <strong>{{ $t['donations'] }}</strong> sorted donation{{ $t['donations'] === 1 ? '' : 's' }},
-        <strong>{{ number_format($t['units']) }}</strong> units sorted, overall loss <strong>{{ $pct($t['loss_percent']) }}</strong>.
-        {{ $t['watch'] }} on watch, {{ $t['decline'] }} on decline; {{ $t['needs_review'] }} with a suggestion that differs from their standing.
+        {{ __('reports.Donors.text.donors_summary', ['p0' => $t['donors'], 'p1' => $t['donations'], 'p2' => number_format($t['units']), 'p3' => $pct($t['loss_percent'])]) }}
+        {{ __('reports.Donors.text.watch_decline', ['p0' => $t['watch'], 'p1' => $t['decline'], 'p2' => $t['needs_review']]) }}
     </div>
 
     @if($report['donors']->isEmpty())
-        <p>No donations{{ $range === 'all donations' ? '' : ' in this date range' }}.</p>
+        <p>{{ $range === __('reports.Donors.text.all_donations') ? __('reports.Donors.text.no_donations') : __('reports.Donors.text.no_donations_range') }}</p>
     @else
         <h2>{{ __("commons.text.donors") }}</h2>
         <table>
@@ -93,7 +106,7 @@
                     </tr>
                     @foreach($d['donation_list'] as $n)
                         <tr class="donation">
-                            <td class="indent">#{{ $n['id'] }} &middot; {{ $n['date'] }} &middot; {{ $n['status'] }}</td>
+                            <td class="indent">#{{ $n['id'] }} &middot; {{ $n['date'] }} &middot; {{ $statusLabels[$n['status']] ?? $n['status'] }}</td>
                             <td></td><td></td><td></td><td></td>
                             <td class="num">{{ number_format($n['usable']) }}</td>
                             <td class="num">{{ number_format($n['outdated']) }}</td>
@@ -108,12 +121,7 @@
     @endif
 
     <div class="disclaimer">
-        Loss % = (outdated + trashed) &divide; everything sorted; diverted goods aren't counted against a donor.
-        Suggested standing needs {{ $c['min_donations'] }}+ sorted donations and {{ $c['min_units'] }}+ units: watch at
-        {{ $c['watch_loss_percent'] }}%+ loss, decline at {{ $c['decline_loss_percent'] }}%+ over {{ $c['decline_min_donations'] }}+
-        donations, preferred at {{ $c['preferred_loss_percent'] }}% or less over {{ $c['preferred_min_donations'] }}+ donations and
-        {{ $c['preferred_min_units'] }}+ units. A suggestion is not a decision: the standing shown is the one staff set.
-        Quantities are in each item's own unit.
+        {{ __('reports.Donors.text.disclaimer', ['min_donations' => $c['min_donations'], 'min_units' => $c['min_units'], 'watch_loss_percent' => $c['watch_loss_percent'], 'decline_loss_percent' => $c['decline_loss_percent'], 'decline_min_donations' => $c['decline_min_donations'], 'preferred_loss_percent' => $c['preferred_loss_percent'], 'preferred_min_donations' => $c['preferred_min_donations'], 'preferred_min_units' => $c['preferred_min_units']]) }}
     </div>
 </body>
 </html>

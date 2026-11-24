@@ -236,3 +236,10 @@ Dívidas documentadas da fase (todas não bloqueantes): relatório completo em `
 - **Vue já estava pronto:** Receiving.vue usa $t(unknown_donor/donor_unknown) — pt atualizado para "Doador desconhecido".
 - **PHP display strings agora via __():** DonationOfferController ×2 (fallback de label) e DonorReportController abort 422 -> `Commons.text.unknown_donor_no_standing` = "O registro de doador desconhecido não tem situação.".
 - **Testes atualizados:** UnknownDonorTest ×2 expectativas organization -> "Doador desconhecido". Restante dos testes casa por system_key — intocado. Comentários de código citando "Unknown Donor" (documentação) intocados de propósito.
+
+### Lote PDFs 100% pt — conclusão (2026-11-24)
+
+- **Traduzidos:** donors, partners, unfulfilled (intro/resumo/disclaimer/cabeçalho @page/página X de Y), flow (summary/legenda/por bucket/bucket_day|week|month = dia/semana/mês), BOL (sign-offs: Staff Name/Signature/Date/Carrier/Driver Name/Driver Cell/Driver Signature/Pickup Date/Received By (print) + Order #:p0), orders/inventory/order-form/pick-sheets (headers/subtitles/Uncategorized/unnumbered/Totals/Pick Sheet—Order/Sorting area ×N/no location), sitrep (Orders by Zip + top :p0 de :p1, Trend/vs. 7 dias anteriores, estágios do pipeline via `Str::slug` → stage_* keys), training (setup-packet completo, team-sheet, report-cards, certificate fallbacks).
+- **Status nos PDFs (donors/partners):** células `{{ $n['status'] }}`/`{{ $o['status'] }}` → `$statusLabels[...]` com mapa `__()` (11 status pt: Carrinho de compras/Novo pedido/Em atendimento/Pronto para atendimento/Atendido/Pronto para expedição/Expedido/Entregue/Entregue — aguardando BOL/Concluído/Encerrado — não atendido) sob `Reports.Common.status.*`.
+- **Compartilhado:** `Reports.Common.text.page/of` ("Página"/"de") nos @top-right de todos.
+- php -l: blades e lang 0 erros. lang regenerado pelo script oficial após cada lote.

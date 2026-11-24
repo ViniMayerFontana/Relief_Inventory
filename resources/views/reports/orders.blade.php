@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>{{ __("reports.Orders.text.outstanding_orders_report") }}</title>
+    <title>{{ __("reports.Orders.text.header_name") }}</title>
     <style>
         @page {
             size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Outstanding Orders Report — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
+                content: "{{ __('reports.Orders.text.header_name') }} — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -95,9 +95,9 @@
     </style>
 </head>
 <body>
-    <h1>{{ __("reports.Orders.text.outstanding_orders_report") }}</h1>
+    <h1>{{ __("reports.Orders.text.header_name") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; every order not yet shipped, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
+        {{ config('app.name') }} &mdash; {{ __('reports.Orders.text.subtitle', ['date' => __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <table>

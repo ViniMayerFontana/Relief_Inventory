@@ -13,11 +13,11 @@
             size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Inventory Flow Report — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
+                content: "{{ __('reports.Flow.text.header_name') }} — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}";
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "{{ __('reports.Common.text.page') }} " counter(page) " {{ __('reports.Common.text.of') }} " counter(pages);
                 font-family: Arial, sans-serif; font-size: 9px; color: #888;
             }
         }
@@ -44,23 +44,22 @@
 <body>
     <h1>{{ __("reports.Flow.text.inventory_flow_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; {{ __('reports.Flow.text.period_by', ['from' => $f->from, 'to' => $f->to, 'bucket' => $f->bucket]) }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
+    {{ config('app.name') }} &mdash; {{ __('reports.Flow.text.subtitle', ['period' => __('reports.Flow.text.period_by', ['from' => $f->from, 'to' => $f->to, 'bucket' => __('reports.Flow.text.bucket_'.$f->bucket)]), 'date' => __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')])]) }}
     </div>
 
     <div class="summary">
-        Opening on hand <strong>{{ number_format($t['opening']) }}</strong>
-        + received <strong>{{ number_format($t['received']) }}</strong>
-        &minus; picked <strong>{{ number_format($t['picked']) }}</strong>
-        {{ $t['adjustments'] < 0 ? '&minus;' : '+' }} adjustments <strong>{{ number_format(abs($t['adjustments'])) }}</strong>
-        = closing on hand <strong>{{ number_format($t['closing']) }}</strong>.
-        Not stock: {{ number_format($t['outdated']) }} outdated, {{ number_format($t['trashed']) }} trashed,
-        {{ number_format($t['diverted']) }} diverted.
+        {{ __('reports.Flow.text.opening') }} <strong>{{ number_format($t['opening']) }}</strong>
+        {{ __('reports.Flow.text.received') }} <strong>{{ number_format($t['received']) }}</strong>
+        {{ __('reports.Flow.text.picked') }} <strong>{{ number_format($t['picked']) }}</strong>
+        {{ $t['adjustments'] < 0 ? '&minus;' : '+' }} {{ __('reports.Flow.text.adjustments') }} <strong>{{ number_format(abs($t['adjustments'])) }}</strong>
+        {{ __('reports.Flow.text.closing') }} <strong>{{ number_format($t['closing']) }}</strong>.
+        {{ __('reports.Flow.text.not_stock', ['p0' => number_format($t['outdated']), 'p1' => number_format($t['trashed']), 'p2' => number_format($t['diverted'])]) }}
     </div>
 
-    <h2>By {{ $f->bucket }}</h2>
+    <h2>{{ __('reports.Flow.text.by_bucket', ['bucket' => __('reports.Flow.text.bucket_'.($f->bucket ?? ''))]) }}</h2>
     <table>
         <thead><tr>
-            <th>{{ __("commons.text.period_starting") }}</th><th class="num">Received</th><th class="num">{{ __("commons.text.picked") }}</th><th class="num">{{ __("commons.text.adjustments") }}</th>
+            <th>{{ __("commons.text.period_starting") }}</th><th class="num">{{ __('reports.Flow.text.received_th') }}</th><th class="num">{{ __("commons.text.picked") }}</th><th class="num">{{ __("commons.text.adjustments") }}</th>
             <th class="num">{{ __("reports.Flow.text.on_hand_end") }}</th><th class="num">{{ __("commons.text.outdated") }}</th><th class="num">{{ __("commons.text.trashed") }}</th><th class="num">{{ __("commons.text.diverted") }}</th>
         </tr></thead>
         <tbody>
@@ -94,7 +93,7 @@
     <h2>{{ __("commons.text.by_item") }}</h2>
     <table>
         <thead><tr>
-            <th>{{ __("commons.text.item") }}</th><th>{{ __("commons.text.item_2") }}</th><th>{{ __("commons.text.unit") }}</th><th class="num">{{ __("commons.text.opening") }}</th><th class="num">Received</th>
+            <th>{{ __("commons.text.item") }}</th><th>{{ __("commons.text.item_2") }}</th><th>{{ __("commons.text.unit") }}</th><th class="num">{{ __("commons.text.opening") }}</th><th class="num">{{ __('reports.Flow.text.received_th') }}</th>
             <th class="num">{{ __("commons.text.picked") }}</th><th class="num">{{ __("reports.Flow.text.adjust") }}</th><th class="num">{{ __("commons.text.closing") }}</th>
             <th class="num">{{ __("commons.text.outdated") }}</th><th class="num">{{ __("commons.text.trashed") }}</th><th class="num">{{ __("commons.text.diverted") }}</th>
         </tr></thead>
@@ -118,10 +117,7 @@
     </table>
 
     <div class="disclaimer">
-        Received = usable goods sorted in; picked = filled onto requests; adjustments = manual inventory corrections
-        (net). Outdated, trashed and diverted goods are not stock and don't change on-hand. Moving a pallet changes
-        where stock is, not how much, so it isn't shown. Quantities are in each item's own unit, so totals across
-        different items mix units.
+        {{ __('reports.Flow.text.legend') }}
     </div>
 </body>
 </html>

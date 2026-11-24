@@ -8,13 +8,13 @@
             size: {{ \App\Support\ReportPaper::size() }};
             margin: 0.75in 0.5in 0.5in 0.5in;
             @top-left {
-                content: "Order Request Form — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')]) }}";
+                content: "{{ __('reports.OrderForm.text.header_name') }} — {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y')]) }}";
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "{{ __('reports.Common.text.page') }} " counter(page) " {{ __('reports.Common.text.of') }} " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -148,7 +148,7 @@
         <div class="field"><label>{{ __("reports.OrderForm.text.organization_pod_name") }}</label><div class="line"></div></div>
         <div class="field"><label>{{ __("commons.text.contact_name") }}</label><div class="line"></div></div>
         <div class="field"><label>{{ __("commons.text.phone_2") }}</label><div class="line"></div></div>
-        <div class="field"><label>Email</label><div class="line"></div></div>
+        <div class="field"><label>{{ __('reports.OrderForm.text.email') }}</label><div class="line"></div></div>
         <div class="field"><label>{{ __("commons.text.delivery_address") }}</label><div class="line"></div></div>
         <div class="field"><label>{{ __("reports.OrderForm.text.date_needed_by") }}</label><div class="line"></div></div>
     </div>
@@ -157,7 +157,7 @@
         <table>
             <thead>
                 <tr>
-                    <th class="category-heading" colspan="4">{{ $category ?? 'Uncategorized' }}</th>
+                    <th class="category-heading" colspan="4">{{ $category ?? __('reports.OrderForm.text.uncategorized') }}</th>
                 </tr>
                 <tr>
                     <th>{{ __("commons.text.item") }}</th>

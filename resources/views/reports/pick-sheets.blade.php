@@ -14,7 +14,7 @@
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "{{ __('reports.Common.text.page') }} " counter(page) " {{ __('reports.Common.text.of') }} " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -101,9 +101,9 @@
 <body>
 @foreach($orders as $order)
     <div class="order-page">
-        <h1>Pick Sheet — Order #{{ $order->id }}</h1>
+        <h1>{{ $t('reports.PickSheets.text.header', { p0: $order->id }) }}</h1>
         <div class="subtitle">
-            {{ $order->person?->full_name ?? 'Unknown' }}
+            {{ $order->person?->full_name ?? __('reports.PickSheets.text.unknown') }}
             @if($order->order_date) &mdash; {{ \Illuminate\Support\Carbon::parse($order->order_date)->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y' : 'F j, Y') }} @endif
         </div>
 
@@ -134,9 +134,9 @@
                             @foreach(($plans[$line->id]['steps'] ?? []) as $step)
                                 <div>
                                     @if($step['kind'] === 'pool')
-                                        Sorting area &times;{{ $step['qty'] }}
+                                        {{ __('reports.PickSheets.text.sorting_area_qty', ['p0' => $step['qty']]) }}
                                     @else
-                                        <strong>{{ $step['location'] ?? 'no location' }}</strong> {{ $step['tag'] }} &times;{{ $step['qty'] }}@if(!empty($step['expires_on'])) (exp {{ $step['expires_on'] }})@endif @if(!empty($step['whole'])) <em>{{ __("reports.PickSheets.text.take_the_whole_pallet") }}</em>@elseif($step['needs_open']) <em>{{ __("reports.PickSheets.text.open_pallet_first") }}</em>@endif
+                                        <strong>{{ $step['location'] ?? __('reports.PickSheets.text.no_location') }}</strong> {{ $step['tag'] }} &times;{{ $step['qty'] }}@if(!empty($step['expires_on'])) (exp {{ $step['expires_on'] }})@endif @if(!empty($step['whole'])) <em>{{ __("reports.PickSheets.text.take_the_whole_pallet") }}</em>@elseif($step['needs_open']) <em>{{ __("reports.PickSheets.text.open_pallet_first") }}</em>@endif
                                     @endif
                                 </div>
                             @endforeach

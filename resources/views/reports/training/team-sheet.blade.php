@@ -29,14 +29,14 @@
 <body>
 @foreach ($sheets as $sheet)
     <div class="sheet">
-        <h1>Team {{ $sheet['team'] }} — Activity Sheet</h1>
-        <div class="subtitle">{{ config('app.name') }} hands-on training · two segments of {{ \App\Support\TrainingGuide::SEGMENT_MINUTES }} minutes · about 8 minutes per station</div>
+        <h1>{{ __('reports.Training.TeamSheet.text.team_activity_sheet', ['p0' => $sheet['team']]) }}</h1>
+        <div class="subtitle">{{ __('reports.Training.TeamSheet.text.subtitle', ['p0' => AppSupportTrainingGuide::SEGMENT_MINUTES]) }}</div>
 
         <div class="box">
             <strong>{{ __("commons.text.logging_in") }}</strong> on a station's tablet, tap your name, choose Team {{ $sheet['team'] }}, and tap Start.
-            Not on the list? Tap Add New. Tap "Staff login" in the yellow strip when you're done, or just hand the tablet to the next team.
+            {{ __('reports.Training.TeamSheet.text.staff_login_hint') }}
             <strong>{{ __("commons.text.move_on") }}</strong> when the trainer calls time: go to the next station on the list below (Station 6 goes back to Station 1).
-            <br><strong>{{ __("commons.text.segment_1") }}</strong> = Round 1 at every station. <strong>{{ __("commons.text.segment_2") }}</strong> = Round 2 at every station, in the same order.
+            <br><strong>{{ __("commons.text.segment_1") }}</strong> {{ __('reports.Training.TeamSheet.text.rounds_note') }} <strong>{{ __("commons.text.segment_2") }}</strong> {{ __('reports.Training.TeamSheet.text.rounds_note_2') }} same order.
             @if (! empty($drivers[$sheet['team']]))
                 <br><strong>{{ __("reports.Training.TeamSheet.text.your_team_driver_station") }}</strong> phone {{ $drivers[$sheet['team']]['phone'] }}, PIN {{ $drivers[$sheet['team']]['pin'] }}
             @endif
@@ -62,7 +62,7 @@
                 <h2>Slot {{ $slot['slot'] }} · Station {{ $slot['station'] }}: {{ $slot['name'] }} <span style="font-weight:normal; color:#555;">({{ $slot['activity']['page'] }})</span></h2>
                 @foreach (['round1' => 'Round 1', 'round2' => 'Round 2'] as $key => $label)
                     <div class="round">
-                        <span class="check">&#9744; done</span>
+                        <span class="check">&#9744; {{ __('reports.Training.TeamSheet.text.done') }}</span>
                         <strong>{{ $label }}: {{ $slot['activity'][$key]['title'] }}</strong>
                         <ol>
                             @foreach ($slot['activity'][$key]['steps'] as $step)

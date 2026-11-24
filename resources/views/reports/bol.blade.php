@@ -14,7 +14,7 @@
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "{{ __('reports.Common.text.page') }} " counter(page) " {{ __('reports.Common.text.of') }} " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -140,7 +140,7 @@
 </head>
 <body>
     <h1>{{ __("reports.Bol.text.bill_of_lading") }}</h1>
-    <div class="subtitle">{{ $order->bol_number }} &mdash; Order #{{ $order->id }}</div>
+    <div class="subtitle">{{ $order->bol_number }} &mdash; {{ __('reports.Bol.text.order_number', { p0: $order->id }) }}</div>
 
     <div class="section">
         <h2>{{ __("commons.text.shipment") }}</h2>
@@ -224,31 +224,31 @@
     <div class="signoff">
         <h2>{{ __("commons.text.shipper_release") }}</h2>
         <div class="row">
-            Staff Name: <span class="line"></span>
-            Signature: <span class="line"></span>
-            Date: <span class="line" style="min-width:100px;"></span>
+            {{ __('reports.Bol.text.staff_name') }} <span class="line"></span>
+            {{ __('reports.Bol.text.signature') }} <span class="line"></span>
+            {{ __('reports.Bol.text.date') }} <span class="line" style="min-width:100px;"></span>
         </div>
     </div>
 
     <div class="signoff">
         <h2>{{ __("reports.Bol.text.carrier_driver_receipt") }}</h2>
         <div class="row">
-            Carrier: <span class="line">{{ $order->driver?->carrier }}</span>
-            Driver Name: <span class="line">{{ $order->driver?->name }}</span>
-            Driver Cell: <span class="line">{{ $order->driver?->phone }}</span>
+            {{ __('reports.Bol.text.carrier') }} <span class="line">{{ $order->driver?->carrier }}</span>
+            {{ __('reports.Bol.text.driver_name') }} <span class="line">{{ $order->driver?->name }}</span>
+            {{ __('reports.Bol.text.driver_cell') }} <span class="line">{{ $order->driver?->phone }}</span>
         </div>
         <div class="row">
-            Driver Signature: <span class="line"></span>
-            Pickup Date: <span class="line" style="min-width:100px;"></span>
+            {{ __('reports.Bol.text.driver_signature') }} <span class="line"></span>
+            {{ __('reports.Bol.text.pickup_date') }} <span class="line" style="min-width:100px;"></span>
         </div>
     </div>
 
     <div class="signoff">
         <h2>{{ __("commons.text.delivery_confirmation") }}</h2>
         <div class="row">
-            Received By (print): <span class="line"></span>
-            Signature: <span class="line"></span>
-            Date: <span class="line" style="min-width:100px;"></span>
+            {{ __('reports.Bol.text.received_by_print') }} <span class="line"></span>
+            {{ __('reports.Bol.text.signature') }} <span class="line"></span>
+            {{ __('reports.Bol.text.date') }} <span class="line" style="min-width:100px;"></span>
         </div>
     </div>
 </body>

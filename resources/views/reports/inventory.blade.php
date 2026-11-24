@@ -98,14 +98,14 @@
 <body>
     <h1>{{ __("commons.text.inventory_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; stock on hand, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
+        {{ config('app.name') }} &mdash; {{ __('reports.Inventory.text.subtitle', ['date' => __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     @foreach($records->groupBy('category') as $category => $rows)
         <table>
             <thead>
                 <tr>
-                    <th class="category-heading" colspan="8">{{ $category ?? 'Uncategorized' }}</th>
+                    <th class="category-heading" colspan="8">{{ $category ?? __('reports.Inventory.text.uncategorized') }}</th>
                 </tr>
                 <tr>
                     <th>{{ __("commons.text.item") }}</th>
@@ -121,7 +121,7 @@
             <tbody>
                 @foreach($rows as $row)
                     <tr>
-                        <td>{{ $row['display_number'] ?? '(unnumbered)' }}</td>
+                        <td>{{ $row['display_number'] ?? __('reports.Inventory.text.unnumbered') }}</td>
                         <td>{{ $row['name'] }}</td>
                         <td>{{ $row['unit'] }}</td>
                         <td class="num">{{ $row['on_hand'] }}</td>
@@ -141,7 +141,7 @@
         <table>
             <tbody>
                 <tr class="totals">
-                    <td colspan="3">Totals ({{ $records->count() }} item type{{ $records->count() === 1 ? '' : 's' }})</td>
+                    <td colspan="3">{{ __('reports.Inventory.text.totals', ['p0' => $records->count()]) }}</td>
                     <td class="num">{{ $records->sum('on_hand') }}</td>
                     <td class="num">{{ $records->sum('received_new') ?: '' }}</td>
                     <td class="num">{{ $records->sum('outdated') ?: '' }}</td>

@@ -27,7 +27,7 @@
     <h1>{{ __("reports.Training.ReportCards.text.training_report_cards") }}</h1>
     <div class="subtitle">
         {{ config('app.name') }} — {{ $range }}{{ ! empty($f['team']) ? ', Team '.$f['team'] : '' }}
-        — {{ $report['totals']['complete'] }} of {{ $report['totals']['trainees'] }} trainees completed all six stations
+        — {{ __('reports.Training.ReportCards.text.completed_summary', ['p0' => $report['totals']['complete'], 'p1' => $report['totals']['trainees']]) }}
     </div>
 
     @if (count($report['trainees']) === 0)

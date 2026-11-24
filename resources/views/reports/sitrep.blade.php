@@ -111,9 +111,9 @@
                 <div class="stat_row"><span>{{ __("reports.Sitrep.text.last_30_days") }}</span><strong>{{ $data['orders_fulfilled']['last_30_days'] }}</strong></div>
                 <div class="stat_row"><span>{{ __("commons.text.all_time") }}</span><strong>{{ $data['orders_fulfilled']['all_time'] }}</strong></div>
                 <div class="trend trend_{{ $data['orders_trend']['direction'] }}">
-                    Trend: {{ ucfirst($data['orders_trend']['direction']) }}
+                    {{ __('reports.Sitrep.text.trend', ['p0' => ucfirst($data['orders_trend']['direction'])]) }}
                     @if($data['orders_trend']['percent'] !== null) ({{ $data['orders_trend']['percent'] }}%) @endif
-                    vs. prior 7 days
+                    {{ __('reports.Sitrep.text.vs_prior') }}
                 </div>
             </div>
             <div class="stat_block">
@@ -123,9 +123,9 @@
                 <div class="stat_row"><span>{{ __("reports.Sitrep.text.last_30_days") }}</span><strong>{{ $data['donations_completed']['last_30_days'] }}</strong></div>
                 <div class="stat_row"><span>{{ __("commons.text.all_time") }}</span><strong>{{ $data['donations_completed']['all_time'] }}</strong></div>
                 <div class="trend trend_{{ $data['donations_trend']['direction'] }}">
-                    Trend: {{ ucfirst($data['donations_trend']['direction']) }}
+                    {{ __('reports.Sitrep.text.trend', ['p0' => ucfirst($data['donations_trend']['direction'])]) }}
                     @if($data['donations_trend']['percent'] !== null) ({{ $data['donations_trend']['percent'] }}%) @endif
-                    vs. prior 7 days
+                    {{ __('reports.Sitrep.text.vs_prior') }}
                 </div>
             </div>
         </div>
@@ -138,7 +138,7 @@
                 <thead><tr><th>{{ __("commons.text.donations") }}</th><th class="num">{{ __("commons.text.count") }}</th></tr></thead>
                 <tbody>
                     @foreach($data['pipeline']['donations'] as $stage => $count)
-                        <tr><td>{{ $stage }}</td><td class="num">{{ $count }}</td></tr>
+                        <tr><td>{{ __('reports.Sitrep.text.stage_'.\Illuminate\Support\Str::slug($stage, '_')) }}</td><td class="num">{{ $count }}</td></tr>
                     @endforeach
                 </tbody>
             </table></div>
@@ -146,7 +146,7 @@
                 <thead><tr><th>{{ __("commons.text.orders") }}</th><th class="num">{{ __("commons.text.count") }}</th></tr></thead>
                 <tbody>
                     @foreach($data['pipeline']['orders'] as $stage => $count)
-                        <tr><td>{{ $stage }}</td><td class="num">{{ $count }}</td></tr>
+                        <tr><td>{{ __('reports.Sitrep.text.stage_'.\Illuminate\Support\Str::slug($stage, '_')) }}</td><td class="num">{{ $count }}</td></tr>
                     @endforeach
                 </tbody>
             </table></div>
@@ -175,7 +175,7 @@
             @endif
         </div>
         <div class="section stat_col">
-            <h2>Orders by Zip @if($zipShown < $zipTotal)(top {{ $zipShown }} of {{ $zipTotal }})@endif</h2>
+            <h2>{{ __('reports.Sitrep.text.orders_by_zip') }} @if($zipShown < $zipTotal){{ __('reports.Sitrep.text.top', ['p0' => $zipShown, 'p1' => $zipTotal]) }}@endif</h2>
             @if($zipShown)
                 <table>
                     <thead><tr><th>{{ __("commons.text.zip") }}</th><th class="num">{{ __("commons.text.orders") }}</th></tr></thead>

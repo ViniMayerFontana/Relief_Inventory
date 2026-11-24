@@ -23,7 +23,7 @@
                 color: #888;
             }
             @top-right {
-                content: "Page " counter(page) " of " counter(pages);
+                content: "{{ __('reports.Common.text.page') }} " counter(page) " {{ __('reports.Common.text.of') }} " counter(pages);
                 font-family: Arial, sans-serif;
                 font-size: 9px;
                 color: #888;
@@ -120,26 +120,20 @@
 <body>
     <h1>{{ __("reports.Unfulfilled.text.unfulfilled_requests_report") }}</h1>
     <div class="subtitle">
-        {{ config('app.name') }} &mdash; what was requested but not filled, {{ $range }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
+        {{ config('app.name') }} &mdash; {{ __('reports.Unfulfilled.text.subtitle', ['range' => $range]) }}, {{ __('reports.generated_at', ['date' => $generatedAt->translatedFormat(app()->getLocale() === 'pt_BR' ? 'j \d\e F \d\e Y \à\s H:i T' : 'F j, Y \a\t g:i A T')]) }}
     </div>
 
     <div class="summary">
-        <strong>{{ $totals['item_types'] }}</strong> item types short across
-        <strong>{{ $totals['requests'] }}</strong> request{{ $totals['requests'] === 1 ? '' : 's' }}:
-        <strong>{{ number_format($totals['requested']) }}</strong> requested,
-        <strong>{{ number_format($totals['filled']) }}</strong> filled,
-        <strong class="short">{{ number_format($totals['not_filled']) }}</strong> not filled
-        ({{ number_format($totals['cut_at_allocation']) }} cut at allocation,
-        {{ number_format($totals['short_at_picking']) }} short at picking).
+        {{ __('reports.Unfulfilled.text.summary', ['p0' => $totals['item_types'], 'p1' => $totals['requests'], 'p2' => number_format($totals['requested']), 'p3' => number_format($totals['filled']), 'p4' => number_format($totals['not_filled']), 'p5' => number_format($totals['cut_at_allocation']), 'p6' => number_format($totals['short_at_picking'])]) }}
     </div>
 
     @if($report['items']->isEmpty())
-        <p>No unfulfilled requests{{ $range === 'all orders' ? '' : ' in this date range' }}.</p>
+        <p>{{ $range === __('reports.Unfulfilled.text.all_orders') ? __('reports.Unfulfilled.text.none') : __('reports.Unfulfilled.text.none_range') }}</p>
     @else
         <div class="columns">
-            @foreach(['county' => 'County', 'zip' => 'Zip'] as $field => $label)
+            @foreach(['county' => __('reports.Unfulfilled.text.county'), 'zip' => __('reports.Unfulfilled.text.zip')] as $field => $label)
                 <div>
-                    <h2>Not Filled by {{ $label }}</h2>
+                    <h2>{{ __('reports.Unfulfilled.text.not_filled_by') }} {{ $label }}</h2>
                     <table>
                         <thead><tr>
                             <th>{{ $label }}</th><th class="num">{{ __("commons.text.requests") }}</th><th class="num">{{ __("commons.text.item_types") }}</th><th class="num">{{ __("commons.text.not_filled") }}</th>
@@ -164,7 +158,7 @@
             <thead>
                 <tr>
                     <th>{{ __("commons.text.item") }}</th>
-                    <th>Item / County &middot; Zip</th>
+                    <th>{{ __('reports.Unfulfilled.text.item_county_zip') }}</th>
                     <th>{{ __("commons.text.unit") }}</th>
                     <th class="num">{{ __("commons.text.requests") }}</th>
                     <th class="num">{{ __("commons.text.requested") }}</th>
@@ -206,11 +200,7 @@
     @endif
 
     <div class="disclaimer">
-        Counts only requests whose filling is finished (Filled through Completed, plus Closed &ndash; Unfulfilled);
-        requests still being entered or filled aren't included. Not filled = requested &minus; filled. Cut at
-        allocation = less approved than requested in Review Allocation; short at picking = approved but not picked.
-        County and zip are the requesting partner's. Quantities are in each item's own unit, so totals across
-        different items mix units.
+        {{ __('reports.Unfulfilled.text.disclaimer') }}
     </div>
 </body>
 </html>

@@ -41,13 +41,13 @@
             <div class="lead">{{ __("reports.Training.Certificate.text.this_certifies_that") }}</div>
             <div class="name">{{ $t['name'] }}</div>
             <div class="lead">{{ __("commons.text.has_completed") }}</div>
-            <div class="event">{{ $eventTitle ?: 'Hands-on Warehouse Training' }}</div>
-            <div class="lead">{{ $eventLocation ? 'held at '.$eventLocation.' on ' : 'on ' }}{{ $date }}</div>
+            <div class="event">{{ $eventTitle ?: __('reports.Training.Certificate.text.default_event') }}</div>
+            <div class="lead">{{ $eventLocation ? __('reports.Training.Certificate.text.held_at_on', ['p0' => $eventLocation]) : __('reports.Training.Certificate.text.on') }} {{ $date }}</div>
             <div class="signers">
                 @foreach ($signers as $signer)
                     <div class="signer">
                         <div class="signature">@if ($signer['signature'])<img src="{{ $signer['signature'] }}" alt="">@endif</div>
-                        <div class="sign">{{ $signer['name'] ?: 'Trainer' }}</div>
+                        <div class="sign">{{ $signer['name'] ?: __('reports.Training.Certificate.text.trainer_fallback') }}</div>
                     </div>
                 @endforeach
             </div>
