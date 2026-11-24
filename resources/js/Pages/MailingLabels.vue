@@ -23,8 +23,6 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { t } from '@/i18n';
 
-const AUDIENCES = computed(() => ({ partner: t('Commons.heading.partners'), donor: t('Commons.heading.donors'), volunteer: t('Commons.text.volunteers'), other: t('Pages.text.other_no_tag') }));
-
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu },
 	props: {
@@ -51,7 +49,8 @@ export default {
 	},
 	computed: {
 		audiences() {
-			return AUDIENCES.value;
+			// t() aqui roda no render (reativo); em escopo de módulo congelaria em EN.
+			return { partner: t('Commons.heading.partners'), donor: t('Commons.heading.donors'), volunteer: t('Commons.text.volunteers'), other: t('Pages.text.other_no_tag') };
 		},
 		mailable() {
 			return this.records.filter((r) => r.mailable);

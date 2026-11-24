@@ -277,7 +277,8 @@
         "county": "Condado",
         "zip": "CEP",
         "item_county_zip": "Item / Condado · CEP",
-        "disclaimer": "Conta apenas pedidos com atendimento concluído (De Atendido a Concluído, mais Encerrado — não atendido); pedidos ainda sendo digitados ou atendidos não são incluídos. Não atendido = solicitado − atendido. Cortado na alocação = aprovado a menos que solicitado em Revisar alocação; faltando na separação = aprovado mas não separado. Condado e CEP são do parceiro solicitante. As quantidades estão na unidade de cada item, então os totais entre itens diferentes misturam unidades."
+        "disclaimer": "Conta apenas pedidos com atendimento concluído (De Atendido a Concluído, mais Encerrado — não atendido); pedidos ainda sendo digitados ou atendidos não são incluídos. Não atendido = solicitado − atendido. Cortado na alocação = aprovado a menos que solicitado em Revisar alocação; faltando na separação = aprovado mas não separado. Condado e CEP são do parceiro solicitante. As quantidades estão na unidade de cada item, então os totais entre itens diferentes misturam unidades.",
+        "none_range": "Nenhuma solicitação não atendida neste período."
       }
     },
     "Common": {
