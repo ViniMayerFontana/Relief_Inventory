@@ -91,20 +91,20 @@ async function deleteRelease(release) {
 	}
 }
 
-const IMAGE_LABELS = { disk_image: t('Pages.text.raspberry_pi_sd_card'), vm_image: t('Pages.text.virtual_machine_image') };
+const IMAGE_LABELS = computed(() => ({ disk_image: t('Pages.text.raspberry_pi_sd_card'), vm_image: t('Pages.text.virtual_machine_image') }));
 
 // Images and the print client are downloaded by people (anyone who can pair a device), never
 // offered to devices — so they have no update channels.
-const isDownloadOnly = (release) => release.kind === 'print_client' || release.release_type in IMAGE_LABELS;
+const isDownloadOnly = (release) => release.kind === 'print_client' || release.release_type in IMAGE_LABELS.value;
 
 function releaseLabel(release) {
 	if (release.kind === 'print_client') return t('Pages.heading.ri_print_client');
-	return IMAGE_LABELS[release.release_type] || release.kind;
+	return IMAGE_LABELS.value[release.release_type] || release.kind;
 }
 
 function releaseDetail(release) {
 	const platform = release.kind === 'print_client' ? platforms.value[release.architecture] || release.architecture : release.architecture;
-	return IMAGE_LABELS[release.release_type] || release.kind === 'print_client' ? platform : `${release.release_type}, ${platform}`;
+	return IMAGE_LABELS.value[release.release_type] || release.kind === 'print_client' ? platform : `${release.release_type}, ${platform}`;
 }
 
 function formatSize(bytes) {

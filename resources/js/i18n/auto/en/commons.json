@@ -1331,7 +1331,9 @@
       "your_team": "Your team",
       "zip": "Zip",
       "zip_2": ", zip:",
-      "zip_code": "ZIP Code:"
+      "zip_code": "ZIP Code:",
+      "received_3": "Received",
+      "receiving": "Receiving"
     },
     "title": {
       "carton_barcodes": "Carton Barcodes",

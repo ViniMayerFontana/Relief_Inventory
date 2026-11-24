@@ -17,14 +17,15 @@
 
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { computed } from 'vue';
 import { Head, Link } from '@inertiajs/vue3';
 import PeriodStatCard from '@/Components/Dashboard/PeriodStatCard.vue';
 import BarBreakdownCard from '@/Components/Dashboard/BarBreakdownCard.vue';
 import axios from 'axios';
 import { t } from '@/i18n';
 
-const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') };
-const ORDER_STAGE_LABELS = { 'New Order': t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped'), 'Delivered — Waiting on BOL': t('Pages.text.waiting_on_bol') };
+const DONATION_STAGE_LABELS = computed(() => ({ Received: t('Commons.text.received_3'), Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') }));
+const ORDER_STAGE_LABELS = computed(() => ({ 'New Order': t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped'), 'Delivered — Waiting on BOL': t('Pages.text.waiting_on_bol') }));
 
 export default {
 	components: { AuthenticatedLayout, Head, Link, PeriodStatCard, BarBreakdownCard },
@@ -41,13 +42,13 @@ export default {
 	computed: {
 		donationPipelineRows() {
 			if (!this.data) return [];
-			return Object.entries(DONATION_STAGE_LABELS).map(([key, label]) => ({
+			return Object.entries(DONATION_STAGE_LABELS.value).map(([key, label]) => ({
 				label, value: this.data.pipeline.donations[key] || 0,
 			}));
 		},
 		orderPipelineRows() {
 			if (!this.data) return [];
-			return Object.entries(ORDER_STAGE_LABELS).map(([key, label]) => ({
+			return Object.entries(ORDER_STAGE_LABELS.value).map(([key, label]) => ({
 				label, value: this.data.pipeline.orders[key] || 0,
 			}));
 		},
@@ -104,8 +105,8 @@ export default {
 				<BarBreakdownCard :title="$t('Pages.title.donations_in_progress')" :rows="donationPipelineRows" />
 				<BarBreakdownCard :title="$t('Pages.title.orders_in_progress')" :rows="orderPipelineRows" />
 
-				<BarBreakdownCard :title="$t('Pages.title.orders_by_county')" :rows="countyRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard :title="$t('Pages.title.stock_by_category')" :rows="categoryRows" empty-text="No stock on hand yet." />
+				<BarBreakdownCard :title="$t('Pages.title.orders_by_county')" :rows="countyRows" :empty-text="$t('Reports.Sitrep.text.no_orders_placed_yet')" />
+				<BarBreakdownCard :title="$t('Pages.title.stock_by_category')" :rows="categoryRows" :empty-text="$t('Reports.Inventory.text.no_stock_on_hand')" />
 
 				<div class="wd_card wd_inventory">
 					<h3>{{ $t('Commons.heading.inventory_summary', {}) }}</h3>

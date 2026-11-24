@@ -387,7 +387,7 @@ async function copyCode() {
 // ---- Full Instance Backups (Docker) ----
 const instBackups = ref(null);   // the server's payload: { available, schedule, backups, activity, working }
 const instForm = ref(null);
-const weekdays = [t('Commons.text.sunday'), t('Commons.text.monday'), t('Commons.text.tuesday'), t('Commons.text.wednesday'), t('Commons.text.thursday'), t('Commons.text.friday'), t('Commons.text.saturday')];
+const weekdays = computed(() => [t('Commons.text.sunday'), t('Commons.text.monday'), t('Commons.text.tuesday'), t('Commons.text.wednesday'), t('Commons.text.thursday'), t('Commons.text.friday'), t('Commons.text.saturday')]);
 let instTimer = null;
 
 const instFormOf = (sc) => ({
@@ -437,7 +437,7 @@ function backUpInstanceNow(files) {
 }
 
 const sizeOf = (bytes) => (bytes > 1073741824 ? `${(bytes / 1073741824).toFixed(2)} GB` : bytes > 1048576 ? `${(bytes / 1048576).toFixed(1)} MB` : `${Math.ceil(bytes / 1024)} KB`);
-const labelNames = { 'scheduled-daily': t('Commons.text.scheduled_daily'), 'scheduled-weekly': t('Commons.text.scheduled_weekly'), manual: t('Pages.text.made_by_hand'), premigrate: t('Pages.text.before_an_upgrade') };
+const labelNames = computed(() => ({ 'scheduled-daily': t('Commons.text.scheduled_daily'), 'scheduled-weekly': t('Commons.text.scheduled_weekly'), manual: t('Pages.text.made_by_hand'), premigrate: t('Pages.text.before_an_upgrade') }));
 const instWhen = (iso) => (iso ? new Date(iso).toLocaleString() : '');
 
 // ---- Recovery key ----

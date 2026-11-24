@@ -339,7 +339,7 @@ const fillTarget = computed(() => {
 // ---- sealed / open, and the two ways to change an open pallet (never both at once) ----
 const isWarehouse = computed(() => current.value?.kind === 'W');
 const canAdjust = computed(() => props.canAdjust && !!fillTarget.value && !!current.value.location_id); // permitted, open and already placed
-const mode = ref(t('Commons.text.add')); // 'add' (from the sorting area) | 'adjust' (correct what is on the pallet)
+const mode = ref('add'); // 'add' (from the sorting area) | 'adjust' (correct what is on the pallet) — technical value, never translated
 const adj = ref({ rows: [], reason: '', notes: '' });
 const adjError = ref(null);
 const adjusting = ref(false);

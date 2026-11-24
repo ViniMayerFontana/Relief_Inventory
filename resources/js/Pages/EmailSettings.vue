@@ -25,7 +25,7 @@ defineProps({
 	},
 });
 
-const MAILER_LABELS = { resend: t('Commons.text.resend'), smtp: t('Commons.text.smtp_server'), log: t('Pages.text.log_only_no_email') };
+const MAILER_LABELS = computed(() => ({ resend: t('Commons.text.resend'), smtp: t('Commons.text.smtp_server'), log: t('Pages.text.log_only_no_email') }));
 
 const error = ref('');
 const notice = ref('');

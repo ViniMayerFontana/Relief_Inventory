@@ -172,7 +172,7 @@ async function loadHistory(id) {
 }
 
 // ---- display helpers ----
-const STATUS_LABELS = { queued: t('Commons.text.waiting'), claimed: t('Commons.text.printing'), failed: t('Commons.text.failed_4'), printed: t('Commons.text.printed'), cancelled: t('Commons.text.cancelled') };
+const STATUS_LABELS = computed(() => ({ queued: t('Commons.text.waiting'), claimed: t('Commons.text.printing'), failed: t('Commons.text.failed_4'), printed: t('Commons.text.printed'), cancelled: t('Commons.text.cancelled') }));
 const STATUS_CLASSES = {
 	queued: 'bg-blue-100 text-blue-800',
 	claimed: 'bg-indigo-100 text-indigo-800',
@@ -182,7 +182,7 @@ const STATUS_CLASSES = {
 };
 
 function statusLabel(status) {
-	return STATUS_LABELS[status] || status;
+	return STATUS_LABELS.value[status] || status;
 }
 
 function dotClass(printer) {

@@ -40,7 +40,7 @@ const running = computed(() => sim.value.state === 'running');
 const percent = computed(() => (sim.value.total ? Math.min(100, Math.round((100 * (sim.value.day || 0)) / sim.value.total)) : 0));
 const summary = computed(() => sim.value.summary || null);
 
-const slow = reactive({ view: 'requests', source: t('Commons.text.all_2'), loading: false, loaded: false, entries: [], groups: [], requests: [], db: { available: null, message: null } });
+const slow = reactive({ view: 'requests', source: 'all', loading: false, loaded: false, entries: [], groups: [], requests: [], db: { available: null, message: null } });
 
 async function loadStatus() {
 	try {

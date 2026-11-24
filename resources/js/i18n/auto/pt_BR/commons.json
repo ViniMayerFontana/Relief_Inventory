@@ -1331,7 +1331,9 @@
       "your_team": "Sua equipe",
       "zip": "CEP",
       "zip_2": ", CEP:",
-      "zip_code": "CEP:"
+      "zip_code": "CEP:",
+      "received_3": "Recebidas",
+      "receiving": "Recebimento"
     },
     "title": {
       "carton_barcodes": "Códigos de caixa",

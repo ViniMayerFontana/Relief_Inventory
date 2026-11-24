@@ -18,6 +18,7 @@
 
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import PeriodStatCard from '@/Components/Dashboard/PeriodStatCard.vue';
 import BarBreakdownCard from '@/Components/Dashboard/BarBreakdownCard.vue';
@@ -25,8 +26,8 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import axios from 'axios';
 import { t } from '@/i18n';
 
-const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') };
-const ORDER_STAGE_LABELS = { 'New Order': t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped') };
+const DONATION_STAGE_LABELS = computed(() => ({ Received: t('Commons.text.received_3'), Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') }));
+const ORDER_STAGE_LABELS = computed(() => ({ 'New Order': t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped') }));
 
 export default {
 	components: { AuthenticatedLayout, Head, PeriodStatCard, BarBreakdownCard, PrintMenu },
@@ -43,13 +44,13 @@ export default {
 	computed: {
 		donationPipelineRows() {
 			if (!this.data) return [];
-			return Object.entries(DONATION_STAGE_LABELS).map(([key, label]) => ({
+			return Object.entries(DONATION_STAGE_LABELS.value).map(([key, label]) => ({
 				label, value: this.data.pipeline.donations[key] || 0,
 			}));
 		},
 		orderPipelineRows() {
 			if (!this.data) return [];
-			return Object.entries(ORDER_STAGE_LABELS).map(([key, label]) => ({
+			return Object.entries(ORDER_STAGE_LABELS.value).map(([key, label]) => ({
 				label, value: this.data.pipeline.orders[key] || 0,
 			}));
 		},
@@ -65,7 +66,7 @@ export default {
 			if (!this.data) return t('Pages.text.orders_by_zip');
 			const total = this.data.zip_breakdown.zip_count;
 			const shown = this.data.zip_breakdown.rows.length;
-			return shown < total ? `Orders by Zip (top ${shown} of ${total})` : t('Pages.text.orders_by_zip');
+			return shown < total ? t('Pages.text.orders_by_zip_top', { p0: shown, p1: total }) : t('Pages.text.orders_by_zip');
 		},
 		categoryRows() {
 			if (!this.data) return [];
@@ -121,9 +122,9 @@ export default {
 				<BarBreakdownCard :title="$t('Pages.title.donations_in_progress')" :rows="donationPipelineRows" />
 				<BarBreakdownCard :title="$t('Pages.title.orders_in_progress')" :rows="orderPipelineRows" />
 
-				<BarBreakdownCard :title="$t('Pages.title.orders_by_county')" :rows="countyRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard :title="zipTitle" :rows="zipRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard :title="$t('Pages.title.stock_by_category')" :rows="categoryRows" empty-text="No stock on hand yet." />
+				<BarBreakdownCard :title="$t('Pages.title.orders_by_county')" :rows="countyRows" :empty-text="$t('Reports.Sitrep.text.no_orders_placed_yet')" />
+				<BarBreakdownCard :title="zipTitle" :rows="zipRows" :empty-text="$t('Reports.Sitrep.text.no_orders_placed_yet')" />
+				<BarBreakdownCard :title="$t('Pages.title.stock_by_category')" :rows="categoryRows" :empty-text="$t('Reports.Inventory.text.no_stock_on_hand')" />
 
 				<div class="sr_card">
 					<h3>{{ $t('Pages.heading.stock_on_hand', {}) }}</h3>

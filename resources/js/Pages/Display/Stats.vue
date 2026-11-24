@@ -3,6 +3,7 @@
 
 <script>
 import DisplayLayout from '@/Layouts/DisplayLayout.vue';
+import { computed } from 'vue';
 import { Head } from '@inertiajs/vue3';
 import PeriodStatCard from '@/Components/Dashboard/PeriodStatCard.vue';
 import BarBreakdownCard from '@/Components/Dashboard/BarBreakdownCard.vue';
@@ -13,8 +14,8 @@ import { t } from '@/i18n';
 // warehouse dashboard ('dashboard') with no menus, refreshing itself. Data comes from
 // /json/display/<mode>, open to a paired device with the matching Function — see EnsureDeviceAccess.
 const REFRESH_MS = 60 * 1000;
-const DONATION_STAGE_LABELS = { Received: 'Received', Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') };
-const ORDER_STAGE_LABELS = { 'New Order': t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped') };
+const DONATION_STAGE_LABELS = computed(() => ({ Received: t('Commons.text.received_3'), Sorting: t('Commons.text.sorting_2'), Complete: t('Commons.text.complete') }));
+const ORDER_STAGE_LABELS = computed(() => ({ 'New Order': t('Commons.button.new_order'), Filling: t('Commons.heading.filling'), Filled: t('Commons.text.filled'), Shipped: t('Commons.text.shipped') }));
 
 export default {
 	components: { DisplayLayout, Head, PeriodStatCard, BarBreakdownCard },
@@ -29,10 +30,10 @@ export default {
 			return this.mode === 'dashboard' ? t('Commons.text.warehouse_stats') : t('Commons.heading.situation_report');
 		},
 		donationPipelineRows() {
-			return Object.entries(DONATION_STAGE_LABELS).map(([key, label]) => ({ label, value: this.data.pipeline.donations[key] || 0 }));
+			return Object.entries(DONATION_STAGE_LABELS.value).map(([key, label]) => ({ label, value: this.data.pipeline.donations[key] || 0 }));
 		},
 		orderPipelineRows() {
-			return Object.entries(ORDER_STAGE_LABELS).map(([key, label]) => ({ label, value: this.data.pipeline.orders[key] || 0 }));
+			return Object.entries(ORDER_STAGE_LABELS.value).map(([key, label]) => ({ label, value: this.data.pipeline.orders[key] || 0 }));
 		},
 		countyRows() {
 			return this.data.county_breakdown.map((c) => ({ label: c.county, value: c.count }));
@@ -85,8 +86,8 @@ export default {
 				<PeriodStatCard :title="$t('Commons.title.donations_completed')" :counts="data.donations_completed" :trend="data.donations_trend" />
 				<BarBreakdownCard :title="$t('Pages.Display.title.donations_in_progress')" :rows="donationPipelineRows" />
 				<BarBreakdownCard :title="$t('Pages.Display.title.orders_in_progress')" :rows="orderPipelineRows" />
-				<BarBreakdownCard :title="$t('Pages.Display.title.orders_by_county')" :rows="countyRows" empty-text="No orders placed yet." />
-				<BarBreakdownCard :title="$t('Pages.Display.title.stock_by_category')" :rows="categoryRows" empty-text="No stock on hand yet." />
+				<BarBreakdownCard :title="$t('Pages.Display.title.orders_by_county')" :rows="countyRows" :empty-text="$t('Reports.Sitrep.text.no_orders_placed_yet')" />
+				<BarBreakdownCard :title="$t('Pages.Display.title.stock_by_category')" :rows="categoryRows" :empty-text="$t('Reports.Inventory.text.no_stock_on_hand')" />
 				<div class="ds_card">
 					<h3>{{ $t('Pages.Display.heading.stock_on_hand', {}) }}</h3>
 					<div class="ds_inv">

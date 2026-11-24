@@ -11,13 +11,13 @@ const props = defineProps({
 	},
 });
 
-const trackMessages = {
+const trackMessages = computed(() => ({
 	volunteer: t('Pages.Auth.text.your_volunteer_sign_up'),
 	donor: t('Pages.Auth.text.your_donation_offer_is'),
 	partner: t('Pages.Auth.text.your_request_to_receive'),
-};
+}));
 
-const message = computed(() => trackMessages[props.requested_track] || t('Pages.Auth.text.your_account_is_pending'));
+const message = computed(() => trackMessages.value[props.requested_track] || t('Pages.Auth.text.your_account_is_pending'));
 </script>
 
 <template>

@@ -1553,7 +1553,10 @@
       "your_name_optional": "Your name (optional)",
       "your_password_to_confirm": "Your password, to confirm",
       "finish_or_clear_items": "Finish or clear the items staged to add first",
-      "finish_or_clear_adjustment": "Finish or clear the adjustment first"
+      "finish_or_clear_adjustment": "Finish or clear the adjustment first",
+      "database_plus_files": "database + files",
+      "orders_by_zip_top": "Orders by Zip (top {p0} of {p1})",
+      "moved_to": "Moved to {p0}"
     },
     "title": {
       "about_this_installation": "About This Installation",

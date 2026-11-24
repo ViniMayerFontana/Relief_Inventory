@@ -26,7 +26,7 @@ defineProps({
 	breadcrumb: { type: Array },
 });
 
-const STATION_NAMES = { 1: 'Receiving', 2: t('Commons.text.sorting_2'), 3: t('Commons.text.inventory'), 4: t('Commons.text.picking'), 5: t('Commons.text.shipping'), 6: t('Pages.Setup.text.delivery_ordering') };
+const STATION_NAMES = computed(() => ({ 1: t('Commons.text.receiving'), 2: t('Commons.text.sorting_2'), 3: t('Commons.text.inventory'), 4: t('Commons.text.picking'), 5: t('Commons.text.shipping'), 6: t('Pages.Setup.text.delivery_ordering') }));
 
 const data = ref(null);
 const error = ref(null);

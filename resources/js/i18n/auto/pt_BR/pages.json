@@ -1553,7 +1553,10 @@
       "you_re_signed_up": "! Sua inscrição está feita.",
       "your_browser_blocked_the": "Seu navegador bloqueou a janela de impressão. Use Baixar em vez disso.",
       "your_name_optional": "Seu nome (opcional)",
-      "your_password_to_confirm": "Sua senha, para confirmar"
+      "your_password_to_confirm": "Sua senha, para confirmar",
+      "database_plus_files": "database + arquivos",
+      "orders_by_zip_top": "Pedidos por CEP (top {p0} de {p1})",
+      "moved_to": "Movido para {p0}"
     },
     "title": {
       "about_this_installation": "Sobre esta instalação",

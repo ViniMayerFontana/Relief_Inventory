@@ -27,8 +27,8 @@ const error = ref('');
 const notice = ref('');
 const busy = ref(false);
 
-const kindLabels = { instance: t('Commons.text.another_instance'), print_client: t('Commons.text.print_client'), rstation: t('Commons.aria_label.r_station'), backup_client: t('Pages.text.backup_client_ri_launcher') };
-const methodLabels = { pairing_code: t('Pages.text.approved_by_admin_via'), domain_verified: t('Pages.text.approved_by_admin_domain') };
+const kindLabels = computed(() => ({ instance: t('Commons.text.another_instance'), print_client: t('Commons.text.print_client'), rstation: t('Commons.aria_label.r_station'), backup_client: t('Pages.text.backup_client_ri_launcher') }));
+const methodLabels = computed(() => ({ pairing_code: t('Pages.text.approved_by_admin_via'), domain_verified: t('Pages.text.approved_by_admin_domain') }));
 const riskClass = { low: 'bg-green-100 text-green-800', medium: 'bg-amber-100 text-amber-800', high: 'bg-red-100 text-red-800' };
 
 const identityForm = reactive({ name: '', base_url: '' });

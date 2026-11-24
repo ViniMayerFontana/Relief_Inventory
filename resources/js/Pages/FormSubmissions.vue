@@ -46,7 +46,7 @@ async function load() {
 }
 onMounted(load);
 
-const statusLabels = { pending: t('Commons.text.pending_2'), approved: t('Commons.text.approved'), denied: t('Commons.text.denied') };
+const statusLabels = computed(() => ({ pending: t('Commons.text.pending_2'), approved: t('Commons.text.approved'), denied: t('Commons.text.denied') }));
 const statusClasses = {
 	pending: 'bg-amber-100 text-amber-800',
 	approved: 'bg-green-100 text-green-800',
@@ -128,7 +128,7 @@ async function confirmCompose() {
 						<div v-if="submission.status_logs?.length" class="mt-3 pl-4 border-l-2 border-gray-200 space-y-2">
 							<div v-for="log in submission.status_logs" :key="log.id" class="rounded border bg-white shadow-sm px-3 py-2 text-xs">
 								<span class="font-semibold">
-									{{ log.from_status !== log.to_status ? `Moved to ${statusLabels[log.to_status] || log.to_status}` : $t('Commons.label.note') }}
+									{{ log.from_status !== log.to_status ? $t('Pages.text.moved_to', { p0: statusLabels[log.to_status] || log.to_status }) : $t('Commons.label.note') }}
 								</span>
 								by {{ log.changed_by?.full_name }}
 								<span class="text-gray-400">— {{ formatDateTime(log.created_at) }}</span>

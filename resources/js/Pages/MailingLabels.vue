@@ -23,7 +23,7 @@ import { Head } from '@inertiajs/vue3';
 import axios from 'axios';
 import { t } from '@/i18n';
 
-const AUDIENCES = { partner: t('Commons.heading.partners'), donor: t('Commons.heading.donors'), volunteer: t('Commons.text.volunteers'), other: t('Pages.text.other_no_tag') };
+const AUDIENCES = computed(() => ({ partner: t('Commons.heading.partners'), donor: t('Commons.heading.donors'), volunteer: t('Commons.text.volunteers'), other: t('Pages.text.other_no_tag') }));
 
 export default {
 	components: { AuthenticatedLayout, Head, PrintMenu },
@@ -32,7 +32,6 @@ export default {
 	},
 	data() {
 		return {
-			audiences: AUDIENCES,
 			audience: 'partner',
 			countyId: '',
 			search: '',
@@ -51,6 +50,9 @@ export default {
 		};
 	},
 	computed: {
+		audiences() {
+			return AUDIENCES.value;
+		},
 		mailable() {
 			return this.records.filter((r) => r.mailable);
 		},

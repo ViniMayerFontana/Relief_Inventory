@@ -53,7 +53,7 @@ const confirmingDelete = ref(null);
 let backupTimer = null;
 
 const active = computed(() => (records.value || []).find((r) => r.status === 'queued' || r.status === 'running'));
-const scopeNames = { database: t('Commons.text.database_only_2'), full: 'database + files', storage: t('Commons.text.files_only') };
+const scopeNames = computed(() => ({ database: t('Commons.text.database_only_2'), full: t('Pages.text.database_plus_files'), storage: t('Commons.text.files_only') }));
 
 // quiet: the background poll. It keeps running during an update, when every request gets the
 // maintenance-mode 503 (or a 502 while PHP restarts) — that's expected, not something to show.
@@ -75,8 +75,8 @@ const schedule = ref(null);
 const form = ref(null);
 const savingSchedule = ref(false);
 const scheduleSaved = ref(false);
-const tierNames = { hourly: t('Commons.label.hourly'), daily: t('Commons.label.daily'), weekly: t('Commons.label.weekly'), monthly: t('Commons.label.monthly') };
-const weekdays = [t('Commons.text.sunday'), t('Commons.text.monday'), t('Commons.text.tuesday'), 'Wednesday', t('Commons.text.thursday'), t('Commons.text.friday'), t('Commons.text.saturday')];
+const tierNames = computed(() => ({ hourly: t('Commons.label.hourly'), daily: t('Commons.label.daily'), weekly: t('Commons.label.weekly'), monthly: t('Commons.label.monthly') }));
+const weekdays = computed(() => [t('Commons.text.sunday'), t('Commons.text.monday'), t('Commons.text.tuesday'), t('Commons.text.wednesday'), t('Commons.text.thursday'), t('Commons.text.friday'), t('Commons.text.saturday')]);
 
 const scheduleForm = (s) => ({
 	hourly_enabled: !!s.hourly_enabled, hourly_keep: s.hourly_keep,
@@ -88,7 +88,7 @@ const scheduleForm = (s) => ({
 // An upper bound: every kept snapshot as big as the latest backup. One zip often serves several tiers, so real use is usually lower.
 const estimatedBytes = computed(() => {
 	if (!form.value || !schedule.value?.last_size_bytes) return null;
-	const kept = Object.keys(tierNames).reduce((n, t) => n + (form.value[`${t}_enabled`] ? Number(form.value[`${t}_keep`]) || 0 : 0), 0);
+	const kept = Object.keys(tierNames.value).reduce((n, t) => n + (form.value[`${t}_enabled`] ? Number(form.value[`${t}_keep`]) || 0 : 0), 0);
 	return kept * schedule.value.last_size_bytes;
 });
 
