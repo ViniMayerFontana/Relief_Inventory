@@ -43,8 +43,6 @@ import PrintMenu from '@/Components/PrintMenu.vue';
 import axios from 'axios';
 import { t } from '@/i18n';
 
-const NEED_LEVEL_LABELS = { critical: t('Commons.text.critical'), moderate: t('Commons.text.moderate'), low: t('Commons.text.low') };
-
 export default {
 	components: { AuthenticatedLayout, HelpLink, Head, SearchSelect, ScanButton, PrintMenu },
 	props: {
@@ -85,11 +83,14 @@ export default {
 			// item catalog, fetched once and filtered client-side per line's
 			// itemtype — same pattern DonationSorting.vue uses for /json/items
 			items: [],
-
-			needLevelLabels: NEED_LEVEL_LABELS,
 		};
 	},
 	computed: {
+		// t() at module scope would freeze the labels in the boot locale;
+		// a computed re-evaluates per render/locale.
+		needLevelLabels() {
+			return { critical: t('Commons.text.critical'), moderate: t('Commons.text.moderate'), low: t('Commons.text.low') };
+		},
 		// Itemtypes where total requested across Ready-to-Fill orders
 		// exceeds on-hand — the Allocation Review panel's contents.
 		allocationRows() {

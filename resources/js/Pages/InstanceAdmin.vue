@@ -39,7 +39,7 @@ const props = defineProps({
 const docker = computed(() => props.runtime === 'docker');
 
 // ?tab=backups opens that tab directly (the recovery-key banner links there).
-const tab = ref([t('Commons.text.updates'), 'warehouses', t('Commons.text.backups')].includes(new URLSearchParams(location.search).get('tab')) ? new URLSearchParams(location.search).get('tab') : t('Commons.text.updates'));
+const tab = ref(['updates', 'warehouses', 'backups'].includes(new URLSearchParams(location.search).get('tab')) ? new URLSearchParams(location.search).get('tab') : 'updates');
 const status = ref(null);
 const error = ref('');
 const notice = ref('');
