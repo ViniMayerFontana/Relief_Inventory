@@ -180,7 +180,7 @@ function changeVote() {
 					{{ $t('Pages.text.try_each_design_then', {}) }} <strong>{{ $t('Pages.button.i_like_this', {}) }}</strong> or <strong>{{ $t('Pages.button.not_for_me', {}) }}</strong> {{ $t('Pages.text.on_any_of_them', {}) }}
 				</p>
 				<p v-if="!open" class="rounded bg-gray-100 border border-gray-300 text-gray-700 px-4 py-3 text-sm">
-					Voting has closed. Here is how people voted ({{ results?.voters || 0 }} {{ results?.voters === 1 ? 'person' : 'people' }}).
+					{{ __('Pages.text.voting_closed_voters', { p0: results?.voters || 0, p1: results?.voters === 1 ? 'pessoa' : 'pessoas' }) }}
 				</p>
 				<div v-else-if="voted && !changing" class="rounded bg-green-100 border border-green-400 text-green-800 px-4 py-3 text-sm space-y-1">
 					<p>{{ $t('Pages.text.thank_you_your_vote', {}) }}</p>

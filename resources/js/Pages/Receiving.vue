@@ -55,6 +55,18 @@ const categoryOptions = [
 	},
 	{ id: 'other', name: t('Commons.text.other_2') },
 ];
+const containerTypes = { pallet: 'Pallet', box: 'Caixa', bag: 'Saco', tote: 'Tote' };
+function containerTypeLabel(value) {
+	return containerTypes[value] ?? (value ? value.charAt(0).toUpperCase() + value.slice(1) : '');
+}
+const palletStatuses = {
+	received: 'Recebido', sorting: 'Triagem', empty: 'Vazio', sealed: 'Lacrado', open: 'Aberto',
+	building: 'Em separação', ready: 'Pronto', shipped: 'Expedido', filling: 'Em preenchimento',
+	collected: 'Coletado', held: 'Retido', released: 'Liberado', condemned: 'Inutilizado', missing: 'Faltando',
+};
+function palletStatusLabel(value) {
+	return palletStatuses[value] ?? (value ? value.charAt(0).toUpperCase() + value.slice(1) : '');
+}
 
 const yesNoOptions = [
 	{ value: true, label: t('Commons.text.yes') },
@@ -169,7 +181,7 @@ const containerTypeOptions = [
 					{{ donorName(record) }}
 					<span v-if="record.donor_identification_pending" class="recv_badge recv_badge_id">{{ $t('Pages.text.donor_id_pending', {}) }}</span>
 				</td>
-				<td>{{ record.category === $t('Commons.text.other') && record.category_other ? record.category_other : record.category }}</td>
+				<td>{{ record.category === 'other' && record.category_other ? record.category_other : (categoryOptions.find((o) => o.id === record.category)?.name ?? record.category) }}</td>
 				<td>
 					{{ record.status ? record.status.name : '' }}
 					<span v-if="record.is_close_out_candidate" class="recv_badge">{{ $t('Pages.text.ready_to_close_out', {}) }}</span>
@@ -453,8 +465,8 @@ const containerTypeOptions = [
 								<tbody>
 									<tr v-for="pallet in record.pallets" :key="pallet.id">
 										<td class="recv_mono">{{ pallet.tag }}</td>
-										<td>{{ pallet.container_type }}</td>
-										<td>{{ pallet.status }}</td>
+										<td>{{ containerTypeLabel(pallet.container_type) }}</td>
+										<td>{{ palletStatusLabel(pallet.status) }}</td>
 										<td><PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="link" :label="$t('Commons.label.reprint')"
 											:params="{ id: pallet.id }" :download-href="'/report/pallet/' + pallet.id" /></td>
 									</tr>
@@ -556,8 +568,8 @@ const containerTypeOptions = [
 								<tbody>
 									<tr v-for="pallet in record.pallets" :key="pallet.id">
 										<td class="recv_mono">{{ pallet.tag }}</td>
-										<td>{{ pallet.container_type }}</td>
-										<td>{{ pallet.status }}</td>
+										<td>{{ containerTypeLabel(pallet.container_type) }}</td>
+										<td>{{ palletStatusLabel(pallet.status) }}</td>
 										<td><PrintMenu document-key="pallet-label" :media="$page.props.printing.palletLabelMedia" variant="link" :label="$t('Commons.label.label')"
 											:params="{ id: pallet.id }" :download-href="'/report/pallet/' + pallet.id" /></td>
 									</tr>

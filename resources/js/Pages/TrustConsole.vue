@@ -249,7 +249,7 @@ onMounted(load);
 							<input type="checkbox" class="mt-1 rounded border-gray-300" :checked="codeForm.grants.includes(p.key)" @change="toggle(codeForm.grants, p.key)" />
 							<span>
 								{{ p.label }}
-								<span class="ml-1 text-xs rounded px-1.5 py-0.5" :class="riskClass[p.risk]">{{ p.risk }}</span>
+								<span class="ml-1 text-xs rounded px-1.5 py-0.5" :class="riskClass[p.risk]">{{ { low: 'baixo', medium: 'médio', high: 'alto' }[p.risk] ?? p.risk }}</span>
 								<span v-if="!p.built" class="ml-1 text-xs text-gray-400">{{ $t('Pages.text.not_available_yet', {}) }}</span>
 								<span class="block text-xs text-gray-500">{{ p.description }}</span>
 							</span>
@@ -273,7 +273,7 @@ onMounted(load);
 								<legend class="text-gray-700">{{ $t('Pages.text.it_may_do_this', {}) }}</legend>
 								<label v-for="p in data.permissions" :key="p.key" class="flex items-start gap-2">
 									<input type="checkbox" class="mt-1 rounded border-gray-300" :checked="inviteForm.grants.includes(p.key)" @change="toggle(inviteForm.grants, p.key)" />
-									<span>{{ p.label }} <span class="ml-1 text-xs rounded px-1.5 py-0.5" :class="riskClass[p.risk]">{{ p.risk }}</span></span>
+									<span>{{ p.label }} <span class="ml-1 text-xs rounded px-1.5 py-0.5" :class="riskClass[p.risk]">{{ { low: 'baixo', medium: 'médio', high: 'alto' }[p.risk] ?? p.risk }}</span></span>
 								</label>
 							</fieldset>
 							<PrimaryButton :disabled="busy" @click="createInvite">{{ busy ? $t('Commons.button.working') : $t('Pages.button.create_connection_code') }}</PrimaryButton>
@@ -293,7 +293,7 @@ onMounted(load);
 								<legend class="text-gray-700">{{ $t('Pages.text.it_may_do_this', {}) }}</legend>
 								<label v-for="p in data.permissions" :key="p.key" class="flex items-start gap-2">
 									<input type="checkbox" class="mt-1 rounded border-gray-300" :checked="acceptForm.grants.includes(p.key)" @change="toggle(acceptForm.grants, p.key)" />
-									<span>{{ p.label }} <span class="ml-1 text-xs rounded px-1.5 py-0.5" :class="riskClass[p.risk]">{{ p.risk }}</span></span>
+									<span>{{ p.label }} <span class="ml-1 text-xs rounded px-1.5 py-0.5" :class="riskClass[p.risk]">{{ { low: 'baixo', medium: 'médio', high: 'alto' }[p.risk] ?? p.risk }}</span></span>
 								</label>
 							</fieldset>
 							<PrimaryButton :disabled="busy || !acceptForm.connection_code" @click="acceptInvite">{{ busy ? $t('Commons.button.connecting') : $t('Commons.button.connect') }}</PrimaryButton>
@@ -332,7 +332,7 @@ onMounted(load);
 						<div v-if="editing[t.id]" class="space-y-2">
 							<label v-for="p in data.permissions" :key="p.key" class="flex items-start gap-2">
 								<input type="checkbox" class="mt-1 rounded border-gray-300" :checked="editing[t.id].includes(p.key)" @change="toggle(editing[t.id], p.key)" />
-								<span>{{ p.label }} <span class="ml-1 text-xs rounded px-1.5 py-0.5" :class="riskClass[p.risk]">{{ p.risk }}</span></span>
+								<span>{{ p.label }} <span class="ml-1 text-xs rounded px-1.5 py-0.5" :class="riskClass[p.risk]">{{ { low: 'baixo', medium: 'médio', high: 'alto' }[p.risk] ?? p.risk }}</span></span>
 							</label>
 							<div class="flex items-center gap-4">
 								<PrimaryButton :disabled="busy" @click="saveGrants(t)">{{ $t('Commons.button.save_permissions', {}) }}</PrimaryButton>

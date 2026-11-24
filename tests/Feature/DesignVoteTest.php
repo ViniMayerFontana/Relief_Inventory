@@ -160,8 +160,8 @@ test('admins open and close polls, and see live results, why-comments by option 
         ->assertJsonMissingPath('polls.0.comments.0.voter_token_hash');
 
     $csv = $this->actingAs($admin)->get('/json/design-votes/delivery-days/csv')->assertOk()->streamedContent();
-    expect($csv)->toContain('Day grid')->toContain('Not for them')->toContain('Too many buttons')
-        ->toContain('Tap to cycle')->toContain('Likes it')->toContain('Bo');
+    expect($csv)->toContain('Grade de dias')->toContain('Not for them')->toContain('Too many buttons')
+        ->toContain('Toque para alternar')->toContain('Likes it')->toContain('Bo');
 
     $this->actingAs($admin)->putJson('/json/design-votes/delivery-days/open', ['open' => false])->assertJsonPath('polls.0.open', false);
     expect(DesignPoll::forSlug('delivery-days')->closed_at)->not->toBeNull();

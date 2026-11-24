@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 
 class PackageTypesSeeder extends Seeder
 {
+    // pt-BR (2026-11-24): importadores Flowtrac casam por singular EN
+    // (3 importadores) — risco aceito pelo usuário. "Box" permanece EN
+    // (colisão de singular com Case→"Caixa"; decisão pendente do lead).
     /**
      * Run the database seeds.
      */
@@ -18,17 +21,17 @@ class PackageTypesSeeder extends Seeder
         // Sample data for the `items` table
         $pkg = [
             [
-                'singular' => 'Unit',
-                'plural' => 'Units',
+                'singular' => 'Unidade',
+                'plural' => 'Unidades',
             ],
             [
-                'singular' => 'Case',
-                'plural' => 'Cases',
+                'singular' => 'Caixa',
+                'plural' => 'Caixas',
 
             ],
             [
-                'singular' => 'Bag',
-                'plural' => 'Bags',
+                'singular' => 'Saco',
+                'plural' => 'Sacos',
 
             ],
             [
@@ -36,32 +39,32 @@ class PackageTypesSeeder extends Seeder
                 'plural' => 'Pallets',
             ],
             [
-                'singular' => 'Each',
-                'plural' => 'Each',
+                'singular' => 'Unidade',
+                'plural' => 'Unidade',
             ],
             [
                 'singular' => 'Gaylord',
                 'plural' => 'Gaylords',
             ],
             [
-                'singular' => 'Roll',
-                'plural' => 'Rolls',
+                'singular' => 'Rolo',
+                'plural' => 'Rolos',
             ],
             [
-                'singular' => 'Gallon',
-                'plural' => 'Gallons',
+                'singular' => 'Galão',
+                'plural' => 'Galões',
             ],
             [
-                'singular' => 'Ton',
-                'plural' => 'Tons',
+                'singular' => 'Tonelada',
+                'plural' => 'Toneladas',
             ],
             [
-                'singular' => 'Shipping Container',
-                'plural' => 'Shipping Containers',
+                'singular' => 'Contêiner de expedição',
+                'plural' => 'Contêineres de expedição',
             ],
             [
-                'singular' => 'Truckload',
-                'plural' => 'Truckloads',
+                'singular' => 'Carga de caminhão',
+                'plural' => 'Cargas de caminhão',
             ],
         ];
         // Insert data into the items table

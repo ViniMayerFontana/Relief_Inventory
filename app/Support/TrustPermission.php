@@ -24,7 +24,12 @@ enum TrustPermission: string
 
     public function label(): string
     {
-        return match ($this) {
+        // Display strings live in lang/<locale>/trusts.php keyed by the
+        // permission value (dots → dashes); missing key falls back to English.
+        $key = 'trusts.'.str_replace('.', '-', $this->value);
+        $translated = trans($key);
+
+        return $translated === $key ? match ($this) {
             self::PrintShare => 'Sharing printers',
             self::FeedbackSend => 'Sending feedback',
             self::FeedbackReceive => 'Receiving feedback',
@@ -34,12 +39,15 @@ enum TrustPermission: string
             self::SuppliesRequest => 'Request supplies',
             self::SuppliesQueryAvailable => 'Query items available for request',
             self::OperatorFullRead => 'Backup and reporting operator (full read access)',
-        };
+        } : $translated;
     }
 
     public function description(): string
     {
-        return match ($this) {
+        $key = 'trusts.'.str_replace('.', '-', $this->value).'-desc';
+        $translated = trans($key);
+
+        return $translated === $key ? match ($this) {
             self::PrintShare => 'The peer is a print server (or may use printers shared with it) and may claim print jobs.',
             self::FeedbackSend => 'The peer may send bug and feature reports to this instance.',
             self::FeedbackReceive => 'The peer may read the feedback reports this instance holds.',
@@ -49,7 +57,7 @@ enum TrustPermission: string
             self::SuppliesRequest => 'The peer may submit supply requests, which staff review like any other request.',
             self::SuppliesQueryAvailable => 'The peer may see which items are available to request.',
             self::OperatorFullRead => 'The peer may make and download backups of this instance (and, later, read its reports). A database backup holds credentials and personal data: grant this only to an operator you would trust with the whole system.',
-        };
+        } : $translated;
     }
 
     /** low | medium | high — how much a peer holding it could see or do. */

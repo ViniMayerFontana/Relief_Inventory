@@ -280,7 +280,7 @@ class FlowReportController extends Controller
                     'display_number' => $type?->display_number,
                     'name' => $type?->name ?? '(deleted item type)',
                     'category' => $type?->category?->name,
-                    'unit' => $type?->unit?->abbreviation ?? $type?->unit?->name,
+                    'unit' => $type?->unit?->name ?? $type?->unit?->abbreviation,
                     'opening' => (int) ($opening[$id] ?? 0),
                     'received' => (int) ($r->received ?? 0),
                     'picked' => (int) ($r->picked ?? 0),

@@ -1572,7 +1572,13 @@
       "usable_on_hand": "~{p0} utilizáveis em estoque",
       "none_on_hand": "nenhuma em estoque",
       "change_pallet": "Trocar pallet",
-      "print_a_pdf": "Imprimir um PDF"
+      "print_a_pdf": "Imprimir um PDF",
+      "scan_sounds_on": "Sons de digitalização ligados",
+      "scan_sounds_on_hint": "Sons de digitalização ligados (bipe = encontrado, tom grave = não encontrado). Clique para silenciar.",
+      "scan_sounds_off": "Sons de digitalização desligados. Clique para ligar.",
+      "expires_click_to_change": "Vence em :p0 - clique para alterar",
+      "add_expiration_optional": "Adicionar data de validade (opcional)",
+      "voting_closed_voters": "A votação foi encerrada. Veja como as pessoas votaram (:p0 :p1)."
     },
     "title": {
       "about_this_installation": "Sobre esta instalação",

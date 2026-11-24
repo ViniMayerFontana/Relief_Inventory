@@ -1024,8 +1024,8 @@ export default {
 							: $t('Commons.button.complete_session') }}
 					</button>
 					<button type="button" @click="toggleScanSounds" class="sort_sound_toggle"
-						:aria-label="scanSounds ? 'Scan sounds on' : 'Scan sounds off'"
-						:title="scanSounds ? 'Scan sounds on (beep = matched, low tone = not found). Click to mute.' : 'Scan sounds off. Click to turn on.'">
+						:aria-label="scanSounds ? $t('Pages.text.scan_sounds_on') : $t('Pages.text.scan_sounds_off')"
+						:title="scanSounds ? $t('Pages.text.scan_sounds_on_hint') : $t('Pages.text.scan_sounds_off')">
 						{{ scanSounds ? '🔊' : '🔇' }}
 					</button>
 				</template>
@@ -1184,7 +1184,7 @@ export default {
 						type="button"
 						class="sort_exp_btn"
 						:class="{ sort_exp_set: entry.expires_on }"
-						:title="entry.expires_on ? 'Expires ' + entry.expires_on + ' - click to change' : 'Add an expiration date (optional)'"
+						:title="entry.expires_on ? $t('Pages.text.expires_click_to_change', { p0: entry.expires_on }) : $t('Pages.text.add_expiration_optional')"
 						@click="toggleExpiry"
 					>&#128197;<span v-if="entry.expires_on" class="sort_exp_date">{{ entry.expires_on }}</span></button>
 					<div v-if="expOpen" class="sort_exp_pop">

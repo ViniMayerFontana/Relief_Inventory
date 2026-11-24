@@ -100,7 +100,8 @@
       "too_many_online_lookups": "Too many online lookups this minute - enter the details by hand.",
       "when_there_s_an": "when there's an update.",
       "which_location_is_this": "Which location is this kiosk at?",
-      "will_queue": "— will queue"
+      "will_queue": "— will queue",
+      "scan_with_camera": "Scan with camera"
     }
   }
 }

@@ -222,9 +222,7 @@ onUnmounted(() => clearInterval(timer));
 			<section v-if="labelSettings" class="bg-white shadow rounded-lg p-6 space-y-3">
 				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.label_sizes', {}) }}</h2>
 				<p class="text-sm text-gray-600">
-					Labels are laid out for these sizes, and the Print menu offers only printers set to the
-					same paper (set on the
-					<a href="/setup/devices" class="underline">{{ $t('Pages.heading.r_station_devices', {}) }}</a> page).
+					{{ __('Commons.text.labels_laid_out_a') }} <a href="/setup/devices" class="underline">{{ $t('Pages.heading.r_station_devices') }}</a>{{ __('Commons.text.labels_laid_out_b') }}
 				</p>
 				<div class="flex flex-wrap items-center gap-x-6 gap-y-3">
 					<label class="flex items-center gap-2 text-sm">

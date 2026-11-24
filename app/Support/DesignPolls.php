@@ -17,22 +17,22 @@ class DesignPolls
 {
     public const POLLS = [
         'delivery-days' => [
-            'title' => 'Delivery days on a request',
-            'question' => 'Which way of choosing delivery days makes the most sense to you?',
-            'intro' => 'When a partner asks for a delivery, we record which days they can take it. Some days may be '
-                .'better than others: a partner might accept Tuesday, Wednesday or Thursday but prefer Tuesday. '
-                .'Try each design below — tap the days as if you were entering a request — then pick the one you like best.',
+            'title' => 'Dias de entrega em um pedido',
+            'question' => 'Qual forma de escolher os dias de entrega faz mais sentido para você?',
+            'intro' => 'Quando um parceiro pede uma entrega, registramos quais dias ele pode receber. Alguns dias podem ser '
+                .'melhores que outros: um parceiro pode aceitar terça, quarta ou quinta, mas preferir terça. '
+                .'Experimente cada design abaixo — toque nos dias como se estivesse digitando um pedido — e escolha o que preferir.',
             'options' => [
                 'cycle' => [
-                    'label' => 'Tap to cycle',
-                    'description' => 'Each tap moves a day along: cannot → can accept → preferred (★) → cannot.',
+                    'label' => 'Toque para alternar',
+                    'description' => 'Cada toque avança um dia: não pode → pode receber → preferido (★) → não pode.',
                 ],
                 'star' => [
-                    'label' => 'Pick, then star',
-                    'description' => 'Tap the days the partner can accept, then tap the ☆ on a day to make it preferred.',
+                    'label' => 'Escolha e marque',
+                    'description' => 'Toque nos dias que o parceiro pode receber e toque na ☆ do dia para marcá-lo como preferido.',
                 ],
                 'grid' => [
-                    'label' => 'Day grid',
+                    'label' => 'Grade de dias',
                     'description' => 'One row per day. Choose Can\'t, OK or Preferred for each.',
                 ],
             ],

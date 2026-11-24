@@ -418,7 +418,7 @@ onUnmounted(() => {
 						<template v-if="updatedAt">{{ $t('Commons.text.updated') }} {{ updatedAt.toLocaleTimeString() }}. </template>
 						{{ realtime.connected ? $t('Pages.text.updating_live') : $t('Pages.text.this_page_refreshes_every') }}
 						<template v-if="canManage">{{ $t('Pages.text.cancelling_a_job_that', {}) }}</template>
-						Finished jobs' files are removed after a couple of weeks; the record stays.
+						{{ __('Commons.text.finished_jobs_note') }}
 					</p>
 				</section>
 			</template>

@@ -421,8 +421,7 @@ onMounted(fetchAll);
 					</div>
 				</div>
 				<p class="text-xs text-gray-500">
-					Devices check in every 5 minutes; changes made here reach a device on its next check-in.
-					Revoking sends it back to setup. A device unseen for 15+ minutes shows as offline.
+					{{ __('Commons.text.devices_check_in') }}
 				</p>
 			</section>
 		</div>

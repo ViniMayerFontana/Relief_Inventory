@@ -106,7 +106,7 @@ class OutstandingOrdersReportController extends Controller
                 'lines' => $order->orderLines->map(fn ($line) => [
                     'itemtype' => $line->itemtype?->name,
                     'display_number' => $line->itemtype?->display_number,
-                    'unit' => $line->itemtype?->unit?->abbreviation ?? $line->itemtype?->unit?->name,
+                    'unit' => $line->itemtype?->unit?->name ?? $line->itemtype?->unit?->abbreviation,
                     'qty_requested' => (int) $line->qty_requested,
                 ])->values(),
             ])

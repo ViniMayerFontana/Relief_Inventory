@@ -138,7 +138,7 @@ class InventoryReportController extends Controller
                 'name' => $itemType->name,
                 'status' => $itemType->status,
                 'category' => $itemType->category?->name,
-                'unit' => $itemType->unit?->abbreviation ?? $itemType->unit?->name,
+                'unit' => $itemType->unit?->name ?? $itemType->unit?->abbreviation,
                 'on_hand' => (int) $items->sum('on_hand'),
                 // Usable goods sorted as new, all-time. Not "new on hand": stock is
                 // pooled once sorted and fills don't record condition.

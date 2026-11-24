@@ -16,6 +16,9 @@ use Illuminate\Database\Seeder;
  */
 class CategoriesSeeder extends Seeder
 {
+    // pt-BR (2026-11-24): ATENÇÃO — os importadores Flowtrac casam Category por name EN
+    // (FlowtracProductsImporter.php:174); imports futuros podem criar categorias EN
+    // duplicadas. Risco aceito pelo usuário.
     public function run(): void
     {
         $categories = [

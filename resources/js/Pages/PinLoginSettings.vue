@@ -217,8 +217,7 @@ onMounted(() => {
 						<span class="text-gray-700 font-medium">{{ $t('Pages.text.offer_badge_scanning_on', {}) }}</span>
 					</label>
 					<p class="text-xs text-gray-500">
-						Off by default until badges are actually issued — with this off, the unlock screen only
-						shows name tiles + PIN, no badge scan step. Turn on once physical badges exist.
+						{{ __('Commons.text.badges_off_hint') }}
 					</p>
 
 					<label class="flex items-center gap-2">
@@ -242,9 +241,7 @@ onMounted(() => {
 			<section v-if="canManageDevices" class="bg-white shadow rounded-lg p-6 space-y-4">
 				<h2 class="text-lg font-semibold">{{ $t('Commons.heading.devices', {}) }}</h2>
 				<p class="text-sm text-gray-600">
-					PIN login is only offered on a device approved here. A device is added when someone
-					logged in on it asks for PIN login there (profile menu &gt; <strong>{{ $t('Pages.heading.pin_login_on_this', {}) }}</strong>): you can approve your own device on the spot from that page, and anyone
-					else's request waits here.
+					{{ __('Commons.text.pin_login_only_offered') }}
 					<Link href="/this-device" class="text-blue-600 underline">{{ $t('Pages.link.approve_the_device_you', {}) }}</Link>
 				</p>
 
@@ -253,8 +250,8 @@ onMounted(() => {
 
 				<template v-else>
 					<div v-for="group in [
-						{ key: 'pending', title: 'Requests waiting for approval', list: pendingDevices, empty: 'No requests waiting.' },
-						{ key: 'approved', title: 'Approved devices', list: approvedDevices, empty: 'No devices approved yet.' },
+						{ key: 'pending', title: __('Commons.text.requests_waiting'), list: pendingDevices, empty: __('Commons.text.no_requests_waiting') },
+						{ key: 'approved', title: __('Commons.text.approved_devices'), list: approvedDevices, empty: __('Commons.text.no_devices_approved') },
 					]" :key="group.key" class="space-y-3">
 						<h3 class="font-semibold text-gray-800">{{ group.title }} ({{ group.list.length }})</h3>
 						<p v-if="!group.list.length" class="text-sm text-gray-400">{{ group.empty }}</p>

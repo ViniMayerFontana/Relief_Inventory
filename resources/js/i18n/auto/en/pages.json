@@ -1572,7 +1572,13 @@
       "usable_on_hand": "~{p0} usable on hand",
       "none_on_hand": "none on hand",
       "change_pallet": "Change Pallet",
-      "print_a_pdf": "Print a PDF"
+      "print_a_pdf": "Print a PDF",
+      "scan_sounds_on": "Scan sounds on",
+      "scan_sounds_on_hint": "Scan sounds on (beep = matched, low tone = not found). Click to mute.",
+      "scan_sounds_off": "Scan sounds off. Click to turn on.",
+      "expires_click_to_change": "Expires :p0 - click to change",
+      "add_expiration_optional": "Add an expiration date (optional)",
+      "voting_closed_voters": "Voting has closed. Here is how people voted (:p0 :p1)."
     },
     "title": {
       "about_this_installation": "About This Installation",

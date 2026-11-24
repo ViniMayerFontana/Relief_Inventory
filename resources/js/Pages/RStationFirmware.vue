@@ -18,6 +18,7 @@ import { Head } from '@inertiajs/vue3';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import { useChunkedUpload } from '@/composables/chunkedUpload';
 import axios from 'axios';
+import { computed } from 'vue';
 import { onMounted, reactive, ref, watch } from 'vue';
 import { t } from '@/i18n';
 

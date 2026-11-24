@@ -100,7 +100,8 @@
       "too_many_online_lookups": "Muitas consultas online neste minuto - informe os detalhes manualmente.",
       "when_there_s_an": "quando houver uma atualização.",
       "which_location_is_this": "Em qual localização está este quiosque?",
-      "will_queue": "— entrará na fila"
+      "will_queue": "— entrará na fila",
+      "scan_with_camera": "Escanear com a câmera"
     }
   }
 }

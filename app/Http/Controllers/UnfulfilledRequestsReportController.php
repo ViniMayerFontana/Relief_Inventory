@@ -124,7 +124,7 @@ class UnfulfilledRequestsReportController extends Controller
                     'display_number' => $type?->display_number,
                     'name' => $type?->name ?? '(deleted item type)',
                     'category' => $type?->category?->name,
-                    'unit' => $type?->unit?->abbreviation ?? $type?->unit?->name,
+                    'unit' => $type?->unit?->name ?? $type?->unit?->abbreviation,
                     ...$this->sums($rows),
                     'locations' => $rows->groupBy(fn ($r) => $r->county."\0".$r->zip)
                         ->map(fn (Collection $g) => [

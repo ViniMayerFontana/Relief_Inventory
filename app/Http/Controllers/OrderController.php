@@ -332,7 +332,7 @@ class OrderController extends Controller
                     THEN COALESCE(item_ledgers.qty_added, 0) ELSE 0 END)
                 - SUM(COALESCE(item_ledgers.qty_subtracted, 0)) > 0
             ")
-            ->selectRaw('itemtypes.id, itemtypes.family, itemtypes.variant, itemtypes.name, categories.name as category, COALESCE(units.abbreviation, units.name) as unit')
+            ->selectRaw('itemtypes.id, itemtypes.family, itemtypes.variant, itemtypes.name, categories.name as category, COALESCE(units.name, units.abbreviation) as unit')
             ->get();
 
         $records = $rows->map(fn ($row) => [

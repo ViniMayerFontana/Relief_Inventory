@@ -59,7 +59,7 @@ function onCameraError(message) {
 
 <template>
   <span class="scanbtn">
-    <button type="button" class="ri_formbutton" :class="{ scanbtn_compact: compact }" :title="compact ? 'Scan with camera' : null" :aria-label="compact ? 'Scan with camera' : null" @click="begin">📷<template v-if="!compact"> {{ label }}</template></button>
+    <button type="button" class="ri_formbutton" :class="{ scanbtn_compact: compact }" :title="compact ? t('Components.text.scan_with_camera') : null" :aria-label="compact ? t('Components.text.scan_with_camera') : null" @click="begin">📷<template v-if="!compact"> {{ label }}</template></button>
     <span v-if="error" class="scanbtn_error" role="alert">{{ error }}</span>
     <Teleport to="body">
       <div v-if="open" class="scanbtn_overlay" @click.self="open = false">
