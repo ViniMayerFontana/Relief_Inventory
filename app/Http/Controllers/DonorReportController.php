@@ -91,7 +91,7 @@ class DonorReportController extends Controller
     public function setStanding(Request $request, $id)
     {
         $person = Person::findOrFail($id);
-        abort_if($person->isSystem(), 422, 'The Unknown Donor placeholder has no standing.');
+        abort_if($person->isSystem(), 422, __('Commons.text.unknown_donor_no_standing'));
 
         $data = $request->validate([
             'standing' => ['required', Rule::in(DonorStanding::ALL)],

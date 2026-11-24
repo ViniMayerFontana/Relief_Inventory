@@ -80,7 +80,7 @@ class DonationOfferController extends Controller
                 && Carbon::parse($lastDay)->endOfDay()->isPast();
             // Flat display field for SearchSelect (Receiving.vue's picker),
             // which can't traverse into nested person.full_name.
-            $offer->label = ($offer->person->full_name ?? 'Unknown donor')
+            $offer->label = ($offer->person->full_name ?? __('Commons.text.unknown_donor'))
                 .($offer->eta_start ? ' — ETA '.$offer->etaRangeLabel() : '');
         });
 
@@ -121,7 +121,7 @@ class DonationOfferController extends Controller
 
         // Flat display field for SearchSelect, same reason as index()'s label.
         $donations->each(function (Transaction $donation) {
-            $donation->label = ($donation->person->full_name ?? 'Unknown donor')
+            $donation->label = ($donation->person->full_name ?? __('Commons.text.unknown_donor'))
                 .' — '.($donation->order_date ?? $donation->created_at->format('Y-m-d'))
                 .' (#'.$donation->id.')';
         });

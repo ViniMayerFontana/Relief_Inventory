@@ -1355,6 +1355,7 @@ return [
         'received_3' => 'Received',
         'receiving' => 'Receiving',
         'details' => 'Details',
+        'unknown_donor_no_standing' => 'The Unknown Donor placeholder has no standing.',
     ],
     'title' => [
         'carton_barcodes' => 'Carton Barcodes',

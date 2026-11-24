@@ -32,8 +32,11 @@ return new class extends Migration
 
         DB::table('people')->insert([
             'system_key' => 'unknown-donor',
-            'organization' => 'Unknown Donor',
-            'comments' => 'System-provided placeholder for donations whose source is genuinely unknown at intake. Reassign the donation to the real donor once identified; do not delete this record.',
+            // pt-BR (2026-11-24, decisão do usuário): o valor de exibição nasce
+            // em português; casamento lógico é por system_key. Legado EN em
+            // disabled_en/backup_en_unknown_donor.php.
+            'organization' => 'Doador desconhecido',
+            'comments' => 'Registro de sistema para doações cuja origem é genuinamente desconhecida no recebimento. Reatribua a doação ao doador real assim que identificado; não exclua este registro.',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

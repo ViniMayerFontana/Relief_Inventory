@@ -419,7 +419,9 @@ return [
         'delivery' => 'Entrega',
         'description' => 'Descrição:',
         'donated_from' => 'Doadas por',
-        'donor_unknown' => 'Donor Unknown',
+        'donor_unknown' => [
+            'donor_unknown' => 'Doador desconhecido',
+        ],
         'email' => 'E-mail:',
         'feature_idea' => 'Ideia de funcionalidade',
         'first_name' => 'Nome:',
@@ -1289,7 +1291,9 @@ return [
         'units_sorted' => 'Unidades triadas',
         'unknown' => 'Desconhecido',
         'unknown_browser' => 'Navegador desconhecido',
-        'unknown_donor' => 'Unknown donor',
+        'unknown_donor' => [
+            'unknown_donor' => 'Doador desconhecido',
+        ],
         'unknown_os' => 'Sistema desconhecido',
         'unknown_status' => 'Status desconhecido',
         'unnamed_station' => 'Estação sem nome',
@@ -1355,6 +1359,9 @@ return [
         'received_3' => 'Recebidas',
         'details' => 'Detalhes',
         'receiving' => 'Recebimento',
+        'unknown_donor_no_standing' => [
+            'unknown_donor_no_standing' => 'O registro de doador desconhecido não tem situação.',
+        ],
     ],
     'title' => [
         'carton_barcodes' => 'Códigos de caixa',

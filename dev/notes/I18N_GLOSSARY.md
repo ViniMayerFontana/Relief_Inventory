@@ -228,3 +228,11 @@ Dívidas documentadas da fase (todas não bloqueantes): relatório completo em `
 - **(α) Roles label na UI:** People.vue MultiSelect de roles agora `display="label"` (backend /json/roles manda label com fallback=name, feito pelo lead); chips de roles em People e os 3 pontos de UI em Users.vue (select do formulário, coluna da tabela, chip do botão) usam `role.label ?? role.name`. Lógica (inTab/sortValue/filtros) permanece com `name` técnico.
 - **(β) Blade "dated X to Y":** donors/partners/unfulfilled/flow blades agora usam `__()` com chaves novas `Reports.<Stem>.text.*` (donations_dated_from_to/_from/_to/all_donations; orders_dated_*; all_orders; Flow.text.period_by ":from a :to, por :bucket") — EN+pt nos auto views.json e lang/{en,pt_BR}/reports.php REGENERADO via `dev/scripts/i18n-lang-from-auto.cjs` (gerado, nunca à mão). php -l 10/10.
 - **Resto dos blades EN (pendência reportada):** flow/partners/donors/unfulfilled blades têm MUITO mais texto EN além do range (ex.: flow "Opening on hand + received…") — lote blade dedicado futuro.
+
+### Donor Unknown → pt (2026-11-24, decisão do usuário REVOGOU o verbatim)
+
+- Inventário completo: NENHUMA lógica casa por organization — todo o código (importer Flowtrac, Simulator, DonorReport, testes) casa por `system_key = "unknown-donor"` (chave estável). Nenhuma troca de casamento foi necessária.
+- **Traduzido na fonte:** migration 2026_08_15_030000 (organization -> "Doador desconhecido", comments pt; legado EN em disabled_en/backup_en_unknown_donor.php) + migration nova `2026_11_24_000001_translate_unknown_donor_pt_br.php` (update por system_key para instâncias existentes; down restaura EN literal). Campos validados contra a própria migration original (organization/comments/system_key).
+- **Vue já estava pronto:** Receiving.vue usa $t(unknown_donor/donor_unknown) — pt atualizado para "Doador desconhecido".
+- **PHP display strings agora via __():** DonationOfferController ×2 (fallback de label) e DonorReportController abort 422 -> `Commons.text.unknown_donor_no_standing` = "O registro de doador desconhecido não tem situação.".
+- **Testes atualizados:** UnknownDonorTest ×2 expectativas organization -> "Doador desconhecido". Restante dos testes casa por system_key — intocado. Comentários de código citando "Unknown Donor" (documentação) intocados de propósito.

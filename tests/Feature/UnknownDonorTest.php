@@ -9,7 +9,7 @@ test('a canonical Unknown Donor person exists after migrating', function () {
     $unknown = Person::where('system_key', 'unknown-donor')->first();
 
     expect($unknown)->not->toBeNull()
-        ->and($unknown->organization)->toBe('Unknown Donor')
+        ->and($unknown->organization)->toBe('Doador desconhecido')
         ->and($unknown->isSystem())->toBeTrue();
 });
 
@@ -18,7 +18,7 @@ test('the Unknown Donor record is selectable from the normal people list like an
 
     $records = $this->actingAs($user)->getJson('/json/people')->assertOk()->json('records');
 
-    expect(collect($records)->pluck('organization'))->toContain('Unknown Donor');
+    expect(collect($records)->pluck('organization'))->toContain('Doador desconhecido');
 });
 
 test('the Unknown Donor system record cannot be deleted', function () {
