@@ -55,6 +55,26 @@ const categoryOptions = [
 	},
 	{ id: 'other', name: t('Commons.text.other_2') },
 ];
+const statusLabels = {
+	"Received": t('Pages.text.status_received'),
+	"Sorting": t('Pages.text.status_sorting'),
+	"Complete": t('Pages.text.status_complete'),
+	"Shopping Cart": t('Pages.text.status_shopping_cart'),
+	"New Order": t('Pages.text.status_new_order'),
+	"Picking In Progress": t('Pages.text.status_picking_in_progress'),
+	"Ready to Fill": t('Pages.text.status_ready_to_fill'),
+	"Filling": t('Pages.text.status_filling'),
+	"Filled": t('Pages.text.status_filled'),
+	"Ready to Ship": t('Pages.text.status_ready_to_ship'),
+	"Shipped": t('Pages.text.status_shipped'),
+	"Delivered": t('Pages.text.status_delivered'),
+	"Delivered — Waiting on BOL": t('Pages.text.status_delivered_waiting_on_bol'),
+	"Completed": t('Pages.text.status_completed'),
+	"Closed - Unfulfilled": t('Pages.text.status_closed_unfulfilled'),
+};
+function donationStatusLabel(name) {
+	return statusLabels[name] ?? name;
+}
 const containerTypes = { pallet: 'Pallet', box: 'Caixa', bag: 'Saco', tote: 'Tote' };
 function containerTypeLabel(value) {
 	return containerTypes[value] ?? (value ? value.charAt(0).toUpperCase() + value.slice(1) : '');
@@ -183,7 +203,7 @@ const containerTypeOptions = [
 				</td>
 				<td>{{ record.category === 'other' && record.category_other ? record.category_other : (categoryOptions.find((o) => o.id === record.category)?.name ?? record.category) }}</td>
 				<td>
-					{{ record.status ? record.status.name : '' }}
+					{{ record.status ? donationStatusLabel(record.status.name) : '' }}
 					<span v-if="record.is_close_out_candidate" class="recv_badge">{{ $t('Pages.text.ready_to_close_out', {}) }}</span>
 				</td>
 				<td>{{ record.container_count }}</td>

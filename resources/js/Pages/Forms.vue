@@ -193,8 +193,8 @@ async function moveQuestion(record, index, direction) {
 			</template>
 			<template #tbody="{ record }">
 				<td>{{ record.name }}</td>
-				<td>{{ record.status }}</td>
-				<td>{{ record.access_mode }}</td>
+				<td>{{ statusOptions.find((o) => o.value === record.status)?.label ?? record.status }}</td>
+				<td>{{ accessOptions.find((o) => o.value === record.access_mode)?.label ?? record.access_mode }}</td>
 				<td>{{ record.requires_approval ? $t('Commons.label.required') : $t('Commons.text.none') }}</td>
 				<td>{{ record.submissions_count }}</td>
 			</template>

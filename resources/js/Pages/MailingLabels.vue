@@ -188,8 +188,8 @@ export default {
 					<p v-if="loading">{{ $t('Pages.text.loading', {}) }}</p>
 					<template v-else>
 						<p class="ml_summary">
-							<strong>{{ selected.length }}</strong> label{{ selected.length === 1 ? '' : 's' }} selected
-							<template v-if="selected.length"> &middot; {{ sheets }} sheet{{ sheets === 1 ? '' : 's' }}</template>
+							<strong>{{ selected.length }}</strong> {{ $t('Pages.text.labels_selected_count', { p0: selected.length }) }}
+							<template v-if="selected.length"> &middot; {{ $t('Pages.text.sheets_count', { p0: sheets }) }}</template>
 							<template v-if="mailable.length">
 								&middot;
 								<button type="button" class="ml_link" @click="setAll(true)" :disabled="allChecked">{{ $t('Commons.aria_label.select_all', {}) }}</button>

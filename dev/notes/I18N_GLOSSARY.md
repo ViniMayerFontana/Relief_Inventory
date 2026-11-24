@@ -271,3 +271,13 @@ Dívidas documentadas da fase (todas não bloqueantes): relatório completo em `
 - Draft final: `.i18n-queue/items_pt_draft.md` — 455 descrições únicas (456 linhas; todas "GENERIC ITEM"), 0 sem tradução, **0 colisões de pt** (update/down por description é seguro).
 - Migration `2026_11_24_000003_translate_items_catalog_pt_br.php` gerada: update por description EN → pt com sufixo " GENERIC ITEM" preservado; down restaura EN por description pt; php -l OK. Installs fresh não têm catálogo (comportamento inalterado).
 - Regra futura registrada: ao traduzir pares "X" / "X, qualifier", garantir pt distinto (genérico com "(genérico)" ou "Piso de X").
+
+### Lote "prints 18:36–18:48" — conclusão (2026-11-24)
+
+- **Receiving coluna Status (item 1):** a coluna usava `record.status.name` (names do banco EN: Received/Sorting/Complete + statuses de pedido) — mapa `statusLabels`/`donationStatusLabel()` inserido no script setup com 15 chaves `Pages.text.status_*` (Recebida/Triagem/Concluída + Carrinho de compras/Novo pedido/Separação em andamento/Pronto para atendimento/Em atendimento/Atendido/Pronto para expedição/Expedido/Entregue/Entregue — aguardando BOL/Concluído/Encerrado — não atendido). Fallback = name cru. As colunas de pallet (container_type/status) já estavam com containerTypeLabel/palletStatusLabel do lote anterior.
+- **Forms (item 2):** colunas `record.status`/`record.access_mode` cruas → lookup nos statusOptions/accessOptions existentes (Ativo; "Link público e para equipe" — label do valor both já traduzido). Banco intocado. approved/pending já usavam $t (statusLabels do FormSubmissions). PublicForm não exibe esses valores.
+- **Units (item 3):** th + fieldlabel → `Commons.label.abbreviation` = "Abreviação:" (chave nova).
+- **MailingLabels (item 4):** contador → `Pages.text.labels_selected_count` = "{p0} etiqueta(s) selecionada(s)" + `Pages.text.sheets_count` = "{p0} folha(s)".
+- **Varredura de réguas (item 5):** heurística nas 4 páginas = 0 prosa EN residual (588 apontados eram atributos/comentários/CSS/código — falsos positivos).
+- **Classe 0b (extra):** RStationFirmware.vue sem import do computed (crash) — corrigido neste lote; re-scan 0 problemas.
+- diff de tipos en↔pt = 0 problemas; build node:22 ✓ 53s.

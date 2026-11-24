@@ -236,7 +236,8 @@
       "wide": "Wide",
       "withdraw": "Withdraw",
       "working": "Working…",
-      "print_pdf": "Print / PDF"
+      "print_pdf": "Print / PDF",
+      "none_2": "None"
     },
     "heading": {
       "account": "Account —",
@@ -480,7 +481,8 @@
       "carrier_trucking": "Carrier (if a trucking company, not a personal vehicle)",
       "flagged_only": "Flagged only",
       "labels_laid_out_a": "Labels are laid out for these sizes, and the Print menu offers only printers set to the same paper (set on the",
-      "labels_laid_out_b": " page)."
+      "labels_laid_out_b": " page).",
+      "abbreviation": "Abbreviation:"
     },
     "link": {
       "all_printers": "All printers",

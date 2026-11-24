@@ -98,7 +98,7 @@ const unitSort = computed(() => (a, b) => {
 
 			<template #thead>
 				<th class="ri_sortable" @click="setSort('name')">{{ $t('Commons.button.name') }} {{ sortArrow('name') }}</th>
-				<th class="ri_sortable" @click="setSort('abbreviation')">Abbreviation{{ sortArrow('abbreviation') }}</th>
+				<th class="ri_sortable" @click="setSort('abbreviation')">{{ $t('Commons.label.abbreviation') }}{{ sortArrow('abbreviation') }}</th>
 				<th class="ri_sortable" @click="setSort('type')">{{ $t('Commons.text.type_2') }} {{ sortArrow('type') }}</th>
 			</template>
 			<template #tbody="{ record }">
@@ -113,7 +113,7 @@ const unitSort = computed(() => (a, b) => {
 						<TextInput v-model="record.name" required autofocus :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">
-						<div class="ri_fieldlabel">Abbreviation:</div>
+						<div class="ri_fieldlabel">{{ $t('Commons.label.abbreviation') }}</div>
 						<TextInput v-model="record.abbreviation" required :enabled="editing" />
 					</div>
 					<div class="ri_fieldset">

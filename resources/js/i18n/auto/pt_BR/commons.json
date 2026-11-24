@@ -236,7 +236,8 @@
       "wide": "Paisagem",
       "withdraw": "Retirar",
       "working": "Trabalhando…",
-      "print_pdf": "Imprimir / PDF"
+      "print_pdf": "Imprimir / PDF",
+      "none_2": "Nenhum"
     },
     "heading": {
       "account": "Conta —",
@@ -480,7 +481,8 @@
       "carrier_trucking": "Transportadora (se for empresa de transporte, não veículo próprio)",
       "flagged_only": "Somente sinalizados",
       "labels_laid_out_a": "As etiquetas são dispostas para estes tamanhos, e o menu Imprimir oferece apenas impressoras configuradas com o mesmo papel (definido em",
-      "labels_laid_out_b": ")."
+      "labels_laid_out_b": ").",
+      "abbreviation": "Abreviação:"
     },
     "link": {
       "all_printers": "Todas as impressoras",
