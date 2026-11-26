@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+# post-commit hook — runs codegraph:index after each commit
+npm run codegraph:index

@@ -1,0 +1,4 @@
+#!/bin/sh
+set -e
+# post-merge hook — runs codegraph:index after git pull/merge
+npm run codegraph:index

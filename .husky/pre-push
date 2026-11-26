@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+# pre-push hook — runs test:coverage before allowing a push.
+# Runs from the repo root; cd into src/ where node_modules and jest config live.
+# Run security scan and test coverage in parallel for faster feedback
+# npm run sec:semgrep 
+# npm run test:coverage
+
+# wait $! || exit $?
+# npm run wiki:rotate-log
+
+

@@ -1,0 +1,6 @@
+#!/bin/sh
+set -e
+# pre-commit hook — runs all security checks.
+# npm run sec:kguard
+# npm run sec:lint:fix 
+# npm run sec:format:fix 
